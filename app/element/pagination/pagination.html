@@ -1,0 +1,256 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+
+<link rel="import" href="iconset.html">
+<link rel="import" href="../../css/global-styles.html">
+
+<dom-module id="application-pagination">
+    <template>
+        <style include="global-style"></style>
+        <style >
+            :host {
+                display: block;
+            }
+
+            .flex {
+                @apply --layout;
+            }
+
+            .flex-horizontal {
+                @apply --layout-horizontal;
+            }
+
+            .flex-vertical {
+                @apply --layout-vertical;
+            }
+
+            .flex-end-justified {
+                @apply --layout-end-justified;
+            }
+
+            paper-dropdown-menu {
+                width: 50px;
+            }
+
+            paper-listbox {
+                min-width: 60px;
+            }
+
+            paper-button {
+                height: 30px;
+                width: 30px !important;
+                min-width: 30px !important;
+                border-radius: 50%;
+                margin: 0.29em;
+                font-weight: 600;
+                font-family: "Open Sans";
+            }
+
+            paper-dropdown-menu {
+
+                top: -20px;
+            }
+
+
+            .selected {
+                background-color: white;
+                color: var(--accent-color);
+            }
+
+        </style>
+        <div id="container" class="flex flex-end-justified">
+
+        </div>
+    </template>
+
+    <script>
+        class AppliactionPagination extends Polymer.Element {
+
+            static get is() {
+                return 'application-pagination';
+            }
+
+            static get properties() {
+                return {
+
+                    page: {
+                        type: Number,
+                        value: 1,
+                        notify: true,
+                    },
+
+                    totalItem: {
+                        type: Number
+                    },
+
+                    itemPerPage: {
+                        type:Number,
+                        notify: true,
+                    },
+
+                    numberPages: {
+                        type: Number,
+                        readOnly: true,
+                    },
+
+                    listNumberPerPage: {
+                        type: Array,
+                        value: [
+                            5,
+                            10,
+                            20,
+                            30,
+                            40,
+                            50
+                        ]
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_render(page, totalItem, itemPerPage)'
+                ]
+            }
+
+            /**
+             */
+            _render(page, totalItem, itemPerPage) {
+                if (typeof page !== 'number' || typeof totalItem !== 'number' || typeof itemPerPage !== 'number') {
+                    return;
+                }
+
+                this._setNumberPages(Math.ceil(totalItem / itemPerPage));
+
+                this._clear();
+                if (this.numberPages < 2) {
+                    if (totalItem > 0) {
+                        this.$.container.appendChild(this._createNumberItemsElement());
+                    }
+                    return;
+                }
+
+                let element;
+
+                this.$.container.appendChild(this._createPreviousElement());
+
+                for (let count = 1; count <= this.numberPages;  count++) {
+                    element = document.createElement('paper-button');
+                    element.textContent = count;
+                    element.page = count;
+                    if (count === page) {
+                        element.disabled = true;
+                        element.classList.add("selected");
+                    }
+                    element.addEventListener('click', this.clickPage.bind(this));
+                    this.$.container.appendChild(element);
+                }
+
+                this.$.container.appendChild(this._createNextElement());
+                this.$.container.appendChild(this._createNumberItemsElement());
+            }
+
+            /**
+             *
+             */
+            _createPreviousElement() {
+                let element = document.createElement('paper-icon-button');
+                element.icon = 'pagination:previous';
+                if (this.page > 1) {
+                    element.addEventListener('click', this.clickPreviousPage.bind(this));
+                } else {
+                    element.disabled = true;
+                }
+                return element;
+            }
+
+            /**
+             *
+             */
+            _createNextElement() {
+                let element = document.createElement('paper-icon-button');
+                element.icon = 'pagination:next';
+                if (this.numberPages <= this.page) {
+                    element.disabled = true;
+                } else {
+                    element.addEventListener('click', this.clickNextPage.bind(this));
+                }
+                return element;
+            }
+
+            /**
+             *
+             */
+            _createNumberItemsElement() {
+                let element = document.createElement('paper-dropdown-menu');
+                element.addEventListener('iron-select', this.clickItemPerPage.bind(this));
+                let paperBox = document.createElement('paper-listbox');
+                paperBox.slot = "dropdown-content";
+                for (let cont = 0; this.listNumberPerPage.length > cont; cont++) {
+                    if (this.itemPerPage === this.listNumberPerPage[cont]) {
+                        paperBox.selected = cont;
+                    }
+                    let paperItem = document.createElement('paper-item');
+                    paperItem.textContent = this.listNumberPerPage[cont];
+                    paperBox.appendChild(paperItem);
+                }
+                Polymer.dom(element).appendChild(paperBox);
+                return element;
+            }
+
+            _clear() {
+
+                while (this.$.container.hasChildNodes()) {
+                    this.$.container.removeChild(this.$.container.lastChild);
+                }
+            }
+
+            /**
+             *
+             * @param evt
+             */
+            clickPage(evt) {
+                this.page = evt.target.page;
+            }
+
+            clickPreviousPage() {
+                if (this.page < 2) {
+                    return;
+                }
+                this.page--;
+            }
+
+            clickNextPage() {
+                if (this.numberPages <= this.page) {
+                    return;
+                }
+                this.page++;
+            }
+
+            /**
+             * @param evt
+             */
+            clickItemPerPage(evt) {
+               this.itemPerPage = parseInt(evt.detail.item.textContent);
+            }
+        }
+
+        window.customElements.define(AppliactionPagination.is, AppliactionPagination);
+    </script>
+</dom-module>

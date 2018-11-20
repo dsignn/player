@@ -1,0 +1,89 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../css/global-layout.html">
+<link rel="import" href="../../css/global-styles.html">
+
+<link rel="import" href="element/view/list.html">
+<link rel="import" href="element/view/upsert.html">
+
+<dom-module id="playlist-index">
+
+  <template>
+    <style include="global-layout"></style>
+    <style include="global-style"></style>
+    <style>
+      #ironPages {
+        padding: 16px;
+      }
+
+    </style>
+    <iron-pages id="ironPages" selected="{{selected}}" >
+      <div id="list">
+        <playlist-view-list selected="{{selected}}" playlist-selected="{{playlist}}">
+            <div slot="header" class="flex-horizontal flex-1 flex-vertical-center">
+                <div class="flex flex-1 flex-vertical-center">Lista Playlist</div>
+                <paper-icon-button
+                        id="buttAddPlaylistr"
+                        icon="app:create"
+                        class="circle"
+                        title="Crea monitor virtuale"
+                        on-click="displayAddView">
+                </paper-icon-button>
+            </div>
+        </playlist-view-list>
+      </div>
+      <div id="add">
+          <playlist-view-upsert>
+              <div slot="header" class="flex-horizontal flex-1 flex-vertical-center">
+                  <paper-icon-button
+                          icon="app:back"
+                          title="Torna alla lista delle configurazioni"
+                          on-tap="displayListView">
+                  </paper-icon-button>
+                  <div>Add playlist</div>
+              </div>
+          </playlist-view-upsert>
+      </div>
+      <div id="edit">
+          <playlist-view-upsert playlist="{{playlist}}">
+              <div slot="header" class="flex-horizontal flex-1 flex-vertical-center">
+                  <paper-icon-button
+                          icon="app:back"
+                          title="Torna alla lista delle configurazioni"
+                          on-tap="displayListView">
+                  </paper-icon-button>
+                  <div>Edit playlist</div>
+              </div>
+          </playlist-view-upsert>
+      </div>
+    </iron-pages>
+  </template>
+  <script>
+    class PluginPluginIndex extends Polymer.Element {
+
+      static get is() { return 'playlist-index'; }
+
+      static get properties() {
+          return {
+
+              selected: {
+                  type: Number,
+                  value: 0
+              }
+          }
+      }
+
+      displayAddView() {
+          this.selected = 1;
+      }
+
+      displayListView() {
+          this.selected = 0;
+      }
+    }
+
+    window.customElements.define(PluginPluginIndex.is, PluginPluginIndex);
+
+  </script>
+</dom-module>Resource

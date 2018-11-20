@@ -1,0 +1,397 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../element/player/player.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="soccer-view-upsert">
+    <template>
+        <style>
+            #cardSubSideline {
+                padding: 8px;
+            }
+
+            .paper-sideline {
+                padding: 8px;
+            }
+
+            .padding-left {
+                margin-left: 30px;
+
+            }
+
+            .pd-r {
+                padding-right: 6px;
+            }
+
+            #formResource {
+                width:100%;
+            }
+
+            .paper-sideline paper-input,
+            .paper-sub-monitor paper-input,
+            .paper-sideline paper-autocomplete,
+            .paper-sub-monitor paper-autocomplete {
+                padding-left: 6px;
+            }
+
+            paper-dropdown-menu {
+                width: 100%;
+            }
+
+        </style>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <slot name="header"></slot>
+        <div class="flex flex-horizontal">
+            <iron-form id="formResource">
+                <form method="post">
+                    <div style="display: flex;">
+                        <div style="flex-basis: 50%; padding-right: 8px;">
+                            <div><paper-input type="date" value="{{resource.date}}" label="Date" tabindex="1"></paper-input></div>
+                            <div hidden$="[[hasHomeTeam]]">
+                                <paper-autocomplete
+                                        id="homeTeam"
+                                        label="Squadra di casa"
+                                        text-property="name"
+                                        value-property="name"
+                                        remote-source
+                                        home
+                                        on-autocomplete-selected="_selectTeam"
+                                        on-autocomplete-change="_searchTeamChanged">
+                                    <template slot="autocomplete-custom-template">
+                                        <style>
+                                            :host {
+                                                display: block;
+                                            }
+
+                                            paper-item.account-item {
+                                                padding: 8px 16px;
+                                            }
+
+                                            .service-name {
+                                                color: #333;
+                                            }
+
+                                            .service-description {
+                                                margin-top: 4px;
+                                                color: #999;
+                                            }
+                                        </style>
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div>
+                                                <div class="service-name">[[item.name]]</div>
+                                            </div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                            </div>
+                            <div hidden$="[[!hasHomeTeam]]">
+                                <div class="flex flex-horizontal flex-horizontal-space-between">
+                                    <paper-input value="{{resource.homeTeam.name}}" class="flex-1"></paper-input>
+                                    <paper-button style="margin: 8px;" on-click="removeTeam" home>Reset team</paper-button>
+                                    <paper-button style="margin: 8px;" on-click="addPlayer" home>Add player</paper-button>
+                                </div>
+                                <template id="homeTeamPlayers" is="dom-repeat" items="[[resource.homeTeam.players]]" as="player">
+                                    <soccer-player-wc player="{{player}}" on-wrap-remove="_removePlayer" updated home></soccer-player-wc>
+                                </template>
+                            </div>
+                        </div>
+                        <div style="flex-basis: 50%;">
+                            <div><paper-input type="time" tabindex="2" value="{{resource.time}}" label="Time"></paper-input></div>
+                            <div hidden$="[[hasGuestTeam]]">
+                                <paper-autocomplete
+                                        id="guestTeam"
+                                        label="Squadra ospite"
+                                        text-property="name"
+                                        value-property="name"
+                                        remote-source
+                                        guest
+                                        on-autocomplete-selected="_selectTeam"
+                                        on-autocomplete-change="_searchTeamChanged">
+                                    <template slot="autocomplete-custom-template">
+                                        <style>
+                                            :host {
+                                                display: block;
+                                            }
+
+                                            paper-item.account-item {
+                                                padding: 8px 16px;
+                                            }
+
+                                            .service-name {
+                                                color: #333;
+                                            }
+
+                                            .service-description {
+                                                margin-top: 4px;
+                                                color: #999;
+                                            }
+                                        </style>
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div>
+                                                <div class="service-name">[[item.name]]</div>
+                                            </div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                            </div>
+                            <div hidden$="[[!hasGuestTeam]]">
+                                <div class="flex flex-horizontal flex-horizontal-space-between">
+                                    <paper-input value="{{resource.guestTeam.name}}" class="flex-1"></paper-input>
+                                    <paper-button style="margin: 8px;" on-click="removeTeam" guest>Reset team</paper-button>
+                                    <paper-button style="margin: 8px;" on-click="addPlayer" guest>Add player</paper-button>
+                                </div>
+                                <template id="guestTeamPlayers" is="dom-repeat" items="[[resource.guestTeam.players]]" as="player">
+                                    <soccer-player-wc player="{{player}}" on-wrap-remove="_removePlayer" updated guest></soccer-player-wc>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-horizontal-end">
+                        <paper-button on-tap="submitResourceButton">{{labelAction}}</paper-button>
+                    </div>
+                </form>
+            </iron-form>
+        </div>
+    </template>
+
+    <script>
+        class ElementSoccerViewUpsert extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-view-upsert';
+            }
+
+            static get properties() {
+                return {
+
+                    /**
+                     * @param {MatchSoccer}
+                     */
+                    resource: {
+                        type: Object,
+                        notify: true,
+                        value: new MatchSoccer(),
+                        observer: '_resourceChanged'
+                    },
+
+                    labelAction: {
+                        type: String,
+                        value: 'Save'
+                    },
+
+                    hasHomeTeam: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    hasGuestTeam: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    }
+                }
+            }
+
+            ready() {
+                super.ready();
+
+                serviceManager.get('StoragePluginManager')
+                    .get(SoccerConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearResource.bind(this)
+                );
+
+                this.$.formResource.addEventListener('iron-form-presubmit', this.submitResource.bind(this));
+            }
+
+            _resourceChanged(newValue, oldValue) {
+
+                if (!newValue) {
+                    return;
+                }
+
+                this.hasHomeTeam = newValue.hasHomeTeam() && newValue.getHomeTeam().countPlayer() > 0;
+                this.hasGuestTeam = newValue.hasGuestTeam() && newValue.getGuestTeam().countPlayer() > 0;
+
+                this.labelAction = newValue && newValue.id ? 'Update' : 'Save';
+            }
+
+            /**
+             * @param evt
+             */
+            submitResource(evt) {
+                evt.preventDefault();
+
+                let method = this.resource.id ? 'update' : 'save';
+
+                serviceManager.get('StoragePluginManager')
+                    .get(SoccerConfig.NAME_SERVICE)[method](this.resource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' match');
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+
+            }
+
+            _hasTeam(team) {
+                let has = false;
+                switch (team) {
+                    case 'home':
+                        has = this.resource.hasHomeTeam();
+                        break;
+                    case 'guest':
+                        has = this.resource.hasGuestTeam();
+                        break;
+                }
+                return has;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _searchTeamChanged(evt) {
+                let listPath = "leagues/serie-a/seasons/18-19/teams";
+
+                serviceManager.get('SoccerClient')
+                    .get(listPath)
+                    .then(res => res.json())
+                    .then(json => {
+
+                        let filter = json.data.teams.filter(
+                            element => {
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    });
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectTeam(evt) {
+                let isHomeTeam = evt.target.getAttribute('home') === '';
+                let playersPath = `leagues/serie-a/seasons/18-19/teams/${evt.detail.option.team_slug}/players`;
+
+                serviceManager.get('SoccerClient')
+                    .get(playersPath)
+                    .then(res => res.json())
+                    .then(json => {
+
+                        let pl = serviceManager.get('HydratorPluginManager').get('playerSoccerApiHydrator').hydrate(json.data.players[0])
+
+                        evt.detail.option.players = json.data.players;
+                        let team =  serviceManager.get('HydratorPluginManager').get('teamSoccerApiHydrator').hydrate(evt.detail.option);
+
+                        if (isHomeTeam) {
+                            this.resource.homeTeam = team;
+                            this.hasHomeTeam = true;
+                            this.notifyPath('resource.homeTeam');
+                        } else {
+                            this.resource.guestTeam = team;
+                            this.hasGuestTeam = true;
+                            this.notifyPath('resource.guestTeam');
+                        }
+                    });
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _removePlayer(evt) {
+                let team = evt.target.getAttribute('home') === '' ? 'homeTeam' : 'guestTeam';
+
+                let index = this.resource[team].getPlayers().findIndex((element) => {
+                   return element.id === evt.detail.id;
+                });
+
+                this.splice(`resource.${team}.players`, index, 1);
+                this.resource[team].removePlayer(evt.detail);
+            }
+
+            /**
+             * @param method
+             * @returns {boolean}
+             * @private
+             */
+            _isMethod(method) {
+                let isMethod = false;
+                switch (true) {
+                    case method === 'update' && this.resource.id !== undefined:
+                        isMethod = true;
+                        break;
+                    case method === 'save' && this.resource.id === undefined:
+                        isMethod = true;
+                        break;
+                }
+
+                return isMethod;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _clearResource(evt) {
+                this.resource = new MatchSoccer();
+            }
+
+            /**
+             * @param evt
+             */
+            removeTeam(evt) {
+
+                if (evt.target.getAttribute('home') === '') {
+                    this.resource.removeHomeTeam();
+                    this.hasHomeTeam = false;
+                    this.notifyPath('resource.homeTeam');
+                } else {
+                    this.resource.removeGuestTeam();
+                    this.hasGuestTeam = false;
+                    this.notifyPath('resource.guestTeam');
+                }
+            }
+
+            addPlayer(evt) {
+                let team = evt.target.getAttribute('home') === '' ? 'homeTeam' : 'guestTeam';
+                this.resource[team].addPlayer(new PlayerSoccer(), {prepend:true});
+                this.$[`${team}Players`].render();
+            }
+
+            /**
+             *
+             */
+            submitResourceButton(evt) {
+                this.$.formResource.submit();
+            }
+        }
+
+        window.customElements.define(ElementSoccerViewUpsert.is, ElementSoccerViewUpsert);
+
+    </script>
+</dom-module>

@@ -1,0 +1,106 @@
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="scoreboard-goal-single.html">
+
+<dom-module id="soccer-scoreboard-goals-wc">
+    <template>
+        <template id="repeatGoal" is="dom-repeat" items="[[goals]]" as="goal">
+            <soccer-scoreboar-goal-single-wc player="{{_getPlayer(goal)}}" goal="{{goal}}" on-wrap-remove="_remove" on-wrap-update="_update" left="{{left}}"></soccer-scoreboar-goal-single-wc>
+        </template>
+    </template>
+
+    <script>
+        class ElementSoccerScoreboardGoals extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-scoreboard-goals-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    goals: {
+                        type: new PlayerSoccer(),
+                        notify: true,
+                    },
+
+                    left: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                return serviceManager.get('SoccerService')
+                    .eventManager
+                    .on(`add-goal-${this._getTeamName()}`, this._addGoalListener.bind(this));
+            }
+
+            _addGoalListener(evt) {
+                this.$.repeatGoal.render();
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _remove(evt) {
+                console.log('REMOVE GOAL');
+                serviceManager.get('SoccerService').removeGoal(this._getTeamName(), evt.target.goal);
+                this.$.repeatGoal.render();
+            }
+
+
+            /**
+             * @param evt
+             * @private
+             */
+            _update(evt) {
+                console.log('UPDATE GOAL');
+                serviceManager.get('SoccerService').updateGoals(this._getTeamName(), evt.target.goal);
+                this.$.repeatGoal.render();
+            }
+
+            /**
+             * @param {Goal} goal
+             * @private
+             */
+            _getPlayer(goal) {
+
+                let teamName = this._getTeamName();
+                if (Goal.TYPE_AUTO === goal.type) {
+                    teamName = teamName === 'home' ? 'guest' : 'home';
+                }
+                return serviceManager.get('SoccerService').getPlayer(teamName, goal.playerId)
+            }
+
+            /**
+             * @return {string}
+             * @private
+             */
+            _getTeamName() {
+
+                let label = '';
+                switch (true) {
+                    case this.getAttribute('guest') === "":
+                        label = SoccerService.GUEST_TEAM;
+                        break;
+                    case this.getAttribute('home') === "":
+                        label = SoccerService.HOME_TEAM;
+                        break;
+                    default:
+                        console.error('No attribute for team name found');
+
+                }
+
+                return label;
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboardGoals.is, ElementSoccerScoreboardGoals);
+
+    </script>
+</dom-module>

@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="../../element/iconset/iconset.html">
+<link rel="import" href="../../css/global-layout.html">
+<link rel="import" href="../../css/global-styles.html">
+<link rel="import" href="element/view/list.html">
+<link rel="import" href="element/view/upsert.html">
+
+<dom-module id="timeslot-index">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            #ironPages {
+                padding: 16px;
+            }
+
+        </style>
+        <iron-pages id="ironPages" selected="{{selected}}">
+            <div id="list">
+                <timeslot-view-list selected="{{selected}}" timeslot-selected="{{timeslot}}">
+                    <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
+                        <div>Lista timeslots</div>
+                        <paper-icon-button class="circle" on-tap="displayAddView" icon="app:create" title="Crea risorsa"></paper-icon-button>
+                    </div>
+                </timeslot-view-list>
+            </div>
+            <div id="add">
+                <timeslot-view-upsert>
+                    <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                        <paper-icon-button icon="app:back" on-tap="displayListView" title="Torna alla lista delle configurazioni"></paper-icon-button>
+                        <div>Aggiungi timeslot</div>
+                    </div>
+                </timeslot-view-upsert>
+            </div>
+            <div id="update">
+                <timeslot-view-upsert timeslot="{{timeslot}}">
+                    <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                        <paper-icon-button icon="app:back" on-tap="displayListView" title="Torna alla lista delle configurazioni"></paper-icon-button>
+                        <div>Modifica timeslot</div>
+                    </div>
+                </timeslot-view-upsert>
+            </div>
+        </iron-pages>
+    </template>
+    <script>
+        class PluginTimeslotIndex extends Polymer.Element {
+
+            static get is() {
+                return 'timeslot-index';
+            }
+
+            static get properties() {
+                return {
+
+                    selected: {
+                        type: Number,
+                        value: 0
+                    }
+                }
+            }
+
+            displayAddView() {
+                this.selected = 1;
+            }
+
+            displayListView() {
+                this.selected = 0;
+            }
+        }
+
+        window.customElements.define(PluginTimeslotIndex.is, PluginTimeslotIndex);
+
+    </script>
+</dom-module>Resource

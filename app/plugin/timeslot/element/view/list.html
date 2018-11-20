@@ -1,0 +1,209 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+<link rel="import" href="../../element/iconset/iconset.html">
+<link rel="import" href="../timeslot/timeslot.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+
+<dom-module id="timeslot-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            /** TODO insert style    */
+            :host ::slotted(.header) {
+                margin-bottom: 16px;
+            }
+        </style>
+        <slot name="header"></slot>
+        <div hidden$="{{!hasResources}}">
+            <template is="dom-repeat" items="[[timeslots]]" as="timeslot">
+                <timeslot-wc
+                        timeslot="{{timeslot}}"
+                        on-play="play"
+                        on-resume="resume"
+                        on-stop="stop"
+                        on-pause="pause"
+                        on-wrap-update="displayUpdateView"
+                        on-wrap-update-timeslot="update"
+                        on-wrap-remove="remove">
+                </timeslot-wc>
+            </template>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{hasResources}}">
+            Non sono presenti timeslot
+        </div>
+    </template>
+    <script>
+        class ElementTimeslotViewList extends Polymer.Element {
+
+            static get is() {
+                return 'timeslot-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    timeslots: {
+                        type: Array,
+                        value: []
+                    },
+
+                    timeslotSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    page: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    itemPerPage: {
+                        type: Number,
+                        value: 20
+                    },
+
+                    totalItem: {
+                        type: Number,
+                    }
+                };
+            }
+
+
+            ready() {
+                super.ready();
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._loadResource.bind(this)
+                );
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._loadResource.bind(this)
+                );
+
+                this._loadResource();
+            }
+
+            static get observers() {
+                return [
+                    '_queryTimeslots(page, itemPerPage)'
+                ]
+            }
+
+            _queryTimeslots(page, itemPerPage) {
+                if (page === undefined || itemPerPage === undefined) {
+                    return;
+                }
+                this._loadResource();
+            }
+
+            _loadResource() {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .getPaged(this.page, this.itemPerPage)
+                    .then((data) => {
+                        this.set('timeslots', data);
+                        this.hasResources = data.length > 0;
+                        this.totalItems = data.totalItems;
+                    });
+            }
+
+            /**
+             * @param event
+             */
+            remove(evt) {
+
+                let index = null;
+                let element = this.timeslots.find((element, ind) => {
+                    if (element.id === evt.detail.id) {
+                        index = ind;
+                        return element;
+                    }
+                });
+
+                this.splice('timeslots', index, 1);
+                this.hasResources = this.timeslots.length > 0;
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .remove(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Remove timeslot')
+                    });
+            }
+
+            update(evt) {
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .update(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Update timeslot ' + data.name)
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            play(evt) {
+                serviceManager.get('TimeslotService').play(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            resume(evt) {
+                serviceManager.get('TimeslotService').resume(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            stop(evt) {
+                serviceManager.get('TimeslotService').stop(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            pause(evt) {
+                serviceManager.get('TimeslotService').pause(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            displayUpdateView(evt) {
+                this.timeslotSelected = evt.detail;
+                this.selected = 2;
+            }
+        }
+
+        window.customElements.define(ElementTimeslotViewList.is, ElementTimeslotViewList);
+
+    </script>
+</dom-module>

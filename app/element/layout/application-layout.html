@@ -1,0 +1,291 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../element/iconset/iconset.html">
+<link rel="import" href="../../element/internet/internet.html">
+
+<link rel="import" href="view/view-404.html">
+
+<link rel="import" href="../../css/global-styles.html">
+
+<dom-module id="application-layout">
+    <template>
+        <style include="global-style"></style>
+        <style>
+            :host {
+                display: block;
+            }
+
+            app-header-layout {
+                left: 64px;
+                margin-right: 64px;
+            }
+
+            app-header {
+                color: var(--title-color);
+                background-color: var(--dark-primary-color);
+            }
+
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: var(--title-color);
+            }
+
+            app-drawer iron-selector div {
+                display: flex;
+                align-items: center;
+                cursor: pointer;
+                width: 100%;
+                height: 64px;
+            }
+
+            app-drawer {
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 64px;
+
+                --app-drawer-content-container: {
+                    visibility: visible;
+                    padding: 0 0;
+                }
+            }
+
+            .menu-text {
+                padding-right: 8px;
+                justify-content: flex-end;
+            }
+
+            .menu-icon {
+                height: 64px;
+                width: 99px;
+                display: flex;
+                justify-content: center;
+            }
+
+        </style>
+        <app-header-layout>
+            <app-header slot="header" fixed condenses effects="waterfall">
+                <app-toolbar>
+                    <paper-icon-button icon="app:menu" on-click="toggle"></paper-icon-button>
+                    <div main-title>{{nameApplication}}</div>
+                    <element-internet internet="vai toni"></element-internet>
+                </app-toolbar>
+            </app-header>
+            <div>
+                <iron-pages id="views"
+                            selected="[[page]]"
+                            attr-for-selected="name"
+                            fallback-selection="view404"
+                            role="main">
+                    <app-view404 name="view404"></app-view404>
+                </iron-pages>
+            </div>
+        </app-header-layout>
+        <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+            <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                <template is="dom-repeat" items="{{modules}}" as="item">
+                    <template is="dom-if" if="{{_hasMenuItem(item)}}" >
+                        <div menu-item value="{{item.nameWc}}" on-tap="handleRoute">
+                            <div class="menu-text">{{item.label}}</div>
+                            <div class="menu-icon">
+                                <paper-icon-button icon="{{item.icon}}" title="{{item.label}}" style="[[_computeIcondStyle(item)]]"></paper-icon-button>
+                            </div>
+                        </div>
+                    </template>
+               </template>
+           </iron-selector>
+       </app-drawer>
+   </template>
+
+   <script>
+       class ApplicationLayout extends Polymer.Element {
+
+           static get is() {
+               return 'application-layout';
+           }
+
+           static get properties() {
+               return {
+                   modules : {
+                       tyep: Array,
+                       readOnly : true,
+                       notify: true
+                   },
+
+                   page: {
+                       type: String,
+                       reflectToAttribute: true,
+                       observer: '_pageChanged',
+                       value: 'timeslot-index'
+                   },
+
+                   nameApplication: {
+                       type: String,
+                       value: 'Dsign'
+                   },
+
+                   routeData: Object
+               };
+           }
+
+           static get observers() {
+               return [
+                   '_routePageChanged(page)',
+               ];
+           }
+
+           /**
+            *
+            */
+           ready() {
+               super.ready();
+               this._setModules(serviceManager.get('Application').modules);
+               this.modules.forEach(function (plugin) {
+
+                   if (plugin.label) {
+                       let elem =  document.createElement(plugin.nameWc);
+                       elem.name = plugin.nameWc;
+                       this.$.views.appendChild(elem);
+                   }
+
+               }.bind(this));
+           }
+
+           /**
+            *
+            */
+           handleRoute(event) {
+               // TODO exception if is not se value
+
+               this.page = this._findRoute(event.target);
+           }
+
+           /**
+            *
+            */
+           toggle() {
+               this.$.drawer.toggle();
+           }
+
+           /**
+            * @param module
+            * @return {string}
+            * @private
+            */
+           _computeIcondStyle(module) {
+               let style = '';
+               if (module.customeStyle) {
+                   for (let property in module.customeStyle) {
+                       style = style + `${property}:${module.customeStyle[property]};`;
+                   }
+               }
+               return style;
+           }
+
+           _findRoute(elem) {
+               if (elem.getAttribute('menu-item') === null && elem.parentElement) {
+                   return this._findRoute(elem.parentElement);
+               }
+
+               return elem.value;
+           }
+
+           /**
+            * @param page
+            * @private
+            */
+           _routePageChanged(page) {
+               // If no page was found in the route data, page will be an empty string.
+               // Deault to 'view1' in that case.
+               this.page = page || 'dashboard-index';
+
+               // Close a non-persistent drawer when the page & route are changed.
+               if (!this.$.drawer.persistent) {
+                   this.$.drawer.close();
+               }
+           }
+
+           /**
+            * @param {string} page
+            * @private
+            */
+           _pageChanged(page) {
+               // Load page import on demand. Show 404 page if fails
+               let path = page.split("-");
+               let resolvedPageUrl = this.resolveUrl(`../../plugin/${this._getNameDirectoryFromPage(page)}/${this._getNameFileFromPage(page)}.html`);
+               Polymer.importHref(
+                   resolvedPageUrl,
+                   null,
+                   this._showPage404.bind(this),
+                   true);
+           }
+
+           /**
+            * @param {string} page
+            * @private
+            */
+           _getNameDirectoryFromPage(page) {
+               let chunk = page.split("-");
+               let directoryName = '';
+               switch (true) {
+                   case chunk.length > 2:
+                       for (let cont = 0; chunk.length > (cont+1); cont++) {
+                           directoryName += cont === 0 ? chunk[cont] : '-' + chunk[cont];
+                       }
+                       break;
+                   case chunk.length > 1:
+                       directoryName = chunk[0];
+                       break;
+                   default:
+                       throw `Wrong page ${page}`;
+               }
+               return directoryName;
+           }
+
+           /**
+            * @param {string} page
+            * @private
+            */
+           _getNameFileFromPage(page) {
+               let chunk = page.split("-");
+               return chunk[chunk.length-1];
+           }
+
+           /**
+            * @private
+            */
+           _hasMenuItem(module) {
+               return !!module.label;
+           }
+
+           /**
+            * @private
+            */
+           _showPage404() {
+               this.page = 'view-404';
+           }
+       }
+
+       window.customElements.define(ApplicationLayout.is, ApplicationLayout);
+   </script>
+</dom-module>

@@ -1,0 +1,58 @@
+<dom-module id="wc-resource-soccer-player">
+    <template>
+        <style>
+
+            .player {
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                color: white;
+                font-size: 40px;
+                background-color: #0b97c4;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+        </style>
+        <div class="player">
+            {{data.shirtNumber}} {{data.name}} {{data.surname}}
+        </div>
+    </template>
+
+    <script>
+        class WcResourceSoccerPlayer extends Polymer.Element {
+
+            static get is() {
+                return 'wc-resource-soccer-player';
+            }
+
+            static get properties() {
+                return {
+
+                    data: {
+                        type: Object,
+                        notify: true,
+                        observer: '_dataChanged',
+                    },
+                };
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _dataChanged(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                console.log('DATI', newValue);
+            }
+        }
+
+        window.customElements.define(WcResourceSoccerPlayer.is, WcResourceSoccerPlayer);
+
+    </script>
+</dom-module>

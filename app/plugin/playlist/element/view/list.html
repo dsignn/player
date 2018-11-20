@@ -1,0 +1,200 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../element/playlist/playlist.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+
+
+<dom-module id="playlist-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+        </style>
+        <slot name="header"></slot>
+        <div hidden$="{{!hasResources}}" style="padding-top: 20px;">
+            <template is="dom-repeat" items="[[playlists]]" as="playlist">
+                <playlist-wc
+                        playlist="{{playlist}}"
+                        on-wrap-remove="remove"
+                        on-wrap-update="displayUpdateView"
+                        on-wrap-update-playlist="update"
+                        on-play="play"
+                        on-stop="stop"
+                        on-pause="pause"
+                        on-resume="resume">
+                </playlist-wc>
+            </template>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{hasResources}}">
+            Non sono presenti playlist
+        </div>
+    </template>
+
+    <script>
+        class ElementPlaylistViewList extends Polymer.Element {
+
+            static get is() {
+                return 'playlist-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    playlists: {
+                        type: Array,
+                        notify: true,
+                        value: []
+                    },
+
+                    playlistSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    page: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    itemPerPage: {
+                        type: Number,
+                        value: 20
+                    },
+
+                    totalItems: {
+                        type: Number,
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+                serviceManager.get('StoragePluginManager')
+                    .get(PlaylistConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._loadResource.bind(this)
+                );
+
+                serviceManager.get('StoragePluginManager')
+                    .get(PlaylistConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._loadResource.bind(this)
+                );
+            }
+
+            static get observers() {
+                return [
+                    '_queryPlayists(page, itemPerPage)'
+                ]
+            }
+
+            _queryPlayists(page, itemPerPage) {
+                if (page === undefined || itemPerPage === undefined) {
+                    return;
+                }
+                this._loadResource();
+            }
+
+            _loadResource() {
+                serviceManager.get('StoragePluginManager')
+                    .get(PlaylistConfig.NAME_SERVICE)
+                    .getPaged(this.page, this.itemPerPage)
+                    .then((data) => {
+                        this.set('playlists', data);
+                        this.hasResources = data.length > 0;
+                        this.totalItems = data.totalItems;
+                    });
+            }
+
+            update(evt) {
+                serviceManager.get('StoragePluginManager')
+                    .get(PlaylistConfig.NAME_SERVICE)
+                    .update(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Update playlist ' + data.name)
+                    });
+            }
+
+            remove(evt) {
+
+                let index = -1;
+                let element = this.playlists.find((element, ind) => {
+                    if (element.id === evt.detail.id) {
+                        index = ind;
+                        return element;
+                    }
+                });
+
+                if (index < 0) {
+                    return;
+                }
+
+                this.splice('playlists', index, 1);
+                this.hasResources = this.playlists.length > 0;
+
+                serviceManager.get('StoragePluginManager')
+                    .get(PlaylistConfig.NAME_SERVICE)
+                    .remove(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Remove playlist')
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            play(evt) {
+                serviceManager.get('PlaylistService').play(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            stop(evt) {
+                serviceManager.get('PlaylistService').stop(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            pause(evt) {
+                serviceManager.get('PlaylistService').pause(
+                    evt.detail
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            resume(evt) {
+                serviceManager.get('PlaylistService').resume(
+                    evt.detail
+                );
+            }
+
+            displayUpdateView(evt) {
+                this.playlistSelected = evt.detail;
+                this.selected = 2;
+            }
+        }
+
+        window.customElements.define(ElementPlaylistViewList.is, ElementPlaylistViewList);
+
+    </script>
+</dom-module>

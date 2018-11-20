@@ -1,0 +1,193 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<dom-module id="widget-wc">
+    <template>
+        <style>
+            :host {
+                overflow: hidden;
+                background-color: #FFFFFF;
+                box-shadow: 2px 2px 2px 2px #909196;
+                -webkit-box-shadow: 2px 2px 2px 2px #909196;
+                -moz-box-shadow: 2px 2px 2px 2px #909196;
+                overflow-y: hidden;
+            }
+
+            .content {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 98%;
+                cursor: move;
+                overflow: auto;
+            }
+
+            div.content ::slotted([resize]) {
+                font-size: 20px;
+                color: transparent;
+            }
+
+            div.content ::slotted([resize]:hover) {
+                color: black;
+            }
+
+            .move {
+                cursor: move;
+            }
+
+            div.content ::slotted([slot=top-left]),
+            div.content ::slotted([slot=top-right]),
+            div.content ::slotted([slot=top])
+            {
+                line-height: 10px;
+            }
+
+
+            div.content ::slotted([slot=bottom-left]),
+            div.content ::slotted([slot=bottom-right]),
+            div.content ::slotted([slot=bottom])
+            {
+                line-height: 12px;
+            }
+
+            .remove {
+                position: absolute;
+                top: 0;
+                right: 0;
+            }
+
+
+        </style>
+
+        <div id="content" class="content">
+            <div class="remove">
+                <paper-icon-button icon="app:remove" on-tap="customRemove"></paper-icon-button>
+            </div>
+            <slot name="top"></slot>
+            <slot name="top-right"></slot>
+            <slot name="top-left"></slot>
+            <slot name="bottom"></slot>
+            <slot name="bottom-right"></slot>
+            <slot name="bottom-left"></slot>
+            <slot name="left"></slot>
+            <slot name="right"></slot>
+        </div>
+    </template>
+
+    <script>
+        class ElementWidget extends Polymer.Element {
+
+            static get is() {
+                return 'widget-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    id: {
+                        type: String
+                    },
+
+                    wc: {
+                        type: String,
+                        notify: true,
+                        observer: "_changedWc"
+                    },
+
+                    data: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    col: {
+                        type: Number,
+                        notify: true,
+                        reflectToAttribute: true
+                    },
+
+                    row: {
+                        type: Number,
+                        notify: true,
+                        reflectToAttribute: true,
+                    },
+
+                    height: {
+                        type: Number,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value: 3
+                    },
+
+                    width: {
+                        type: Number,
+                        notify: true,
+                        reflectToAttribute: true,
+                        value: 3
+                    },
+                };
+            }
+
+            ready() {
+                super.ready();
+
+
+            }
+
+
+            _changedWc(newValue, oldValue) {
+
+                if (!newValue || newValue == oldValue) {
+                    return;
+                }
+
+                let elem = document.createElement(this.wc);
+                elem.data = this.data;
+                elem.loadData();
+                elem.classList.add("move");
+
+                this.$.content.appendChild(elem);
+            }
+            /**
+             * @return {Widget}
+             */
+            getWidget() {
+                let widget = new Widget();
+
+                widget.id = this.id;
+                widget.width = this.width;
+                widget.height = this.height;
+                widget.row = this.row;
+                widget.col = this.col;
+                widget.wc = this.wc;
+                widget.data = this.data;
+
+                return widget;
+            }
+
+            /**
+             * @param {Widget} widget
+             */
+            initFromWidget(widget) {
+
+                this.id = widget.id;
+                this.width = widget.width;
+                this.height = widget.height;
+                this.row = widget.row;
+                this.col = widget.col;
+                this.wc = widget.wc;
+                this.data = widget.data;
+            }
+
+            /**
+             *
+             */
+            customRemove() {
+                this.dispatchEvent(new CustomEvent('customRemove'));
+            }
+        }
+
+        window.customElements.define(ElementWidget.is, ElementWidget);
+
+    </script>
+</dom-module>

@@ -1,0 +1,182 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="monitor-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+
+            .card-content,
+            .card-actions {
+                padding: 0;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            .enableButtonContainer {
+                height: 40px;
+                width: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .enableButtonContainer paper-radio-button {
+                width: 16px;
+            }
+
+            #rightSection {
+                background-image: url("img/monitor.jpg") !important;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+            .crud paper-icon-button {
+                background-color: #0b8043 ;
+            }
+
+            paper-toggle-button {
+                width: 38px;
+                cursor: pointer;
+                --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+                --paper-toggle-button-unchecked-bar-color:  var(--paper-pink-500);
+                --paper-toggle-button-unchecked-button-color:  var(--paper-pink-500);
+                --paper-toggle-button-unchecked-ink-color: var(--paper-pink-500);
+                --paper-toggle-button-invalid-bar-color:  var(--paper-green-500);
+                --paper-toggle-button-invalid-button-color:  var(--paper-green-500);
+
+            }
+
+            .crud {
+                padding-left: 4px;
+                padding-right: 4px;
+            }
+
+        </style>
+        <paper-card id="design" class="setting">
+            <div class="card-setting">
+                <div class="enableButtonContainer">
+                    <paper-toggle-button id="paperToggleEnable" on-change="_changeEnableMonitor"></paper-toggle-button>
+                </div>
+            </div>
+            <div class="card-content flex flex-horizontal">
+                <div class="flex-basis-85 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <div>{{monitor.name}}</div>
+                        <div>Monitor Number: {{_computeMonitorNumber()}}</div>
+                    </div>
+                </div>
+                <div class="data flex-basis-15 flex flex-vertical">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-click="_update">Modifica</paper-item>
+                            <paper-item  on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div class="card-actions flex flex-horizontal-end"></div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementMonitor extends Polymer.Element {
+
+            static get is() {
+                return 'monitor-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    monitor: {
+                        type: Object,
+                        notify : true
+                    },
+
+                    hideCrud : {
+                        type: Boolean,
+                        value: false
+                    },
+                };
+            }
+
+            static get observers() {
+                return [
+                    'monitorEnableChange(monitor.enable)'
+                ]
+            }
+
+            /**
+             * @param {Number} enable
+             */
+            monitorEnableChange(enable) {
+                this.$.paperToggleEnable.checked = !!enable;
+                this.$.paperToggleEnable.invalid = !!enable;
+                this.$.paperToggleEnable.disabled = !!enable;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.monitor}));
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _changeEnableMonitor(evt) {
+                this.monitor.enable = evt.target.checked;
+                this.dispatchEvent(new CustomEvent('wrap-change-enable-monitor', {detail: this.monitor}));
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-update', {detail: this.monitor}));
+            }
+
+            /**
+             * @returns {Number}
+             * @private
+             */
+            _computeMonitorNumber() {
+                return this.monitor.getMonitors({nested:true}).length;
+            }
+        }
+
+        window.customElements.define(ElementMonitor.is, ElementMonitor);
+
+    </script>
+</dom-module>

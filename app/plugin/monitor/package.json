@@ -1,0 +1,13 @@
+{
+  "name": "dsign-monitor-plugin",
+  "version": "0.1.0",
+  "author": "antonino visalli <antonino.visalli@gmail.com>",
+  "description": "Dsign monitor plugin",
+  "homepage": "www.visa4.it",
+  "config": "config.js",
+  "autoload": [
+    "src/model/Monitor.js",
+    "src/model/VirtualMonitor.js",
+    "src/model/VirtualMonitorReference.js"
+  ]
+}

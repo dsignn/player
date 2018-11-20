@@ -1,0 +1,537 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-icons.html">
+<link rel="import" href="../../../../element/file-upload/file-upload.html">
+
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../data-injector-input/data-injector-input.html">
+
+<dom-module id="timeslot-view-upsert">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            paper-dropdown-menu {
+                width: 100%;
+            }
+        </style>
+        <slot name="header"></slot>
+        <iron-form id="formTimeslot">
+            <form method="post" action="">
+                <paper-input id="name" name="name" label="Name" value="{{timeslot.name}}" required></paper-input>
+                <paper-input id="duration" name="duration" label="Duration" type="number" min="1" value="{{timeslot.duration}}" required></paper-input>
+                <paper-autocomplete
+                        id="monitor"
+                        label="Monitor"
+                        text-property="name"
+                        value-property="name"
+                        text="{{timeslot.virtualMonitorReference.name}}"
+                        remote-source
+                        on-autocomplete-selected="_selectMonitor"
+                        on-autocomplete-change="_searcMonitorChanged">
+                    <template slot="autocomplete-custom-template">
+                        <style>
+                            :host {
+                                display: block;
+                            }
+
+                            paper-item.account-item {
+                                padding: 8px 16px;
+                            }
+
+                            .service-name {
+                                color: #333;
+                            }
+
+                            .service-description {
+                                margin-top: 4px;
+                                color: #999;
+                            }
+                        </style>
+                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                            <div>
+                                <div class="service-name">[[item.monitor.name]]</div>
+                                <div class="service-description">Width [[item.monitor.width]]px Height [[item.monitor.height]]px</div>
+                            </div>
+                            <paper-ripple></paper-ripple>
+                        </paper-item>
+                    </template>
+                </paper-autocomplete>
+                <paper-autocomplete
+                        id="resource"
+                        label="Resource"
+                        text-property="name"
+                        value-property="name"
+                        remote-source
+                        on-autocomplete-selected="_selectResource"
+                        on-autocomplete-change="_searchResourceChanged">
+                    <template slot="autocomplete-custom-template">
+                        <style>
+                            :host {
+                                display: block;
+                            }
+
+                            paper-item.account-item {
+                                padding: 8px 16px;
+                            }
+
+                            .service-name {
+                                color: #333;
+                            }
+
+                            .service-description {
+                                margin-top: 4px;
+                                color: #999;
+                            }
+                        </style>
+                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                            <div>
+                                <div class="service-name">[[item.name]]</div>
+                            </div>
+                            <paper-ripple></paper-ripple>
+                        </paper-item>
+                    </template>
+                </paper-autocomplete>
+                <div id="listResource"></div>
+
+                <paper-input id="blur-filter" name='filters["blur"]' label="Blur filter" value="{{timeslot.filters.blur}}"></paper-input>
+                <paper-input id="brightness-filter" name='filters["brightness"]' label="Brightness filter" value="{{timeslot.filters.brightness}}"></paper-input>
+                <paper-input id="contrast-filter" name='filters["contrast"]' label="Contrast filter" value="{{timeslot.filters.contrast}}"></paper-input>
+                <paper-input id="grayscale-filter" name='filters["grayscale"]' label="Grayscale filter" value="{{timeslot.filters.grayscale}}"></paper-input>
+                <paper-input id="hue-rotate-filter" name='filters["hueRotate"]' label="Grayscale filter" value="{{timeslot.filters.hueRotate}}"></paper-input>
+                <paper-input id="invert-filter" name='filters["invert"]' label="Invert filter" value="{{timeslot.filters.invert}}"></paper-input>
+                <paper-input id="opacity-filter" name='filters["opacity"]' label="Opacity filter" value="{{timeslot.filters.opacity}}"></paper-input>
+                <paper-input id="saturate-filter" name='filters["saturate"]' label="Saturate filter" value="{{timeslot.filters.saturate}}"></paper-input>
+                <paper-input id="sepia-filter" name='filters["sepia"]' label="Sepia filter" value="{{timeslot.filters.sepia}}"></paper-input>
+                <paper-input id="drop-shadow-filter" name='filters["dropShadow"]' label="Drop Shadow filter" value="{{timeslot.filters.dropShadow}}"></paper-input>
+
+                <paper-chip-input values="{{timeslot.tags}}"></paper-chip-input>
+                <paper-autocomplete
+                        id="bind"
+                        label="Bind timeslots"
+                        text-property="name"
+                        value-property="name"
+                        remote-source
+                        on-autocomplete-selected="_selectBind"
+                        on-autocomplete-change="_searchBindChanged">
+                    <template slot="autocomplete-custom-template">
+                        <style>
+                            :host {
+                                display: block;
+                            }
+
+                            paper-item.account-item {
+                                padding: 8px 16px;
+                            }
+
+                            .service-name {
+                                color: #333;
+                            }
+
+                            .service-description {
+                                margin-top: 4px;
+                                color: #999;
+                            }
+                        </style>
+                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                            <div>
+                                <div class="service-name">[[item.name]]</div>
+                            </div>
+                            <paper-ripple></paper-ripple>
+                        </paper-item>
+                    </template>
+                </paper-autocomplete>
+                <div id="listBind"></div>
+                <data-injector-input id="dataRefernces"></data-injector-input>
+                <div>
+                    <div class="flex flex-horizontal-end" style="margin-top: 20px;">
+                        <paper-button on-tap="submitTimeslotButton">{{labelAction}}</paper-button>
+                    </div>
+                </div>
+            </form>
+        </iron-form>
+    </template>
+
+    <script>
+        class ElementTimeslotViewUpsert extends Polymer.Element {
+
+            static get is() {
+                return 'timeslot-view-upsert';
+            }
+
+            static get fs() {
+                return require('fs')
+            }
+
+            static get path() {
+                return require('path')
+            }
+
+            static get properties() {
+                return {
+
+                    timeslot: {
+                        type: Object,
+                        notify: true,
+                        value: new Timeslot(),
+                        observer: '_timeslotChanged'
+                    },
+
+                    resources: {
+                        type: Array,
+                        value: []
+                    },
+
+                    labelAction: {
+                        type: String,
+                        value: 'Save'
+                    },
+
+                    binds: {
+                        type: Array,
+                        value: []
+                    }
+                }
+            }
+
+            ready() {
+                super.ready();
+
+                this.$.formTimeslot.addEventListener('iron-form-presubmit', this.submitTimeslot.bind(this));
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
+                );
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .getAll()
+                    .then((data) => {
+                        this.binds = data;
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            submitTimeslotButton(evt) {
+                this.$.formTimeslot.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitTimeslot(evt) {
+                evt.preventDefault();
+
+                let method = 'save';
+
+                if (this.timeslot.id) {
+                    method = 'update';
+                } else {
+                    this.timeslot.id = Utils.uid;
+                }
+
+                this.timeslot.dataReferences = [];
+
+                if (this.$.dataRefernces.data && this.$.dataRefernces.service) {
+                    let timeslotData = new TimeslotDataReference();
+                    timeslotData.name = this.$.dataRefernces.service.serviceName;
+                    timeslotData.data = this.$.dataRefernces.service.extractTimeslot(this.$.dataRefernces.data);
+                    this.timeslot.dataReferences.push(timeslotData);
+                }
+
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)[method](this.timeslot)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' timeslot');
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+
+                if (method === 'save') {
+                    this.timeslot = new Timeslot();
+                    this.clearView();
+                }
+            }
+
+            /**
+             *
+             */
+            _clearData() {
+                this.$.name.value = null;
+                this.$.duration.value = null;
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             */
+            _timeslotChanged(newValue, oldValue) {
+
+                if (!newValue || (newValue && !newValue.id)) {
+                    return;
+                }
+
+                this.clearView();
+
+                for (let cont = 0; newValue.resources.length > cont; cont++) {
+
+                    let chip = this._createChip(newValue.resources[cont], 'name', 'resource');
+                    chip.addEventListener('remove', this._removeResource.bind(this));
+                    this.$.listResource.appendChild(chip);
+                }
+
+                for (let cont = 0; newValue.binds.length > cont; cont++) {
+
+                    let chip = this._createChip(newValue.binds[cont], 'name', 'bind');
+                    chip.addEventListener('remove', this._removeBind.bind(this));
+                    this.$.listBind.appendChild(chip);
+                }
+
+                if (Array.isArray(this.timeslot.dataReferences) && this.timeslot.dataReferences.length > 0) {
+                    let dataReferences = this.timeslot.dataReferences[0];
+
+                    let service = this.$.dataRefernces.$.serviceInput.source.find(
+                        (element) => {
+                            return element.serviceName == dataReferences.name;
+                        }
+                    );
+
+                    if (service) {
+                        this.$.dataRefernces.service = service;
+                        this.$.dataRefernces.$.serviceInput.text = service.serviceLabel;
+                        this.$.dataRefernces.hideDataInput = false;
+
+                        service.getTimeslotData(dataReferences.data)
+                            .then((data) => {
+                                this.$.dataRefernces.data = data;
+                                this.$.dataRefernces.$.dataInput.text = data.name;
+                            });
+
+                    }
+                }
+
+                this.labelAction = newValue && newValue.id ? 'Update' : 'Save';
+            }
+
+
+            /**
+             * @param evt
+             */
+            _searcMonitorChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(MonitorConfig.NAME_SERVICE)
+                    .getAll()
+                    .then((virtualMonitors) => {
+
+                        let monitors = [];
+                        for (let cont = 0; virtualMonitors.length > cont; cont++) {
+                            let internaMonitor = virtualMonitors[cont].getMonitors({nested: true});
+                            for (let index = 0; internaMonitor.length > index; index++) {
+                                monitors.push({
+                                    monitor: internaMonitor[index],
+                                    config: virtualMonitors[cont],
+                                    name: internaMonitor[index].name
+                                });
+                            }
+                        }
+
+                        let filter = monitors.filter(
+                            element => {
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    });
+
+
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectMonitor(evt) {
+
+                this.tim =  evt.detail.option;
+                let ref = new VirtualMonitorReference();
+                ref.virtualMonitorId = evt.detail.option.config.id;
+                ref.monitorId = evt.detail.option.monitor.id;
+                ref.name = evt.detail.option.monitor.name;
+                this.timeslot.virtualMonitorReference = ref;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _searchResourceChanged(evt) {
+                // TODO refactor search
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .getAll()
+                    .then((data) => {
+
+                        let filter = data.filter(
+                            element => {
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectResource(evt) {
+
+                let chip = this._createChip(evt.detail.option, 'name', 'resource');
+                chip.addEventListener('remove', this._removeResource.bind(this));
+
+                this.$.listResource.appendChild(this._createChip(evt.detail.option, 'name', 'resource'));
+                this.timeslot.resources.push(
+                    evt.detail.option
+                );
+
+                this.$.resource.clear();
+            }
+
+            /**
+             * @param resource
+             * @param labelProperty
+             * @param nameInject
+             * @return paper-chip
+             * @private
+             */
+            _createChip(resource, labelProperty, nameInject) {
+
+                let chip = document.createElement("paper-chip");
+                chip.setAttribute('removable', true);
+                chip.setAttribute('single-line', true);
+
+                let div = document.createElement("div");
+                div.setAttribute('slot', 'label');
+                div.innerHTML = resource[labelProperty];
+
+                chip.appendChild(div);
+                chip[nameInject] = resource;
+
+                return chip;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _searchBindChanged(evt) {
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .getAll()
+                    .then((data) => {
+
+                        let filter = data.filter(
+                            element => {
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectBind(evt) {
+
+                let chip = this.$.listResource.appendChild(this._createChip(evt.detail.option, 'name', 'bind'));
+                chip.addEventListener('remove', this._removeBind.bind(this));
+
+                this.$.listBind.appendChild(chip);
+                this.timeslot.binds.push(
+                    evt.detail.option
+                );
+
+                setTimeout(
+                    function () {
+                        this.$.bind.clear();
+                    }.bind(this),
+                    200
+                );
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _removeBind(evt) {
+                this.timeslot.removeBind(evt.target.bind);
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _removeResource(evt) {
+                this.timeslot.removeResource(evt.target.resource);
+            }
+
+            /**
+             *
+             */
+            clearView() {
+
+                this.$.resource.clear();
+                this.$.listResource.innerHTML = '';
+                this.$.bind.clear();
+                this.$.listBind.innerHTML = '';
+                this.$.dataRefernces.clear();
+            }
+
+            onEnter(evt) {
+                console.log('ENTER', evt);
+            }
+        }
+
+        window.customElements.define(ElementTimeslotViewUpsert.is, ElementTimeslotViewUpsert);
+
+    </script>
+</dom-module>

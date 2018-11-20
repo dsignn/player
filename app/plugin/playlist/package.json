@@ -1,0 +1,12 @@
+{
+  "name": "dsign-playlist-plugin",
+  "version": "0.1.0",
+  "author": "antonino visalli <antonino.visalli@gmail.com>",
+  "description": "Dsign playlist plugin",
+  "homepage": "www.visa4.it",
+  "config": "config.js",
+  "autoload": [
+    "src/PlaylistService.js",
+    "src/model/Playlist.js"
+  ]
+}

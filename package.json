@@ -1,0 +1,51 @@
+{
+  "name": "dsign",
+  "description": "Dsign",
+  "repository": "git@github.com:visa4/thor.git",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "bower": "^1.8.4",
+    "chai": "*",
+    "devtron": "^1.4.0",
+    "electron": "3.0.4",
+    "electron-builder": "~20.11.1",
+    "mocha": "*",
+    "nyc": "^11.7.1",
+    "polymer-cli": "^1.5.4"
+  },
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "electron --inspect=5858 ./app --enable-logging",
+    "dev": "NODE_ENV='development' npm run start",
+    "dist": "build -l --x64 --ia32",
+    "test": "nyc mocha app/**/Test*.js"
+  },
+  "build": {
+    "appId": "com.app.dsign",
+    "asar": false,
+    "linux": {
+      "target": "deb",
+      "icon": "build"
+    }
+  },
+  "dependencies": {
+    "adm-zip": "^0.4.9",
+    "app-module-path": "^2.2.0",
+    "dexie": "^2.0.4",
+    "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git",
+    "file-metadata": "^1.0.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "image-size": "^0.6.2",
+    "node-fetch": "^2.2.0"
+  },
+  "nyc": {
+    "reporter": [
+      "html",
+      "text-summary"
+    ],
+    "report-dir": "./test/nyc",
+    "exclude": [
+      "app/**/Test*.js"
+    ]
+  }
+}

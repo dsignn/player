@@ -1,0 +1,196 @@
+
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-radio-button/paper-radio-button.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+
+<link rel="import" href="../../css/global-layout.html">
+<link rel="import" href="../../css/global-styles.html">
+
+<link rel="import" href="element/iconset/iconset.html">
+<link rel="import" href="element/view/list.html">
+<link rel="import" href="element/view/upsert.html">
+<link rel="import" href="element/monitor/system-monitor.html">
+
+<dom-module id="monitor-index">
+  <template>
+    <style include="global-layout"></style>
+    <style include="global-style"></style>
+    <style>
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .title {
+        font-size: 22px;
+        color: var(--dark-primary-color);
+      }
+
+      #current_settings,
+      #virtual_monitor {
+
+        position: relative;
+        margin: 16px;
+      }
+
+      #addVirtualMonitor,
+      #editVirtualMonitor {
+        display: none;
+      }
+
+      paper-tabs {
+        max-width: 400px;
+        margin: 16px 16px 0 16px;
+      }
+
+      .debug {
+        background-color: #8c9eff;
+        opacity: 0.5;
+      }
+
+      .row {
+        padding: 8px 0;
+      }
+
+    </style>
+
+    <paper-tabs selected="{{selected}}" tabindex="0">
+      <paper-tab>Manage data</paper-tab>
+      <paper-tab>Topology</paper-tab>
+    </paper-tabs>
+
+    <iron-pages id="ironPages" selected="{{selected}}">
+      <div id="virtual_monitor" class="flex-vertical">
+        <iron-pages id="ironPagesView" selected="{{viewSelected}}">
+          <div id="list">
+            <monitor-view-list selected="{{viewSelected}}" monitor-selected="{{monitorSelected}}">
+              <div slot="header" class="flex-horizontal flex-1 flex-vertical-center">
+                <div class="flex flex-1 flex-vertical-center">Lista configurazioni</div>
+                <paper-icon-button
+                        id="buttAddVirtualMonitor"
+                        icon="monitor:create"
+                        class="circle"
+                        title="Crea monitor virtuale"
+                        on-click="displayAddView">
+                </paper-icon-button>
+              </div>
+            </monitor-view-list>
+          </div>
+          <div id="add">
+            <monitor-view-upsert selected="{{viewSelected}}">
+              <div slot="header" class="flex-horizontal flex-1 flex-vertical-center">
+                <paper-icon-button
+                        icon="monitor:back"
+                        title="Torna alla lista delle configurazioni"
+                        on-tap="displayListView">
+                </paper-icon-button>
+                <div>Add configuration monitors</div>
+              </div>
+            </monitor-view-upsert>
+          </div>
+          <div id="update">
+            <monitor-view-upsert selected="{{viewSelected}}" monitor="{{monitorSelected}}">
+              <div slot="header" class="flex-horizontal flex-1 flex-vertical-center">
+                <paper-icon-button
+                        icon="monitor:back"
+                        title="Torna alla lista delle configurazioni"
+                        on-tap="displayListView">
+                </paper-icon-button>
+                <div>Modifica configuration monitors</div>
+              </div>
+            </monitor-view-upsert>
+          </div>
+        </iron-pages>
+      </div>
+      <div id="current_settings" class="container">
+        <template is="dom-repeat" items="{{monitors}}">
+          <system-monitor-wc
+                  width="{{item.size.width}}"
+                  height="{{item.size.height}}"
+                  top="{{item.bounds.y}}"
+                  left="{{item.bounds.x}}">
+          </system-monitor-wc>
+        </template>
+      </div>
+    </iron-pages>
+  </template>
+  <script>
+      class PluginMonitorIndex extends Polymer.Element {
+
+          static get electron() { return require('electron') };
+
+          static get electronIpc() { return require('electron').ipcRenderer };
+
+          static get is() { return 'monitor-index'; }
+
+          static get properties() {
+              return {
+                  monitors: {
+                      type: Array,
+                      value: []
+                  },
+
+                  zoom: {
+                      type: Number,
+                      value: 5
+                  },
+
+                  selected: {
+                      type: Number,
+                      value: 0
+                  },
+
+                  viewSelected: {
+                      type: Number,
+                      value: 0
+                  },
+              }
+          }
+
+          ready() {
+              super.ready();
+              this.monitors = PluginMonitorIndex.electron.screen.getAllDisplays();
+              /*
+               * MOCK DATA
+              this.monitors = [ { bounds: { x : 0, y : 0 }, size : { width : 2100, height: 1020, } }, { bounds: { x : 2100, y : 0 }, size : { width : 1300, height: 1100, } }, { bounds: { x : 3400, y : 0 }, size : { width : 900, height: 1700, } } ];
+              */
+          }
+
+          connectedCallback() {
+              super.connectedCallback();
+              this.__computeSizeMonitorContainer();
+          }
+
+          __computeSizeMonitorContainer() {
+
+              if (Array.isArray(this.monitors)) {
+                  let height = 0;
+                  let width  = 0;
+                  for (let cont = 0; cont < this.monitors.length; cont++) {
+                      height = Math.max(height, this.monitors[cont].size.height);
+                      width += this.monitors[cont].size.width;
+                  }
+
+                  this.$.current_settings.style.height = height / this.zoom + 'px';
+                  this.$.current_settings.style.width = width / this.zoom + 'px';
+              }
+          }
+
+          displayListView() {
+              this.viewSelected = 0;
+          }
+
+          displayAddView() {
+              this.viewSelected = 1;
+          }
+      }
+
+      window.customElements.define(PluginMonitorIndex.is, PluginMonitorIndex);
+
+  </script>
+</dom-module>

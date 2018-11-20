@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <title>Guida HTML5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+</head>
+<body>
+<div id="GameDiv" >
+    <canvas id="GameCanvas" >
+        Il tuo browser non supporta l'elemento Canvas Html5
+    </canvas>
+</div>
+</body>
+
+<script>
+    function Game() {
+
+        //il <div> che contiene l'elemento canvas
+        this.div = document.getElementById("GameDiv");
+        this.div.style.width = "768px";
+        this.div.style.height = "512px"
+
+        //l'elemento <canvas>
+        this.canvas = document.getElementById("GameCanvas");
+        this.canvas.setAttribute("width","768");
+        this.canvas.setAttribute("height","512");
+        this.canvas.defaultWidth = this.canvas.width;
+        this.canvas.defaultHeight = this.canvas.height;
+
+        //nasconde il cursore
+        this.canvas.style.cursor = "none";
+
+        //context 2d
+        this.ctx = this.canvas.getContext("2d");
+        if(!this.ctx){
+            alert("Il tuo browser non supporta HTML5, aggiornalo!");
+        }
+    }
+
+    function StartGame(){
+        //crea un istanza di Game
+        game = new Game();
+    }
+
+    window.addEventListener('load', function() {
+        StartGame();
+    }, true);
+</script>

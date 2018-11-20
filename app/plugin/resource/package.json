@@ -1,0 +1,14 @@
+{
+  "name": "dsign-resource-plugin",
+  "version": "0.1.0",
+  "author": "antonino visalli <antonino.visalli@gmail.com>",
+  "description": "Dsign resource plugin",
+  "homepage": "www.visa4.it",
+  "config": "config.js",
+  "autoload": [
+    "src/model/GenericFile.js",
+    "src/model/Image.js",
+    "src/model/Video.js",
+    "src/model/Audio.js"
+  ]
+}

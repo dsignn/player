@@ -1,0 +1,174 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+
+<dom-module id="match-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .card-content,
+            .card-actions {
+                padding: 0;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+            .running {
+                color: var(--playlist-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--playlist-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--playlist-pause);
+                font-style: italic;
+            }
+
+            .card-actions {
+                justify-content: flex-start;
+                padding-left: 6px;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+            #rightSection {
+                background-image: url("img/calcio.jpg") !important;
+            }
+
+            .enableButtonContainer {
+                height: 40px;
+                width: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .enableButtonContainer paper-radio-button {
+                width: 16px;
+            }
+
+            paper-toggle-button {
+                width: 38px;
+                cursor: pointer;
+                --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+                --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+                --paper-toggle-button-unchecked-bar-color:  var(--paper-pink-500);
+                --paper-toggle-button-unchecked-button-color:  var(--paper-pink-500);
+                --paper-toggle-button-unchecked-ink-color: var(--paper-pink-500);
+            }
+
+        </style>
+        <paper-card id="design" class="setting">
+            <div class="card-setting">
+                <div class="enableButtonContainer">
+                    <paper-toggle-button id="paperToggleEnable" on-change="_changeEnableMatch"></paper-toggle-button>
+                </div>
+            </div>
+            <div class="card-content flex flex-horizontal">
+                <div class="data flex-basis-85 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <div>{{match.homeTeam.name}} vs {{match.guestTeam.name}}</div>
+                        <div>{{match.date}}</div>
+                    </div>
+                </div>
+                <div class="flags flex-basis-15">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-click="_update">Modifica</paper-item>
+                            <paper-item  on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div class="card-actions"></div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementMatch extends Polymer.Element {
+
+            static get is() {
+                return 'match-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    match: {
+                        type: Object,
+                        notify:true
+                    },
+                };
+            }
+
+            static get observers() {
+                return [
+                    'matchEnableChange(match.enable)'
+                ]
+            }
+
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.match}));
+            }
+
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-update', {detail: this.match}));
+            }
+
+            _changeEnableMatch(evt) {
+                this.match.enable = evt.target.checked === true ? 1 : 0;
+                this.dispatchEvent(new CustomEvent('wrap-change-enable-match', {detail: this.match}));
+            }
+
+            /**
+             * @param enable
+             */
+            matchEnableChange(enable) {
+
+                this.$.paperToggleEnable.checked = !!enable;
+
+            }
+        }
+
+        window.customElements.define(ElementMatch.is, ElementMatch);
+
+    </script>
+</dom-module>

@@ -1,0 +1,142 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+<link rel="import" href="../../element/iconset/iconset.html">
+
+<dom-module id="resource-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .card-content {
+                padding: 0;
+            }
+
+            .data {
+                padding: 8px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            .imgBackground {
+                background-image: url("img/image.jpeg") !important;
+            }
+
+            .videoBackground {
+                background-image: url("img/video.jpeg") !important;
+            }
+
+            .webBackground {
+                background-image: url("img/web.jpeg") !important;
+            }
+
+            .audioBackground {
+                background-image: url("img/audio.jpeg") !important;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+        </style>
+        <paper-card id="design">
+            <div class="card-content flex flex-horizontal">
+                <div class="data flex-basis-85 flex flex-vertical">
+                    <div>{{resource.name}}</div>
+                    <div>{{size}} {{sizeLabel}}</div>
+                </div>
+                <paper-menu-button ignore-select>
+                    <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                    <paper-listbox slot="dropdown-content" multi>
+                        <paper-item on-click="_update">Modifica</paper-item>
+                        <paper-item  on-click="_remove">Elimina</paper-item>
+                    </paper-listbox>
+                </paper-menu-button>
+            </div>
+            <div class="card-actions"></div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementResource extends Polymer.Element {
+
+            static get is() {
+                return 'resource-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    resource: {
+                        type: Object,
+                        observer: '_resourceChanged'
+                    }
+                };
+            }
+
+
+            _resourceChanged(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                switch (true) {
+                    case newValue.type === 'text/html':
+                        this.$.rightSection.classList.add("webBackground");
+                        break;
+                    case newValue.type === 'image/png':
+                    case newValue.type === 'image/jpeg':
+                        this.$.rightSection.classList.add("imgBackground");
+                        break;
+                    case newValue.type === 'video/mp4':
+                        this.$.rightSection.classList.add("videoBackground");
+                        break;
+                    case newValue.type === 'audio/mp3':
+                        this.$.rightSection.classList.add("audioBackground");
+                        break;
+                }
+
+                let size = this._byteConverter(newValue.size);
+                this.size = Math.ceil(size[0]);
+                this.sizeLabel = size[1];
+            }
+
+            _byteConverter(byte) {
+                var unit, units = ["TB", "GB", "MB", "KB", "Byte"];
+                for (unit = units.pop(); units.length && byte >= 1024; unit = units.pop()) {
+                    byte /= 1024;
+                }
+                return [byte, unit];
+            }
+
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('remove', {detail: this.resource}));
+            }
+
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('update-view', {detail: this.resource}));
+            }
+        }
+
+        window.customElements.define(ElementResource.is, ElementResource);
+
+    </script>
+</dom-module>

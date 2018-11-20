@@ -1,0 +1,103 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+
+<link rel="import" href="../../element/iconset/iconset.html">
+<link rel="import" href="../../css/global-layout.html">
+<link rel="import" href="../../css/global-styles.html">
+<link rel="import" href="element/view/list.html">
+<link rel="import" href="element/view/upsert.html">
+<link rel="import" href="element/scoreboard/scoreboard.html">
+
+<dom-module id="soccer-index">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            #ironPages {
+                padding: 16px;
+            }
+
+            paper-tabs {
+                max-width: 400px;
+                margin: 16px 16px 0 16px;
+            }
+
+        </style>
+
+        <paper-tabs selected="{{selected}}" tabindex="0">
+            <paper-tab>Manage data</paper-tab>
+            <paper-tab>Scoreboard</paper-tab>
+        </paper-tabs>
+        <iron-pages id="ironPages" selected="{{selected}}">
+            <div>
+                <iron-pages id="ironPagesView" selected="{{viewSelected}}">
+                    <div id="list">
+                        <soccer-view-list selected="{{viewSelected}}" resource-selected="{{match}}">
+                            <div slot="header"
+                                 class="flex flex-horizontal flex-center flex-horizontal-space-between header">
+                                <div>Lista match</div>
+                                <paper-icon-button class="circle" on-tap="displayAddView" icon="app:create" title="Crea un match"></paper-icon-button>
+                            </div>
+                        </soccer-view-list>
+                    </div>
+                    <div id="add">
+                        <soccer-view-upsert>
+                            <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                                <paper-icon-button icon="app:back" on-tap="displayListView" title="Torna alla lista dei match"></paper-icon-button>
+                                <div>Aggiungi match</div>
+                            </div>
+                        </soccer-view-upsert>
+                    </div>
+                    <div id="update">
+                        <soccer-view-upsert resource="{{match}}">
+                            <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                                <paper-icon-button icon="app:back" on-tap="displayListView" title="Torna alla lista dei match"></paper-icon-button>
+                                <div>Modifica match</div>
+                            </div>
+                        </soccer-view-upsert>
+                    </div>
+                </iron-pages>
+            </div>
+            <div>
+                <soccer-scoreboard-wc></soccer-scoreboard-wc>
+            </div>
+        </iron-pages>
+
+    </template>
+    <script>
+        class ModuleSoccerIndex extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-index';
+            }
+
+            static get properties() {
+                return {
+
+                    selected: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    viewSelected: {
+                        type: Number,
+                        value: 0
+                    },
+                }
+            }
+
+            displayAddView() {
+                this.viewSelected = 1;
+            }
+
+            displayListView() {
+                this.viewSelected = 0;
+            }
+        }
+
+        window.customElements.define(ModuleSoccerIndex.is, ModuleSoccerIndex);
+
+    </script>
+</dom-module>Resource

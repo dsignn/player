@@ -1,0 +1,27 @@
+
+<link rel="import" href="../../app/bower_components/polymer/polymer.html">
+
+
+<dom-module id="test-wc">
+    <template>
+        <style>
+            div {
+                font-weight: bold;
+                font-size: 30px;
+                color: #0b8043;
+            }
+        </style>
+       <div>
+           {{data.name}}
+       </div>
+    </template>
+
+    <script>
+        class ElementTest extends Polymer.Element {
+
+            static get is() { return 'test-wc'; }
+        }
+
+        window.customElements.define(ElementTest.is, ElementTest);
+    </script>
+</dom-module>

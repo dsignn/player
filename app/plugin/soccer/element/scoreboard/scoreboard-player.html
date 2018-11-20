@@ -1,0 +1,677 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+
+<dom-module id="soccer-scoreboard-player-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .card-content,
+            .card-actions {
+                padding: 0;
+                min-height: initial !important;
+                min-width: inherit !important;
+                margin-left: 0 !important;
+            }
+
+            paper-card {
+                width: 100%;
+                height: 40px;
+                min-height: initial;
+                min-width: inherit;
+            }
+
+            .hidden {
+                display: none;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            #card-container {
+                height: 40px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+            .running {
+                color: var(--playlist-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--playlist-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--playlist-pause);
+                font-style: italic;
+            }
+
+            .card-actions {
+                justify-content: flex-start;
+                padding-left: 6px;
+            }
+
+            .padding-right-6 {
+                padding-right: 6px;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+            .number {
+                padding-right: 6px;
+                padding-left: 6px;
+            }
+
+            paper-dropdown-menu {
+                top: -2px;
+            }
+
+            .reverse {
+                flex-direction: row-reverse;
+            }
+
+            .flex-end {
+                align-items: flex-end;
+
+            }
+
+            #cardDialog,
+            #goalDialog,
+            #replaceDialog {
+                margin: 0;
+                margin-top: 18px;
+                width: 150px;
+                height: 220px;
+            }
+
+            #cardDialog .button,
+            #goalDialog .button,
+            #replaceDialog .button  {
+                background-color: black;
+                color: white;
+                width: 100px;
+                min-width: 100px;
+                height: 40px;
+            }
+
+            .dialog-content {
+                height: 100%;
+                margin: 0;
+            }
+
+            paper-icon-button#yellow,
+            paper-icon-button#double-yellow {
+                color: yellow;
+            }
+
+            paper-icon-button#red {
+                color: red;
+            }
+
+            paper-icon-button[aria-disabled="true"] {
+                color: grey !important;
+            }
+
+            paper-autocomplete {
+                padding-bottom: 7px;
+            }
+
+            :host-context(paper-autocomplete) {
+                background-color: green;
+            }
+
+            :host(#suggestionsWrapper)  {
+                background-color: blue;
+            }
+
+        </style>
+        <paper-card id="design">
+            <div id="card-container" class="card-content flex flex-horizontal">
+                <div id="player-data" class="data flex-basis-85 flex">
+                    <div id="metadata" class="dataWrapper flex flex-horizontal">
+                        <div class="number">{{player.shirtNumber}}</div>
+                        <div>{{player.shirtName}} {{player.surname}}</div>
+                    </div>
+                </div>
+                <div id="action" class="data flex-basis-15 flex flex-horizontal-end">
+                    <template is="dom-if" if="{{_canReplace()}}">
+                        <paper-icon-button id="replace" icon="soccer:replace" title="Sostituisci" on-tap="tapDialog"></paper-icon-button>
+                    </template>
+                    <template is="dom-if" if="{{_canGoal()}}">
+                        <paper-icon-button id="goal" icon="soccer:ball" title="Assegna un goal" on-tap="tapDialog"></paper-icon-button>
+                    </template>
+                    <template is="dom-if" if="{{_canCard()}}">
+                        <paper-icon-button id="yellow" icon="soccer:yellow-card" title="Giallo" on-tap="tapDialog"></paper-icon-button>
+                        <paper-icon-button id="double-yellow" icon="soccer:double-yellow-card"  title="Doppio giallo" on-tap="tapDialog" class="hidden"></paper-icon-button>
+                        <paper-icon-button id="red" icon="soccer:red-card" title="Rosso" on-tap="tapDialog"></paper-icon-button>
+                    </template>
+                    <paper-icon-button id="status" icon="soccer:rostrum" on-tap="changeStatus"></paper-icon-button>
+                </div>
+            </div>
+        </paper-card>
+        <paper-dialog id="cardDialog" no-overlap horizontal-align="left" vertical-align="top" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <iron-form id="cardForm" style="height: 100%; margin: 0;">
+                <form method="post" style="height: 100%; margin: 0;">
+                    <div class="dialog-content flex flex-vertical">
+                        <div class="flex-basis-77">
+                            <paper-input id="timeCard" label="Time" type="number" required></paper-input>
+                        </div>
+                        <div class="flex-basis-23 flex flex-horizontal-center">
+                            <paper-button class="button" on-tap="submitCardButton">{{labelCard}}</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
+        <paper-dialog id="goalDialog" no-overlap horizontal-align="left" vertical-align="top" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <iron-form id="goalForm" style="height: 100%; margin: 0;">
+                <form method="post" style="height: 100%; margin: 0;">
+                    <div class="dialog-content flex flex-vertical">
+                        <div class="flex-basis-77">
+                            <paper-input id="timeGoal" label="Time" type="number" required></paper-input>
+                            <paper-dropdown-menu label="Type">
+                                <paper-listbox id="selectGoal" slot="dropdown-content" selected="0">
+                                    <paper-item value="standard">Goal</paper-item>
+                                    <paper-item value="autogoal">Autogoal</paper-item>
+                                </paper-listbox>
+                            </paper-dropdown-menu>
+                        </div>
+                        <div class="flex-basis-23 flex flex-horizontal-center">
+                            <paper-button class="button" on-tap="submitGoalButton">{{labelGoal}}</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
+        <paper-dialog id="replaceDialog" no-overlap horizontal-align="left" vertical-align="top" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <iron-form id="replaceForm" style="height: 100%; margin: 0;">
+                <form method="post" style="height: 100%; margin: 0;">
+                    <div class="dialog-content flex flex-vertical">
+                        <div class="flex-basis-77">
+                            <paper-input id="timeReplace" label="Time" type="number" required></paper-input>
+                            <div id="substitution" class="flex-basis-50 flex flex-center">
+                                <paper-autocomplete
+                                        id="replaceAutocomplete"
+                                        label="Replace"
+                                        text-property="surname"
+                                        value-property="name"
+                                        remote-source
+                                        on-autocomplete-selected="_selectReplace"
+                                        on-autocomplete-change="_searchReplaceChanged">
+                                    <template slot="autocomplete-custom-template">
+                                        <style>
+                                            :host {
+                                                display: block;
+                                            }
+
+                                            paper-item.account-item {
+                                                padding: 8px 16px;
+                                            }
+
+                                            .service-name {
+                                                color: #333;
+                                            }
+
+                                            .service-description {
+                                                margin-top: 4px;
+                                                color: #999;
+                                            }
+                                        </style>
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div>
+                                                <div class="service-name">[[item.surname]]</div>
+                                            </div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                            </div>
+                        </div>
+                        <div class="flex-basis-23 flex flex-horizontal-center">
+                            <paper-button class="button" on-tap="submitReplaceButton">{{labelReplace}}</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
+    </template>
+
+    <script>
+        class ElementSoccerScoreboardPlayer extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-scoreboard-player-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    player: {
+                        type: new PlayerSoccer(),
+                        notify:true
+                    },
+
+                    left: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_leftChanged'
+                    },
+
+                    labelCard: {
+                        type: String,
+                        notify:true
+                    },
+
+                    labelGoal: {
+                        type: String,
+                        notify : true,
+                        value : 'Aggiungi'
+                    },
+
+                    labelReplace: {
+                        type: String,
+                        notify : true,
+                        value : 'Sostituisci'
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_changeStatus(player.status)'
+                ]
+            }
+
+            ready() {
+                super.ready();
+                this.$.cardForm.addEventListener('iron-form-presubmit', this.submitCard.bind(this));
+                this.$.goalForm.addEventListener('iron-form-presubmit', this.submitGoal.bind(this));
+                this.$.replaceForm.addEventListener('iron-form-presubmit', this.submitReplace.bind(this));
+
+                serviceManager.get('SoccerService')
+                    .eventManager
+                    .on(`add-card-${this._getTeamName()}`, this._renderCard.bind(this));
+
+                serviceManager.get('SoccerService')
+                    .eventManager
+                    .on(`remove-card-${this._getTeamName()}`, this._renderCard.bind(this));
+
+                setTimeout(
+                    () => {
+                        this._changeVisibilityCard();
+                        },
+                    200
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            changeStatus(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-change-status', {detail: this.player}));
+            }
+
+            _changeStatus(status) {
+
+                if (!status) {
+                    return;
+                }
+
+                switch (status) {
+                    case PlayerSoccer.STATUS_ROSTRUM:
+                        this.$.status.icon = 'soccer:holder';
+                        this.$.status.title = 'Sposta nei giocatori in panchina';
+                        this.$['metadata'].classList.remove("flex-basis-50");
+                        break;
+                    case PlayerSoccer.STATUS_BENCH:
+                        this.$.status.icon = 'soccer:bench-left';
+                        this.$.status.title = 'Sposta nei giocatori titolari';
+
+                        this.$['metadata'].classList.remove("flex-basis-50");
+                        this.$['player-data'].classList.remove("flex-basis-85");
+                        this.$['player-data'].classList.add("flex-basis-70");
+                        this.$['action'].classList.remove("flex-basis-15");
+                        this.$['action'].classList.add("flex-basis-30");
+                        break;
+                    case PlayerSoccer.STATUS_HOLDER:
+                        this.$.status.icon = 'soccer:rostrum';
+                        this.$.status.title = 'Sposta nei giocatori in rosa';
+                        this.$['metadata'].classList.add("flex-basis-50");
+                        this.$['player-data'].classList.remove("flex-basis-85");
+                        this.$['player-data'].classList.add("flex-basis-70");
+                        this.$['action'].classList.remove("flex-basis-15");
+                        this.$['action'].classList.add("flex-basis-30");
+                        break;
+                }
+            }
+
+            /**
+             * @parmas evt
+             * @private
+             */
+            _renderCard(evt) {
+                if (evt.data.card.playerId === this.player.id) {
+                    this._changeVisibilityCard();
+                }
+            }
+
+            /**
+             *
+             */
+            _changeVisibilityCard() {
+
+                let elements = this.shadowRoot.querySelectorAll('#yellow,#double-yellow,#red');
+                if (!elements) {
+                    return;
+                }
+
+                let team = serviceManager.get('SoccerService').getTeam(this._getTeamName());
+                for (let cont = 0; elements.length > cont; cont++) {
+
+                    switch (true) {
+                        case elements[cont].id === 'yellow':
+                            switch (true) {
+                                case team.isExpelled(this.player) === true:
+                                    elements[cont].disabled = true;
+                                    if (team.isWarning(this.player) === true) {
+                                        elements[cont].classList.add('hidden');
+                                    } else {
+                                        elements[cont].classList.remove('hidden');
+                                    }
+                                    break;
+                                case team.isWarning(this.player) === true:
+                                    elements[cont].classList.add('hidden');
+                                    elements[cont].disabled = true;
+                                    break;
+                                case team.hasNoCard(this.player) === true:
+                                    elements[cont].classList.remove('hidden');
+                                    elements[cont].disabled = false;
+                                    break;
+                            }
+                            break;
+                        case elements[cont].id === 'double-yellow':
+                            switch (true) {
+                                case team.isExpelled(this.player) === true:
+                                    elements[cont].disabled = true;
+                                    if (team.isWarning(this.player) === true) {
+                                        elements[cont].classList.remove('hidden');
+                                    } else {
+                                        elements[cont].classList.add('hidden');
+                                    }
+                                    break;
+                                case team.isWarning(this.player) === true:
+                                    elements[cont].classList.remove('hidden');
+                                    elements[cont].disabled = false;
+                                    break;
+                                case team.hasNoCard(this.player) === true:
+                                    elements[cont].classList.add('hidden');
+                                    elements[cont].disabled = true;
+                                    break;
+                            }
+                            break;
+                        case elements[cont].id === 'red':
+                            switch (true) {
+                                case team.isExpelled(this.player) === true:
+                                    elements[cont].disabled = true;
+                                    break;
+                                case team.isWarning(this.player) === true:
+                                    elements[cont].classList.remove('hidden');
+                                    elements[cont].disabled = false;
+                                    break;
+                                case team.hasNoCard(this.player) === true:
+                                    elements[cont].classList.remove('hidden');
+                                    elements[cont].disabled = false;
+                                    break;
+                            }
+                            break;
+                    }
+                }
+            }
+
+            /**
+             * @param newValue
+             * @private
+             */
+            _leftChanged(newValue) {
+
+                if (newValue === true) {
+                    this.$['card-container'].classList.add("reverse");
+                    this.$['player-data'].classList.remove("flex-horizontal-end");
+                    this.$['player-data'].classList.add("reverse");
+                    this.$.metadata.classList.add("reverse");
+                    this.$.metadata.classList.remove("flex-1");
+                    this.$.action.classList.remove("flex-vertical-end");
+                    this.$.action.classList.add("reverse");
+                }
+
+                if (newValue === false) {
+                    this.$['card-container'].classList.remove("reverse");
+                    this.$['player-data'].classList.add("flex-horizontal-end");
+                    this.$['player-data'].classList.remove("reverse");
+                    this.$.metadata.classList.remove("reverse");
+                    this.$.metadata.classList.add("flex-1");
+                    this.$.action.classList.add("flex-vertical-end");
+                    this.$.action.classList.remove("reverse");
+                }
+            }
+
+            /**
+             * @returns {boolean}
+             * @private
+             */
+            _canGoal() {
+                return this.player.status === PlayerSoccer.STATUS_HOLDER;
+            }
+
+            /**
+             * @returns {boolean}
+             * @private
+             */
+            _canCard() {
+                return this.player.status === PlayerSoccer.STATUS_HOLDER || this.player.status === PlayerSoccer.STATUS_BENCH;
+            }
+
+            /**
+             * @returns {boolean}
+             * @private
+             */
+            _canReplace() {
+                return this.player.status === PlayerSoccer.STATUS_HOLDER;
+            }
+
+            /**
+             * @parmas evt
+             * @private
+             */
+            _selectReplace(evt) {
+               console.log(evt.detail.option);
+            }
+
+            /**
+             * @parmas evt
+             * @private
+             */
+            _searchReplaceChanged(evt) {
+
+                let team = this.getAttribute('guest') === "" ? 'guestTeam' : 'homeTeam';
+
+                evt.detail.target.suggestions(
+                    serviceManager.get('SoccerService').match[team].getPlayers({toBench : true, name : evt.detail.value})
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            tapDialog(evt) {
+                let nameDialog = `${evt.target.id}Dialog`;
+
+                switch (evt.target.id) {
+                    case 'yellow':
+                    case 'double-yellow':
+                        nameDialog = 'cardDialog';
+                        this.$[nameDialog].style.backgroundColor = 'yellow';
+                        this.$[nameDialog].card = 'yellow';
+                        this.labelCard = 'Ammonisci';
+                        break;
+                    case 'red':
+                        nameDialog = 'cardDialog';
+                        this.$[nameDialog].style.backgroundColor = 'red';
+                        this.$[nameDialog].card = 'red';
+                        this.labelCard = 'Espelli';
+                        break;
+                }
+
+                if (this.left) {
+                    this.$[nameDialog].horizontalAlign = 'right';
+                } else {
+                    this.$[nameDialog].horizontalAlign = 'left';
+                }
+
+                this.$[nameDialog].open();
+            }
+
+            /**
+             * @param evt
+             */
+            submitCardButton(evt) {
+                this.$.cardForm.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitCard(evt) {
+                evt.preventDefault();
+
+                serviceManager.get('SoccerService').addCard(
+                    this._getTeamName(),
+                    new Card(
+                        this.$.cardDialog.card === 'yellow' ? Card.TYPE_YELLOW : Card.TYPE_RED,
+                        parseInt(this.$.timeCard.value),
+                        this.player.id
+                    )
+                );
+
+                this.$.cardForm.reset();
+                this.$.cardDialog.close();
+            }
+
+            /**
+             * @param evt
+             */
+            submitGoalButton(evt) {
+                this.$.goalForm.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitGoal(evt) {
+                evt.preventDefault();
+
+                serviceManager.get('SoccerService').addGoal(
+                    this._getTeamName(),
+                    new Card(
+                        this.$.selectGoal.selectedItem.getAttribute('value'),
+                        parseInt(this.$.timeGoal.value),
+                        this.player.id
+                    )
+                );
+
+                this.$.goalForm.reset();
+                this.$.goalDialog.close();
+            }
+
+            /**
+             * @param evt
+             */
+            submitReplace(evt) {
+                evt.preventDefault();
+
+                this.dispatchEvent(new CustomEvent(
+                    'wrap-replace',
+                    {
+                        detail: {
+                            playerOut : this.player,
+                            playerIn : this.$.replaceAutocomplete._selectedOption,
+                            time : this.$.timeReplace.value
+                        }
+                    }
+                ));
+
+                this.$.replaceForm.reset();
+                this.$.replaceDialog.close();
+            }
+
+            /**
+             * @param evt
+             */
+            submitReplaceButton(evt) {
+                this.$.replaceForm.submit();
+            }
+
+            /**
+             * @return {string}
+             * @private
+             */
+            _getTeamName() {
+
+                let label = '';
+                switch (true) {
+                    case this.getAttribute('guest') === "":
+                        label = SoccerService.GUEST_TEAM;
+                        break;
+                    case this.getAttribute('home') === "":
+                        label = SoccerService.HOME_TEAM;
+                        break;
+                    default:
+                        console.error('No attribute for team name found');
+
+                }
+
+                return label;
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboardPlayer.is, ElementSoccerScoreboardPlayer);
+
+    </script>
+</dom-module>

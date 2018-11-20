@@ -1,0 +1,203 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../css/global-layout.html">
+<link rel="import" href="iconset.html">
+
+<dom-module id="file-upload">
+  <template>
+    <style include="global-layout"></style>
+    <style>
+
+      input {
+        display: none;
+      }
+
+      paper-input {
+        width: 100%;
+      }
+
+    </style>
+    <div class="flex flex-horizontal flex-center">
+      <paper-input label="Upload" disabled="disabled" value="[[nameInput]]"></paper-input>
+      <paper-icon-button icon="fileupload:download" on-click="_clickFile"></paper-icon-button>
+    </div>
+    <input type="file" id="uploadInput" on-change="_fileChange" multiple="{{multi}}" hidden>
+  </template>
+
+  <script>
+      class ElementFileUpload extends Polymer.Element {
+
+          static get is() { return 'file-upload'; }
+
+          static get fs() { return require('fs'); }
+
+          static get path() { return require('path'); }
+
+          static get imageSize() { return require('image-size'); }
+
+          static get ffmpeg() { return  require('fluent-ffmpeg'); }
+
+          // Declare properties for the element's public API
+          static get properties() {
+              return {
+                  
+                  multi: {
+                      type: Boolean,
+                      value: false
+                  },
+
+                  files: {
+                      type: Array,
+                      value: [],
+                      notify: true,
+                  },
+
+                  path: {
+                      type: String,
+                  },
+
+                  method: {
+                      type: String,
+                      value: 'POST'
+                  },
+
+                  renameSingleFile: {
+                      type: String
+                  },
+
+                  url: {
+                      type:String,
+                      value: '#'
+                  },
+
+                  allowNodeDirName: {
+                      type: Boolean,
+                      value: true
+                  },
+
+                  tmpRelativePath: {
+                      type:String,
+                  },
+
+                  nameInput: {
+                      type: String,
+                      readOnly: true,
+                      notify: true,
+                  }
+              }
+          }
+
+          _clickFile(evt) {
+              let elem = this.$.uploadInput;
+              let event = document.createEvent('MouseEvents');
+              event.initEvent('click', true, false);
+              elem.dispatchEvent(event);
+          }
+
+          _fileChange(evt) {
+              if (!evt.currentTarget.files) {
+                  return;
+              }
+
+              this.set('files', []);
+              for (let cont = 0; evt.currentTarget.files.length > cont; cont++) {
+                  let file = evt.currentTarget.files[cont];
+
+                  this.push('files', file);
+                  this.uploadFile(file);
+              }
+          }
+
+          uploadFile(file) {
+              if (!file) {
+                  return;
+              }
+
+              let form = new FormData();
+
+              form.append('upload', file, file.name);
+
+              file.xmrRequest =  new XMLHttpRequest();
+
+              /**
+               * Progress upload
+               */
+              file.xmrRequest.addEventListener("progress", function (evt) {
+                  let done = evt.loaded, total = evt.total;
+              }.bind(this));
+
+              file.xmrRequest.addEventListener("load", function (evt) {
+
+                  let tmpDir = '';
+                  if (this.allowNodeDirName) {
+                      tmpDir = __dirname;
+                  }
+
+                  tmpDir = tmpDir + this.tmpRelativePath;
+
+                  let source =  ElementFileUpload.fs.createReadStream(form.get('upload').path);
+                  let nameSplit =  ElementFileUpload.path.basename(form.get('upload').path).split('.');
+                  let nameFileDest = (!this.multi && this.renameSingleFile) ? this.renameSingleFile + '.' +  nameSplit[nameSplit.length -1] : nameSplit[0] + '.' + nameSplit[nameSplit.length -1];
+
+                  let destination = ElementFileUpload.fs.createWriteStream(tmpDir + nameFileDest);
+                  source.pipe(destination);
+
+                  file.location = {
+                      path: tmpDir,
+                      name: nameFileDest
+                  };
+
+                  let nameInput = '';
+                  for (let cont = 0; this.files.length > cont; cont++) {
+                      nameInput = nameInput === '' ? ElementFileUpload.path.basename(form.get('upload').path) : nameInput + ', ' + ElementFileUpload.path.basename(form.get('upload').path)
+                  }
+                  this._setNameInput(nameInput);
+                  this._retriveMetada(file);
+
+
+              }.bind(this));
+
+              file.xmrRequest.open(this.method, this.url, true);
+              file.xmrRequest.send(form);
+          }
+
+          _retriveMetada(file) {
+              if (!file) {
+                  return;
+              }
+
+              switch (file.type) {
+                  case 'image/jpeg':
+                  case 'image/png':
+                  case 'application/octet-stream':
+                      file.dimension = ElementFileUpload.imageSize(file.location.path + file.location.name);
+                      delete file.dimension.type;
+                      break;
+                  case 'video/mp4':
+                      let command = new ElementFileUpload.ffmpeg(file.location.path+file.location.name);
+                      command.ffprobe(0, (err, metadata) => {
+                              if(err) {
+                                  console.error(err);
+                              }
+                              file.duration = metadata.format.duration;
+                              file.dimension = {};
+                              file.dimension.height = metadata.streams[0].height;
+                              file.dimension.width = metadata.streams[0].width;
+                          }
+                      );
+                      break;
+              }
+          }
+
+          clearName() {
+              this._setNameInput(null);
+          }
+      }
+
+
+      window.customElements.define(ElementFileUpload.is, ElementFileUpload);
+
+  </script>
+</dom-module>

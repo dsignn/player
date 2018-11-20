@@ -1,0 +1,20 @@
+{
+  "name": "dsign-soccer-module",
+  "version": "0.1.0",
+  "author": "antonino visalli <antonino.visalli@gmail.com>",
+  "description": "Dsign soccer module",
+  "homepage": "www.visa4.it",
+  "config": "config.js",
+  "autoloads": [
+    "src/model/Goal.js",
+    "src/model/Card.js",
+    "src/model/Replacement.js",
+    "src/model/MatchSoccer.js",
+    "src/model/PlayerSoccer.js",
+    "src/model/TeamSoccer.js",
+    "src/SoccerService.js",
+    "src/injector/HomePlayerDataInjector.js",
+    "src/injector/GuestPlayerDataInjector.js",
+    "src/injector/BenchPlayersDataInjector.js"
+  ]
+}

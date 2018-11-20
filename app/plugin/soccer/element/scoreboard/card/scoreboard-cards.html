@@ -1,0 +1,102 @@
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="scoreboard-card-single.html">
+
+<dom-module id="soccer-scoreboard-cards-wc">
+    <template>
+        <template id="repeatCard" is="dom-repeat" items="[[cards]]" as="card">
+            <soccer-scoreboar-card-single-wc player="{{_getPlayer(card)}}" card="{{card}}" on-wrap-remove="_remove" on-wrap-update="_update" left="{{left}}"></soccer-scoreboar-card-single-wc>
+        </template>
+    </template>
+
+    <script>
+        class ElementSoccerScoreboardCards extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-scoreboard-cards-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    cards: {
+                        type: Array,
+                        notify:true
+
+                    },
+
+                    left: {
+                        type: Boolean,
+                        value: false
+                    },
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                return serviceManager.get('SoccerService')
+                    .eventManager
+                    .on(`add-card-${this._getTeamName()}`, this._addCardListener.bind(this));
+            }
+
+            /**
+             * @param evt
+             */
+            _addCardListener(evt) {
+                this.$.repeatCard.render();
+            }
+
+            /**
+             * @param {Card} card
+             * @private
+             */
+            _getPlayer(card) {
+                return serviceManager.get('SoccerService').getPlayer(this._getTeamName(), card.playerId)
+            }
+
+            /**
+             * @param evt
+             */
+            _remove(evt) {
+
+                serviceManager.get('SoccerService').removeCard(this._getTeamName(), evt.target.card);
+                this.$.repeatCard.render();
+            }
+
+            /**
+             *
+             */
+            _update(evt) {
+
+                serviceManager.get('SoccerService').updateGoals(this._getTeamName());
+                this.$.repeatCard.render();
+            }
+
+            /**
+             * @return {string}
+             * @private
+             */
+            _getTeamName() {
+
+                let label = '';
+                switch (true) {
+                    case this.getAttribute('guest') === "":
+                        label = SoccerService.GUEST_TEAM;
+                        break;
+                    case this.getAttribute('home') === "":
+                        label = SoccerService.HOME_TEAM;
+                        break;
+                    default:
+                        console.error('No attribute for team name found');
+
+                }
+
+                return label;
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboardCards.is, ElementSoccerScoreboardCards);
+
+    </script>
+</dom-module>

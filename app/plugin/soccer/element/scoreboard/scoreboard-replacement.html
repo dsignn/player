@@ -1,0 +1,175 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../../bower_components/neon-animation/neon-animation.html">
+<link rel="import" href="../../../../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+
+<dom-module id="soccer-scoreboar-replacement-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            paper-card {
+                width: 100%;
+                min-height: initial;
+                min-width: inherit;
+                height: 86px;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                font-size: 16px;
+                margin: 10px 6px;
+            }
+
+            .time {
+                font-size: 16px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+            .number {
+                padding-right: 6px;
+                padding-left: 6px;
+            }
+
+            paper-dropdown-menu {
+                top: -2px;
+            }
+
+            .reverse {
+                flex-direction: row-reverse;
+            }
+
+            .flex-end {
+                align-items: flex-end;
+
+            }
+
+            iron-icon[icon="soccer:replace-in"] {
+                color: green;
+            }
+
+            iron-icon[icon="soccer:replace-out"] {
+                color: red;
+            }
+
+        </style>
+        <paper-card>
+            <div id="player-wrapper" class="goal-container goal-content flex flex-horizontal">
+                <div class="player-data data flex-basis-70 flex flex-vertical">
+                    <div class="dataWrapper flex flex-horizontal">
+                        <iron-icon icon="soccer:replace-out"></iron-icon>
+                        <div class="number">{{replacement.playerOut.shirtNumber}}</div>
+                        <div>{{replacement.playerOut.surname}}</div>
+                    </div>
+                    <div class="dataWrapper flex flex-horizontal">
+                        <iron-icon icon="soccer:replace-in"></iron-icon>
+                        <div class="number">{{replacement.playerIn.shirtNumber}}</div>
+                        <div>{{replacement.playerIn.surname}}</div>
+                    </div>
+                </div>
+                <div id="action" class="data flex-basis-30 flex flex-center">
+                    <div class="time">
+                        {{replacement.time}} Min
+                    </div>
+                    <div>
+                        <paper-menu-button>
+                            <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                            <paper-listbox slot="dropdown-content" multi>
+                                <paper-item on-tap="_remove" goal="{{goal}}">Elimina</paper-item>
+                            </paper-listbox>
+                        </paper-menu-button>
+                    </div>
+
+                </div>
+            </div>
+        </paper-card>
+    </template>
+    <script>
+        class ElementSoccerScoreboardReplacement extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-scoreboar-replacement-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    replacement: {
+                        type: new Replacement(),
+                        notify: true
+                    },
+
+                    left: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_leftChanged'
+                    }
+                };
+            }
+
+            /**
+             * @param newValue
+             * @private
+             */
+            _leftChanged(newValue) {
+                if (newValue === true) {
+                    this.$['player-wrapper'].classList.remove("reverse");
+                    this.$['action'].classList.remove("reverse");
+
+                    let eles = this.shadowRoot.querySelectorAll('.dataWrapper');
+                    for (let cont = 0;  eles.length > cont; cont++ ) {
+                        eles[cont].classList.remove("reverse");
+                    }
+                }
+
+                if (newValue === false) {
+                    this.$['player-wrapper'].classList.add("reverse");
+                    this.$['action'].classList.add("reverse");
+
+                    let eles = this.shadowRoot.querySelectorAll('.dataWrapper');
+                    for (let cont = 0;  eles.length > cont; cont++ ) {
+                        eles[cont].classList.add("reverse");
+                    }
+                }
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: {replacement: this.replacement}}));
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboardReplacement.is, ElementSoccerScoreboardReplacement);
+
+    </script>
+</dom-module>

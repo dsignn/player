@@ -1,0 +1,18 @@
+{
+  "name": "dsign-timeslot-plugin",
+  "version": "0.1.0",
+  "author": "antonino visalli <antonino.visalli@gmail.com>",
+  "description": "Dsign timeslot plugin",
+  "homepage": "www.visa4.it",
+  "config": "config.js",
+  "autoload": [
+    "src/TimeslotService.js",
+    "src/model/Timeslot.js",
+    "src/model/TimeslotDataReference.js",
+    "src/injector/AbstractInjector.js",
+    "src/injector/TimeslotDataInjectorServicePluginManager.js"
+  ],
+  "widgets": [
+    "widget/timeslot-tags.html"
+  ]
+}

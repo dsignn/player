@@ -1,0 +1,212 @@
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../css/global-layout.html">
+
+<dom-module id="data-injector-input">
+    <template>
+        <style include="global-layout"></style>
+
+        <div class="flex flex-horizontal ">
+            <paper-autocomplete
+                    id="serviceInput"
+                    label="Servizio"
+                    text-property="serviceLabel"
+                    value-property="propertyName"
+                    class="flex-basis-50"
+                    _selected-option="{{service}}"
+                    on-autocomplete-selected="_selectService"
+                    on-autocomplete-reset-blur="_resetService">
+                <template slot="autocomplete-custom-template">
+                    <style>
+                        :host {
+                            display: block;
+                        }
+
+                        paper-item.account-item {
+                            padding: 8px 16px;
+                        }
+
+                        .service-name {
+                            color: #333;
+                        }
+
+                        .service-description {
+                            margin-top: 4px;
+                            color: #999;
+                        }
+
+                    </style>
+                    <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                        <div>
+                            <div class="service-name">[[item.serviceLabel]]</div>
+                            <div class="service-description">[[item.serviceDescription]]</div>
+                        </div>
+                        <paper-ripple></paper-ripple>
+                    </paper-item>
+                </template>
+            </paper-autocomplete>
+            <div>&nbsp;</div>
+            <div hidden$="{{hideDataInput}}" class="flex-basis-50">
+                <paper-autocomplete
+                        id="dataInput"
+                        label="Dati"
+                        text-property="{{textProperty}}"
+                        value-property="name"
+                        style="width: 100%;"
+                        remote-source
+                        _selected-option="{{data}}"
+                        on-autocomplete-change="_dataValueChanged"
+                        on-autocomplete-reset-blur="_resetData">
+                </paper-autocomplete>
+            </div>
+
+        </div>
+    </template>
+    <script>
+        class DataInjectorInput extends Polymer.Element {
+
+            static get is() {
+                return 'data-injector-input';
+            }
+
+            static get properties() {
+                return {
+
+                    hideDataInput: {
+                        type: Boolean,
+                        notify: true,
+                        value: true
+                    },
+
+                    dataValue : {
+                        type: String,
+                        notify: true,
+                        observer: '_dataValueChanged'
+                    },
+
+                    services : {
+                        type: Array,
+                        readOnly : true
+                    },
+
+                    service: {
+                        type: Object,
+                        notify: true,
+                        value: null,
+                        observer: '_serviceChanged'
+                    },
+
+                    data: {
+                        type: Object,
+                        notify: true,
+                        value: null
+                    },
+
+                    textProperty : {
+                        type: String,
+                        notify: true,
+                        value: 'name'
+                    }
+                }
+            }
+
+            ready() {
+                super.ready();
+                this._setServices(
+                    serviceManager.get('TimeslotDataInjectorService')
+                        .getAll()
+                );
+
+                this.$.serviceInput.source = this.services;
+
+                this.$.serviceInput.queryFn = this._queryFn.bind(this.$.serviceInput);
+            }
+
+            /**
+             * @param newValue
+             * @private
+             */
+            _serviceChanged(newValue) {
+
+                if (!newValue) {
+                    return;
+                }
+
+                this.textProperty = newValue.getTextProperty();
+            }
+
+            /**
+             *
+             */
+            clear() {
+                this.$.serviceInput.clear();
+                this.$.dataInput.clear();
+            }
+
+            /**
+             * @param datasource
+             * @param query
+             * @private
+             */
+            _queryFn(datasource, query) {
+                return datasource.filter(function (item) {
+                    return (
+                        item[this.textProperty].toLowerCase().indexOf(query) != -1 || item[this.textProperty].toLowerCase().indexOf(query) != -1
+                    );
+                }.bind(this));
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectService(evt) {
+                this.hideDataInput = false;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _resetService(evt) {
+                this.hideDataInput = true;
+                this.service = null;
+                this.$.dataInput.clear();
+                this.data = null;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _resetData(evt) {
+                this.data = null;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _dataValueChanged(evt) {
+
+                let service = this.services.find(
+                    function(items) {
+                        return items.serviceName === this.$.serviceInput._selectedOption.serviceName
+                    }.bind(this)
+                );
+
+                if (!service) {
+                    throw 'Service not forund';
+                }
+
+                service.getServiceData(evt.detail.value)
+                    .then((data) => {
+                        evt.detail.target.suggestions(data)
+                    });
+            }
+        }
+
+        window.customElements.define(DataInjectorInput.is, DataInjectorInput);
+
+    </script>
+</dom-module>

@@ -1,0 +1,183 @@
+
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../iconset/iconset.html">
+<link rel="import" href="../monitor/monitor.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+
+
+<dom-module id="monitor-view-list">
+  <template>
+    <style include="global-layout"></style>
+    <style include="global-style"></style>
+    <slot name="header"></slot>
+    <div hidden$="{{!hasResources}}" style="padding-top: 20px;">
+      <template is="dom-repeat" items="[[monitors]]" as="monitor">
+        <monitor-wc
+                monitor="{{monitor}}"
+                on-wrap-update="displayUpdateView"
+                on-wrap-remove="remove"
+                on-wrap-change-enable-monitor="changeEnableMonior">
+        </monitor-wc>
+      </template>
+      <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+    </div>
+    <div hidden$="{{hasResources}}">Non sono presenti monitor virtuali</div>
+  </template>
+
+  <script>
+      class ElementMonitorViewList extends Polymer.Element {
+
+          static get is() { return 'monitor-view-list'; }
+
+          static get properties() {
+              return {
+
+                  monitors: {
+                      type: Array,
+                      notify: true,
+                      value: []
+                  },
+
+                  selected: {
+                      type: Number,
+                      notify: true
+                  },
+
+                  monitorSelected: {
+                      type: Object,
+                      notify: true
+                  },
+
+                  page : {
+                      type: Number,
+                      value :1
+                  },
+
+                  itemPerPage : {
+                      type: Number,
+                      value :20
+                  },
+
+                  totalItems : {
+                      type: Number,
+                  }
+              };
+          }
+
+          ready() {
+              super.ready();
+
+              serviceManager.get('StoragePluginManager')
+                  .get(MonitorConfig.NAME_SERVICE)
+                  .eventManager.on(Storage.STORAGE_POST_SAVE, this._loadResource.bind(this)
+              );
+
+              serviceManager.get('StoragePluginManager')
+                  .get(MonitorConfig.NAME_SERVICE)
+                  .eventManager.on(Storage.STORAGE_POST_UPDATE, this._loadResource.bind(this)
+              );
+          }
+
+          static get observers() {
+              return [
+                  '_queryMonitors(page, itemPerPage)'
+              ]
+          }
+
+          _queryMonitors(page, itemPerPage) {
+              if (page === undefined || itemPerPage === undefined) {
+                  return;
+              }
+              this._loadResource();
+          }
+
+          _loadResource() {
+              serviceManager.get('StoragePluginManager')
+                  .get(MonitorConfig.NAME_SERVICE)
+                  .getPaged(this.page, this.itemPerPage)
+                  .then((data) =>  {
+                      this.set('monitors', data);
+                      this.hasResources = data.length > 0;
+                      this.totalItems = data.totalItems;
+                  });
+          }
+
+          /**
+           * @param evt
+           */
+          remove(evt) {
+
+              let index = null;
+              this.monitors.find((element, ind) => {
+                  if ( element.id === evt.detail.id) {
+                      index = ind;
+                      return element;
+                  }
+              });
+
+              this.splice('monitors', index, 1);
+              this.hasResources = this.monitors.length > 0;
+
+              serviceManager.get('StoragePluginManager')
+                  .get(MonitorConfig.NAME_SERVICE)
+                  .remove(evt.detail)
+                  .then((data) =>  {
+                      this.set('playlists', data)
+                      serviceManager.get('PaperToastNotification').notify('Remove monitor')
+                  });
+          }
+
+          /**
+           * @param evt
+           */
+          changeEnableMonior(evt) {
+
+              for (let cont = 0; this.monitors.length > cont; cont++) {
+                  this.monitors[cont].enable = 0
+              }
+
+              let monitorStorage = serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE);
+              monitorStorage.getAll({enable: 1})
+                  .then((enableMonitors) => {
+                      for (let cont = 0; enableMonitors.length > cont; cont++) {
+
+                          enableMonitors[cont].enable = 0;
+                          monitorStorage.update(enableMonitors[cont])
+                              .then((data) => {})
+                              .catch((err) => {
+                                      console.log(err)
+                                  }
+                              );
+                      }
+
+                      evt.detail.enable = 1;
+                      monitorStorage.update(evt.detail)
+                          .then((data) => {
+                              serviceManager.get('PaperToastNotification').notify(' Enable ' + evt.detail.name);
+                              PluginMonitorIndex.electronIpc.send('change-monitors-configuration', evt.detail);
+                          })
+                          .catch((err) => {
+                                  console.log(err)
+                              }
+                          );
+
+                  });
+          }
+
+          displayUpdateView(evt) {
+              this.monitorSelected = evt.detail;
+              this.selected = 2;
+          }
+      }
+
+      window.customElements.define(ElementMonitorViewList.is, ElementMonitorViewList);
+
+  </script>
+</dom-module>

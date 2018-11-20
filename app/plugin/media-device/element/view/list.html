@@ -1,0 +1,155 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+<link rel="import" href="../media-device/media-device.html">
+
+<dom-module id="media-device-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            /** TODO insert style    */
+            :host ::slotted(.header) {
+                margin-bottom: 16px;
+            }
+        </style>
+
+        <slot name="header"></slot>
+        <div hidden$="{{!hasResources}}">
+            <template is="dom-repeat" items="[[resources]]" as="resource">
+                <media-device-wc media-device="{{resource}}" on-wrap-remove="remove"></media-device-wc>
+            </template>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{hasResources}}">
+            Non sono presenti match
+        </div>
+    </template>
+
+    <script>
+        class ElementMediaDeviceViewList extends Polymer.Element {
+
+            static get is() {
+                return 'media-device-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    resources: {
+                        type: Array,
+                        value: []
+                    },
+
+                    resourceSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    page: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    itemPerPage: {
+                        type: Number,
+                        value: 20
+                    },
+
+                    totalItem: {
+                        type: Number,
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_querySidelines(page, itemPerPage)'
+                ]
+            }
+
+            ready() {
+                super.ready();
+                serviceManager.get('StoragePluginManager')
+                    .get(MediaDeviceConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
+                );
+
+                serviceManager.get('StoragePluginManager')
+                    .get(MediaDeviceConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
+                );
+            }
+
+            /**
+             *
+             */
+            _getResources() {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(MediaDeviceConfig.NAME_SERVICE)
+                    .getPaged(this.page, this.itemPerPage)
+                    .then((data) => {
+                        this.set('resources', data);
+                        this.hasResources = data.length > 0;
+                        this.totalItems = data.totalItems;
+                    });
+            }
+
+            _querySidelines(page, itemPerPage) {
+                if (page === undefined || itemPerPage === undefined) {
+                    return;
+                }
+                this._getResources();
+            }
+
+            /**
+             * @param evt
+             */
+            remove(evt) {
+
+                let index = null;
+                this.resources.find((element, ind) => {
+                    if (element.id === evt.detail.id) {
+                        index = ind;
+                        return element;
+                    }
+                });
+
+                this.splice('resources', index, 1);
+                this.hasTimer = this.resources.length > 0;
+
+                serviceManager.get('StoragePluginManager')
+                    .get(MediaDeviceConfig.NAME_SERVICE)
+                    .remove(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Remove media device')
+                    });
+
+            }
+
+            /**
+             * @param evt
+             */
+            displayUpdateView(evt) {
+                this.resourceSelected = evt.target.match;
+                this.selected = 2;
+            }
+        }
+
+        window.customElements.define(ElementMediaDeviceViewList.is, ElementMediaDeviceViewList);
+
+    </script>
+</dom-module>

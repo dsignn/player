@@ -1,0 +1,302 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+<link rel="import" href="../../element/iconset/iconset.html">
+
+<dom-module id="timeslot-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            :host {
+                color: black;
+            }
+
+
+            .card-content,
+            .card-actions{
+                padding: 0;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            .nameTimeslot {
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            #rightSection {
+                background-image: url("img/timslot.jpg") !important;
+            }
+
+            .activePaperButton {
+                color: forestgreen;
+            }
+
+            paper-icon-button#rotationIcon[aria-disabled="true"] {
+                opacity: 0.4;
+            }
+
+            .running {
+                color: var(--timeslot-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--timeslot-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--timeslot-pause);
+                font-style: italic;
+            }
+
+            .card-actions {
+                justify-content: flex-start;
+                padding-left: 6px;
+            }
+
+            .crud paper-icon-button {
+                background-color: #0b8043 ;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+        </style>
+        <paper-card id="design" class="setting">
+            <div class="card-setting">
+                <paper-icon-button
+                        id="overlayIcon"
+                        item="{{timeslot}}"
+                        title="Send timeslot in overlay mode"
+                        icon="timeslot:overlay"
+                        class$="{{_computeContexIcon()}}"
+                        on-tap="_tapOverlay">
+                </paper-icon-button>
+                <paper-icon-button
+                        id="rotationIcon"
+                        item="{{timeslot}}"
+                        title="{{labelRotationIcon}}"
+                        icon="timeslot:{{timeslot.rotation}}"
+                        class="activePaperButton"
+                        on-tap="_tapRotation">
+
+                </paper-icon-button>
+            </div>
+            <div class="card-content flex flex-horizontal">
+                <div class="data flex-basis-85 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <div class="nameTimeslot">{{timeslot.name}}</div>
+                        <div class$="{{timeslot.status}}">{{timeslot.status}}
+                            <template is="dom-if" if="{{_viewTime(timeslot, 'running', 'pause')}}">
+                                {{timeslot.currentTime}} sec
+                            </template>
+                        </div>
+                        <div>{{timeslot.duration}} sec</div>
+                    </div>
+                </div>
+                <div class="data flex-basis-15 flex flex-vertical">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-click="_update">Modifica</paper-item>
+                            <paper-item  on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div class="card-actions">
+                <paper-icon-button id="play" icon="timeslot:play" on-click="_play" class="circle-small action" title="Play"></paper-icon-button>
+                <paper-icon-button id="stop" icon="timeslot:stop" on-click="_stop" class="circle-small action" title="Stop"></paper-icon-button>
+                <paper-icon-button id="pause" icon="timeslot:pause" on-click="_pause" class="circle-small action" title="Pause"></paper-icon-button>
+            </div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementTimeslot extends Polymer.Element {
+
+            static get is() {
+                return 'timeslot-wc';
+            }
+
+            static get LIST_ROTATION() {
+                return [
+                    Timeslot.ROTATION_NO,
+                    Timeslot.ROTATION_LOOP,
+                    Timeslot.ROTATION_INFINITY
+                ];
+            }
+
+            static get LIST_ROTATION_LABEL_ICON() {
+                let obj = {};
+                obj[Timeslot.ROTATION_NO] = 'Send timeslot in standard mode';
+                obj[Timeslot.ROTATION_LOOP] = 'Send timeslot in loop mode';
+                obj[Timeslot.ROTATION_INFINITY] = 'Send timeslot in infinity mode';
+                return obj;
+            }
+
+            static get properties() {
+                return {
+
+                    timeslot: {
+                        type: Object,
+                        observer: '_timeslotChanged'
+                    },
+
+                    hideCrud : {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+
+            _computeContexIcon() {
+                return this.timeslot.context === Timeslot.CONTEXT_OVERLAY ? 'activePaperButton timeslot' : 'timeslot';
+            }
+
+            _timeslotChanged(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                switch (true) {
+                    case newValue.status === Timeslot.RUNNING:
+                        this.hideCrud = true;
+                        this.$.overlayIcon.disabled = true;
+                        this.$.rotationIcon.disabled = true;
+
+                        this.$.play.disabled = true;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = newValue.rotation === Timeslot.ROTATION_INFINITY ? true : false;
+                        break;
+                    case newValue.status === Timeslot.PAUSE:
+
+                        this.hideCrud = false;
+                        this.$.overlayIcon.disabled = false;
+                        this.$.rotationIcon.disabled = false;
+
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = true;
+                        break;
+                    default:
+                        this.hideCrud = false;
+                        this.$.overlayIcon.disabled = false;
+                        this.$.rotationIcon.disabled = false;
+
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = true;
+                        this.$.pause.disabled = true;
+                }
+            }
+
+            /**
+             * @param timeslot
+             * @returns {boolean}
+             * @private
+             */
+            _viewTime(timeslot) {
+                if (arguments.length < 2) {
+                    console.warn('less then 2 parameter pass on this funcion')
+                    return false;
+                }
+
+                if (timeslot.rotation === Timeslot.ROTATION_INFINITY) {
+                    return false;
+                }
+
+                let inStatus = false;
+                for (let cont = 1; arguments.length > cont; cont++) {
+                    if (arguments[cont] === timeslot.status) {
+                        inStatus = true;
+                        break;
+                    }
+                }
+
+                return inStatus;
+            }
+
+            _tapOverlay(evt) {
+                this.timeslot.context = this.timeslot.context === 'standard' || !this.timeslot.context ? 'overlay' : 'standard';
+                if (this.timeslot.context === 'overlay') {
+                    this.$.overlayIcon.classList.add("activePaperButton");
+                } else {
+                    this.$.overlayIcon.classList.remove("activePaperButton");
+                }
+                this.dispatchEvent(new CustomEvent('wrap-update-timeslot', {detail: this.timeslot}));
+            }
+
+            _tapRotation(evt) {
+
+
+                let index = ElementTimeslot.LIST_ROTATION.findIndex((items) => {
+                    return items === this.timeslot.rotation;
+                });
+
+                this.timeslot.rotation = (index < (ElementTimeslot.LIST_ROTATION.length - 1)) ?
+                    ElementTimeslot.LIST_ROTATION[index+1] : ElementTimeslot.LIST_ROTATION[0];
+                this.labelRotationIcon = ElementTimeslot.LIST_ROTATION_LABEL_ICON[this.timeslot.rotation];
+                this.dispatchEvent(new CustomEvent('wrap-update-timeslot', {detail: this.timeslot}));
+            }
+
+            _play(evt) {
+                if (this.timeslot.status === Timeslot.IDLE) {
+                    this.dispatchEvent(new CustomEvent('play', {detail: this.timeslot}));
+                } else {
+                    this.dispatchEvent(new CustomEvent('resume', {detail: this.timeslot}));
+                }
+            }
+
+            _stop(evt) {
+                this.dispatchEvent(new CustomEvent('stop', {detail: this.timeslot}));
+            }
+
+            _pause(evt) {
+                this.dispatchEvent(new CustomEvent('pause', {detail: this.timeslot}));
+            }
+
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.timeslot}));
+            }
+
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-update', {detail: this.timeslot}));
+            }
+        }
+
+        window.customElements.define(ElementTimeslot.is, ElementTimeslot);
+
+    </script>
+</dom-module>

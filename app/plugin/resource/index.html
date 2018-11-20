@@ -1,0 +1,87 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="element/view/list.html">
+<link rel="import" href="element/view/upsert.html">
+<link rel="import" href="../../css/global-layout.html">
+<link rel="import" href="../../css/global-styles.html">
+
+<dom-module id="resource-index">
+
+  <template>
+    <style include="global-layout"></style>
+    <style include="global-style"></style>
+    <style>
+      #ironPages {
+        padding: 16px;
+      }
+
+    </style>
+    <iron-pages id="ironPages" selected="{{selected}}">
+      <div id="list">
+        <resource-view-list selected="{{selected}}" resource-selected="{{resource}}">
+          <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
+            <div>Lista risorse</div>
+            <paper-icon-button
+                    class="circle"
+                    on-tap="displayAddView"
+                    icon="resource:create"
+                    title="Crea risorsa">
+            </paper-icon-button>
+          </div>
+        </resource-view-list>
+      </div>
+      <div id="add">
+        <resource-view-upsert>
+          <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+            <paper-icon-button
+                    icon="resource:back"
+                    on-tap="displayListView"
+                    title="Torna alla lista delle configurazioni">
+            </paper-icon-button>
+            <div>Aggiungi risorsa</div>
+          </div>
+        </resource-view-upsert>
+      </div>
+      <div id="edit">
+        <resource-view-upsert resource="{{resource}}">
+          <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+            <paper-icon-button
+                    icon="resource:back"
+                    on-tap="displayListView"
+                    title="Torna alla lista delle configurazioni">
+            </paper-icon-button>
+            <div>Modifica risorsa</div>
+          </div>
+        </resource-view-upsert>
+      </div>
+    </iron-pages>
+  </template>
+  <script>
+    class PluginResourceIndex extends Polymer.Element {
+
+      static get is() { return 'resource-index'; }
+
+      static get properties() {
+          return {
+
+              selected: {
+                  type: Number,
+                  value: 0
+              }
+          }
+      }
+
+      displayAddView() {
+          this.selected = 1;
+      }
+
+      displayListView() {
+          this.selected = 0;
+      }
+    }
+
+    window.customElements.define(PluginResourceIndex.is, PluginResourceIndex);
+
+  </script>
+</dom-module>Resource

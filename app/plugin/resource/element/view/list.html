@@ -1,0 +1,156 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../iconset/iconset.html">
+<link rel="import" href="../resource/resource.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+
+<dom-module id="resource-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            /** TODO insert style    */
+            :host ::slotted(.header) {
+                margin-bottom: 16px;
+            }
+        </style>
+
+        <slot name="header"></slot>
+        <div hidden$="{{!hasResources}}">
+            <template is="dom-repeat" items="[[resources]]" as="resource">
+                <resource-wc
+                        resource="{{resource}}"
+                        on-update-view="displayUpdateView"
+                        on-remove="remove">
+                </resource-wc>
+            </template>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{hasResources}}">
+            Non sono presenti risorse
+        </div>
+    </template>
+
+    <script>
+        class ElementResourceViewList extends Polymer.Element {
+
+            static get is() {
+                return 'resource-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    resources: {
+                        type: Array,
+                        value: []
+                    },
+
+                    resourceSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    page: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    itemPerPage: {
+                        type: Number,
+                        value: 20
+                    },
+
+                    totalItem: {
+                        type: Number,
+                    },
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_queryResources(page, itemPerPage)'
+                ]
+            }
+
+            ready() {
+                super.ready();
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
+                );
+
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
+                );
+            }
+
+            _queryResources(page, itemPerPage) {
+                if (page === undefined || itemPerPage === undefined) {
+                    return;
+                }
+                this._getResources();
+            }
+
+            _getResources() {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .getPaged(this.page, this.itemPerPage)
+                    .then((data) => {
+                        this.set('resources', data);
+                        this.hasResources = data.length > 0;
+                        this.totalItems = data.totalItems;
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            remove(evt) {
+
+                let index = null;
+                this.resources.find((element, ind) => {
+                    if (element.id === evt.detail.id) {
+                        index = ind;
+                        return element;
+                    }
+                });
+
+                this.splice('resources', index, 1);
+                this.hasResources = this.resources.length > 0;
+
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .remove(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Remove resource')
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            displayUpdateView(evt) {
+                this.resourceSelected = evt.detail;
+                this.selected = 2;
+            }
+        }
+
+        window.customElements.define(ElementResourceViewList.is, ElementResourceViewList);
+
+    </script>
+</dom-module>Resource

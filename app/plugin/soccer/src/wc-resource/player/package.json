@@ -1,0 +1,6 @@
+{
+  "name": "wc-resource-soccer-player",
+  "version": "0.1.0",
+  "description": "View player data",
+  "main": "wc-resource-soccer-player.html"
+}

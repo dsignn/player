@@ -1,0 +1,294 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+<link rel="import" href="../../element/iconset/iconset.html">
+
+<dom-module id="playlist-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .card-content,
+            .card-actions {
+                padding: 0;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+
+            #rightSection {
+                background-image: url("img/playlist.jpg") !important;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+            .running {
+                color: var(--playlist-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--playlist-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--playlist-pause);
+                font-style: italic;
+            }
+
+            .card-actions {
+                justify-content: flex-start;
+                padding-left: 6px;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+        </style>
+        <paper-card id="design" class="setting">
+            <div class="card-setting">
+                <paper-icon-button
+                        id="loopIcon"
+                        title="Send playlist in loop mode"
+                        item="{{timeslot}}"
+                        icon="playlist:loop"
+                        class$="{{_computeLoopIcon()}}"
+                        on-tap="_tapLoop">
+                </paper-icon-button>
+                <paper-icon-button
+                        id="overlayIcon"
+                        title="Send playlist in overlay mode"
+                        item="{{timeslot}}"
+                        icon="playlist:overlay"
+                        class$="{{_computeContexIcon()}}"
+                        on-tap="_tapOverlay">
+                </paper-icon-button>
+            </div>
+            <div class="card-content flex flex-horizontal">
+                <div class="data flex-basis-85 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <div>{{playlist.name}}</div>
+                        <div class$="{{playlist.status}}">
+                            <div>{{playlist.status}}</div>
+                            <template is="dom-if" if="{{_isInStatus(playlist, 'running', 'pause')}}">
+                                <div>{{currentTimeslotName}} {{currentTimeslotTime}} sec</div>
+                            </template>
+                        </div>
+                        <div>{{duration}} sec</div>
+                    </div>
+                </div>
+                <div class="flags flex-basis-15">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-click="_update">Modifica</paper-item>
+                            <paper-item  on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div class="card-actions">
+                <paper-icon-button id="play" icon="playlist:play" on-click="_play" class="circle-small action" title="Play"></paper-icon-button>
+                <paper-icon-button id="stop" icon="playlist:pause" on-click="_pause" class="circle-small action" title="Pause"></paper-icon-button>
+                <paper-icon-button id="pause" icon="playlist:stop" on-click="_stop" class="circle-small action" title="Stop"></paper-icon-button>
+            </div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementPlaylist extends Polymer.Element {
+
+            static get is() {
+                return 'playlist-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    playlist: {
+                        type: Object,
+                        observer: '_changePlaylist'
+                    },
+
+                    duration: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    currentTimeslotName: {
+                        type: Number,
+                        notify: true,
+
+                    },
+
+                    currentTimeslotTime: {
+                        type: Number,
+                        notify: true,
+
+                    },
+
+                    hideCrud : {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            _changePlaylist(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                switch (true) {
+                    case newValue.status === Playlist.RUNNING:
+                        this.hideCrud = true;
+                        this.$.loopIcon.disabled = true;
+                        this.$.overlayIcon.disabled = true;
+
+                        this.$.play.disabled = true;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = false;
+                        break;
+                    case newValue.status === Timeslot.PAUSE:
+
+                        this.hideCrud = false;
+                        this.$.loopIcon.disabled = false;
+                        this.$.overlayIcon.disabled = false;
+
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = true;
+                        break;
+                    default:
+                        this.hideCrud = false;
+                        this.$.loopIcon.disabled = false;
+                        this.$.overlayIcon.disabled = false;
+
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = true;
+                        this.$.pause.disabled = true;
+                }
+
+                if (newValue.timeslots[newValue.currentIndex] !== undefined &&
+                    this.currentTimeslotName !== newValue.timeslots[newValue.currentIndex].name) {
+                    this.currentTimeslotName = newValue.timeslots[newValue.currentIndex].name;
+                }
+
+                if (newValue.timeslots[newValue.currentIndex] !== undefined &&
+                    this.currentTimeslotTime !== newValue.timeslots[newValue.currentIndex].currentTime) {
+                    this.currentTimeslotTime = newValue.timeslots[newValue.currentIndex].currentTime;
+                }
+
+                this.duration = newValue.getDuration();
+            }
+
+            _computeLoopIcon() {
+                return this.playlist.loop === true ? 'activePaperButton timeslot' : 'timeslot';
+            }
+
+            _computeContexIcon() {
+                return this.playlist.context === Timeslot.CONTEXT_OVERLAY ? 'activePaperButton timeslot' : 'timeslot';
+            }
+
+            _tapLoop(evt) {
+                this.playlist.loop = !this.playlist.loop;
+                if (this.playlist.loop) {
+                    this.$.loopIcon.classList.add("activePaperButton");
+                } else {
+                    this.$.loopIcon.classList.remove("activePaperButton");
+                }
+                this.dispatchEvent(new CustomEvent('wrap-update-playlist', {detail: this.playlist}));
+            }
+
+            _tapOverlay(evt) {
+                this.playlist.context = this.playlist.context === 'standard' || !this.playlist.context ? 'overlay' : 'standard';
+                if (this.playlist.context === 'overlay') {
+                    this.$.overlayIcon.classList.add("activePaperButton");
+                } else {
+                    this.$.overlayIcon.classList.remove("activePaperButton");
+                }
+                this.dispatchEvent(new CustomEvent('wrap-update-playlist', {detail: this.playlist}));
+            }
+
+            _isInStatus(playlist) {
+                if (arguments.length < 2) {
+                    return;
+                }
+
+                let inStatus = false;
+                for (let cont = 1; arguments.length > cont; cont++) {
+                    if (arguments[cont] === playlist.status) {
+                        inStatus = true;
+                        break;
+                    }
+                }
+
+                return inStatus;
+            }
+
+            /**
+             * @param property
+             * @return {*}
+             * @private
+             */
+            _getCurrentTimeslotData(property) {
+                return this.playlist.timeslots[this.playlist.currentIndex][property]
+            }
+
+            _play(evt) {
+                if (this.playlist.status === Playlist.IDLE) {
+                    this.dispatchEvent(new CustomEvent('play', {detail: this.playlist}));
+                } else {
+                    this.dispatchEvent(new CustomEvent('resume', {detail: this.playlist}));
+                }
+            }
+
+            _stop(evt) {
+                this.dispatchEvent(new CustomEvent('stop', {detail: this.playlist}));
+            }
+
+            _pause(evt) {
+                this.dispatchEvent(new CustomEvent('pause', {detail: this.playlist}));
+            }
+
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.playlist}));
+            }
+
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-update', {detail: this.playlist}));
+            }
+        }
+
+        window.customElements.define(ElementPlaylist.is, ElementPlaylist);
+
+    </script>
+</dom-module>

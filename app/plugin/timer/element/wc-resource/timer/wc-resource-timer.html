@@ -1,0 +1,98 @@
+<dom-module id="wc-resource-timer">
+    <template>
+        <style>
+
+            .timer {
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                color: white;
+                font-size: 30px;
+            }
+
+        </style>
+        <div class="timer">
+            {{hours}}:{{minutes}}:{{seconds}}
+        </div>
+    </template>
+
+    <script>
+        class WcResourceTimer extends Polymer.Element {
+
+            static get is() {
+                return 'wc-resource-timer';
+            }
+
+            static get properties() {
+                return {
+
+                    data: {
+                        type: Object,
+                        notify: true,
+                        observer: '_dataChanged',
+                    },
+
+                    hours: {
+                        type: String,
+                        notify: true,
+                    },
+
+                    minutes: {
+                        type: String,
+                        notify: true,
+                    },
+
+                    seconds: {
+                        type: String,
+                        notify: true,
+                    },
+
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                require('electron').ipcRenderer.on('timer-progress', this._progress.bind(this));
+                require('electron').ipcRenderer.on('timer-stop', this._stop.bind(this));
+            }
+
+            _dataChanged(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                this._init(newValue.timer);
+            }
+
+            /**
+             * @param timer
+             * @private
+             */
+            _init(timer) {
+                this.hours = timer.startAt.hours < 10 ? '0' + timer.startAt.hours : timer.startAt.hours;
+                this.minutes = timer.startAt.minutes < 10 ? '0' +  timer.startAt.minutes :  timer.startAt.minutes;
+                this.seconds = timer.startAt.seconds < 10 ? '0' + timer.startAt.seconds : timer.startAt.seconds;
+            }
+
+            _progress(evt, msg) {
+                if (!this.data || !this.data.timer || msg.id !== this.data.timer.id) {
+                    return;
+                }
+
+                this.hours = msg.progress.hours < 10 ? '0' + msg.progress.hours : msg.progress.hours;
+                this.minutes = msg.progress.minutes < 10 ? '0' + msg.progress.minutes : msg.progress.minutes;
+                this.seconds = msg.progress.seconds < 10 ? '0' + msg.progress.seconds : msg.progress.seconds;
+
+            }
+
+            _stop(evt, msg) {
+
+            }
+
+        }
+
+        window.customElements.define(WcResourceTimer.is, WcResourceTimer);
+
+    </script>
+</dom-module>

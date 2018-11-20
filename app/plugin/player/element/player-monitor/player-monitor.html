@@ -1,0 +1,457 @@
+
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../player-timeslot/player-timeslot.html">
+
+<dom-module id="player-monitor">
+    <template>
+        <style>
+            :host {
+                display: flex;
+                position: absolute;
+                overflow: hidden;
+            }
+
+            .layers {
+                padding: 0;
+                margin: 0;
+                height: 100%;
+                width: 100%;
+                position: relative;
+            }
+
+            .layer {
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
+                background-color: transparent;
+            }
+
+            .default {
+                z-index: 1;
+            }
+
+            .standard {
+                z-index: 2;
+            }
+
+            .overlay {
+                z-index: 3;
+            }
+
+            .monitors {
+                z-index: 4;
+            }
+
+        </style>
+
+        <div id="container" class="layers">
+            <div id="default"  class="layer default"></div>
+            <div id="standard" class="layer standard"></div>
+            <div id="overlay"  class="layer overlay"></div>
+            <div id="monitors" class="layer monitors"></div>
+        </div>
+    </template>
+
+    <script>
+        class ElementPlayerMonitor extends Polymer.Element {
+
+            static get is() { return 'player-monitor'; }
+
+            static get ipc() { return  require('electron').ipcRenderer; }
+
+            static get properties() {
+                return {
+                    nodeName : {
+                        type: String,
+                        readOnly: true,
+                        value: 'playerMonitor'
+                    },
+
+                    identifier: {
+                        type: String,
+                        reflectToAttribute : true,
+                    },
+
+                    defaultTimeslotId: {
+                        type: String,
+                        notify : true,
+                        observer: '_changeDefaultTimeslotId'
+                    },
+
+                    height: {
+                        type: Number,
+                        notify : true,
+                        observer: '_changeHeight'
+                    },
+
+                    width: {
+                        type: Number,
+                        notify : true,
+                        observer: '_changeWidth'
+                    },
+
+                    backgroundColor : {
+                        type: String,
+                        observer: '_changeBackgroundColor'
+                    },
+
+                    offsetX : {
+                        type: Number,
+                        value: 0,
+                        observer: '_changeOffsetX'
+                    },
+
+                    offsetY : {
+                        type: Number,
+                        value: 0,
+                        observer: '_changeOffsetY'
+                    },
+
+                    polygon : {
+                        type: String,
+                        observer: '_changePolygon'
+                    },
+
+
+                    timeslotDefault : {
+
+                    }
+                }
+            }
+
+            constructor() {
+                super();
+                ElementPlayerMonitorManager.ipc.on('play-timeslot', this._startTimeslot.bind(this));
+                ElementPlayerMonitorManager.ipc.on('stop-timeslot', this._stopTimeslot.bind(this));
+                ElementPlayerMonitorManager.ipc.on('pause-timeslot', this._pauseTimeslot.bind(this));
+                ElementPlayerMonitorManager.ipc.on('resume-timeslot', this._resumeTimeslot.bind(this));
+            }
+
+
+            /**
+             * @param {Monitor} monitor
+             */
+            updateValueFromMonitor(monitor) {
+                this.setStyles(monitor);
+                let nodeMonitors = Array.prototype.slice.call(
+                    this.shadowRoot.querySelectorAll('player-monitor')
+                );
+
+                for (let cont = 0; monitor.monitors.length > cont; cont++) {
+                    monitor.monitors[cont].addToDom = true;
+                    for (let subCont = 0; nodeMonitors.length > subCont; subCont++) {
+                        if (nodeMonitors[subCont].identifier === monitor.monitors[cont].id) {
+                            /**
+                             * update style
+                             */
+                            nodeMonitors[subCont].setStyles(monitor.monitors[cont]);
+                            monitor.monitors[cont].addToDom = false;
+
+                            if (monitor.monitors[cont].monitors.length > 0) {
+                                nodeMonitors[subCont].updateValueFromMonitor(monitor.monitors[cont]);
+                                console.log('AGGIORNIAMO SUB');
+                            }
+                            console.log('MODIFY', nodeMonitors[subCont]);
+                            nodeMonitors[subCont].removeToDom = false;
+                            nodeMonitors.splice(subCont, 1);
+                         
+                        }
+                    }
+                }
+
+                for (let cont = 0; nodeMonitors.length > cont; cont++) {
+                    console.log('REMOVE', nodeMonitors[cont]);
+                    nodeMonitors[cont].remove();
+                }
+
+                for (let cont = 0; monitor.monitors.length > cont; cont++) {
+                    if ( monitor.monitors[cont].addTDom === true) {
+
+                        let monitorElement = document.createElement("player-monitor");
+                        monitorElement.identifier =  monitor.monitors[cont].id;
+                        monitorElement.setStyles( monitor.monitors[cont]);
+                        this.appendMonitor(monitorElement);
+                        console.log('APPEND', monitorElement);
+                    }
+                }
+                // TODO add to dom;
+            }
+
+            /**
+             * @param {Monitor} monitor
+             */
+            setStyles(monitor) {
+                this.height = monitor.height;
+                this.width = monitor.width;
+                this.offsetX = monitor.offsetX;
+                this.offsetY = monitor.offsetY;
+                this.backgroundColor = monitor.backgroundColor;
+                this.polygon = monitor.polygon;
+                return this;
+            }
+
+            /**
+             * @param layer string
+             */
+            clearLayer(layer) {
+
+                if (!this.$[layer]) {
+                    return;
+                }
+
+                // Clear layer
+                while (this.$[layer].firstChild) {
+                    this.$[layer].removeChild(this.$[layer].firstChild);
+                }
+            }
+
+            /**
+             * @param timeslot ElementPlayerTimeslot
+             */
+            appendTimeslot(layer, wsTimeslot) {
+                this.$[layer].appendChild(wsTimeslot);
+            }
+
+            /**
+             * @param playerMonitor
+             */
+            appendMonitor(playerMonitor) {
+                this.$.monitors.appendChild(playerMonitor);
+            }
+
+            /**
+             * @param timeslot
+             * @params context
+             * @private
+             */
+            getTimeslotElement(timeslot, context = {}) {
+                let query = `player-timeslot[timeslot-id="${timeslot.id}"]`;
+                if (context.playlistId) {
+                    query = query.concat(`[playlist-id="${context.playlistId}"]`);
+                } else {
+                    query = query.concat(`:not([playlist-id=""])`);
+                }
+
+                return this.shadowRoot.querySelector(query);
+            }
+
+            /**
+             * @param evt
+             * @param msg
+             * @private
+             */
+            _startTimeslot(evt, msg) {
+                // The timeslot is not associate to thi monitor
+                if (msg.timeslot.virtualMonitorReference.monitorId != this.identifier) {
+                    return;
+                }
+
+                this.startTimeslot(this._hydrateTimeslot(msg.timeslot), msg.context);
+            }
+
+            /**
+             * @param {Timeslot} timeslot
+             */
+            startTimeslot(timeslot, context) {
+                let playerTimeslot = document.createElement('player-timeslot');
+
+                playerTimeslot.height = this.height;
+                playerTimeslot.width  = this.width;
+                playerTimeslot.filters = timeslot.filters;
+                playerTimeslot.config(timeslot, context);
+
+                this.clearLayer(timeslot.context);
+                this.appendTimeslot(timeslot.context, playerTimeslot);
+            }
+            /**
+             * TODO add public interface
+             *
+             * @param evt
+             * @param msg
+             * @private
+             */
+            _stopTimeslot(evt, msg) {
+                // The timeslot is not associate to thi monitor
+                if (this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
+                    return;
+                }
+
+                let element = this.getTimeslotElement(msg.timeslot, msg.context);
+                if (element) {
+                    console.log('MONITOR STOP TIMESLOT', msg.timeslot);
+                    element.remove();
+                }
+            }
+
+            /**
+             * TODO add public interface
+             *
+             * @param evt
+             * @param msg
+             * @private
+             */
+            _pauseTimeslot(evt, msg) {
+                // The timeslot is not associate to thi monitor
+                if (this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
+                    return;
+                }
+                console.log('MONITOR PAUSE TIMESLOT', msg.timeslot);
+                let element = this.getTimeslotElement(msg.timeslot,  msg.context);
+                if (element) {
+                    element.pause();
+                }
+            }
+
+            /**
+             * TODO add public interface
+             *
+             * @param evt
+             * @param msg
+             * @private
+             */
+            _resumeTimeslot(evt, msg) {
+                // The timeslot is not associate to thi monitor
+                if (this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
+                    return;
+                }
+
+                let element = this.getTimeslotElement(msg.timeslot, msg.context);
+                console.log('MONITOR RESUME TIMESLOT', msg.timeslot);
+
+                switch (true) {
+                    case element !== null:
+                        // TODO pass currentTime to resume
+                        element.resume(msg.timeslot.currentTime);
+                        break;
+                    default:
+                        let timeslotWc = document.createElement('player-timeslot');
+                        let timeslot = this._hydrateTimeslot(msg.timeslot);
+                        timeslotWc.height = this.height;
+                        timeslotWc.width  = this.width;
+                        timeslotWc.config(timeslot);
+                        timeslotWc.startAt = timeslot.currentTime;
+                        timeslotWc.filters = timeslot.filters;
+                        this.clearLayer(timeslot.context);
+                        this.appendTimeslot(timeslot.context, timeslotWc);
+                        break;
+                }
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _changeDefaultTimeslotId(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .get(newValue)
+                    .then((timeslot) => {
+                        timeslot.context = 'default';
+                        this.startTimeslot(timeslot);
+                    });
+
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _changeHeight(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+                this.style.height = newValue + 'px';
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _changeWidth(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+                this.style.width = newValue + 'px';
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _changeBackgroundColor(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+                setTimeout(
+                    () => {
+                        this.$.container.style.backgroundColor = newValue === '#ffffff' ? 'transparent' : newValue
+                    },
+                    500
+                );
+                // TODO migliore il color picker per gestire la trasparenza
+
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _changeOffsetX(newValue, oldValue) {
+                if (!newValue || (this.parentElement && this.parentElement.tagName === 'BODY')) {
+                    return;
+                }
+                this.style.left = newValue + 'px';
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _changeOffsetY(newValue, oldValue) {
+                if (!newValue || (this.parentElement && this.parentElement.tagName === 'BODY')) {
+                    return;
+                }
+                this.style.top = newValue + 'px';
+            }
+
+            _changePolygon(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+                this.style.clipPath = `polygon(${newValue})`;
+            }
+
+            /**
+             * @param data
+             * @returns {Timeslot}
+             * @private
+             */
+            _hydrateTimeslot(data) {
+                let timeslot = serviceManager.get('HydratorPluginManager')
+                    .get('timeslotHydrator')
+                    .hydrate(data);
+
+                if (!(timeslot instanceof Timeslot)) {
+                    console.error('Wrong data timeslot');
+                }
+
+                return timeslot;
+            }
+        }
+
+        window.customElements.define(ElementPlayerMonitor.is, ElementPlayerMonitor);
+
+    </script>
+</dom-module>
