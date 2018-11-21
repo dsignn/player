@@ -1,5 +1,5 @@
 
-class BenchPlayersDataInjector extends AbstractInjector {
+class LastGoalDataInjector extends AbstractInjector {
 
     constructor(soccerService) {
         super();
@@ -38,15 +38,14 @@ class BenchPlayersDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-
             try {
-                let result = {
-                    players : this.soccerService.getTeam(data.name).getPlayers({bench : true})
-                };
-                resolve(result);
+                let goal = this.soccerService.match.getLastGoal();
+                let player = this.soccerService.match.getPlayerFromGoal(goal);
+                resolve({goal: goal, player : player});
             } catch (e) {
                 reject(e);
             }
+
         });
     }
 
@@ -57,33 +56,34 @@ class BenchPlayersDataInjector extends AbstractInjector {
         return {'name' : data.name};
     }
 
+
     /**
      *  @return string
      */
     get serviceLabel() {
-        return 'Bench Players';
+        return 'Last goal';
     }
 
     /**
      *  @return string
      */
     get serviceName() {
-        return BenchPlayersDataInjector.name;
+        return LastGoalDataInjector.name;
     }
 
     /**
      *  @return string
      */
     get serviceDescription() {
-        return 'Bench playes';
+        return 'Last goal';
     }
 
     /**
-     * @return {string}
+     *  @return string
      */
     serviceNamespace () {
-        return 'players';
+        return 'data';
     }
 }
 
-module.exports = BenchPlayersDataInjector;
+module.exports = LastGoalDataInjector;

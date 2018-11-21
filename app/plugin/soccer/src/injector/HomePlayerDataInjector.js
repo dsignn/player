@@ -23,7 +23,7 @@ class HomePlayerDataInjector extends AbstractInjector {
      */
     getServiceData(value) {
         return new Promise((resolve, reject) => {
-            let players = this.soccerService.getTeam(SoccerService.HOME_TEAM).getPlayers({surname :  value});
+            let players = this.soccerService.getTeam(MatchSoccer.HOME_TEAM).getPlayers({surname :  value});
             if (Array.isArray(players)) {
                 resolve(players);
             }
@@ -37,7 +37,7 @@ class HomePlayerDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-            let player = this.soccerService.getPlayer(SoccerService.HOME_TEAM, data.id);
+            let player = this.soccerService.getPlayer(MatchSoccer.HOME_TEAM, data.id);
             if (player) {
                 resolve(player);
             }

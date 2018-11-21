@@ -82,10 +82,10 @@
                 let label = '';
                 switch (true) {
                     case this.getAttribute('guest') === "":
-                        label = SoccerService.GUEST_TEAM;
+                        label = MatchSoccer.GUEST_TEAM;
                         break;
                     case this.getAttribute('home') === "":
-                        label = SoccerService.HOME_TEAM;
+                        label = MatchSoccer.HOME_TEAM;
                         break;
                     default:
                         console.error('No attribute for team name found');

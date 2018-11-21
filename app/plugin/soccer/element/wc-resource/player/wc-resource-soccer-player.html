@@ -16,7 +16,7 @@
 
         </style>
         <div class="player">
-            {{data.shirtNumber}} {{data.name}} {{data.surname}}
+            {{player.shirtNumber}} {{player.name}} {{player.surname}}
         </div>
     </template>
 
@@ -30,10 +30,10 @@
             static get properties() {
                 return {
 
-                    data: {
+                    player: {
                         type: Object,
                         notify: true,
-                        observer: '_dataChanged',
+                        observer: '_playerChanged',
                     },
                 };
             }
@@ -43,7 +43,7 @@
              * @param oldValue
              * @private
              */
-            _dataChanged(newValue, oldValue) {
+            _playerChanged(newValue, oldValue) {
                 if (!newValue) {
                     return;
                 }

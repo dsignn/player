@@ -1,5 +1,5 @@
 
-class BenchPlayersDataInjector extends AbstractInjector {
+class LastCardsDataInjector extends AbstractInjector {
 
     constructor(soccerService) {
         super();
@@ -38,15 +38,19 @@ class BenchPlayersDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-
-            try {
+            let cards = this.soccerService.getTeam(data.name).getLastCardsOfPlayer();
+            if (Array.isArray(cards)) {
                 let result = {
-                    players : this.soccerService.getTeam(data.name).getPlayers({bench : true})
+                    cards :cards
                 };
+
+                if (cars.length > 0 ) {
+                    result.player = this.soccerService.getTeam(data.name).getPlayer(cards[0].playerId);
+                }
+
                 resolve(result);
-            } catch (e) {
-                reject(e);
             }
+            reject(cards);
         });
     }
 
@@ -57,33 +61,34 @@ class BenchPlayersDataInjector extends AbstractInjector {
         return {'name' : data.name};
     }
 
+
     /**
      *  @return string
      */
     get serviceLabel() {
-        return 'Bench Players';
+        return 'Last cards';
     }
 
     /**
      *  @return string
      */
     get serviceName() {
-        return BenchPlayersDataInjector.name;
+        return LastCardsDataInjector.name;
     }
 
     /**
      *  @return string
      */
     get serviceDescription() {
-        return 'Bench playes';
+        return 'Last cards';
     }
 
     /**
-     * @return {string}
+     *  @return string
      */
     serviceNamespace () {
-        return 'players';
+        return 'player';
     }
 }
 
-module.exports = BenchPlayersDataInjector;
+module.exports = LastCardsDataInjector;

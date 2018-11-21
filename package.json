@@ -1,7 +1,7 @@
 {
-  "name": "dsign",
-  "description": "Dsign",
-  "repository": "git@github.com:visa4/thor.git",
+  "name": "dsign-player",
+  "description": "Dsign core player",
+  "repository": "git@github.com:dsignn/player.git",
   "license": "BSD-3-Clause",
   "devDependencies": {
     "bower": "^1.8.4",

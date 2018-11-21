@@ -54,8 +54,8 @@
                         value-property="name"
                         style="width: 100%;"
                         remote-source
-                        _selected-option="{{data}}"
                         on-autocomplete-change="_dataValueChanged"
+                        on-autocomplete-selected="_selectData"
                         on-autocomplete-reset-blur="_resetData">
                 </paper-autocomplete>
             </div>
@@ -162,6 +162,15 @@
              */
             _selectService(evt) {
                 this.hideDataInput = false;
+                this.service = evt.detail.option;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectData(evt) {
+                this.data = evt.detail.option;
             }
 
             /**

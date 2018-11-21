@@ -85,7 +85,7 @@ class SoccerService {
      */
     addCard(teamName, card) {
 
-        let result = this._getTeamFromString(teamName).addCard(card);
+        let result = this.match._getTeamFromString(teamName).addCard(card);
         if (result) {
             console.log('SoccerService ADD CARD', teamName, card);
             this.eventManager.fire(`add-card-${teamName}`, {card : result});
@@ -99,7 +99,7 @@ class SoccerService {
      */
     removeCard(teamName, card) {
 
-        let result = this._getTeamFromString(teamName).removeCard(card);
+        let result = this.match._getTeamFromString(teamName).removeCard(card);
         if (result) {
             console.log('SoccerService REMOVE CARD', teamName, card);
             this.eventManager.fire(`remove-card-${teamName}`, {card : result});
@@ -111,9 +111,9 @@ class SoccerService {
      * @param teamName
      */
     updateCards(teamName) {
-        this._getTeamFromString(teamName).sortCardsPlayer({time : true});
-        console.log('SoccerService UPDATE CARDS', teamName, this._getTeamFromString(teamName).cards);
-        this.eventManager.fire(`update-cards-${teamName}`, {cards : this._getTeamFromString(teamName).cards});
+        this.match._getTeamFromString(teamName).sortCardsPlayer({time : true});
+        console.log('SoccerService UPDATE CARDS', teamName, this.match._getTeamFromString(teamName).cards);
+        this.eventManager.fire(`update-cards-${teamName}`, {cards : this.match._getTeamFromString(teamName).cards});
         this.updateCurrentMatch();
     }
 
@@ -156,9 +156,9 @@ class SoccerService {
      * @param teamName
      */
     updateGoals(teamName) {
-        this._getTeamFromString(teamName).sortGoalsPlayer({time : true});
-        console.log('SoccerService UPDATE GOALS', teamName, this._getTeamFromString(teamName).goals);
-        this.eventManager.fire(`update-goals-${teamName}`, {cards : this._getTeamFromString(teamName).goals});
+        this.match._getTeamFromString(teamName).sortGoalsPlayer({time : true});
+        console.log('SoccerService UPDATE GOALS', teamName, this.match._getTeamFromString(teamName).goals);
+        this.eventManager.fire(`update-goals-${teamName}`, {cards : this.match._getTeamFromString(teamName).goals});
         this.updateCurrentMatch();
     }
 
@@ -167,7 +167,7 @@ class SoccerService {
      * @param {string} id
      */
     getPlayer(teamName, id) {
-        return this._getTeamFromString(teamName).getPlayer(id);
+        return this.match._getTeamFromString(teamName).getPlayer(id);
     }
 
     /**
@@ -175,29 +175,7 @@ class SoccerService {
      * @return {TeamSoccer}
      */
     getTeam(teamName) {
-        return this._getTeamFromString(teamName);
-    }
-
-    /**
-     * @param teamName
-     * @return {TeamSoccer}
-     * @private
-     */
-    _getTeamFromString(teamName) {
-
-        let team = {};
-        switch (teamName) {
-            case SoccerService.GUEST_TEAM:
-                team = this.match.getGuestTeam();
-                break;
-            case SoccerService.HOME_TEAM:
-                team = this.match.getHomeTeam();
-                break;
-            default:
-                throw 'Wrong team name';
-        }
-
-        return team;
+        return this.match._getTeamFromString(teamName);
     }
 }
 

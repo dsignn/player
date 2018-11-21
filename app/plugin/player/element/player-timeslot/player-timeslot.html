@@ -290,9 +290,24 @@
                 let fs = require('fs');
 
                 if (this.timeslot.dataReferences && this.timeslot.dataReferences.length > 0) {
-                    this.data = this._computeDataInjector(
+                    this.data  = this._computeDataInjector(
                         await this._extractDataTimeslot(this.timeslot.dataReferences))
                     ;
+                    /*
+
+                    TODO REMOVE
+                    console.log('Cosa cazzo ho computato', data);
+                    if (data === null || typeof data !== 'object') {
+                        console.error('data injector sbagliato', data);
+                        return;
+                    }
+                    for (let property in data) {
+                        console.log('suca');
+                        this[property] = data[property];
+                    }
+
+                    this.data = data;
+                    */
                 }
 
                 let promise = new Promise( function(resolve, reject) {
@@ -344,7 +359,13 @@
                 let element = document.createElement(name);
                 element.height = this.height;
                 element.width = this.width;
-                element.data = this.data;
+                if (this.data !== null || typeof this.data === 'object') {
+                    for (let property in this.data) {
+                        console.log('INJECT IN WC', property, this.data[property]);
+                        element[property] = this.data[property];
+                    }
+                }
+
                 return element;
             }
 

@@ -386,6 +386,15 @@ class TeamSoccer extends Team {
 
         return index > -1;
     }
+
+    /**
+     * @return {Array}
+     */
+    getLastCardsOfPlayer() {
+        return this.cards.filter((card) => {
+            return card.playerId === this.cards[0].playerId;
+        });
+    }
 }
 
 module.exports = TeamSoccer;

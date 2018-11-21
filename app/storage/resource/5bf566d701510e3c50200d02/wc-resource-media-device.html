@@ -9,9 +9,7 @@
             }
 
         </style>
-        <video id="camera" autoplay>
-
-        </video>
+        <video id="camera" autoplay></video>
     </template>
 
     <script>
@@ -24,10 +22,10 @@
             static get properties() {
                 return {
 
-                    data: {
+                    mediaDevice: {
                         type: Object,
                         notify: true,
-                        observer: '_dataChanged',
+                        observer: '_mediaDeviceChanged',
                     }
 
                 };
@@ -38,10 +36,9 @@
              * @param oldValue
              * @private
              */
-            _dataChanged(newValue, oldValue) {
+            _mediaDeviceChanged(newValue, oldValue) {
 
                 let constraint = { video : {deviceId: { exact:  newValue.id}}};
-                //constraint = {video: true};
 
                 navigator.mediaDevices.getUserMedia(constraint)
                     .then((stream) => {
