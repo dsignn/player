@@ -39,7 +39,9 @@ class GuestPlayerDataInjector extends AbstractInjector {
         return new Promise((resolve, reject) => {
             let player = this.soccerService.getPlayer(SoccerService.GUEST_TEAM, data.id);
             if (player) {
-                resolve(player);
+                let result = {};
+                result[this.serviceNamespace()] = player;
+                resolve(result);
             }
             reject(player);
         });

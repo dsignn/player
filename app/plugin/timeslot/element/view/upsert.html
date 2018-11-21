@@ -323,7 +323,7 @@
                         service.getTimeslotData(dataReferences.data)
                             .then((data) => {
                                 this.$.dataRefernces.data = data;
-                                this.$.dataRefernces.$.dataInput.text = data.name;
+                                this.$.dataRefernces.$.dataInput.text = this.$.dataRefernces.service.extractMedatadaFromData(data);
                             });
 
                     }
@@ -524,10 +524,6 @@
                 this.$.bind.clear();
                 this.$.listBind.innerHTML = '';
                 this.$.dataRefernces.clear();
-            }
-
-            onEnter(evt) {
-                console.log('ENTER', evt);
             }
         }
 

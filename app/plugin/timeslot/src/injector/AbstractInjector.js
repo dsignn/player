@@ -45,13 +45,42 @@ class AbstractInjector {
         throw 'method must be override';
     }
 
+    /**
+     *  @return string
+     */
     get serviceNamespace() {
         throw 'method must be override';
     }
 
-
+    /**
+     *  @return string
+     */
     getTextProperty() {
         return 'name';
+    }
+
+    /**
+     * @param {Object} data
+     * @return {Object}
+     */
+    extractMedatadaFromData(data) {
+        let nameSpace = this.extractNamespaceFromData(data);
+
+        if (!nameSpace[this.getTextProperty()]) {
+            throw 'Text property data not found';
+        }
+        return nameSpace[this.getTextProperty()];
+    }
+
+    /**
+     * @param  {Object} data
+     * @return {string}
+     */
+    extractNamespaceFromData(data) {
+        if (!data[this.serviceNamespace()]) {
+            throw 'Name space data not found';
+        }
+        return data[this.serviceNamespace()];
     }
 }
 

@@ -39,7 +39,9 @@ class HomePlayerDataInjector extends AbstractInjector {
         return new Promise((resolve, reject) => {
             let player = this.soccerService.getPlayer(MatchSoccer.HOME_TEAM, data.id);
             if (player) {
-                resolve(player);
+                let result = {};
+                result[this.serviceNamespace()] = player;
+                resolve(result);
             }
             reject(player);
         });
