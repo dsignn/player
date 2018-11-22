@@ -113,7 +113,7 @@ class TeamSoccer extends Team {
                 players =  players.filter((player) => {
                     let toBench = true;
                     for (let cont = 0; this.replacemens.length > cont; cont++) {
-                        if (player.id === this.replacemens[cont].playerOut.id) {
+                        if (player.id === this.replacemens[cont].playerIdOut) {
                             toBench = false;
                             break;
                         }
@@ -211,8 +211,8 @@ class TeamSoccer extends Team {
         }
 
         replacement = new Replacement(
-            playerIn,
-            playerOut,
+            playerIn.id,
+            playerOut.id,
             time
         );
 
@@ -232,8 +232,8 @@ class TeamSoccer extends Team {
     removeReplacementPlayer(replacement) {
 
         let index = this.replacemens.findIndex((iReplacement) => {
-            return iReplacement.playerIn.id === replacement.playerIn.id &&
-                iReplacement.playerOut.id === replacement.playerOut.id &&
+            return iReplacement.playerInId === replacement.playerInId &&
+                iReplacement.playerOutId === replacement.playerOutId &&
                 iReplacement.time === replacement.time
         });
 

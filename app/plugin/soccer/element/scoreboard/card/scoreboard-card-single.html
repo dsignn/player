@@ -12,6 +12,7 @@
 <link rel="import" href="../../../../../css/global-layout.html">
 <link rel="import" href="../../../../../css/global-styles.html">
 <link rel="import" href="../../../../../element/iconset/iconset.html">
+<link rel="import" href="../scoreboard-utils.html">
 
 <dom-module id="soccer-scoreboar-card-single-wc">
     <template>
@@ -149,7 +150,7 @@
     </template>
 
     <script>
-        class ElementSoccerScoreboardCardSingle extends Polymer.Element {
+        class ElementSoccerScoreboardCardSingle extends ElementSoccerScoreboardUtils {
 
             static get is() {
                 return 'soccer-scoreboar-card-single-wc';

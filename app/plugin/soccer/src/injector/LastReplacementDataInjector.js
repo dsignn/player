@@ -42,6 +42,8 @@ class LastReplacementDataInjector extends AbstractInjector {
             if (Array.isArray(replacemens)) {
                 let result = {};
                 result[this.serviceNamespace()] = replacemens[0];
+                result.playerIn = this.soccerService.getTeam(data.name).getPlayer(replacemens[0].playerIdIn);
+                result.playerOut = this.soccerService.getTeam(data.name).getPlayer(replacemens[0].playerIdOut);
                 resolve(result);
             }
             reject(players);

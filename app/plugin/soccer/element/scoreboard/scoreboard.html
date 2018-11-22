@@ -10,6 +10,8 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 
+<link rel="import" href="scoreboard-utils.html">
+
 <dom-module id="soccer-scoreboard-wc">
     <template>
         <style include="global-layout"></style>
@@ -127,7 +129,7 @@
     </template>
 
     <script>
-        class ElementSoccerScoreboard extends Polymer.Element {
+        class ElementSoccerScoreboard extends ElementSoccerScoreboardUtils {
 
             static get is() {
                 return 'soccer-scoreboard-wc';
@@ -305,45 +307,6 @@
 
                 this._renderData(team);
                 serviceManager.get('SoccerService').updateCurrentMatch();
-            }
-
-            /**
-             * Recompute render of the dom-repeat element
-             * @param type
-             */
-            _renderData(type) {
-
-                let listDomRepeat = [];
-                switch (type) {
-                    case 'homeTeam':
-                        listDomRepeat = this.shadowRoot.querySelectorAll('dom-repeat[home]');
-                        break;
-                    case 'guestTeam':
-                        listDomRepeat = this.shadowRoot.querySelectorAll('dom-repeat[guest]');
-                        break;
-                }
-
-                for (let cont = 0; listDomRepeat.length > cont; cont++) {
-                    listDomRepeat[cont].render();
-                }
-            }
-
-            /**
-             * @param elem
-             * @returns {string}
-             * @private
-             */
-            _getTeamAttributeByElement(elem) {
-                return elem.getAttribute('guest') === "" ? 'guestTeam' : 'homeTeam';
-            }
-
-            /**
-             * @param elem
-             * @returns {boolean}
-             * @private
-             */
-            _isHomeTeamByElement(elem) {
-                return elem.getAttribute('home') === "" ? true : false;
             }
         }
 

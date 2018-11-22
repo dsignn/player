@@ -14,6 +14,9 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/iconset/iconset.html">
 
+<link rel="import" href="scoreboard-utils.html">
+
+
 <dom-module id="soccer-scoreboar-replacement-wc">
     <template>
         <style include="global-layout"></style>
@@ -85,13 +88,13 @@
                 <div class="player-data data flex-basis-70 flex flex-vertical">
                     <div class="dataWrapper flex flex-horizontal">
                         <iron-icon icon="soccer:replace-out"></iron-icon>
-                        <div class="number">{{replacement.playerOut.shirtNumber}}</div>
-                        <div>{{replacement.playerOut.surname}}</div>
+                        <div class="number">{{playerOut.shirtNumber}}</div>
+                        <div>{{playerOut.surname}}</div>
                     </div>
                     <div class="dataWrapper flex flex-horizontal">
                         <iron-icon icon="soccer:replace-in"></iron-icon>
-                        <div class="number">{{replacement.playerIn.shirtNumber}}</div>
-                        <div>{{replacement.playerIn.surname}}</div>
+                        <div class="number">{{playerIn.shirtNumber}}</div>
+                        <div>{{playerIn.surname}}</div>
                     </div>
                 </div>
                 <div id="action" class="data flex-basis-30 flex flex-center">
@@ -112,7 +115,7 @@
         </paper-card>
     </template>
     <script>
-        class ElementSoccerScoreboardReplacement extends Polymer.Element {
+        class ElementSoccerScoreboardReplacement extends ElementSoccerScoreboardUtils {
 
             static get is() {
                 return 'soccer-scoreboar-replacement-wc';
@@ -123,15 +126,39 @@
 
                     replacement: {
                         type: new Replacement(),
-                        notify: true
+                        notify: true,
+                        observer: '_replacementChanged'
                     },
 
                     left: {
                         type: Boolean,
+                        notify: true,
                         value: false,
                         observer: '_leftChanged'
+                    },
+
+                    playerIn : {
+                        notify: true,
+                    },
+
+                    playerOut : {
+                        notify: true,
                     }
                 };
+            }
+
+            _replacementChanged(newValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                this.playerIn = serviceManager.get('SoccerService')
+                    .getTeam(this._getTeamName())
+                    .getPlayer(newValue.playerIdIn);
+
+                this.playerOut = serviceManager.get('SoccerService')
+                    .getTeam(this._getTeamName())
+                    .getPlayer(newValue.playerIdOut);
             }
 
             /**

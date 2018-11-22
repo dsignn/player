@@ -372,23 +372,15 @@ class SoccerConfig extends PluginConfig {
 
     _loadReplacementHydrator() {
         let hydrator = new PropertyHydrator(
-            new Replacement(),
-            {
-                'playerOut' : new HydratorStrategy(
-                    this.serviceManager.get('HydratorPluginManager').get('playerSoccerHydrator')
-                ),
-                'playerIn' : new HydratorStrategy(
-                    this.serviceManager.get('HydratorPluginManager').get('playerSoccerHydrator')
-                ),
-            }
+            new Replacement()
         );
 
-        hydrator.enableExtractProperty('playerIn')
-            .enableExtractProperty('playerOut')
+        hydrator.enableExtractProperty('playerIdIn')
+            .enableExtractProperty('playerIdOut')
             .enableExtractProperty('time');
 
-        hydrator.enableHydrateProperty('playerIn')
-            .enableHydrateProperty('playerOut')
+        hydrator.enableHydrateProperty('playerIdIn')
+            .enableHydrateProperty('playerIdOut')
             .enableHydrateProperty('time');
 
         this.serviceManager.get('HydratorPluginManager').set(

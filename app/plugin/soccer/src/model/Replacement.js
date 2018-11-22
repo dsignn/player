@@ -2,21 +2,21 @@ class Replacement {
 
     /**
      *
-     * @param {PlayerSoccer} playerIn
-     * @param {PlayerSoccer} playerOut
+     * @param {string} playerIdIn
+     * @param {string} playerIdOut
      * @param {number} time
      */
-    constructor(playerIn = new PlayerSoccer(), playerOut = new PlayerSoccer(), time) {
+    constructor(playerIdIn, playerIdOut, time) {
 
         /**
-         * @type {PlayerSoccer}
+         * @type {string}
          */
-        this.playerIn = playerIn;
+        this.playerIdIn = playerIdIn;
 
         /**
-         * @type {PlayerSoccer}
+         * @type {string}
          */
-        this.playerOut = playerOut;
+        this.playerIdOut = playerIdOut;
 
         /**
          * @type {number}

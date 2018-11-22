@@ -59,7 +59,6 @@
              * @param evt
              */
             _remove(evt) {
-
                 serviceManager.get('SoccerService').removeCard(this._getTeamName(), evt.target.card);
                 this.$.repeatCard.render();
             }
@@ -68,7 +67,6 @@
              *
              */
             _update(evt) {
-
                 serviceManager.get('SoccerService').updateGoals(this._getTeamName());
                 this.$.repeatCard.render();
             }

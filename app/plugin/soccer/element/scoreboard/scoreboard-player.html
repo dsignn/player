@@ -533,7 +533,7 @@
                 let team = this.getAttribute('guest') === "" ? 'guestTeam' : 'homeTeam';
 
                 evt.detail.target.suggestions(
-                    serviceManager.get('SoccerService').match[team].getPlayers({toBench : true, name : evt.detail.value})
+                    serviceManager.get('SoccerService').match[team].getPlayers({toBench : true, surname : evt.detail.value})
                 );
             }
 
