@@ -44,7 +44,7 @@ class LastCardsDataInjector extends AbstractInjector {
                     cards :cards
                 };
 
-                if (cars.length > 0 ) {
+                if (cards.length > 0 ) {
                     result.player = this.soccerService.getTeam(data.name).getPlayer(cards[0].playerId);
                 }
 

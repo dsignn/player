@@ -88,7 +88,7 @@ class MatchSoccer extends Match {
         team.sortGoalsPlayer({time : true});
         let goal = null;
         if (team.goals.length > 0) {
-            goal = team.goal[0];
+            goal = team.goals[0];
         }
         return goal;
     }

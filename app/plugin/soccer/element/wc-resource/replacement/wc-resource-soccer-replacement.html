@@ -1,0 +1,77 @@
+<dom-module id="wc-resource-soccer-replacement">
+    <template>
+        <style>
+
+            .player {
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                color: white;
+                font-size: 40px;
+                background-color: #0b97c4;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+        </style>
+        <div class="player">
+            <div>{{playerIn.shirtNumber}} {{playerIn.name}} {{playerIn.surname}}</div>
+            <div>{{playerOut.shirtNumber}} {{playerOut.name}} {{playerOut.surname}}</div>
+        </div>
+    </template>
+
+    <script>
+        class WcResourceSoccerReplacement extends Polymer.Element {
+
+            static get is() {
+                return 'wc-resource-soccer-replacement';
+            }
+
+            static get properties() {
+                return {
+
+                    /**
+                     * @type Replacement
+                     */
+                    replacement : {
+                        notify: true,
+                        observer: '_replacementChange',
+                    },
+
+                    /**
+                     * @type PlayerSoccer
+                     */
+                    playerIn : {
+                        notify: true,
+                    },
+
+                    /**
+                     * @type PlayerSoccer
+                     */
+                    playerOut : {
+                        notify: true,
+                    }
+                };
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _replacementChange(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                this.playerIn = newValue.playerIn;
+                this.playerOut =  newValue.playerOut;
+            }
+        }
+
+        window.customElements.define(WcResourceSoccerReplacement.is, WcResourceSoccerReplacement);
+
+    </script>
+</dom-module>

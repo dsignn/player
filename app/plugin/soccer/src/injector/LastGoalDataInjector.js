@@ -39,8 +39,8 @@ class LastGoalDataInjector extends AbstractInjector {
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
             try {
-                let goal = this.soccerService.match.getLastGoal();
-                let player = this.soccerService.match.getPlayerFromGoal(goal);
+                let goal = this.soccerService.match.getLastGoal(data.name);
+                let player = this.soccerService.match.getPlayerFromGoal(data.name, goal);
                 resolve({goal: goal, player : player});
             } catch (e) {
                 reject(e);
