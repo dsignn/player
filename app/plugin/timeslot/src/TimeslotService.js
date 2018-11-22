@@ -20,12 +20,12 @@ class TimeslotService {
     static get RESUME() { return 'resume-timeslot'; }
 
     /**
-     *
-     * @param {sender} sender
      * @param {Storage} timeslotStorage
+     * @param {sender} sender
      * @param {Timer} timer
+     * @param {TimeslotDataInjectorServicePluginManager} dataInjectorManager
      */
-    constructor(sender, timeslotStorage, timer) {
+    constructor(timeslotStorage, sender, timer, dataInjectorManager) {
 
         /**
          *
@@ -41,6 +41,11 @@ class TimeslotService {
          * @type {Timer}
          */
         this.timer = timer;
+
+        /**
+         * @type {TimeslotDataInjectorServicePluginManager}
+         */
+        this.dataInjectorManager = dataInjectorManager ? dataInjectorManager : new TimeslotDataInjectorServicePluginManager();
 
         /**
          * Event manager
@@ -152,27 +157,37 @@ class TimeslotService {
      */
     play(timeslot) {
 
-        let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
-        if (runningTimeslot) {
-            this.pause(runningTimeslot);
-        }
 
-        timeslot.options.typeService = 'timeslot';
-        this._executeBids(timeslot, 'play');
-        this.sender.send(
-            TimeslotService.PLAY,
-            {timeslot : timeslot}
+        this._synchExtractTimeslotData(timeslot).then(
+            (timeslotData) => {
+                console.log('TIMESLOT DATA', timeslotData);
+
+                let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
+                if (runningTimeslot) {
+                    this.pause(runningTimeslot);
+                }
+
+                timeslot.options.typeService = 'timeslot';
+                this._executeBids(timeslot, 'play');
+
+                this.sender.send(
+                    TimeslotService.PLAY,
+                    {timeslot : timeslot, data: timeslotData}
+                );
+                this.eventManager.fire(TimeslotService.PLAY, timeslot);
+                console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
+                if (timeslot.rotation === Timeslot.ROTATION_INFINITY) {
+                    return;
+                }
+
+                this.eventManager.on(
+                    `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) * 10)}`,
+                    this.processTimeslot.bind({timeslotService : this, timeslot: timeslot})
+                )
+            }
         );
-        this.eventManager.fire(TimeslotService.PLAY, timeslot);
-        console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
-        if (timeslot.rotation === Timeslot.ROTATION_INFINITY) {
-            return;
-        }
 
-        this.eventManager.on(
-            `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) * 10)}`,
-            this.processTimeslot.bind({timeslotService : this, timeslot: timeslot})
-        )
+
     }
 
     /**
@@ -198,7 +213,7 @@ class TimeslotService {
         timeslot.options.typeService = 'timeslot';
         this._executeBids(timeslot, 'pause');
         this.sender.send(
-            TimeslotService.STOP,
+            TimeslotService.PAUSE,
             {timeslot : timeslot}
         );
         this.eventManager.fire(TimeslotService.PAUSE, timeslot);
@@ -209,23 +224,29 @@ class TimeslotService {
      */
     resume(timeslot) {
 
-        let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
-        if (runningTimeslot) {
-            this.pause(runningTimeslot);
-        }
+        this._synchExtractTimeslotData(timeslot).then(
+            (timeslotData) => {
 
-        timeslot.options.typeService = 'timeslot';
-        this._executeBids(timeslot, 'resume');
-        this.sender.send(
-            TimeslotService.RESUME,
-            {timeslot : timeslot}
+
+                let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
+                if (runningTimeslot) {
+                    this.pause(runningTimeslot);
+                }
+
+                timeslot.options.typeService = 'timeslot';
+                this._executeBids(timeslot, 'resume');
+                this.sender.send(
+                    TimeslotService.RESUME,
+                    {timeslot : timeslot, data: timeslotData}
+                );
+                this.eventManager.fire(TimeslotService.RESUME, timeslot);
+                console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
+                this.eventManager.on(
+                    `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`,
+                    this.processTimeslot.bind({timeslotService : this, timeslot: timeslot})
+                );
+            }
         );
-        this.eventManager.fire(TimeslotService.RESUME, timeslot);
-        console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
-        this.eventManager.on(
-            `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`,
-            this.processTimeslot.bind({timeslotService : this, timeslot: timeslot})
-        )
     }
 
 
@@ -345,6 +366,42 @@ class TimeslotService {
         for (let cont = 0; timeslot.binds.length > cont; cont++) {
             this[method](timeslot.binds[cont]);
         }
+    }
+
+    /**
+     * @param {Array} dataReferences
+     * @return {Promise}
+     * @private
+     */
+    _extractTimeslotDataFromDataReferences(dataReferences) {
+        let promises = [];
+
+        for (let cont = 0; dataReferences.length > cont;  cont++) {
+            if (this.dataInjectorManager.has(dataReferences[0].name)) {
+                promises.push(this.dataInjectorManager
+                    .get(dataReferences[0].name).getTimeslotData(dataReferences[cont].data
+                    ));
+            }
+        }
+
+        return Promise.all(promises);
+    }
+
+    /**
+     *
+     * @param timeslot
+     * @return {Object|null}
+     * @private
+     */
+    async _synchExtractTimeslotData(timeslot) {
+        let data = null;
+        if (timeslot.dataReferences.length === 0) {
+            return data;
+        }
+
+        data = await this._extractTimeslotDataFromDataReferences(timeslot.dataReferences);
+
+        return data;
     }
 }
 

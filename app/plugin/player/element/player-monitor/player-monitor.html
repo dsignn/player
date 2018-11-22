@@ -248,19 +248,22 @@
                     return;
                 }
 
-                this.startTimeslot(this._hydrateTimeslot(msg.timeslot), msg.context);
+                this.startTimeslot(this._hydrateTimeslot(msg.timeslot), msg.data, msg.context);
             }
 
             /**
              * @param {Timeslot} timeslot
+             * @param {Object|null} data
+             * @param {Timeslot} context
              */
-            startTimeslot(timeslot, context) {
+            startTimeslot(timeslot, data, context) {
                 let playerTimeslot = document.createElement('player-timeslot');
 
                 playerTimeslot.height = this.height;
                 playerTimeslot.width  = this.width;
                 playerTimeslot.filters = timeslot.filters;
                 playerTimeslot.config(timeslot, context);
+                playerTimeslot.data = data;
 
                 this.clearLayer(timeslot.context);
                 this.appendTimeslot(timeslot.context, playerTimeslot);
@@ -330,6 +333,7 @@
                         let timeslot = this._hydrateTimeslot(msg.timeslot);
                         timeslotWc.height = this.height;
                         timeslotWc.width  = this.width;
+                        timeslotWc.data = msg.data;
                         timeslotWc.config(timeslot);
                         timeslotWc.startAt = timeslot.currentTime;
                         timeslotWc.filters = timeslot.filters;

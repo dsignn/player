@@ -132,7 +132,7 @@
                             this.$.resources.appendChild(divResource);
                             break;
                         case 'text/html':
-                            this._createWebComponent(this.timeslot.resources[cont])
+                            this._createWebComponent2(this.timeslot.resources[cont])
                                 .then(
                                     function(data) {
                                         this.$.resources.appendChild(data);
@@ -288,28 +288,38 @@
              */
             async _createWebComponent(resource) {
                 let fs = require('fs');
+                let promise = new Promise( function(resolve, reject) {
+                    let entryPoint = `${resource.location.path}${resource.location.name}`;
+                    if (fs.existsSync(entryPoint)) {
 
-                if (this.timeslot.dataReferences && this.timeslot.dataReferences.length > 0) {
-                    this.data  = this._computeDataInjector(
-                        await this._extractDataTimeslot(this.timeslot.dataReferences))
-                    ;
-                    /*
+                        if (!customElements.get(resource.wcName)) {
 
-                    TODO REMOVE
-                    console.log('Cosa cazzo ho computato', data);
-                    if (data === null || typeof data !== 'object') {
-                        console.error('data injector sbagliato', data);
-                        return;
+                            Polymer.importHref(
+                                entryPoint,
+                                () => { resolve(this._initWebComponent(resource.wcName)); }
+                            );
+                        } else {
+                            resolve(this._initWebComponent(resource.wcName));
+                        }
+
+                    } else {
+                        console.warn(`Web component entry point not found: ${entryPoint}`);
+                        reject(`Web component entry point not found: ${entryPoint}`);
+
                     }
-                    for (let property in data) {
-                        console.log('suca');
-                        this[property] = data[property];
-                    }
+                }.bind(this));
+                return promise;
+            }
 
-                    this.data = data;
-                    */
-                }
-
+            /**
+             * Create webview
+             *
+             * @private
+             * @param resource
+             * @return Element
+             */
+            async _createWebComponent2(resource) {
+                let fs = require('fs');
                 let promise = new Promise( function(resolve, reject) {
                     let entryPoint = `${resource.location.path}${resource.location.name}`;
                     if (fs.existsSync(entryPoint)) {
@@ -359,31 +369,23 @@
                 let element = document.createElement(name);
                 element.height = this.height;
                 element.width = this.width;
-                if (this.data !== null || typeof this.data === 'object') {
-                    for (let property in this.data) {
-                        console.log('INJECT IN WC', property, this.data[property]);
-                        element[property] = this.data[property];
+
+                if (Array.isArray(this.data)) {
+                    for (let cont = 0; this.data.length > cont; cont++) {
+
+                        if (this.data === null || typeof this.data !== 'object') {
+                            console.error('Wrong data for timeslot');
+                            continue;
+                        }
+
+                        for (let property in this.data[cont]) {
+                            console.log('INJECT IN WC', property, this.data[cont][property]);
+                            element[property] = this.data[cont][property];
+                        }
                     }
                 }
 
                 return element;
-            }
-
-            /**
-             * @data  {Array} data
-             * @return {Object}
-             */
-            _computeDataInjector(data) {
-                let decodeData = {};
-                for (let cont = 0; data.length > cont; cont++) {
-
-                    for (let key in data[cont]) {
-                        if (data[cont].hasOwnProperty(key)) {
-                            decodeData[key] = data[cont][key];
-                        }
-                    }
-                }
-                return decodeData;
             }
 
             disconnectedCallback() {
@@ -429,23 +431,6 @@
                     }
                     tags[cont].play();
                 }
-            }
-
-            /**
-             * @param {Array} dataReference
-             * @return {Promise}
-             * @private
-             */
-            _extractDataTimeslot(dataReference) {
-
-                let promises = [];
-
-                for (let cont = 0; dataReference.length > cont;  cont++) {
-                    let service = serviceManager.get('TimeslotDataInjectorService').get(dataReference[0].name);
-                    promises.push(service.getTimeslotData(dataReference[cont].data));
-                }
-
-                return Promise.all(promises);
             }
 
             /**

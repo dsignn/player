@@ -127,9 +127,10 @@ class TimeslotConfig extends PluginConfig {
                 if (evt.data.name ===  TimeslotConfig.NAME_SERVICE) {
 
                     let timeslotService = new TimeslotService(
-                        this.serviceManager.get('SenderPluginManager').get('timeslotSender'),
                         this.serviceManager.get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE),
-                        this.serviceManager.get('Timer')
+                        this.serviceManager.get('SenderPluginManager').get('timeslotSender'),
+                        this.serviceManager.get('Timer'),
+                        this.serviceManager.get('TimeslotDataInjectorService')
                     );
 
                     this.serviceManager.set('TimeslotService', timeslotService);
