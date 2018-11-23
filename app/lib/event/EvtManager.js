@@ -55,6 +55,15 @@ class EvtManager {
         }
     }
 
+    /**
+     * @param event
+     */
+    remove(event) {
+        if (Array.isArray(this.queues[event])) {
+            delete this.queues[event];
+        }
+    }
+
     _consoleDebug() {
         console.group();
         console.log('Number event', Object.keys(this.queues).length);

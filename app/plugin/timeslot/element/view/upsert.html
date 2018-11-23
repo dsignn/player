@@ -12,6 +12,7 @@
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip-icons.html">
+<link rel="import" href="../../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
 
 
@@ -27,135 +28,161 @@
             paper-dropdown-menu {
                 width: 100%;
             }
+
+            .left-container {
+                padding-left: 8px;
+            }
+
+            .deb1 {
+                background-color: deeppink;
+            }
+
+            .deb2 {
+                background-color: green;
+            }
+
+            paper-material {
+                background-color: #fffff0;
+                padding-left: 8px;
+                padding-right: 8px;
+            }
+
+
         </style>
         <slot name="header"></slot>
         <iron-form id="formTimeslot">
             <form method="post" action="">
-                <paper-input id="name" name="name" label="Name" value="{{timeslot.name}}" required></paper-input>
-                <paper-input id="duration" name="duration" label="Duration" type="number" min="1" value="{{timeslot.duration}}" required></paper-input>
-                <paper-autocomplete
-                        id="monitor"
-                        label="Monitor"
-                        text-property="name"
-                        value-property="name"
-                        text="{{timeslot.virtualMonitorReference.name}}"
-                        remote-source
-                        on-autocomplete-selected="_selectMonitor"
-                        on-autocomplete-change="_searcMonitorChanged">
-                    <template slot="autocomplete-custom-template">
-                        <style>
-                            :host {
-                                display: block;
-                            }
+                <div class="flex flex-horizontal">
+                    <div class="flex-basis-70">
+                        <paper-input id="name" name="name" label="Name" value="{{timeslot.name}}" required></paper-input>
+                        <paper-input id="duration" name="duration" label="Duration" type="number" min="1" value="{{timeslot.duration}}" required></paper-input>
+                        <paper-autocomplete
+                                id="monitor"
+                                label="Monitor"
+                                text-property="name"
+                                value-property="name"
+                                text="{{timeslot.virtualMonitorReference.name}}"
+                                remote-source
+                                on-autocomplete-selected="_selectMonitor"
+                                on-autocomplete-change="_searcMonitorChanged">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
 
-                            paper-item.account-item {
-                                padding: 8px 16px;
-                            }
+                                    paper-item.account-item {
+                                        padding: 8px 16px;
+                                    }
 
-                            .service-name {
-                                color: #333;
-                            }
+                                    .service-name {
+                                        color: #333;
+                                    }
 
-                            .service-description {
-                                margin-top: 4px;
-                                color: #999;
-                            }
-                        </style>
-                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                            <div>
-                                <div class="service-name">[[item.monitor.name]]</div>
-                                <div class="service-description">Width [[item.monitor.width]]px Height [[item.monitor.height]]px</div>
-                            </div>
-                            <paper-ripple></paper-ripple>
-                        </paper-item>
-                    </template>
-                </paper-autocomplete>
-                <paper-autocomplete
-                        id="resource"
-                        label="Resource"
-                        text-property="name"
-                        value-property="name"
-                        remote-source
-                        on-autocomplete-selected="_selectResource"
-                        on-autocomplete-change="_searchResourceChanged">
-                    <template slot="autocomplete-custom-template">
-                        <style>
-                            :host {
-                                display: block;
-                            }
+                                    .service-description {
+                                        margin-top: 4px;
+                                        color: #999;
+                                    }
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div>
+                                        <div class="service-name">[[item.monitor.name]]</div>
+                                        <div class="service-description">Width [[item.monitor.width]]px Height [[item.monitor.height]]px</div>
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                        <paper-autocomplete
+                                id="resource"
+                                label="Resource"
+                                text-property="name"
+                                value-property="name"
+                                remote-source
+                                on-autocomplete-selected="_selectResource"
+                                on-autocomplete-change="_searchResourceChanged">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
 
-                            paper-item.account-item {
-                                padding: 8px 16px;
-                            }
+                                    paper-item.account-item {
+                                        padding: 8px 16px;
+                                    }
 
-                            .service-name {
-                                color: #333;
-                            }
+                                    .service-name {
+                                        color: #333;
+                                    }
 
-                            .service-description {
-                                margin-top: 4px;
-                                color: #999;
-                            }
-                        </style>
-                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                            <div>
-                                <div class="service-name">[[item.name]]</div>
-                            </div>
-                            <paper-ripple></paper-ripple>
-                        </paper-item>
-                    </template>
-                </paper-autocomplete>
-                <div id="listResource"></div>
+                                    .service-description {
+                                        margin-top: 4px;
+                                        color: #999;
+                                    }
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div>
+                                        <div class="service-name">[[item.name]]</div>
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                        <div id="listResource"></div>
+                        <data-injector-input id="dataRefernces"></data-injector-input>
+                        <paper-chip-input values="{{timeslot.tags}}"></paper-chip-input>
+                        <paper-autocomplete
+                                id="bind"
+                                label="Bind timeslots"
+                                text-property="name"
+                                value-property="name"
+                                remote-source
+                                on-autocomplete-selected="_selectBind"
+                                on-autocomplete-change="_searchBindChanged">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
 
-                <paper-input id="blur-filter" name='filters["blur"]' label="Blur filter" value="{{timeslot.filters.blur}}"></paper-input>
-                <paper-input id="brightness-filter" name='filters["brightness"]' label="Brightness filter" value="{{timeslot.filters.brightness}}"></paper-input>
-                <paper-input id="contrast-filter" name='filters["contrast"]' label="Contrast filter" value="{{timeslot.filters.contrast}}"></paper-input>
-                <paper-input id="grayscale-filter" name='filters["grayscale"]' label="Grayscale filter" value="{{timeslot.filters.grayscale}}"></paper-input>
-                <paper-input id="hue-rotate-filter" name='filters["hueRotate"]' label="Grayscale filter" value="{{timeslot.filters.hueRotate}}"></paper-input>
-                <paper-input id="invert-filter" name='filters["invert"]' label="Invert filter" value="{{timeslot.filters.invert}}"></paper-input>
-                <paper-input id="opacity-filter" name='filters["opacity"]' label="Opacity filter" value="{{timeslot.filters.opacity}}"></paper-input>
-                <paper-input id="saturate-filter" name='filters["saturate"]' label="Saturate filter" value="{{timeslot.filters.saturate}}"></paper-input>
-                <paper-input id="sepia-filter" name='filters["sepia"]' label="Sepia filter" value="{{timeslot.filters.sepia}}"></paper-input>
-                <paper-input id="drop-shadow-filter" name='filters["dropShadow"]' label="Drop Shadow filter" value="{{timeslot.filters.dropShadow}}"></paper-input>
+                                    paper-item.account-item {
+                                        padding: 8px 16px;
+                                    }
 
-                <paper-chip-input values="{{timeslot.tags}}"></paper-chip-input>
-                <paper-autocomplete
-                        id="bind"
-                        label="Bind timeslots"
-                        text-property="name"
-                        value-property="name"
-                        remote-source
-                        on-autocomplete-selected="_selectBind"
-                        on-autocomplete-change="_searchBindChanged">
-                    <template slot="autocomplete-custom-template">
-                        <style>
-                            :host {
-                                display: block;
-                            }
+                                    .service-name {
+                                        color: #333;
+                                    }
 
-                            paper-item.account-item {
-                                padding: 8px 16px;
-                            }
-
-                            .service-name {
-                                color: #333;
-                            }
-
-                            .service-description {
-                                margin-top: 4px;
-                                color: #999;
-                            }
-                        </style>
-                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                            <div>
-                                <div class="service-name">[[item.name]]</div>
-                            </div>
-                            <paper-ripple></paper-ripple>
-                        </paper-item>
-                    </template>
-                </paper-autocomplete>
-                <div id="listBind"></div>
-                <data-injector-input id="dataRefernces"></data-injector-input>
+                                    .service-description {
+                                        margin-top: 4px;
+                                        color: #999;
+                                    }
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div>
+                                        <div class="service-name">[[item.name]]</div>
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                        <div id="listBind"></div>
+                    </div>
+                    <div class="flex-basis-30 left-container">
+                        <paper-material>
+                            <paper-input id="blur-filter" name='filters["blur"]' label="Blur filter" value="{{timeslot.filters.blur}}"></paper-input>
+                            <paper-input id="brightness-filter" name='filters["brightness"]' label="Brightness filter" value="{{timeslot.filters.brightness}}"></paper-input>
+                            <paper-input id="contrast-filter" name='filters["contrast"]' label="Contrast filter" value="{{timeslot.filters.contrast}}"></paper-input>
+                            <paper-input id="grayscale-filter" name='filters["grayscale"]' label="Grayscale filter" value="{{timeslot.filters.grayscale}}"></paper-input>
+                            <paper-input id="hue-rotate-filter" name='filters["hueRotate"]' label="Grayscale filter" value="{{timeslot.filters.hueRotate}}"></paper-input>
+                            <paper-input id="invert-filter" name='filters["invert"]' label="Invert filter" value="{{timeslot.filters.invert}}"></paper-input>
+                            <paper-input id="opacity-filter" name='filters["opacity"]' label="Opacity filter" value="{{timeslot.filters.opacity}}"></paper-input>
+                            <paper-input id="saturate-filter" name='filters["saturate"]' label="Saturate filter" value="{{timeslot.filters.saturate}}"></paper-input>
+                            <paper-input id="sepia-filter" name='filters["sepia"]' label="Sepia filter" value="{{timeslot.filters.sepia}}"></paper-input>
+                            <paper-input id="drop-shadow-filter" name='filters["dropShadow"]' label="Drop Shadow filter" value="{{timeslot.filters.dropShadow}}"></paper-input>
+                        </paper-material>
+                    </div>
+                </div>
                 <div>
                     <div class="flex flex-horizontal-end" style="margin-top: 20px;">
                         <paper-button on-tap="submitTimeslotButton">{{labelAction}}</paper-button>
@@ -323,7 +350,7 @@
                         service.getTimeslotData(dataReferences.data)
                             .then((data) => {
                                 this.$.dataRefernces.data = data;
-                                this.$.dataRefernces.$.dataInput.text = this.$.dataRefernces.service.extractMedatadaFromData(data);
+                                this.$.dataRefernces.$.dataInput.text = this.$.dataRefernces.service.extractMedatadaFromData(data, dataReferences);
                             });
 
                     }

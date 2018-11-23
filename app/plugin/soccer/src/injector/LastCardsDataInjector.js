@@ -89,6 +89,15 @@ class LastCardsDataInjector extends AbstractInjector {
     serviceNamespace () {
         return 'player';
     }
+
+    /**
+     * @param {Object} data
+     * @param {TimeslotDataReference} dataReference
+     * @return {Object}
+     */
+    extractMedatadaFromData(data, dataReference) {
+        return dataReference.data.name;
+    }
 }
 
 module.exports = LastCardsDataInjector;

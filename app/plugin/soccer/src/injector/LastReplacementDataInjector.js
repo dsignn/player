@@ -84,6 +84,15 @@ class LastReplacementDataInjector extends AbstractInjector {
     serviceNamespace () {
         return 'replacement';
     }
+
+    /**
+     * @param {Object} data
+     * @param {TimeslotDataReference} dataReference
+     * @return {Object}
+     */
+    extractMedatadaFromData(data, dataReference) {
+        return dataReference.data.name;
+    }
 }
 
 module.exports = LastReplacementDataInjector;

@@ -84,6 +84,15 @@ class BenchPlayersDataInjector extends AbstractInjector {
     serviceNamespace () {
         return 'players';
     }
+
+    /**
+     * @param {Object} data
+     * @param {TimeslotDataReference} dataReference
+     * @return {Object}
+     */
+    extractMedatadaFromData(data, dataReference) {
+        return dataReference.data.name;
+    }
 }
 
 module.exports = BenchPlayersDataInjector;

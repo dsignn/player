@@ -33,14 +33,14 @@ class TimeslotService {
         this.sender = sender ? sender : null;
 
         /**
-         * @type {Storage}
-         */
-        this.timeslotStorage = timeslotStorage ? timeslotStorage : null;
-
-        /**
          * @type {Timer}
          */
         this.timer = timer;
+
+        /**
+         * @type {Storage}
+         */
+        this.storage = timeslotStorage ? timeslotStorage : null;
 
         /**
          * @type {TimeslotDataInjectorServicePluginManager}
@@ -104,7 +104,7 @@ class TimeslotService {
         let isRunning = false;
         switch (true) {
             case this.runningTimeslots[`${timeslot.virtualMonitorReference.monitorId}-${Timeslot.CONTEXT_STANDARD}`] !== undefined &&
-                this.runningTimeslots[`${timeslot.virtualMonitorReference.monitorId}-${Playlist.CONTEXT_STANDARD}`].id === timeslot.id:
+                this.runningTimeslots[`${timeslot.virtualMonitorReference.monitorId}-${Timeslot.CONTEXT_STANDARD}`].id === timeslot.id:
                 isRunning = true;
                 break;
             case this.runningTimeslots[`${timeslot.virtualMonitorReference.monitorId}-${Timeslot.CONTEXT_OVERLAY}`] !== undefined &&
@@ -169,10 +169,12 @@ class TimeslotService {
 
                 timeslot.options.typeService = 'timeslot';
                 this._executeBids(timeslot, 'play');
-
                 this.sender.send(
                     TimeslotService.PLAY,
-                    {timeslot : timeslot, data: timeslotData}
+                    {
+                        timeslot : timeslot,
+                        data: timeslotData
+                    }
                 );
                 this.eventManager.fire(TimeslotService.PLAY, timeslot);
                 console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
@@ -186,8 +188,6 @@ class TimeslotService {
                 )
             }
         );
-
-
     }
 
     /**
@@ -291,7 +291,7 @@ class TimeslotService {
         this.setRunningTimeslot(evt.data);
         evt.data.status = Timeslot.RUNNING;
         evt.data.currentTime = 0;
-        this.timeslotStorage.update(evt.data)
+        this.storage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -304,7 +304,7 @@ class TimeslotService {
 
         evt.data.status = Timeslot.RUNNING;
         this.setRunningTimeslot(evt.data);
-        this.timeslotStorage.update(evt.data)
+        this.storage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -315,7 +315,7 @@ class TimeslotService {
         this.removeRunningTimeslot(evt.data);
         evt.data.status = Timeslot.PAUSE;
 
-        this.timeslotStorage.update(evt.data)
+        this.storage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -329,7 +329,7 @@ class TimeslotService {
 
         evt.data.status = Timeslot.IDLE;
         evt.data.currentTime = 0;
-        this.timeslotStorage.update(evt.data)
+        this.storage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -346,7 +346,7 @@ class TimeslotService {
 
             this.runningTimeslots[key].currentTime = parseFloat(Number(this.runningTimeslots[key].currentTime + 0.1).toFixed(2));
           //  this.runningTimeslots[key].currentTime++;
-            this.timeslotStorage.update(this.runningTimeslots[key])
+            this.storage.update(this.runningTimeslots[key])
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
         }

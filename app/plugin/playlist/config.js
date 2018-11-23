@@ -155,9 +155,10 @@ class PlaylistConfig extends PluginConfig {
             function (evt) {
                 if (evt.data.name === PlaylistConfig.NAME_SERVICE) {
                     let playlistService =  new PlaylistService(
-                        serviceManager.get('SenderPluginManager').get('playlistSender'),
                         serviceManager.get('StoragePluginManager').get(PlaylistConfig.NAME_SERVICE),
-                        serviceManager.get('Timer')
+                        serviceManager.get('SenderPluginManager').get('playlistSender'),
+                        serviceManager.get('Timer'),
+                        serviceManager.get('TimeslotDataInjectorService')
                     );
                     serviceManager.set('PlaylistService', playlistService);
                 }

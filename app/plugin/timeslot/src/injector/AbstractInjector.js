@@ -61,10 +61,11 @@ class AbstractInjector {
 
     /**
      * @param {Object} data
+     * @param {TimeslotDataReference} dataReference
      * @return {Object}
      */
-    extractMedatadaFromData(data) {
-        let nameSpace = this.extractNamespaceFromData(data);
+    extractMedatadaFromData(data, dataReference) {
+        let nameSpace = this._extractNamespaceFromData(data);
 
         if (!nameSpace[this.getTextProperty()]) {
             throw 'Text property data not found';
@@ -75,8 +76,9 @@ class AbstractInjector {
     /**
      * @param  {Object} data
      * @return {string}
+     * @private
      */
-    extractNamespaceFromData(data) {
+    _extractNamespaceFromData(data) {
         if (!data[this.serviceNamespace()]) {
             throw 'Name space data not found';
         }
