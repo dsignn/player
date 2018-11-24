@@ -38,19 +38,17 @@ class LastCardsDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-            let cards = this.soccerService.getTeam(data.name).getLastCardsOfPlayer();
-            if (Array.isArray(cards)) {
-                let result = {
-                    cards :cards
-                };
-
-                if (cards.length > 0 ) {
+            try {
+                let cards = this.soccerService.getTeam(data.name).getLastCardsOfPlayer();
+                let result = {};
+                if (Array.isArray(cards) && cards > 0) {
+                    result.cards = cards;
                     result.player = this.soccerService.getTeam(data.name).getPlayer(cards[0].playerId);
                 }
-
                 resolve(result);
+            } catch (e) {
+                reject(e);
             }
-            reject(cards);
         });
     }
 

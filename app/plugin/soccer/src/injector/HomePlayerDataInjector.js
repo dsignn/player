@@ -37,13 +37,17 @@ class HomePlayerDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-            let player = this.soccerService.getPlayer(MatchSoccer.HOME_TEAM, data.id);
-            if (player) {
+            try {
+                let player = this.soccerService.getPlayer(MatchSoccer.HOME_TEAM, data.id);
                 let result = {};
-                result[this.serviceNamespace()] = player;
+                if (player) {
+                    let result = {};
+                    result[this.serviceNamespace()] = player;
+                }
                 resolve(result);
+            } catch (e) {
+                reject(e);
             }
-            reject(player);
         });
     }
 

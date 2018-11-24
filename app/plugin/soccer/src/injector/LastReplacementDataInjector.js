@@ -38,15 +38,18 @@ class LastReplacementDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-            let replacemens = this.soccerService.getTeam(data.name).replacemens;
-            if (Array.isArray(replacemens)) {
+            try {
+                let replacemens = this.soccerService.getTeam(data.name).replacemens;
                 let result = {};
-                result[this.serviceNamespace()] = replacemens[0];
-                result.playerIn = this.soccerService.getTeam(data.name).getPlayer(replacemens[0].playerIdIn);
-                result.playerOut = this.soccerService.getTeam(data.name).getPlayer(replacemens[0].playerIdOut);
+                if (Array.isArray(replacemens) && replacemens.length > 0) {
+                    result[this.serviceNamespace()] = replacemens[0];
+                    result.playerIn = this.soccerService.getTeam(data.name).getPlayer(replacemens[0].playerIdIn);
+                    result.playerOut = this.soccerService.getTeam(data.name).getPlayer(replacemens[0].playerIdOut);
+                }
                 resolve(result);
+            } catch (e) {
+                reject(e);
             }
-            reject(players);
         });
     }
 

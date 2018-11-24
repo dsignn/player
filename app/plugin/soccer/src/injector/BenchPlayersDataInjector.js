@@ -38,7 +38,6 @@ class BenchPlayersDataInjector extends AbstractInjector {
      */
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
-
             try {
                 let result = {
                     players : this.soccerService.getTeam(data.name).getPlayers({bench : true})
