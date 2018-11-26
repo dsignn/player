@@ -26,6 +26,13 @@ class TimeslotDexieCollection extends DexieCollection {
                     case 'monitorId':
                         collection = table.where('virtualMonitorReference.monitorId').equals(search[property]);
                         break;
+                    case 'monitorId+name':
+                        collection = table.where('virtualMonitorReference.monitorId')
+                            .equals(search[property][0])
+                            .and(function(timeslot) {
+                                return timeslot.name.search(new RegExp(search[property][1], 'i')) > -1
+                            });
+                        break;
                 }
             }
         }

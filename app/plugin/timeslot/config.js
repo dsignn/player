@@ -159,6 +159,7 @@ class TimeslotConfig extends PluginConfig {
                                 "status",
                                 "duration",
                                 "virtualMonitorReference.monitorId",
+                                "[virtualMonitorReference.monitorId+name]",
                                 "*tags",
                                 "rotation"
                             ]

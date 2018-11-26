@@ -208,21 +208,24 @@
              * @private
              */
             _searchTimeslotChanged(evt) {
+                console.log('DAI TONI');
+
+                let search = {};
+                if (this.playlist.timeslots.length === 0) {
+                    search.name = evt.detail.value;
+                } else {
+                    search['monitorId+name'] = [
+                        this.playlist.timeslots[0].virtualMonitorReference.monitorId,
+                        evt.detail.value
+                    ]
+                }
                 // TODO refactor search
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
-                    .getAll()
+                    .getAll(search)
                     .then((data) => {
 
-                        let filter = data.filter(
-                            element => {
-                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
-                            }
-                        );
-
-                        evt.detail.target.suggestions(
-                            filter
-                        );
+                        evt.detail.target.suggestions(data);
                     })
                     .catch((err) => {
                             console.log(err)
