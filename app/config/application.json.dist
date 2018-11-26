@@ -184,7 +184,10 @@
         "src/SoccerService.js",
         "src/injector/HomePlayerDataInjector.js",
         "src/injector/GuestPlayerDataInjector.js",
-        "src/injector/BenchPlayersDataInjector.js"
+        "src/injector/BenchPlayersDataInjector.js",
+        "src/injector/LastCardsDataInjector.js",
+        "src/injector/LastGoalDataInjector.js",
+        "src/injector/LastReplacementDataInjector.js"
       ]
     }
   ]

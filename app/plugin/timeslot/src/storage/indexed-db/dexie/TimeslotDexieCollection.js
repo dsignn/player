@@ -23,6 +23,9 @@ class TimeslotDexieCollection extends DexieCollection {
                     case 'name':
                         collection = table.where(property).startsWithIgnoreCase(search[property]);
                         break;
+                    case 'monitorId':
+                        collection = table.where('virtualMonitorReference.monitorId').equals(search[property]);
+                        break;
                 }
             }
         }
