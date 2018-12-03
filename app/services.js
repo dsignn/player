@@ -5,6 +5,10 @@
  */
 const serviceManager = new ServiceManager();
 const fs = require('fs');
+const fsExtra = require('fs-extra')
+const archiver = require('archiver');
+const admZip = require('adm-zip');
+
 /**
  * inject default services
  */
@@ -80,5 +84,97 @@ serviceManager.set(
         let config = sm.get('Config');
 
         return new HttpClient(config.soccerApi.path, config.soccerApi.headers)
+    }
+).set(
+    'Backup',
+    function (sm) {
+
+        let serviceM = sm;
+        return {
+            archive: () => {
+                let archive = new Archive(
+                    'zip',
+                    `${__dirname}/backup/bk.zip`,
+                    { zlib: { level: 9 } }
+                );
+
+                archive.prepareArchive();
+
+                archive.appendDirectory(`${__dirname}/storage/resource`, 'resource');
+
+                let promises = [];
+                let storageServices = serviceM.get('StoragePluginManager').services;
+                for (let property in storageServices) {
+
+                    promises.push(archive.appendStorageData(property, storageServices[property]));
+                }
+
+                Promise.all(promises).then(
+                    () => {
+                        archive.archive();
+                    }
+                ).catch((error) => {
+                    console.log(error);
+                });
+            },
+
+            restore : (path) => {
+
+                let pathDirBk = `${__dirname}/storage/tmp/backup`;
+                let zip = new admZip(path);
+
+                fsExtra.emptyDirSync(pathDirBk);
+
+                zip.extractAllTo(pathDirBk, true);
+
+                fsExtra.move(`${pathDirBk}/resource`, `${__dirname}/storage/resource`, {overwrite:true}, (err) => {
+                    if (err) {
+                        return console.error(err)
+                    }
+
+                    console.info('Move Backup resource');
+                });
+
+                fs.readdir(pathDirBk, function(err, items) {
+
+
+                    for (let cont=0; cont < items.length; cont++) {
+
+                        let promises = [];
+                        if (items[cont].indexOf(".json") > 0) {
+                            fs.readFile(`${pathDirBk}/${items[cont]}`, (err, data) => {
+                                if (err) {
+                                    throw err;
+                                }
+
+                                try {
+                                    let jsonData = JSON.parse(data.toString());
+
+                                    if (jsonData.length > 0) {
+
+                                        let storage = serviceM.get('StoragePluginManager').get(items[cont].replace('.json', ''));
+                                        for (let contI = 0; jsonData.length > contI; contI++) {
+                                            promises.push(storage.update(storage.hydrator.hydrate(jsonData[contI])));
+                                        }
+
+                                    }
+                                } catch (e) {
+                                    throw e;
+                                }
+                            });
+                        }
+
+                        if (promises.length > 0) {
+                            Promise.all(promises).then(
+                                () => {
+                                    console.info('Storage import complete');
+                                }
+                            );
+                        }
+                    }
+                });
+
+            }
+        };
     }
 );

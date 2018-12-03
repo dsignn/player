@@ -7,9 +7,9 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
-<link rel="import" href="../../element/sideline/sideline.html">
+<link rel="import" href="../../element/sideline-resource/sideline-resource.html">
 
-<dom-module id="sideline-view-list">
+<dom-module id="sideline-view-resource-list">
     <template>
         <style include="global-layout"></style>
         <style include="global-style"></style>
@@ -22,8 +22,8 @@
 
         <slot name="header"></slot>
         <div hidden$="{{!hasSidelines}}">
-            <template is="dom-repeat" items="[[sidelines]]" as="sideline">
-                <sideline-wc sideline="{{sideline}}" on-update-view="displayUpdateView" on-remove="remove"></sideline-wc>
+            <template is="dom-repeat" items="[[sidelineResources]]" as="sidelineResource">
+                <sideline-resource-wc sideline-resource="{{sidelineResource}}" on-update-view="displayUpdateView" on-remove="remove"></sideline-resource-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
@@ -33,16 +33,16 @@
     </template>
 
     <script>
-        class ElementSidelineViewList extends Polymer.Element {
+        class ElementSidelineViewResourceList extends Polymer.Element {
 
             static get is() {
-                return 'sideline-view-list';
+                return 'sideline-view-resource-list';
             }
 
             static get properties() {
                 return {
 
-                    sidelines: {
+                    sidelineResources: {
                         type: Array,
                         value: []
                     },
@@ -83,13 +83,13 @@
             ready() {
                 super.ready();
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getSidelines.bind(this)
+                    .get(SidelineConfig.RESOURCE_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getSidelineResources.bind(this)
                 );
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getSidelines.bind(this)
+                    .get(SidelineConfig.RESOURCE_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getSidelineResources.bind(this)
                 );
             }
 
@@ -97,16 +97,19 @@
                 if (page === undefined || itemPerPage === undefined) {
                     return;
                 }
-                this._getSidelines();
+                this._getSidelineResources();
             }
 
-            _getSidelines() {
+            /**
+             *
+             */
+            _getSidelineResources() {
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(SidelineConfig.RESOURCE_SERVICE)
                     .getPaged(this.page, this.itemPerPage)
                     .then((data) => {
-                        this.set('sidelines', data);
+                        this.set('sidelineResources', data);
                         this.hasSidelines = data.length > 0;
                         this.totalItems = data.totalItems;
                     });
@@ -118,21 +121,21 @@
             remove(evt) {
 
                 let index = null;
-                this.sidelines.find((element, ind) => {
+                this.sidelineResources.find((element, ind) => {
                     if (element.id === evt.detail.id) {
                         index = ind;
                         return element;
                     }
                 });
 
-                this.splice('sidelines', index, 1);
-                this.hasSidelines = this.sidelines.length > 0;
+                this.splice('sidelineResources', index, 1);
+                this.hasSidelines = this.sidelineResources.length > 0;
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(SidelineConfig.RESOURCE_SERVICE)
                     .remove(evt.detail)
                     .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify('Remove sideline')
+                        serviceManager.get('PaperToastNotification').notify('Remove sideline resource')
                     });
             }
 
@@ -145,7 +148,7 @@
             }
         }
 
-        window.customElements.define(ElementSidelineViewList.is, ElementSidelineViewList);
+        window.customElements.define(ElementSidelineViewResourceList.is, ElementSidelineViewResourceList);
 
     </script>
 </dom-module>

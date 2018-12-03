@@ -45,9 +45,11 @@ class LocalStorage {
             let index = this._find(obj.id);
 
             if (index >= 0) {
-                this.data[index] = obj
-                this._persist();
+                this.data[index] = obj;
+            } else {
+                this.data.push(obj);
             }
+            this._persist();
 
             resolve(obj);
         });

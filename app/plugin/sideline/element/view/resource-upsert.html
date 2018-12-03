@@ -1,0 +1,507 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-icons.html">
+
+<link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../sideline-resource-generator/sideline-resource-generator.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="sideline-view-resource-upsert">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <slot name="header"></slot>
+        <iron-form id="formSidelineResource">
+            <form method="post" action="">
+                <div>
+                    <paper-input id="name" name="name" label="Name resource" value="{{sidelineResource.nameResource}}" required></paper-input>
+                    <div class="flex flex-horizontal">
+                        <paper-checkbox id="checkSingle" class="flex flex-vertical-end" style="padding-bottom: 10px; padding-right: 20px;" checked="{{hideSingleSection}}">
+                            Single row content
+                        </paper-checkbox>
+                        <paper-autocomplete
+                                style="flex: 1;"
+                                id="sideline"
+                                label="Sideline"
+                                text-property="name"
+                                value-property="name"
+                                remote-source
+                                on-autocomplete-selected="_selectSideline"
+                                on-autocomplete-change="_searctSidelineChanged"
+                                on-autocomplete-reset-blur="_resetSideline">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
+
+                                    paper-item.account-item {
+                                        padding: 8px 16px;
+                                    }
+
+                                    .service-name {
+                                        color: #333;
+                                    }
+
+                                    .service-description {
+                                        margin-top: 4px;
+                                        color: #999;
+                                    }
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div>
+                                        <div class="service-name">[[item.name]]</div>
+                                        <div class="service-description">Width [[item.width]]px Height
+                                            [[item.height]]px
+                                        </div>
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                    </div>
+                    <div hidden$="{{!hideResourceSection}}">
+                        <div id="single" hidden$="{{!hideSingleSection}}">
+                            <paper-autocomplete
+                                    style="flex: 1;"
+                                    id="singleResource"
+                                    label="Select resource"
+                                    text-property="name"
+                                    value-property="name"
+                                    remote-source
+                                    on-autocomplete-selected="_selectMultipleResource"
+                                    on-autocomplete-change="_searchResourceChanged">
+                                <template slot="autocomplete-custom-template">
+                                    <style>
+                                        :host {
+                                            display: block;
+                                        }
+
+                                        paper-item.account-item {
+                                            padding: 8px 16px;
+                                        }
+
+                                        .service-name {
+                                            color: #333;
+                                        }
+
+                                        .service-description {
+                                            margin-top: 4px;
+                                            color: #999;
+                                        }
+                                    </style>
+                                    <paper-item class="account-item" on-tap="_onSelect" role="option"
+                                                aria-selected="false">
+                                        <div>
+                                            <div class="service-name">[[item.name]]</div>
+                                            <div class="service-description">Width [[item.width]]px Height
+                                                [[item.height]]px
+                                            </div>
+                                        </div>
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                </template>
+                            </paper-autocomplete>
+                            <div id="singleSidelineResource" class="listClass"></div>
+                        </div>
+                        <div id="multi" hidden$="{{hideSingleSection}}">
+                            <div class="flex flex-horizontal">
+                                <template is="dom-repeat" items="[[sidelines]]" as="sideline">
+                                    <div class="flex-1" style="padding-right: 6px;" sideline="{{sideline}}" sidelinemultiresource>
+                                        <div class="flex flex-horizontal-center">{{sideline.name}}</div>
+                                        <paper-autocomplete
+                                                label="Select resource"
+                                                text-property="name"
+                                                value-property="name"
+                                                remote-source
+                                                on-autocomplete-selected="_selectMultipleResource"
+                                                on-autocomplete-change="_searchResourceChanged">
+                                            <template slot="autocomplete-custom-template">
+                                                <style>
+                                                    :host {
+                                                        display: block;
+                                                    }
+
+                                                    paper-item.account-item {
+                                                        padding: 8px 16px;
+                                                    }
+
+                                                    .service-name {
+                                                        color: #333;
+                                                    }
+
+                                                    .service-description {
+                                                        margin-top: 4px;
+                                                        color: #999;
+                                                    }
+                                                </style>
+                                                <paper-item class="account-item" on-tap="_onSelect" role="option"
+                                                            aria-selected="false">
+                                                    <div>
+                                                        <div class="service-name">[[item.name]]</div>
+                                                    </div>
+                                                    <paper-ripple></paper-ripple>
+                                                </paper-item>
+                                            </template>
+                                        </paper-autocomplete>
+                                        <div class="listClass"></div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex flex-horizontal-end" style="margin-top: 20px;">
+                        <paper-button on-tap="submitSidelineResourceButton">{{labelAction}}</paper-button>
+                    </div>
+                </div>
+            </form>
+        </iron-form>
+        <sideline-resource-generator-wc id="resourceGenerator" sideline="{{sideline}}">
+
+        </sideline-resource-generator-wc>
+        <paper-button on-tap="createResource">Create resource</paper-button>
+    </template>
+
+    <script>
+        class ElementSidelineViewResourceUpsert extends Polymer.Element {
+
+            static get is() {
+                return 'sideline-view-resource-upsert';
+            }
+
+            static get properties() {
+                return {
+                    sidelineResource: {
+                        type: Object,
+                        notify: true,
+                        value: new SidelineResource(),
+                        observer: '_changeSidelineResource'
+                    },
+
+                    sideline: {
+                        type: Object,
+                        readOnly: true,
+                        observer: '_changeSideline'
+                    },
+
+                    sidelines: {
+                        type: Array,
+                        readOnly: true,
+                        notify: true,
+                        value: []
+                    },
+
+                    hideResourceSection: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    hideSingleSection: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    labelAction: {
+                        type: String,
+                        notify: true,
+                        value: 'Save'
+                    }
+                }
+            }
+            ready() {
+                super.ready();
+
+                serviceManager.get('StoragePluginManager')
+                    .get(SidelineConfig.RESOURCE_SERVICE)
+                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
+                );
+
+                this.$.formSidelineResource.addEventListener('iron-form-presubmit', this.submitSidelineResource.bind(this));
+            }
+
+            /**
+             * @param newValue
+             */
+            _changeSideline(newValue) {
+
+                this.hideResourceSection = !!newValue;
+
+                if (!newValue) {
+                    return;
+                }
+
+                this._setSidelines(newValue.sidelines ? newValue.sidelines : []);
+                this.labelAction = newValue && newValue.id ? 'Update' : 'Save';
+            }
+
+            createResource() {
+                this.$.resourceGenerator.create();
+            }
+
+            /**
+             * @param newValue
+             */
+            _changeSidelineResource(newValue) {
+
+                if (!newValue || !newValue.id) {
+                    return;
+                }
+
+                let elementsToClear = this.shadowRoot.querySelectorAll('div.listClass');
+
+                for (let cont = 0; elementsToClear.length > cont; cont++) {
+                    while (elementsToClear[cont].firstChild) {
+                        elementsToClear[cont].removeChild(elementsToClear[cont].firstChild);
+                    }
+                }
+
+
+                serviceManager.get('StoragePluginManager')
+                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(newValue.sidelineReference.sidelineId)
+                    .then((data) => {
+
+                        this._setSideline(data);
+                        this.$.sideline.text = this.sideline.name;
+                        this.$.checkSingle.checked = newValue.isSingleSidelineResource();
+                        if (this.$.checkSingle.checked ) {
+                            for (let cont = 0; newValue.resourcesInSideline[0].resources.length > cont; cont++) {
+
+                                serviceManager.get('StoragePluginManager')
+                                    .get(ResourceConfig.NAME_SERVICE)
+                                    .get(newValue.resourcesInSideline[0].resources[cont])
+                                    .then((data) => {
+                                        this.$.singleSidelineResource.appendChild(this._createChip(data));
+                                    });
+                            }
+                        } else {
+
+                            setTimeout(
+                                () => {
+                                    let elements = this.shadowRoot.querySelectorAll('div[sidelinemultiresource]');
+                                    for (let cont = 0; elements.length > cont; cont++) {
+                                        let resources = this.sidelineResource.getArrayResourceFromSidelineResource(elements[cont].sideline);
+
+                                        for (let cont2 = 0; resources.length > cont2; cont2++) {
+
+                                            let elementToAppend = elements[cont].querySelector('div.listClass');
+                                            serviceManager.get('StoragePluginManager')
+                                                .get(ResourceConfig.NAME_SERVICE)
+                                                .get(resources[cont2])
+                                                .then((data) => {
+                                                    elementToAppend.appendChild(this._createChip(data));
+                                                });
+                                        }
+                                    }
+                                },
+                                300
+                            );
+                        }
+                    });
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectSideline(evt) {
+
+                this._setSideline(evt.detail.option);
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _resetSideline(evt) {
+
+                this._setSideline(null);
+            }
+
+            /**
+             * @param evt
+             */
+            _searctSidelineChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(SidelineConfig.NAME_SERVICE)
+                    .getAll({name: evt.detail.value})
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            _searchResourceChanged(evt) {
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .getAll({name: evt.detail.value})
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            _selectMultipleResource(evt) {
+                evt.target.parentElement
+                    .querySelector('div.listClass')
+                    .appendChild(this._createChip(evt.detail.option));
+
+                setTimeout(
+                    function () {
+                        this.clear();
+                    }.bind(evt.target),
+                    200
+                );
+
+            }
+
+            /**
+             * @param resource
+             * @return chip
+             * @private
+             */
+            _createChip(resource) {
+
+                let chip = document.createElement("paper-chip");
+                chip.setAttribute('removable', true);
+                chip.setAttribute('single-line', true);
+
+                let div = document.createElement("div");
+                div.setAttribute('slot', 'label');
+                div.innerHTML = resource.name;
+
+                chip.appendChild(div);
+                chip.resource = resource;
+
+                return chip;
+            }
+
+            /**
+             * @param evt
+             */
+            submitSidelineResourceButton() {
+                this.$.formSidelineResource.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitSidelineResource(evt) {
+                evt.preventDefault();
+
+                // TODO validation
+
+                this.sidelineResource.sidelineReference = this._generateSidelineReference(this.sideline);
+                this.sidelineResource.resourcesInSideline = [];
+                let paperChips =  [];
+                let resourcesInSideline = {};
+
+                if (this.$.checkSingle.checked) {
+
+                    this.sidelineResource.resourcesInSideline.push(
+                        this._generateResourceInSideline(
+                            this._generateSidelineReference(this.sideline),
+                            this.shadowRoot.querySelectorAll('#singleSidelineResource paper-chip')
+                        )
+                    );
+                } else {
+                    let elements = this.shadowRoot.querySelectorAll('div[sidelinemultiresource]');
+
+                    for (let cont = 0; elements.length > cont; cont++) {
+
+                        this.sidelineResource.resourcesInSideline.push(
+                            this._generateResourceInSideline(
+                                this._generateSidelineReference(elements[cont].sideline, this.sideline),
+                                elements[cont].querySelectorAll('paper-chip')
+                            )
+                        );
+                    }
+                }
+
+                let method = 'save';
+                if (this.sidelineResource.id) {
+                    method = 'update';
+                }
+
+                serviceManager.get('StoragePluginManager')
+                    .get(SidelineConfig.RESOURCE_SERVICE)[method](this.sidelineResource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' sideline resource');
+                    })
+                    .catch((err) => {
+                            console.error(err)
+                        }
+                    );
+            }
+
+            /**
+             * @param {Sideline} sideline
+             * @param {Sideline|null} parentSideline
+             * @return SidelineReference
+             * @private
+             */
+            _generateSidelineReference(sideline, parentSideline = null) {
+                let reference = new SidelineReference();
+                reference.sidelineId = sideline.id;
+                reference.name = sideline.name;
+                reference.sidelineParentId = (parentSideline !== null) ? parentSideline.id : null;
+                return reference;
+            }
+
+            /**
+             * @param {SidelineReference} sidelineReference
+             * @param paperChips
+             * @return Object
+             * @private
+             */
+            _generateResourceInSideline(sidelineReference, paperChips) {
+
+                let resourceInSideline = {
+                    sidelineReference : sidelineReference,
+                    resources : []
+                };
+
+                for (let cont = 0; paperChips.length > cont; cont++) {
+                    resourceInSideline.resources.push(paperChips[cont].resource.id);
+                }
+
+                return resourceInSideline;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _clearData(evt) {
+                this.$.name.value = null;
+                this.$.checkSingle.checked = false;
+                this.$.sideline.clear();
+                this._setSideline(null);
+            }
+        }
+
+        window.customElements.define(ElementSidelineViewResourceUpsert.is, ElementSidelineViewResourceUpsert);
+
+    </script>
+</dom-module>

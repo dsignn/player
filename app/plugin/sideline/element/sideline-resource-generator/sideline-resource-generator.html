@@ -51,10 +51,12 @@
                             <paper-ripple></paper-ripple>
                         </paper-item>
                     </template>
-
                 </paper-autocomplete>
                 <file-upload id="fileUpload" tmp-relative-path="/storage/tmp/" rename-single-file="sideline-resource"></file-upload>
                 <paper-progress id="progress" indeterminate class="slow red"></paper-progress>
+                <div hidden$="{{!hideSubSideline}}">
+                    suca
+                </div>
             </form>
         </iron-form>
     </template>
@@ -72,6 +74,7 @@
                     sideline: {
                         type: Object,
                         readOnly:true,
+                        observer: '_changeSideline'
                     },
 
                     path: {
@@ -88,7 +91,12 @@
                         type: Number,
                         readOnly:true,
                         value :1
-                    }
+                    },
+
+                    hideSubSideline: {
+                        type: Boolean,
+                        value : true
+                    },
                 };
             }
 
@@ -99,18 +107,20 @@
 
                 serviceManager.get('StoragePluginManager')
                     .get(SidelineConfig.NAME_SERVICE)
-                    .getAll()
+                    .getAll({name : evt.detail.value})
                     .then((data) => {
-                        let filter = data.filter(
-                            element => {
-                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
-                            }
-                        );
-
-                        evt.detail.target.suggestions(
-                            filter
-                        );
+                        evt.detail.target.suggestions(data);
                     });
+            }
+
+            /**
+             * @param newValue
+             */
+            _changeSideline(newValue) {
+                console.log('CAMBIATO');
+                if (newValue) {
+                    this.hideSubSideline = false;
+                }
             }
 
             /**
@@ -158,7 +168,7 @@
 
                             this.$.progress.style.display = 'none';
                             this.$.formResource.reset();
-                            this.$.fileUpload.clearName();
+                            this.$.fileUpload.reset();
                         }.bind(this));
 
                 });

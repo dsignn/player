@@ -10,6 +10,8 @@
   "configFile": "config.js",
   "autoloads": [
     "src/model/Sideline.js",
+    "src/model/SidelineReference.js",
+    "src/model/SidelineResource.js",
     "src/SidelineResourceGenerator.js",
     "src/ffmpg/SidelineMosaic.js"
   ],

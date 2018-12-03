@@ -1,9 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../css/global-layout.html">
 <link rel="import" href="../../css/global-styles.html">
 <link rel="import" href="element/view/list.html">
 <link rel="import" href="element/view/upsert.html">
+<link rel="import" href="element/view/resource-list.html">
+<link rel="import" href="element/view/resource-upsert.html">
 <link rel="import" href="element/sideline-resource-generator/sideline-resource-generator.html">
 
 <dom-module id="sideline-index">
@@ -16,50 +20,102 @@
                 padding: 16px;
             }
 
-        </style>
-        <iron-pages id="ironPages" selected="{{selected}}">
-            <div id="list">
-                <sideline-view-list selected="{{selected}}" resource-selected="{{sideline}}">
-                    <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
-                        <div>Lista file</div>
-                        <paper-icon-button
-                                class="circle"
-                                on-tap="displayAddView"
-                                icon="app:create"
-                                title="Crea risorsa">
-                        </paper-icon-button>
-                    </div>
-                </sideline-view-list>
-            </div>
-            <div id="add">
-                <sideline-view-upsert>
-                    <div slot="header" class="flex flex-horizontal flex-vertical-center header">
-                        <paper-icon-button
-                                icon="app:back"
-                                on-tap="displayListView"
-                                title="Torna alla lista delle configurazioni">
-                        </paper-icon-button>
-                        <div>Aggiungi fila</div>
-                    </div>
-                </sideline-view-upsert>
-            </div>
-            <div id="edit">
-                <sideline-view-upsert sideline="{{sideline}}">
-                    <div slot="header" class="flex flex-horizontal flex-vertical-center header">
-                        <paper-icon-button
-                                icon="app:back"
-                                on-tap="displayListView"
-                                title="Torna alla lista delle file">
-                        </paper-icon-button>
-                        <div>Modifica fila</div>
-                    </div>
-                </sideline-view-upsert>
-                <sideline-resource-generator-wc id="resourceGenerator" sideline="{{sideline}}">
+            #ironPages {
+                padding: 16px;
+            }
 
-                </sideline-resource-generator-wc>
-                <div class="flex flex-horizontal-end" style="margin-top: 20px;">
-                    <paper-button on-tap="createResource">Create resource</paper-button>
-                </div>
+            paper-tabs {
+                max-width: 400px;
+                margin: 16px 16px 0 16px;
+            }
+
+        </style>
+        <paper-tabs selected="{{selected}}" tabindex="0">
+            <paper-tab>Sideline </paper-tab>
+            <paper-tab>Sideline resource</paper-tab>
+        </paper-tabs>
+        <iron-pages id="ironPages" selected="{{selected}}">
+            <div>
+                <iron-pages id="ironPages" selected="{{viewSelected}}">
+                    <div id="list">
+                        <sideline-view-list selected="{{viewSelected}}" resource-selected="{{sideline}}">
+                            <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
+                                <div>Lista file</div>
+                                <paper-icon-button
+                                        class="circle"
+                                        on-tap="displayAddView"
+                                        icon="app:create"
+                                        title="Crea risorsa">
+                                </paper-icon-button>
+                            </div>
+                        </sideline-view-list>
+                    </div>
+                    <div id="add">
+                        <sideline-view-upsert>
+                            <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                                <paper-icon-button
+                                        icon="app:back"
+                                        on-tap="displayListView"
+                                        title="Torna alla lista delle configurazioni">
+                                </paper-icon-button>
+                                <div>Aggiungi fila</div>
+                            </div>
+                        </sideline-view-upsert>
+                    </div>
+                    <div id="edit">
+                        <sideline-view-upsert sideline="{{sideline}}">
+                            <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                                <paper-icon-button
+                                        icon="app:back"
+                                        on-tap="displayListView"
+                                        title="Torna alla lista delle file">
+                                </paper-icon-button>
+                                <div>Modifica fila</div>
+                            </div>
+                        </sideline-view-upsert>
+                    </div>
+                </iron-pages>
+            </div>
+            <div>
+                <iron-pages id="ironPages" selected="{{viewResourceSelected}}">
+                    <div id="listResource">
+                        <sideline-view-resource-list selected="{{viewResourceSelected}}" resource-selected="{{sidelineResource}}">
+                            <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
+                                <div>Lista risorse delle sideline</div>
+                                <paper-icon-button
+                                        class="circle"
+                                        on-tap="displayAddViewResource"
+                                        icon="app:create"
+                                        title="Crea risorsa">
+                                </paper-icon-button>
+                            </div>
+                        </sideline-view-resource-list>
+                    </div>
+                    <div id="addResource">
+                        <sideline-view-resource-upsert>
+                            <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                                <paper-icon-button
+                                        icon="app:back"
+                                        on-tap="displayListViewResource"
+                                        title="Torna alla lista delle configurazioni">
+                                </paper-icon-button>
+                                <div>Aggiungi Risorsa</div>
+                            </div>
+                        </sideline-view-resource-upsert>
+                    </div>
+                    <div id="editResource">
+                        <sideline-view-resource-upsert sideline-resource="{{sidelineResource}}">
+                            <div slot="header" class="flex flex-horizontal flex-vertical-center header">
+                                <paper-icon-button
+                                        icon="app:back"
+                                        on-tap="displayListViewResource"
+                                        title="Torna alla lista delle configurazioni">
+                                </paper-icon-button>
+                                <div>Modifica Risorsa</div>
+                            </div>
+                        </sideline-view-resource-upsert>
+                    </div>
+                </iron-pages>
             </div>
         </iron-pages>
     </template>
@@ -75,21 +131,35 @@
 
                     selected: {
                         type: Number,
+                        value: 1
+                    },
+
+                    viewSelected: {
+                        type: Number,
                         value: 0
+                    },
+
+                    viewResourceSelected: {
+                        type: Number,
+                        value: 1
                     }
                 }
             }
 
             displayAddView() {
-                this.selected = 1;
+                this.viewSelected = 1;
             }
 
             displayListView() {
-                this.selected = 0;
+                this.viewSelected = 0;
             }
 
-            createResource() {
-                this.$.resourceGenerator.create();
+            displayAddViewResource() {
+                this.viewResourceSelected = 1;
+            }
+
+            displayListViewResource() {
+                this.viewResourceSelected = 0;
             }
         }
 

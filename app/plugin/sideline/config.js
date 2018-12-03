@@ -15,7 +15,21 @@ class SidelineConfig extends PluginConfig {
      * @return {string}
      * @constructor
      */
+    static get RESOURCE_SERVICE() { return 'sideline.resource.service'; };
+
+    /**
+     *
+     * @return {string}
+     * @constructor
+     */
     static get NAME_STORAGE() { return 'sideline.data'; };
+
+    /**
+     *
+     * @return {string}
+     * @constructor
+     */
+    static get RESOURCE_STORAGE() { return 'sideline.resource.data'; };
 
     /**
      *
@@ -26,12 +40,24 @@ class SidelineConfig extends PluginConfig {
 
     /**
      *
+     * @return {string}
+     * @constructor
+     */
+    static get RESOURCE_COLLECTION() { return 'sideline-resource'; };
+
+    /**
+     *
      */
     init() {
         this._loadHydrator();
+        this._loadResourceHydrator();
         this._loadStorage();
+        this._loadResourceStorage();
     }
 
+    /**
+     * @private
+     */
     _loadStorage() {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
@@ -53,9 +79,11 @@ class SidelineConfig extends PluginConfig {
                      */
                     serviceManager.get('DexieManager').onReady(
                         function (evt) {
-                      
+
+                            let SidelineDexieCollection = require('../sideline/src/storage/indexed-db/dexie/SidelineDexieCollection');
+
                             let storage = new Storage(
-                                new DexieCollection(
+                                new SidelineDexieCollection(
                                     serviceManager.get('DexieManager'),
                                     SidelineConfig.NAME_COLLECTION
                                 ),
@@ -84,8 +112,51 @@ class SidelineConfig extends PluginConfig {
     }
 
     /**
-     *
-     * @return {PropertyHydrator}
+     * @private
+     */
+    _loadResourceStorage() {
+        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
+
+        serviceManager.eventManager.on(
+            ServiceManager.LOAD_SERVICE,
+            function(evt) {
+                if (evt.data.name === 'DexieManager') {
+                    serviceManager.get('DexieManager').pushSchema(
+                        {
+                            "name": SidelineConfig.RESOURCE_COLLECTION,
+                            "index": [
+                                "++id", "sidelineId", "resourceId"
+                            ]
+                        }
+                    );
+
+                    /**
+                     *
+                     */
+                    serviceManager.get('DexieManager').onReady(
+                        function (evt) {
+
+                            let storage = new Storage(
+                                new DexieCollection(
+                                    serviceManager.get('DexieManager'),
+                                    SidelineConfig.RESOURCE_COLLECTION
+                                ),
+                                serviceManager.get('HydratorPluginManager').get('sidelineResourceHydrator')
+                            );
+
+                            serviceManager.get('StoragePluginManager').set(
+                                SidelineConfig.RESOURCE_SERVICE,
+                                storage
+                            );
+
+                        }.bind(this)
+                    );
+                }
+            }.bind(this)
+        );
+    }
+
+    /**
      * @private
      */
     _loadHydrator() {
@@ -133,6 +204,33 @@ class SidelineConfig extends PluginConfig {
         this.serviceManager.get('HydratorPluginManager').set(
             'sidelineHydrator',
             sidelineHydrator
+        );
+    }
+
+    /**
+     * @private
+     */
+    _loadResourceHydrator() {
+        let sidelineResourceHydrator = new PropertyHydrator(
+            new SidelineResource(),
+            {
+                sidelineReference : new HydratorStrategy(new PropertyHydrator(new SidelineReference()))
+            },
+        );
+
+        sidelineResourceHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('nameResource')
+            .enableHydrateProperty('sidelineReference')
+            .enableHydrateProperty('resourcesInSideline');
+
+        sidelineResourceHydrator.enableExtractProperty('id')
+            .enableExtractProperty('nameResource')
+            .enableExtractProperty('sidelineReference')
+            .enableExtractProperty('resourcesInSideline');
+
+        this.serviceManager.get('HydratorPluginManager').set(
+            'sidelineResourceHydrator',
+            sidelineResourceHydrator
         );
     }
 }

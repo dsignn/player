@@ -208,7 +208,6 @@
              * @private
              */
             _searchTimeslotChanged(evt) {
-                console.log('DAI TONI');
 
                 let search = {};
                 if (this.playlist.timeslots.length === 0) {
@@ -219,12 +218,11 @@
                         evt.detail.value
                     ]
                 }
-                // TODO refactor search
+
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
                     .getAll(search)
                     .then((data) => {
-
                         evt.detail.target.suggestions(data);
                     })
                     .catch((err) => {

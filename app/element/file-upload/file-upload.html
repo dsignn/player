@@ -191,8 +191,12 @@
               }
           }
 
-          clearName() {
+          /**
+           * Reset component
+           */
+          reset() {
               this._setNameInput(null);
+              this.$.uploadInput.value = '';
           }
       }
 

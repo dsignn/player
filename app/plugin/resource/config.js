@@ -43,7 +43,7 @@ class ResourceConfig extends PluginConfig {
                         {
                             "name": ResourceConfig.NAME_COLLECTION,
                             "index": [
-                                "++id", "type", "size", "name"
+                                "++id", "type", "size", "name", "*tags"
                             ]
                         }
                     );
@@ -133,6 +133,7 @@ class ResourceConfig extends PluginConfig {
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
             .enableHydrateProperty('location')
+            .enableHydrateProperty('tags')
             .enableHydrateProperty('lastModified')
             .enableHydrateProperty('duration')
             .enableHydrateProperty('dimension');
@@ -142,6 +143,7 @@ class ResourceConfig extends PluginConfig {
             .enableExtractProperty('size')
             .enableExtractProperty('type')
             .enableExtractProperty('location')
+            .enableExtractProperty('tags')
             .enableExtractProperty('lastModified')
             .enableExtractProperty('duration')
             .enableExtractProperty('dimension');
@@ -164,6 +166,7 @@ class ResourceConfig extends PluginConfig {
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
             .enableHydrateProperty('location')
+            .enableHydrateProperty('tags')
             .enableHydrateProperty('lastModified')
             .enableHydrateProperty('dimension');
 
@@ -172,6 +175,7 @@ class ResourceConfig extends PluginConfig {
             .enableExtractProperty('size')
             .enableExtractProperty('type')
             .enableExtractProperty('location')
+            .enableExtractProperty('tags')
             .enableExtractProperty('lastModified')
             .enableExtractProperty('dimension');
 
@@ -193,6 +197,7 @@ class ResourceConfig extends PluginConfig {
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
             .enableHydrateProperty('location')
+            .enableHydrateProperty('tags')
             .enableHydrateProperty('lastModified')
             .enableHydrateProperty('duration');
 
@@ -201,6 +206,7 @@ class ResourceConfig extends PluginConfig {
             .enableExtractProperty('size')
             .enableExtractProperty('type')
             .enableExtractProperty('location')
+            .enableExtractProperty('tags')
             .enableExtractProperty('lastModified')
             .enableExtractProperty('duration');
 
@@ -222,6 +228,7 @@ class ResourceConfig extends PluginConfig {
             .enableHydrateProperty('size')
             .enableHydrateProperty('wcName')
             .enableHydrateProperty('type')
+            .enableHydrateProperty('tags')
             .enableHydrateProperty('location')
             .enableHydrateProperty('lastModified');
 
@@ -230,6 +237,7 @@ class ResourceConfig extends PluginConfig {
             .enableExtractProperty('size')
             .enableExtractProperty('wcName')
             .enableExtractProperty('type')
+            .enableExtractProperty('tags')
             .enableExtractProperty('location')
             .enableExtractProperty('lastModified');
 

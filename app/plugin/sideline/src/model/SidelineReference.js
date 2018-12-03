@@ -1,22 +1,17 @@
-/**
- *
- */
-class VirtualMonitorReference {
 
-    /**
-     *
-     */
+class SidelineReference {
+
     constructor() {
 
         /**
          * @type {null|string}
          */
-        this.monitorId = null;
+        this.sidelineId = null;
 
         /**
          * @type {null|string}
          */
-        this.virtualMonitorId = null;
+        this.sidelineParentId = null;
 
         /**
          * @type {null|string}
@@ -25,4 +20,4 @@ class VirtualMonitorReference {
     }
 }
 
-module.exports = VirtualMonitorReference;
+module.exports = SidelineReference;

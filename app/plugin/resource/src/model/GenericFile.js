@@ -8,6 +8,7 @@ class GenericFile {
         this.size = null;
         this.type = null;
         this.name = null;
+        this.tags = [];
     }
 
     /**
