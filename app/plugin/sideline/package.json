@@ -13,7 +13,9 @@
     "src/model/SidelineReference.js",
     "src/model/SidelineResource.js",
     "src/SidelineResourceGenerator.js",
-    "src/ffmpg/SidelineMosaic.js"
+    "src/SidelineResourceService.js",
+    "src/ffmpg/SidelineMosaic.js",
+    "src/ffmpg/Mosaic.js"
   ],
   "autoloadWs" : [],
   "widgets": [],

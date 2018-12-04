@@ -140,8 +140,6 @@
             submitResource(evt) {
                 evt.preventDefault();
 
-                console.log(this.resource);
-
                 let method = this.resource.id ? 'update' : 'save';
                 this.resource.type = this.$.type.selectedItem.getAttribute('value');
 

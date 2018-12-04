@@ -96,8 +96,6 @@ class SidelineResourceGenerator {
         complexFilter.push(`color=s=${8640}x${90}:c=${backgroundColor} [base0]`);
 
         command = command.addInput('test/2880x90.mp4');
-        command = command.addInput('test/2880x90.mp4');
-        command = command.addInput('test/2880x90.mp4');
 
         complexFilter.push({
             filter: 'setpts=PTS-STARTPTS',
@@ -129,6 +127,10 @@ class SidelineResourceGenerator {
             inputs: [`base${2}`, `block${2}`], outputs: `base${3}`
         });
         console.log('COMPLEX FILTER', complexFilter);
+
+        command = command.addInput('test/2880x90.mp4');
+        command = command.addInput('test/2880x90.mp4');
+
 
         command
             .complexFilter(complexFilter, 'base3')

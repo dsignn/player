@@ -162,7 +162,9 @@ function loadAppConfig () {
     }
     let appConfig = JSON.parse(fs.readFileSync(path, {'encoding': 'UTF8'}));
     if (appConfig && appConfig.monitorConfig) {
+
         monitorsWrapper = createWindowsPlayer(appConfig.monitorConfig);
+        console.log('PORCO DIO', monitorsWrapper);
     }
 }
 
@@ -211,7 +213,7 @@ ipcMain.on('change-monitors-configuration', (event, message) => {
 
     fs.writeFile(
         getMonitorConfigPath(),
-        JSON.stringify({'monitorConfig' : message}),
+        JSON.stringify({'monitorConfig' : message}, null, 4),
         function(err) {
             if(err) {
                 return console.log("ReloadMonitor save error: " + err);
@@ -275,7 +277,6 @@ ipcMain.on('update-enable-monitor-configuration', (event, message) => {
                     if (monitorsWrapper.monitors[cont].remove === true) {
                         monitorsWrapper.monitors[cont].browserWindows.close();
                         monitorsWrapper.removeMonitor(monitorsWrapper.monitors[cont]);
-                        console.log('remove widows')
                     }
                 }
             }
@@ -292,7 +293,7 @@ ipcMain.on('play-timeslot', (event, message) => {
              * start timeslot in current monitor setting
              */
             if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getMonitor(message.timeslot.virtualMonitorReference.monitorId)
+                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
                     .browserWindows
                     .send('play-timeslot', message);
             } else {
@@ -313,7 +314,7 @@ ipcMain.on('stop-timeslot', (event, message) => {
              * start timeslot in current monitor setting
              */
             if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getMonitor(message.timeslot.virtualMonitorReference.monitorId)
+                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
                     .browserWindows
                     .send('stop-timeslot', message);
             } else {
@@ -334,7 +335,7 @@ ipcMain.on('pause-timeslot', (event, message) => {
              * start timeslot in current monitor setting
              */
             if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getMonitor(message.timeslot.virtualMonitorReference.monitorId)
+                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.virtualMonitorId)
                     .browserWindows
                     .send('pause-timeslot', message);
             } else {
@@ -355,7 +356,7 @@ ipcMain.on('resume-timeslot', (event, message) => {
              * start timeslot in current monitor setting
              */
             if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getMonitor(message.timeslot.virtualMonitorReference.monitorId)
+                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
                     .browserWindows
                     .send('resume-timeslot', message);
             } else {

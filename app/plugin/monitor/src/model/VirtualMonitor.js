@@ -88,6 +88,22 @@ class VirtualMonitor {
     }
 
     /**
+     * @param id
+     * @return {*}
+     */
+    getFirstChildFromId(id) {
+
+        let monitor = null;
+        for (let cont = 0; this.monitors.length > cont; cont++) {
+            if (this.monitors[cont].hasMonitor(id)) {
+                monitor = this.monitors[cont];
+                break;
+            }
+        }
+        return monitor;
+    }
+
+    /**
      * @param {string} id
      * @returns {boolean}
      */

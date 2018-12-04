@@ -149,6 +149,12 @@ class SidelineConfig extends PluginConfig {
                                 storage
                             );
 
+                            serviceManager.set('SidelineResourceService', new SidelineResourceService(
+                                serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
+                                serviceManager.get('StoragePluginManager').get(SidelineConfig.NAME_SERVICE),
+                                serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE)
+                            ));
+
                         }.bind(this)
                     );
                 }

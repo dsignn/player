@@ -37,10 +37,10 @@ class Sideline {
      */
     getSidelines(options) {
         let sidelines = this.sidelines;
-        if (options.isNested !== true) {
+        if (options && options.nested !== true) {
             sidelines = sidelines.concat(this);
         }
-        options.isNested = true;
+
         if (options && typeof options === 'object' && options.nested) {
             for (let cont = 0; this.sidelines.length > cont; cont++) {
                 if (typeof this.sidelines[cont].getSidelines === "function") {
@@ -52,6 +52,24 @@ class Sideline {
             }
         }
         return sidelines;
+    }
+
+    /**
+     * @param id
+     * @returns {*}
+     */
+    getSideline(id) {
+        let sidelines = this.getSidelines({nested:true});
+
+        if (this.id === id) {
+            return this;
+        }
+
+        return sidelines.find(
+            (element) => {
+                return element.id === id;
+            }
+        );
     }
 
 

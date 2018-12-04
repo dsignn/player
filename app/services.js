@@ -92,6 +92,7 @@ serviceManager.set(
         let serviceM = sm;
         return {
             archive: () => {
+                // TODO riscrivere
                 let archive = new Archive(
                     'zip',
                     `${__dirname}/backup/bk.zip`,
@@ -120,6 +121,7 @@ serviceManager.set(
 
             restore : (path) => {
 
+                // TODO riscrivere
                 let pathDirBk = `${__dirname}/storage/tmp/backup`;
                 let zip = new admZip(path);
 
