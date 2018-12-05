@@ -5,6 +5,9 @@
   "localoStorage": {
     "namespace": "Dsign"
   },
+    "backup" : {
+        "path": "/home/bastoni/Videos/"
+    },
   "tcpClient": {
     "port": 8002,
     "ip": "127.0.0.1"
@@ -127,10 +130,10 @@
         "src/model/Sideline.js",
         "src/model/SidelineReference.js",
         "src/model/SidelineResource.js",
+        "src/model/Mosaic.js",
         "src/SidelineResourceGenerator.js",
         "src/SidelineResourceService.js",
-        "src/ffmpg/SidelineMosaic.js",
-        "src/ffmpg/SidelineMosaic2.js"
+        "src/ffmpg/SidelineMosaic.js"
       ],
       "autoloadWs": [],
       "widgets": [],
