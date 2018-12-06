@@ -77,6 +77,29 @@ class Monitor {
     }
 
     /**
+     * @param {string} id
+     * @returns {Monitor|null}
+     */
+    getParent(id) {
+
+        let parent = null;
+        let parentRecursive = null;
+        if (this.monitors.length === 0) {
+            return null;
+        }
+
+        for (let cont = 0; this.monitors.length > cont; cont++) {
+            if (this.monitors[cont].id === id) {
+                return this;
+            } else {
+                parentRecursive = this.monitors[cont].getParent(id);
+                parent = (parentRecursive !== null) ? parentRecursive : parent;
+            }
+        }
+        return parent;
+    }
+
+    /**
      * @param {Monitor} monitor
      * @returns {VirtualMonitor}
      */
