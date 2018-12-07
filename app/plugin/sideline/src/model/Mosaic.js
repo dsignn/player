@@ -4,11 +4,11 @@
 class Mosaic {
 
     /**
-     * @param {Sideline} sideline
      * @param {Monitor} monitor
+     * @param {SidelineMosaicWrapper} sidelineMosaicWrapper
      * @param backgroundColor
      */
-    constructor(monitor, sideline, backgroundColor = 'black') {
+    constructor(monitor, sidelineMosaicWrapper, backgroundColor = 'black') {
 
         let ffmpeg = require('fluent-ffmpeg');
         this.command = new ffmpeg();
@@ -20,10 +20,10 @@ class Mosaic {
         this._monitor = monitor;
 
         /**
-         * @type {Sideline}
+         * @type {SidelineMosaicWrapper}
          * @private
          */
-        this._sideline = sideline;
+        this._sidelineMosaicWrapper= sidelineMosaicWrapper;
 
         /**
          * @type String

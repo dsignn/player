@@ -12,10 +12,11 @@
     "src/model/Sideline.js",
     "src/model/SidelineReference.js",
     "src/model/SidelineResource.js",
+    "src/model/SidelineMosaicWrapper.js",
+    "src/model/Mosaic.js",
     "src/SidelineResourceGenerator.js",
     "src/SidelineResourceService.js",
-    "src/ffmpg/SidelineMosaic.js",
-    "src/ffmpg/Mosaic.js"
+    "src/ffmpg/SidelineMosaic.js"
   ],
   "autoloadWs" : [],
   "widgets": [],

@@ -49,10 +49,12 @@ class SidelineConfig extends PluginConfig {
      *
      */
     init() {
+        this._loadSidelineMosaicWrapperHydrator();
         this._loadHydrator();
         this._loadResourceHydrator();
         this._loadStorage();
         this._loadResourceStorage();
+
     }
 
     /**
@@ -152,7 +154,8 @@ class SidelineConfig extends PluginConfig {
                             serviceManager.set('SidelineResourceService', new SidelineResourceService(
                                 serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
                                 serviceManager.get('StoragePluginManager').get(SidelineConfig.NAME_SERVICE),
-                                serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE)
+                                serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE),
+                                serviceManager.get('HydratorPluginManager').get('sidelineMosaicWrapperHydrator')
                             ));
 
                         }.bind(this)
@@ -237,6 +240,60 @@ class SidelineConfig extends PluginConfig {
         this.serviceManager.get('HydratorPluginManager').set(
             'sidelineResourceHydrator',
             sidelineResourceHydrator
+        );
+    }
+
+    /**
+     * @private
+     */
+    _loadSidelineMosaicWrapperHydrator() {
+        let monitorHydrator = new PropertyHydrator(
+            new Monitor(),
+        );
+
+        monitorHydrator.enableHydrateProperty('id')
+            .enableExtractProperty('id');
+
+        let sidelineHydrator = new PropertyHydrator(
+            new SidelineMosaicWrapper(),
+            {
+                width: new NumberStrategy(),
+                height: new NumberStrategy(),
+                virtualMonitorReference : new HydratorStrategy(new PropertyHydrator(new VirtualMonitorReference())),
+            }
+        );
+
+        sidelineHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('width')
+            .enableHydrateProperty('height')
+            .enableHydrateProperty('offsetX')
+            .enableHydrateProperty('offsetY')
+            .enableHydrateProperty('widthReaming')
+            .enableHydrateProperty('virtualMonitorReference')
+            .enableHydrateProperty('sidelines');
+
+        sidelineHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('width')
+            .enableExtractProperty('height')
+            .enableExtractProperty('offsetY')
+            .enableExtractProperty('widthReaming')
+            .enableExtractProperty('virtualMonitorReference')
+            .enableExtractProperty('sidelines');
+
+
+        sidelineHydrator.addStrategy(
+            'monitor',
+            new HydratorStrategy(monitorHydrator)
+        ).addStrategy(
+            'sidelines',
+            new HydratorStrategy(sidelineHydrator)
+        );
+
+        this.serviceManager.get('HydratorPluginManager').set(
+            'sidelineMosaicWrapperHydrator',
+            sidelineHydrator
         );
     }
 }

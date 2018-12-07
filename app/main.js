@@ -335,7 +335,7 @@ ipcMain.on('pause-timeslot', (event, message) => {
              * start timeslot in current monitor setting
              */
             if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.virtualMonitorId)
+                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
                     .browserWindows
                     .send('pause-timeslot', message);
             } else {

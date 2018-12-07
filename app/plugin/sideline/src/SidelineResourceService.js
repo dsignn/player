@@ -6,12 +6,29 @@ class SidelineResourceService {
      * @param {Storage} storageMonitor
      * @param {Storage} storageSideline
      * @param {Storage} storageResource
+     * @param {AbstractHydrator} sidelineMosaicWrapperhydrator
      */
-    constructor(storageMonitor, storageSideline, storageResource) {
+    constructor(storageMonitor, storageSideline, storageResource, sidelineMosaicWrapperhydrator) {
 
+        /**
+         * @type {Storage}
+         */
         this.storageMonitor = storageMonitor;
+
+        /**
+         * @type {Storage}
+         */
         this.storageSideline = storageSideline;
+
+        /**
+         * @type {Storage}
+         */
         this.storageResource = storageResource;
+
+        /**
+         * @type {AbstractHydrator}
+         */
+        this.sidelineMosaicWrapperhydrator = sidelineMosaicWrapperhydrator;
     }
 
     /**
@@ -20,10 +37,13 @@ class SidelineResourceService {
     async generateResource(sidelineResource) {
 
         let sideline = await this.storageSideline.get(sidelineResource.sidelineReference.sidelineId);
-        let virtualContainer = await this.storageMonitor.get(sideline.virtualMonitorReference.virtualMonitorId);
-        let monitor = virtualContainer.getMonitor(sideline.virtualMonitorReference.monitorId);
+        let sidelineMosaicWrapper = this.sidelineMosaicWrapperhydrator.hydrate(
+            this.sidelineMosaicWrapperhydrator.extract(sideline)
+        );
+        let virtualContainer = await this.storageMonitor.get(sidelineMosaicWrapper.virtualMonitorReference.virtualMonitorId);
+        let monitor = virtualContainer.getMonitor(sidelineMosaicWrapper.virtualMonitorReference.monitorId);
 
-        let mosaic = new Mosaic(monitor, sideline);
+        let mosaic = new Mosaic(monitor, sidelineMosaicWrapper);
 
         dance:
         for (let cont = 0; sidelineResource.resourcesInSideline.length > cont; cont++) {
@@ -36,7 +56,7 @@ class SidelineResourceService {
 
                 mosaic.addResource(
                     resource,
-                    sideline.getSideline(sidelineResource.resourcesInSideline[cont].sidelineReference.sidelineId),
+                    sidelineMosaicWrapper.getSideline(sidelineResource.resourcesInSideline[cont].sidelineReference.sidelineId),
                 );
                 break dance;
             }
