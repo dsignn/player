@@ -90,14 +90,48 @@ serviceManager.set(
     function (sm) {
 
         let serviceM = sm;
+        let path = sm.get('Config').backup.path;
+        let listeners = {
+            progress: [],
+            close : []
+        };
+
         return {
+
+            /**
+             * @param event
+             * @param callback
+             */
+            addEventListener: (event, callback) => {
+                switch (event) {
+                    case 'progress' :
+                        listeners.progress.push(callback);
+                        break;
+                    case 'close' :
+                        listeners.close.push(callback);
+                        break
+                }
+            },
+
             archive: () => {
                 // TODO riscrivere
                 let archive = new Archive(
                     'zip',
-                    `${__dirname}/backup/bk.zip`,
+                    `${path}bk.zip`,
                     { zlib: { level: 9 } }
                 );
+
+                if (listeners.progress.length) {
+                    for (let cont = 0; listeners.progress.length > cont; cont++) {
+                        archive.addEventListener('progress', listeners.progress[cont]);
+                    }
+                }
+
+                if (listeners.close.length) {
+                    for (let cont = 0; listeners.close.length > cont; cont++) {
+                        archive.addEventListener('close', listeners.close[cont]);
+                    }
+                }
 
                 archive.prepareArchive();
 

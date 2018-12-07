@@ -164,7 +164,6 @@ function loadAppConfig () {
     if (appConfig && appConfig.monitorConfig) {
 
         monitorsWrapper = createWindowsPlayer(appConfig.monitorConfig);
-        console.log('PORCO DIO', monitorsWrapper);
     }
 }
 

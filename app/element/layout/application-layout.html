@@ -22,7 +22,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../../element/iconset/iconset.html">
-<link rel="import" href="../../element/internet/internet.html">
+<link rel="import" href="../icon/internet.html">
+<link rel="import" href="../icon/backup.html">
 
 <link rel="import" href="view/view-404.html">
 
@@ -82,12 +83,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 justify-content: center;
             }
 
+            .separator {
+                height: 100%;
+                width: 8px;
+            }
+
         </style>
         <app-header-layout>
             <app-header slot="header" fixed condenses effects="waterfall">
                 <app-toolbar>
                     <paper-icon-button icon="app:menu" on-click="toggle"></paper-icon-button>
                     <div main-title>{{nameApplication}}</div>
+                    <element-backup-icon></element-backup-icon>
+                    <div class="separator"></div>
                     <element-internet internet="vai toni"></element-internet>
                 </app-toolbar>
             </app-header>

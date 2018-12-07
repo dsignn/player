@@ -5,6 +5,9 @@
   "localoStorage": {
     "namespace": "Dsign"
   },
+    "backup" : {
+        "path": "/home/bastoni/Videos/"
+    },
   "tcpClient": {
     "port": 8002,
     "ip": "127.0.0.1"

@@ -1,0 +1,56 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="element-backup-icon">
+  <template>
+    <paper-icon-button id="backup" icon="app:backup" title="{{label}}" on-tap="backup"></paper-icon-button>
+  </template>
+
+  <script>
+      class ElementInternetIcon extends Polymer.Element {
+
+          static get is() { return 'element-backup-icon'; }
+
+          // Declare properties for the element's public API
+          static get properties() {
+              return {
+                  label : {
+                      type: String,
+                      value: 'Backup data'
+                  }
+              }
+          }
+
+          ready() {
+              super.ready();
+
+              serviceManager.get('Backup').addEventListener('progress', this.progress.bind(this));
+              serviceManager.get('Backup').addEventListener('close', this.close.bind(this));
+          }
+
+          /**
+           *
+           */
+          progress(evt) {
+              this.$.backup.disabled = true;
+          }
+
+          /**
+           *
+           */
+          close(evt) {
+              this.$.backup.disabled = false;
+          }
+
+          /**
+           * @param evt
+           */
+          backup(evt) {
+              serviceManager.get('Backup').archive();
+          }
+      }
+
+      window.customElements.define(ElementInternetIcon.is, ElementInternetIcon);
+  </script>
+</dom-module>
