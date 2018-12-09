@@ -12,8 +12,10 @@
     "src/model/Sideline.js",
     "src/model/SidelineReference.js",
     "src/model/SidelineResource.js",
-    "src/model/SidelineMosaicWrapper.js",
-    "src/model/Mosaic.js",
+    "src/model/mosaic/MonitorMosaicWrapper.js",
+    "src/model/mosaic/SidelineMosaicWrapper.js",
+    "src/model/mosaic/ResourceMosaic.js",
+    "src/model/mosaic/Mosaic.js",
     "src/SidelineResourceGenerator.js",
     "src/SidelineResourceService.js",
     "src/ffmpg/SidelineMosaic.js"

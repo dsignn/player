@@ -49,12 +49,13 @@ class SidelineConfig extends PluginConfig {
      *
      */
     init() {
+        this._loadResourceMosaicHydrator();
+        this._loadMonitorMosaicWrapperHydrator();
         this._loadSidelineMosaicWrapperHydrator();
         this._loadHydrator();
         this._loadResourceHydrator();
         this._loadStorage();
         this._loadResourceStorage();
-
     }
 
     /**
@@ -155,7 +156,10 @@ class SidelineConfig extends PluginConfig {
                                 serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
                                 serviceManager.get('StoragePluginManager').get(SidelineConfig.NAME_SERVICE),
                                 serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE),
-                                serviceManager.get('HydratorPluginManager').get('sidelineMosaicWrapperHydrator')
+                                serviceManager.get('HydratorPluginManager').get('monitorMosaicWrapperHydrator'),
+                                serviceManager.get('HydratorPluginManager').get('sidelineMosaicWrapperHydrator'),
+                                serviceManager.get('HydratorPluginManager').get('resourceMosaicHydrator'),
+                                serviceManager.get('HydratorPluginManager').get('monitorHydrator')
                             ));
 
                         }.bind(this)
@@ -267,9 +271,7 @@ class SidelineConfig extends PluginConfig {
             .enableHydrateProperty('name')
             .enableHydrateProperty('width')
             .enableHydrateProperty('height')
-            .enableHydrateProperty('offsetX')
-            .enableHydrateProperty('offsetY')
-            .enableHydrateProperty('widthReaming')
+            .enableHydrateProperty('comutedWidth')
             .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('sidelines');
 
@@ -277,8 +279,7 @@ class SidelineConfig extends PluginConfig {
             .enableExtractProperty('name')
             .enableExtractProperty('width')
             .enableExtractProperty('height')
-            .enableExtractProperty('offsetY')
-            .enableExtractProperty('widthReaming')
+            .enableExtractProperty('comutedWidth')
             .enableExtractProperty('virtualMonitorReference')
             .enableExtractProperty('sidelines');
 
@@ -294,6 +295,86 @@ class SidelineConfig extends PluginConfig {
         this.serviceManager.get('HydratorPluginManager').set(
             'sidelineMosaicWrapperHydrator',
             sidelineHydrator
+        );
+    }
+
+    /**
+     * @private
+     */
+    _loadMonitorMosaicWrapperHydrator() {
+
+        let monitorMosaicWrapperHydrator = new PropertyHydrator(
+            new MonitorMosaicWrapper(),
+            {
+                width: new NumberStrategy(),
+                height: new NumberStrategy(),
+                virtualMonitorReference : new HydratorStrategy(new PropertyHydrator(new VirtualMonitorReference())),
+            }
+        );
+
+        monitorMosaicWrapperHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('width')
+            .enableHydrateProperty('height')
+            .enableHydrateProperty('progressOffsetX')
+            .enableHydrateProperty('progressOffsetY')
+            .enableHydrateProperty('comutedWidth')
+            .enableHydrateProperty('virtualMonitorReference')
+            .enableHydrateProperty('monitors');
+
+        monitorMosaicWrapperHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('width')
+            .enableExtractProperty('height')
+            .enableExtractProperty('progressOffsetX')
+            .enableExtractProperty('progressOffsetY')
+            .enableExtractProperty('comutedWidth')
+            .enableExtractProperty('virtualMonitorReference')
+            .enableExtractProperty('monitors');
+
+
+        monitorMosaicWrapperHydrator.addStrategy(
+            'monitors',
+            new HydratorStrategy(monitorMosaicWrapperHydrator)
+        );
+
+        this.serviceManager.get('HydratorPluginManager').set(
+            'monitorMosaicWrapperHydrator',
+             monitorMosaicWrapperHydrator
+        );
+    }
+
+    /**
+     *
+     * @return {PropertyHydrator}
+     * @private
+     */
+    _loadResourceMosaicHydrator() {
+        let resourceMosaicHydrator = new PropertyHydrator(new ResourceMosaic());
+
+        resourceMosaicHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('size')
+            .enableHydrateProperty('type')
+            .enableHydrateProperty('location')
+            .enableHydrateProperty('tags')
+            .enableHydrateProperty('lastModified')
+            .enableHydrateProperty('dimension')
+            .enableHydrateProperty('computedWidth');
+
+        resourceMosaicHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('size')
+            .enableExtractProperty('type')
+            .enableExtractProperty('location')
+            .enableExtractProperty('tags')
+            .enableExtractProperty('lastModified')
+            .enableExtractProperty('dimension')
+            .enableExtractProperty('computedWidth');
+
+        this.serviceManager.get('HydratorPluginManager').set(
+            'resourceMosaicHydrator',
+            resourceMosaicHydrator
         );
     }
 }

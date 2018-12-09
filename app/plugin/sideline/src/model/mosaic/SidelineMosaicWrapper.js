@@ -9,19 +9,15 @@ class SidelineMosaicWrapper extends Sideline {
         /**
          * @type {Number|null}
          */
-        this.offsetX = null;
-
-        /**
-         * @type {Number|null}
-         */
-        this.offsetY = null;
-
-        /**
-         * @type {Number|null}
-         */
-        this.widthReaming = null;
+        this.comutedWidth = 0;
     }
 
+    /**
+     * @return {Number}
+     */
+    getRemainingWidth() {
+        return this.width - this.comutedWidth;
+    }
 }
 
 module.exports = SidelineMosaicWrapper;
