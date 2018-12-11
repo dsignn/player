@@ -10,6 +10,7 @@
     "src/model/Image.js",
     "src/model/Video.js",
     "src/model/Audio.js",
-    "src/model/SourcePath.js"
+    "src/model/SourcePath.js",
+    "src/model/LocationPath.js"
   ]
 }

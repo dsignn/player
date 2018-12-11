@@ -3,6 +3,7 @@ class GenericFile {
 
     constructor() {
 
+        // TODO REMOVE
         this._path = require('path');
 
         /**
@@ -33,7 +34,21 @@ class GenericFile {
         /**
          * @type {null}
          */
-        this.tmpSourcePath = null;
+        this._tmpSourcePath = null;
+    }
+
+    /**
+     * @param tmpSourcePath
+     */
+    setTmpSourcePath(tmpSourcePath) {
+        this._tmpSourcePath = tmpSourcePath;
+    }
+
+    /**
+     * @return {SourcePath|null}
+     */
+    getTmpSourcePath() {
+        return this._tmpSourcePath;
     }
 
     /**

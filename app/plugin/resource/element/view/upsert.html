@@ -50,7 +50,7 @@
                     resource: {
                         type: Object,
                         notify: true,
-                        value: {},
+                        value: new GenericFile(),
                         observer: '_resourceChanged'
                     },
 
@@ -84,17 +84,16 @@
 
                 let file = this.$.fileUpload.files[0];
 
-                if (this.resource.id) {
-                    serviceManager.get('HydratorPluginManager').get('resourceHydrator').referenceObject = this.resource;
+                if (file) {
+                    this.resource = serviceManager.get('HydratorPluginManager').get('resourceHydrator').hydrate(file);
+                    this.resource.setTmpSourcePath(new SourcePath(file.path));
                 }
 
-                let resource = serviceManager.get('HydratorPluginManager').get('resourceHydrator').hydrate(file);
-                resource.id = this.resource.id;
-                resource.name = this.$.name.value;
+                this.resource.name = this.$.name.value;
 
                 let method = this.resource.id ? 'update' : 'save';
                 serviceManager.get('StoragePluginManager')
-                    .get(ResourceConfig.NAME_SERVICE)[method](resource)
+                    .get(ResourceConfig.NAME_SERVICE)[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' resource');
                     })

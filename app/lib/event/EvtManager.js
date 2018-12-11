@@ -22,6 +22,7 @@ class EvtManager {
     /**
      * @param event
      * @param action
+     * @return {EvtManager}
      */
     on(event, action) {
 
@@ -30,6 +31,8 @@ class EvtManager {
         }
 
         this.queues[event].push(new EvtExecution(action));
+
+        return this;
     }
 
     /**
