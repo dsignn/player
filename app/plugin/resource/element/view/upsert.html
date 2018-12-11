@@ -85,11 +85,11 @@
                 let file = this.$.fileUpload.files[0];
 
                 if (file) {
-                    this.resource = serviceManager.get('HydratorPluginManager').get('resourceHydrator').hydrate(file);
-                    this.resource.setTmpSourcePath(new SourcePath(file.path));
+                    let resource = serviceManager.get('HydratorPluginManager').get('resourceHydrator').hydrate(file);
+                    resource.setTmpSourcePath(new SourcePath(file.path));
+                    resource.name = this.$.name.value;
+                    this.resource = resource;
                 }
-
-                this.resource.name = this.$.name.value;
 
                 let method = this.resource.id ? 'update' : 'save';
                 serviceManager.get('StoragePluginManager')

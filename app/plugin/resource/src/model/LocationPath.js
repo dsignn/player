@@ -23,8 +23,8 @@ class LocationPath {
     /**
      * @return {boolean}
      */
-    isRelPath() {
-
+    isAbsolute() {
+        return require('path').isAbsolute(`${this.path}${this.name}`);
     }
 }
 

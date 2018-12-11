@@ -70,11 +70,12 @@ class Storage extends HydratorAware {
     save(obj) {
 
         obj.id = Utils.uid;
-        let data = this.hydrator ? this.hydrator.extract(obj) : obj;
 
         let promise = new Promise((resolve, reject) => {
 
             this.eventManager.fire(Storage.STORAGE_PRE_SAVE, obj);
+
+            let data = this.hydrator ? this.hydrator.extract(obj) : obj;
 
             this.adapter.save(data)
                 .then(

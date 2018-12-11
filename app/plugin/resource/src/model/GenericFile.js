@@ -3,13 +3,10 @@ class GenericFile {
 
     constructor() {
 
-        // TODO REMOVE
-        this._path = require('path');
-
         /**
-         * @type {Object}
+         * @type {LocationPath|null}
          */
-        this.location = {};
+        this.location = null;
 
         /**
          * @type {Number|null}
@@ -57,7 +54,7 @@ class GenericFile {
     getPath() {
         let path = null;
         if (typeof this.location === 'object' && this.location !== null) {
-            path = this._path.normalize(this.location.path + this.location.name);
+            path = require('path').normalize(this.location.path + this.location.name);
         }
         return path;
     }

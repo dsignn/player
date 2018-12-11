@@ -6,7 +6,7 @@
     "namespace": "Dsign"
   },
   "backup" : {
-      "path": "/home/bastoni/Videos/"
+    "path": "/home/visa/Videos/"
   },
   "tcpClient": {
     "port": 8002,
@@ -62,7 +62,9 @@
         "src/model/GenericFile.js",
         "src/model/Image.js",
         "src/model/Video.js",
-        "src/model/Audio.js"
+        "src/model/Audio.js",
+        "src/model/LocationPath.js",
+        "src/model/SourcePath.js"
       ],
       "name": "resource"
     },

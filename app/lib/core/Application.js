@@ -56,6 +56,7 @@ class Application {
          */
         this.resourcePath = null;
 
+
         /**
          * @type {Object}
          */
@@ -172,6 +173,14 @@ class Application {
      */
     getResourcePath() {
         return this.resourcePath;
+    }
+
+    /**
+     * @returns {string}
+     */
+    getRelativeResourcePath() {
+        let relPath = this.resourcePath.replace(this.basePath, '');
+        return relPath.substr(1, relPath.length);
     }
 
     /**

@@ -152,19 +152,58 @@ class ResourceConfig extends PluginConfig {
     }
 
     onSaveRefactor(evt) {
-        console.log('suca toni');
+
         if (evt.data.getTmpSourcePath() === null) {
             return;
         }
 
         let fs = require('fs');
 
-        let rename = fs.renameSync(
+        fs.copyFileSync(
             evt.data.getTmpSourcePath().getSource(),
             `${serviceManager.get('Application').getResourcePath()}/${evt.data.id}.${evt.data.getExtension()}`
         );
 
-        console.log(rename);
+        evt.data.location.name = `${evt.data.id}${require('path').extname(evt.data.location.name)}`;
+        evt.data.location.path = serviceManager.get('Application').getRelativeResourcePath();
+
+        if (evt.data.type === "application/zip") {
+
+            /*
+            let AdmZip = require('adm-zip');
+            let fs = require('fs');
+            let pathResource = `${serviceManager.get('Application').getResourcePath()}/${evt.data.id}`;
+
+            let zip =  new AdmZip(evt.data.getPath());
+            zip.extractAllTo(pathResource, true);
+            Utils.move(evt.data.getPath(), `${pathResource}/${evt.data.id}.${evt.data.getExtension()}`);
+
+            if (fs.existsSync(`${pathResource}/package.json`)) {
+                let wcConfig = JSON.parse(
+                    fs.readFileSync(`${pathResource}/package.json`).toString()
+                );
+
+                if (wcConfig.main === undefined) {
+                    console.error('Main property not set in package json');
+                    // TODO Exception
+                    return;
+                }
+
+                evt.data.location.name = wcConfig.main;
+                evt.data.location.path = `${pathResource}/`;
+                evt.data.type = 'text/html';
+                evt.data.wcName = wcConfig.name;
+            } else {
+                // TODO error
+            }
+            */
+        }
+
+        console.log('ottimo');
+    }
+
+    _extractZip(resource) {
+
     }
 
     /**
@@ -291,7 +330,12 @@ class ResourceConfig extends PluginConfig {
      * @private
      */
     _loadVideoHydrator() {
-        let videoHydrator = new PropertyHydrator(new Video());
+        let videoHydrator = new PropertyHydrator(
+            new Video(),
+            {
+                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+            }
+        );
         videoHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
@@ -324,7 +368,13 @@ class ResourceConfig extends PluginConfig {
      * @private
      */
     _loadImageHydrator() {
-        let imageHydrator = new PropertyHydrator(new Image());
+        let imageHydrator = new PropertyHydrator(
+            new Image(),
+            {
+                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+            }
+        )
+        ;
         imageHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
@@ -355,7 +405,13 @@ class ResourceConfig extends PluginConfig {
      * @private
      */
     _loadAudioHydrator() {
-        let imageHydrator = new PropertyHydrator(new Audio());
+        let imageHydrator = new PropertyHydrator(
+            new Audio(),
+            {
+                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+            }
+        );
+
         imageHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
@@ -385,7 +441,12 @@ class ResourceConfig extends PluginConfig {
      * @private
      */
     _loadZipHydrator() {
-        let genericHydrator = new PropertyHydrator(new GenericFile());
+        let genericHydrator = new PropertyHydrator(
+            new GenericFile(),
+            {
+                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+            }
+        );
 
         genericHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
