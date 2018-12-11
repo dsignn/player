@@ -6,7 +6,7 @@
     "namespace": "Dsign"
   },
   "backup" : {
-    "path": "/home/visa/Videos/"
+      "path": "/home/bastoni/Videos/"
   },
   "tcpClient": {
     "port": 8002,
@@ -120,8 +120,8 @@
       ]
     },
     {
-      "name": "sideline",
-      "label": "Sideline",
+      "name": "video-panel",
+      "label": "Video panel",
       "customeStyle": {
         "color": " green"
       },
@@ -135,13 +135,13 @@
         "src/model/mosaic/ResourceMosaic.js",
         "src/model/mosaic/Mosaic.js",
         "src/SidelineResourceGenerator.js",
-        "src/SidelineResourceService.js",
+        "src/VideoPanelResourceService.js",
         "src/ffmpg/SidelineMosaic.js"
       ],
       "autoloadWs": [],
       "widgets": [],
-      "icon": "app:sideline",
-      "nameWc": "sideline-index"
+      "icon": "app:video-panel",
+      "nameWc": "video-panel-index"
     },
     {
       "icon": "app:devices",

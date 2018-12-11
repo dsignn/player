@@ -4,11 +4,36 @@ class GenericFile {
     constructor() {
 
         this._path = require('path');
+
+        /**
+         * @type {Object}
+         */
         this.location = {};
+
+        /**
+         * @type {Number|null}
+         */
         this.size = null;
+
+        /**
+         * @type {null}
+         */
         this.type = null;
+
+        /**
+         * @type {string|null}
+         */
         this.name = null;
+
+        /**
+         * @type {Array}
+         */
         this.tags = [];
+
+        /**
+         * @type {null}
+         */
+        this.tmpSourcePath = null;
     }
 
     /**

@@ -4,19 +4,56 @@
 class Monitor {
 
     constructor() {
-        this.name    = null;
+
+        /**
+         * @type {string|null}
+         */
+        this.name = null;
+
+        /**
+         * @type {Number}
+         */
         this.height  = 0;
+
+        /**
+         * @type {Number}
+         */
         this.width   = 0;
+
+        /**
+         * @type {Number}
+         */
         this.offsetX = 0;
+
+        /**
+         * @type {Number}
+         */
         this.offsetY = 0;
+
+        /**
+         * @type {boolean}
+         */
+        this.alwaysOnTop = false;
+
+        /**
+         * @type {String}
+         */
         this.backgroundColor = 'transparent';
+
         /**
          * TODO now string but in the future will be an array of point
          * @type {null}
          */
         this.polygon = null;
+
+        /**
+         * @type {Array}
+         */
         this.monitors = [];
 
+        /**
+         * @type {string|null}
+         */
         this.defaultTimeslotId = null;
     }
 

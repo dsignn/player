@@ -7,9 +7,9 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
-<link rel="import" href="../../element/sideline-resource/sideline-resource.html">
+<link rel="import" href="../video-panel-resource/video-panel-resource.html">
 
-<dom-module id="sideline-view-resource-list">
+<dom-module id="video-panel-view-resource-list">
     <template>
         <style include="global-layout"></style>
         <style include="global-style"></style>
@@ -23,7 +23,7 @@
         <slot name="header"></slot>
         <div hidden$="{{!hasSidelines}}">
             <template is="dom-repeat" items="[[sidelineResources]]" as="sidelineResource">
-                <sideline-resource-wc sideline-resource="{{sidelineResource}}" on-update-view="displayUpdateView" on-remove="remove"></sideline-resource-wc>
+                <video-panel-resource-wc sideline-resource="{{sidelineResource}}" on-update-view="displayUpdateView" on-remove="remove"></video-panel-resource-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
@@ -33,10 +33,10 @@
     </template>
 
     <script>
-        class ElementSidelineViewResourceList extends Polymer.Element {
+        class ElementVideoPanelViewResourceList extends Polymer.Element {
 
             static get is() {
-                return 'sideline-view-resource-list';
+                return 'video-panel-view-resource-list';
             }
 
             static get properties() {
@@ -148,7 +148,7 @@
             }
         }
 
-        window.customElements.define(ElementSidelineViewResourceList.is, ElementSidelineViewResourceList);
+        window.customElements.define(ElementVideoPanelViewResourceList.is, ElementVideoPanelViewResourceList);
 
     </script>
 </dom-module>

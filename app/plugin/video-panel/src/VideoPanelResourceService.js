@@ -1,5 +1,5 @@
 
-class SidelineResourceService {
+class VideoPanelResourceService {
 
     /**
      *
@@ -61,10 +61,24 @@ class SidelineResourceService {
      */
     async generateResource(sidelineResource) {
 
+        /**
+         * @type {Sideline}
+         */
         let sideline = await this.storageSideline.get(sidelineResource.sidelineReference.sidelineId);
+
+        /**
+         * @type VirtualMonitor
+         */
         let virtualContainer = await this.storageMonitor.get(sideline.virtualMonitorReference.virtualMonitorId);
+
+        /**
+         * @type {SidelineMosaicWrapper}
+         */
         let sidelineMosaicWrapper =  this.sidelineMosaicWrapperhydrator.hydrate(this.storageSideline.hydrator.extract(sideline));
 
+        /**
+         * @type {Mosaic}
+         */
         let mosaic = new Mosaic(
             this.monitorMosaicWrapperhydrator.hydrate(this.monitorHydrator.extract(
                 virtualContainer.getMonitor(sideline.virtualMonitorReference.monitorId))
@@ -72,25 +86,52 @@ class SidelineResourceService {
             sidelineMosaicWrapper
         );
 
-        dance:
+   //     dance:
         for (let cont = 0; sidelineResource.resourcesInSideline.length > cont; cont++) {
+            console.log('DIOAAAAA', sidelineResource.resourcesInSideline[cont]);
 
-            let listResources = sidelineResource.resourcesInSideline[cont].resources ? sidelineResource.resourcesInSideline[cont].resources : [];
-            // TODO while le resource colmano la riga
-            for (let cont2 = 0; listResources.length > cont2; cont2++) {
+            /**
+             * @type {Object}
+             * TODO cambiare oggetto
+             * { resources : [], sidelineReference : {}}
+             */
 
-                let resource = await this.storageResource.get(listResources[cont2]);
+            let resourceInSideline =  sidelineResource.resourcesInSideline[cont];
 
+            /**
+             * @type {SidelineMosaicWrapper}
+             */
+            let sidelineMosaicWrapperCurrent = mosaic.getSidelineMosaicWrapper().getSideline(
+                resourceInSideline.sidelineReference.sidelineId
+            );
+
+            /**
+             * Array of id of resources
+             * @type array
+             */
+            let listResources = resourceInSideline.resources ? resourceInSideline.resources : [];
+
+            /**
+             * Index for count mod of the length of resources
+             *
+             * @type {number}
+             */
+            let index = 0;
+
+            while (sidelineMosaicWrapperCurrent.getRemainingWidth() > 0) {
+                let computeCont = index % listResources.length;
+                let resource = await this.storageResource.get(listResources[computeCont]);
                 mosaic.addResource(
                     this.resourceMosaicHydrator.hydrate(this.storageResource.hydrator.extract(resource)),
-                    sidelineMosaicWrapper.getSideline(sidelineResource.resourcesInSideline[cont].sidelineReference.sidelineId),
+                    sidelineMosaicWrapper.getSideline(resourceInSideline.sidelineReference.sidelineId),
                 );
-                break dance;
+                index++;
             }
+            //break dance;
         }
 
         mosaic.generate();
     }
 }
 
-module.exports = SidelineResourceService;
+module.exports = VideoPanelResourceService;

@@ -10,7 +10,7 @@
 <link rel="import" href="element/view/resource-upsert.html">
 <link rel="import" href="element/sideline-resource-generator/sideline-resource-generator.html">
 
-<dom-module id="sideline-index">
+<dom-module id="video-panel-index">
 
     <template>
         <style include="global-layout"></style>
@@ -38,7 +38,7 @@
             <div>
                 <iron-pages id="ironPages" selected="{{viewSelected}}">
                     <div id="list">
-                        <sideline-view-list selected="{{viewSelected}}" resource-selected="{{sideline}}">
+                        <video-panel-view-list selected="{{viewSelected}}" resource-selected="{{sideline}}">
                             <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
                                 <div>Lista file</div>
                                 <paper-icon-button
@@ -48,10 +48,10 @@
                                         title="Crea risorsa">
                                 </paper-icon-button>
                             </div>
-                        </sideline-view-list>
+                        </video-panel-view-list>
                     </div>
                     <div id="add">
-                        <sideline-view-upsert>
+                        <video-panel-view-upsert>
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
@@ -60,10 +60,10 @@
                                 </paper-icon-button>
                                 <div>Aggiungi fila</div>
                             </div>
-                        </sideline-view-upsert>
+                        </video-panel-view-upsert>
                     </div>
                     <div id="edit">
-                        <sideline-view-upsert sideline="{{sideline}}">
+                        <video-panel-view-upsert sideline="{{sideline}}">
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
@@ -72,14 +72,14 @@
                                 </paper-icon-button>
                                 <div>Modifica fila</div>
                             </div>
-                        </sideline-view-upsert>
+                        </video-panel-view-upsert>
                     </div>
                 </iron-pages>
             </div>
             <div>
                 <iron-pages id="ironPages" selected="{{viewResourceSelected}}">
                     <div id="listResource">
-                        <sideline-view-resource-list selected="{{viewResourceSelected}}" resource-selected="{{sidelineResource}}">
+                        <video-panel-view-resource-list selected="{{viewResourceSelected}}" resource-selected="{{sidelineResource}}">
                             <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
                                 <div>Lista risorse delle sideline</div>
                                 <paper-icon-button
@@ -89,10 +89,10 @@
                                         title="Crea risorsa">
                                 </paper-icon-button>
                             </div>
-                        </sideline-view-resource-list>
+                        </video-panel-view-resource-list>
                     </div>
                     <div id="addResource">
-                        <sideline-view-resource-upsert>
+                        <video-panel-view-resource-upsert>
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
@@ -101,10 +101,10 @@
                                 </paper-icon-button>
                                 <div>Aggiungi Risorsa</div>
                             </div>
-                        </sideline-view-resource-upsert>
+                        </video-panel-view-resource-upsert>
                     </div>
                     <div id="editResource">
-                        <sideline-view-resource-upsert sideline-resource="{{sidelineResource}}">
+                        <video-panel-view-resource-upsert sideline-resource="{{sidelineResource}}">
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
@@ -113,17 +113,17 @@
                                 </paper-icon-button>
                                 <div>Modifica Risorsa</div>
                             </div>
-                        </sideline-view-resource-upsert>
+                        </video-panel-view-resource-upsert>
                     </div>
                 </iron-pages>
             </div>
         </iron-pages>
     </template>
     <script>
-        class PluginSidelineIndex extends Polymer.Element {
+        class PluginVideoPanelIndex extends Polymer.Element {
 
             static get is() {
-                return 'sideline-index';
+                return 'video-panel-index';
             }
 
             static get properties() {
@@ -163,7 +163,7 @@
             }
         }
 
-        window.customElements.define(PluginSidelineIndex.is, PluginSidelineIndex);
+        window.customElements.define(PluginVideoPanelIndex.is, PluginVideoPanelIndex);
 
     </script>
 </dom-module>

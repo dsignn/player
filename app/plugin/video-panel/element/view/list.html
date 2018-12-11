@@ -7,9 +7,9 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
-<link rel="import" href="../../element/sideline/sideline.html">
+<link rel="import" href="../video-panel/video-panel.html">
 
-<dom-module id="sideline-view-list">
+<dom-module id="video-panel-view-list">
     <template>
         <style include="global-layout"></style>
         <style include="global-style"></style>
@@ -23,7 +23,7 @@
         <slot name="header"></slot>
         <div hidden$="{{!hasSidelines}}">
             <template is="dom-repeat" items="[[sidelines]]" as="sideline">
-                <sideline-wc sideline="{{sideline}}" on-update-view="displayUpdateView" on-remove="remove"></sideline-wc>
+                <video-panel-wc sideline="{{sideline}}" on-update-view="displayUpdateView" on-remove="remove"></video-panel-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
@@ -33,10 +33,10 @@
     </template>
 
     <script>
-        class ElementSidelineViewList extends Polymer.Element {
+        class ElementVideoPanelViewList extends Polymer.Element {
 
             static get is() {
-                return 'sideline-view-list';
+                return 'video-panel-view-list';
             }
 
             static get properties() {
@@ -145,7 +145,7 @@
             }
         }
 
-        window.customElements.define(ElementSidelineViewList.is, ElementSidelineViewList);
+        window.customElements.define(ElementVideoPanelViewList.is, ElementVideoPanelViewList);
 
     </script>
 </dom-module>

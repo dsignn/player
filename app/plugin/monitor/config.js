@@ -34,6 +34,52 @@ class MonitorConfig extends PluginConfig {
     _loadHydrator() {
 
 
+        let monitorHydrator = this._getMonitoHydrator()
+
+        monitorHydrator.enableExtractProperty('alwaysOnTop');
+        monitorHydrator.enableHydrateProperty('alwaysOnTop');
+
+        monitorHydrator.addStrategy(
+            'monitors',
+            new HydratorStrategy(this._getMonitoHydrator())
+        );
+
+        this.serviceManager.get('HydratorPluginManager').set(
+            'monitorHydrator',
+            monitorHydrator
+        );
+
+        let virtualMonitorHydrator = new PropertyHydrator(
+            new VirtualMonitor(),
+            {
+                'monitors' :  new HydratorStrategy(
+                    monitorHydrator
+                )
+            }
+        );
+
+        virtualMonitorHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('enable')
+            .enableExtractProperty('monitors');
+
+        virtualMonitorHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('enable')
+            .enableHydrateProperty('monitors');
+
+        this.serviceManager.get('HydratorPluginManager').set(
+            'virtualMonitorHydrator',
+            virtualMonitorHydrator
+        );
+
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     * @private
+     */
+    _getMonitoHydrator() {
         let monitorHydrator = new PropertyHydrator(
             new Monitor(),
             {
@@ -66,40 +112,7 @@ class MonitorConfig extends PluginConfig {
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('defaultTimeslotId');
 
-        monitorHydrator.addStrategy(
-            'monitors',
-            new HydratorStrategy(monitorHydrator)
-        );
-
-        this.serviceManager.get('HydratorPluginManager').set(
-            'monitorHydrator',
-            monitorHydrator
-        );
-
-        let virtualMonitorHydrator = new PropertyHydrator(
-            new VirtualMonitor(),
-            {
-                'monitors' :  new HydratorStrategy(
-                    monitorHydrator
-                )
-            }
-        );
-
-        virtualMonitorHydrator.enableExtractProperty('id')
-            .enableExtractProperty('name')
-            .enableExtractProperty('enable')
-            .enableExtractProperty('monitors');
-
-        virtualMonitorHydrator.enableHydrateProperty('id')
-            .enableHydrateProperty('name')
-            .enableHydrateProperty('enable')
-            .enableHydrateProperty('monitors');
-
-        this.serviceManager.get('HydratorPluginManager').set(
-            'virtualMonitorHydrator',
-            virtualMonitorHydrator
-        );
-
+        return monitorHydrator;
     }
 
     _loadStorage() {

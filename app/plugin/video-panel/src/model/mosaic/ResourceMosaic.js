@@ -21,13 +21,6 @@ class ResourceMosaic extends GenericFile {
     }
 
     /**
-     * @return {boolean}
-     */
-    isComputed() {
-        return this.dimension.width > this.computedWidth;
-    }
-
-    /**
      * @returns {Number}
      */
     getWidth() {

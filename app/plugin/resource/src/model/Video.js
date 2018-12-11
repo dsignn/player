@@ -3,7 +3,15 @@ class Video extends GenericFile {
 
     constructor() {
         super();
+
+        /**
+         * @type {Number|null}
+         */
         this.duration = null;
+
+        /**
+         * @type {Object}
+         */
         this.dimension = {};
 
         Object.defineProperty(

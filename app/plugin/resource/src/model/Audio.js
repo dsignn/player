@@ -3,6 +3,10 @@ class Audio extends GenericFile {
 
     constructor() {
         super();
+
+        /**
+         * @type {Number|null}
+         */
         this.duration = null;
 
         Object.defineProperty(

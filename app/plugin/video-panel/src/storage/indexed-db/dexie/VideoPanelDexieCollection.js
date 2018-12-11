@@ -1,7 +1,7 @@
 
 DexieCollection = require('../../../../../../lib/storage/indexed-db/dexie/DexieCollection');
 
-class SidelineDexieCollection extends DexieCollection {
+class VideoPanelDexieCollection extends DexieCollection {
 
     /**
      * @param {Table} table
@@ -28,4 +28,4 @@ class SidelineDexieCollection extends DexieCollection {
     }
 }
 
-module.exports = SidelineDexieCollection;
+module.exports = VideoPanelDexieCollection;

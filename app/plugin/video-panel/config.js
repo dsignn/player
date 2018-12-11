@@ -83,10 +83,10 @@ class SidelineConfig extends PluginConfig {
                     serviceManager.get('DexieManager').onReady(
                         function (evt) {
 
-                            let SidelineDexieCollection = require('../sideline/src/storage/indexed-db/dexie/SidelineDexieCollection');
+                            let VideoPanelDexieCollection = require('.//src/storage/indexed-db/dexie/VideoPanelDexieCollection');
 
                             let storage = new Storage(
-                                new SidelineDexieCollection(
+                                new VideoPanelDexieCollection(
                                     serviceManager.get('DexieManager'),
                                     SidelineConfig.NAME_COLLECTION
                                 ),
@@ -152,7 +152,7 @@ class SidelineConfig extends PluginConfig {
                                 storage
                             );
 
-                            serviceManager.set('SidelineResourceService', new SidelineResourceService(
+                            serviceManager.set('VideoPanelResourceService', new VideoPanelResourceService(
                                 serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
                                 serviceManager.get('StoragePluginManager').get(SidelineConfig.NAME_SERVICE),
                                 serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE),
@@ -318,6 +318,8 @@ class SidelineConfig extends PluginConfig {
             .enableHydrateProperty('height')
             .enableHydrateProperty('progressOffsetX')
             .enableHydrateProperty('progressOffsetY')
+            .enableHydrateProperty('offsetX')
+            .enableHydrateProperty('offsetY')
             .enableHydrateProperty('comutedWidth')
             .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('monitors');
@@ -326,6 +328,8 @@ class SidelineConfig extends PluginConfig {
             .enableExtractProperty('name')
             .enableExtractProperty('width')
             .enableExtractProperty('height')
+            .enableExtractProperty('offsetX')
+            .enableExtractProperty('offsetY')
             .enableExtractProperty('progressOffsetX')
             .enableExtractProperty('progressOffsetY')
             .enableExtractProperty('comutedWidth')

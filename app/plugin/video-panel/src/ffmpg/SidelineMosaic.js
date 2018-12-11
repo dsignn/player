@@ -290,7 +290,8 @@ class SidelineMosaic {
 
         console.log('COMPLEX FILTER', complexFilter);
 
-        return command.complexFilter(complexFilter, `overlay${this._overlayIndex}`)
+        return command.complexFilter(
+            complexFilter, `overlay${this._overlayIndex}`)
             .save(`${this.path}${name}.${this.extension}`);
     }
 

@@ -5,8 +5,19 @@ class VirtualMonitor {
 
     constructor() {
         this.id    = null;
+        /**
+         * @type {string|null}
+         */
         this.name  = null;
+
+        /**
+         * @type {number}
+         */
         this.enable = 0;
+
+        /**
+         * @type {Array}
+         */
         this.monitors = [];
     }
 

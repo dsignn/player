@@ -28,7 +28,7 @@ class MonitorMosaicWrapper extends Monitor {
      * @return {Number}
      */
     getRemainingWidth() {
-        return this.width - this.progressOffsetY;
+        return this.width - this.progressOffsetX;
     }
 }
 

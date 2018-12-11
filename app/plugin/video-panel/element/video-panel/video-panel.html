@@ -10,7 +10,7 @@
 <link rel="import" href="../../../../element/iconset/iconset.html">
 
 
-<dom-module id="sideline-resource-wc">
+<dom-module id="video-panel-wc">
   <template>
     <style include="global-layout"></style>
     <style include="global-style"></style>
@@ -45,7 +45,7 @@
       <div class="card-content flex flex-horizontal">
         <div class="data flex-basis-85 flex flex-vertical">
           <div class="dataWrapper">
-            <div>{{sidelineResource.nameResource}}</div>
+            <div>{{sideline.name}} {{sideline.width}}px {{sideline.height}}px</div>
           </div>
         </div>
         <div class="flex-basis-15 flex flex-vertical">
@@ -64,14 +64,14 @@
   </template>
 
   <script>
-    class ElementSidelineResource extends Polymer.Element {
+    class ElementVideoPanel extends Polymer.Element {
 
-      static get is() { return 'sideline-resource-wc'; }
+      static get is() { return 'video-panel-wc'; }
 
       static get properties() {
           return {
 
-              sidelineResource: {
+              sideline: {
                   type: Object,
                   value: new Sideline()
               }
@@ -79,15 +79,15 @@
       }
 
       _remove(evt) {
-          this.dispatchEvent(new CustomEvent('remove', {detail: this.sidelineResource}));
+          this.dispatchEvent(new CustomEvent('remove', {detail: this.sideline}));
       }
 
       _update(evt) {
-          this.dispatchEvent(new CustomEvent('update-view', {detail: this.sidelineResource}));
+          this.dispatchEvent(new CustomEvent('update-view', {detail: this.sideline}));
       }
     }
 
-    window.customElements.define(ElementSidelineResource.is, ElementSidelineResource);
+    window.customElements.define(ElementVideoPanel.is, ElementVideoPanel);
 
   </script>
 </dom-module>

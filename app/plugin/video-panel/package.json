@@ -1,5 +1,5 @@
 {
-  "name": "dsign-sideline-module",
+  "name": "dsign-video-panel-module",
   "version": "0.1.0",
   "author": "antonino visalli <antonino.visalli@gmail.com>",
   "description": "Dsign sideline plugin",
@@ -17,11 +17,11 @@
     "src/model/mosaic/ResourceMosaic.js",
     "src/model/mosaic/Mosaic.js",
     "src/SidelineResourceGenerator.js",
-    "src/SidelineResourceService.js",
+    "src/VideoPanelResourceService.js",
     "src/ffmpg/SidelineMosaic.js"
   ],
   "autoloadWs" : [],
   "widgets": [],
-  "icon": "app:sideline",
-  "nameWc": "sideline-index"
+  "icon": "app:video-panel",
+  "nameWc": "video-panel-index"
 }
