@@ -79,7 +79,8 @@ function createWindowDashboard () {
         titleBarStyle: 'hidden',
         x: 2400,
         y: 200,
-        autoHideMenuBar: true
+        autoHideMenuBar: true,
+        icon: path.join(__dirname, '../build/icon256x256.png')
     });
 
     dashboard.loadURL(url.format({
