@@ -172,11 +172,11 @@
                   case 'image/jpeg':
                   case 'image/png':
                   case 'application/octet-stream':
-                      file.dimension = ElementFileUpload.imageSize(file.location.path + file.location.name);
+                      file.dimension = ElementFileUpload.imageSize(file.path);
                       delete file.dimension.type;
                       break;
                   case 'video/mp4':
-                      let command = new ElementFileUpload.ffmpeg(file.location.path+file.location.name);
+                      let command = new ElementFileUpload.ffmpeg(file.path);
                       command.ffprobe(0, (err, metadata) => {
                               if(err) {
                                   console.error(err);

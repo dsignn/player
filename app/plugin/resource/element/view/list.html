@@ -122,22 +122,22 @@
              */
             remove(evt) {
 
-                let index = null;
-                this.resources.find((element, ind) => {
-                    if (element.id === evt.detail.id) {
-                        index = ind;
-                        return element;
-                    }
-                });
-
-                this.splice('resources', index, 1);
-                this.hasResources = this.resources.length > 0;
-
                 serviceManager.get('StoragePluginManager')
                     .get(ResourceConfig.NAME_SERVICE)
                     .remove(evt.detail)
                     .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify('Remove resource')
+                        serviceManager.get('PaperToastNotification').notify('Remove resource');
+
+                        let index = null;
+                        this.resources.find((element, ind) => {
+                            if (element.id === evt.detail.id) {
+                                index = ind;
+                                return element;
+                            }
+                        });
+
+                        this.splice('resources', index, 1);
+                        this.hasResources = this.resources.length > 0;
                     });
             }
 

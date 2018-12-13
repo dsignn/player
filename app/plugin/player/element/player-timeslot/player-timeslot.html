@@ -88,6 +88,11 @@
                         value: {}
                     },
 
+                    basePath : {
+                        type: String,
+                        readOnly : true
+                    },
+
                     /**
                      * For debug
                      */
@@ -109,6 +114,8 @@
              */
             connectedCallback() {
                 super.connectedCallback();
+
+                this._setBasePath(serviceManager.get('Application').getBasePath());
 
                 for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
 
@@ -132,7 +139,7 @@
                             this.$.resources.appendChild(divResource);
                             break;
                         case 'text/html':
-                            this._createWebComponent2(this.timeslot.resources[cont])
+                            this._createWebComponent(this.timeslot.resources[cont])
                                 .then(
                                     function(data) {
                                         this.$.resources.appendChild(data);
@@ -245,7 +252,8 @@
                 let element = document.createElement('div');
 
                 element.classList.add("image");
-                element.style.backgroundImage = `url('${resource.location.path}${resource.location.name}')`;
+                let url = resource.location.isAbsolute() ? resource.getPath() : `${this.basePath}/${resource.getPath()}`;
+                element.style.backgroundImage = `url('${url}')`;
                 return element;
             }
 
@@ -259,7 +267,7 @@
             _createVideo(resource) {
 
                 let element = document.createElement('video');
-                element.src = resource.getPath();
+                element.src = resource.location.isAbsolute() ? resource.getPath() : `${this.basePath}/${resource.getPath()}`;
                 element.autoplay = true;
                 element.loop = this.timeslot.rotation === Timeslot.ROTATION_LOOP ? true : false;
                 if (this.startAt > 0) {
@@ -283,45 +291,14 @@
              * Create webview
              *
              * @private
-             * @param resource
+             * @param {GenericFile} resource
              * @return Element
              */
             async _createWebComponent(resource) {
                 let fs = require('fs');
                 let promise = new Promise( function(resolve, reject) {
-                    let entryPoint = `${resource.location.path}${resource.location.name}`;
-                    if (fs.existsSync(entryPoint)) {
 
-                        if (!customElements.get(resource.wcName)) {
-
-                            Polymer.importHref(
-                                entryPoint,
-                                () => { resolve(this._initWebComponent(resource.wcName)); }
-                            );
-                        } else {
-                            resolve(this._initWebComponent(resource.wcName));
-                        }
-
-                    } else {
-                        console.warn(`Web component entry point not found: ${entryPoint}`);
-                        reject(`Web component entry point not found: ${entryPoint}`);
-
-                    }
-                }.bind(this));
-                return promise;
-            }
-
-            /**
-             * Create webview
-             *
-             * @private
-             * @param resource
-             * @return Element
-             */
-            async _createWebComponent2(resource) {
-                let fs = require('fs');
-                let promise = new Promise( function(resolve, reject) {
-                    let entryPoint = `${resource.location.path}${resource.location.name}`;
+                    let entryPoint = resource.location.isAbsolute() ? resource.getPath() : `${this.basePath}/${resource.getPath()}`;
                     if (fs.existsSync(entryPoint)) {
 
                         if (!customElements.get(resource.wcName)) {

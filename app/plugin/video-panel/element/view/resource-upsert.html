@@ -228,7 +228,7 @@
                 super.ready();
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.RESOURCE_SERVICE)
+                    .get(VideoPanelConfig.RESOURCE_SERVICE)
                     .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
                 );
 
@@ -273,7 +273,7 @@
 
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .get(newValue.sidelineReference.sidelineId)
                     .then((data) => {
 
@@ -340,7 +340,7 @@
             _searctSidelineChanged(evt) {
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .getAll({name: evt.detail.value})
                     .then((data) => {
                         evt.detail.target.suggestions(data);
@@ -445,7 +445,7 @@
                 }
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.RESOURCE_SERVICE)[method](this.sidelineResource)
+                    .get(VideoPanelConfig.RESOURCE_SERVICE)[method](this.sidelineResource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' sideline resource');
                     })

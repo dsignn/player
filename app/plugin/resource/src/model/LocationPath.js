@@ -26,6 +26,20 @@ class LocationPath {
     isAbsolute() {
         return require('path').isAbsolute(`${this.path}${this.name}`);
     }
+
+    /**
+     * @return {string}
+     */
+    getName() {
+        return this.name;
+    }
+
+    /**
+     * @return {string}
+     */
+    getPath() {
+        return this.path;
+    }
 }
 
 module.exports = LocationPath;

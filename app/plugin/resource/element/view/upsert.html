@@ -88,6 +88,9 @@
                     let resource = serviceManager.get('HydratorPluginManager').get('resourceHydrator').hydrate(file);
                     resource.setTmpSourcePath(new SourcePath(file.path));
                     resource.name = this.$.name.value;
+                    if (this.resource.id) {
+                        resource.id = this.resource.id;
+                    }
                     this.resource = resource;
                 }
 
@@ -96,12 +99,14 @@
                     .get(ResourceConfig.NAME_SERVICE)[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' resource');
+                        if (method === 'save') {
+                            this.resource = new GenericFile();
+                        }
                     })
                     .catch((err) => {
                             console.log(err)
                         }
                     );
-
             }
 
             /**

@@ -83,12 +83,12 @@
             ready() {
                 super.ready();
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .eventManager.on(Storage.STORAGE_POST_SAVE, this._getSidelines.bind(this)
                 );
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getSidelines.bind(this)
                 );
             }
@@ -103,7 +103,7 @@
             _getSidelines() {
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .getPaged(this.page, this.itemPerPage)
                     .then((data) => {
                         this.set('sidelines', data);
@@ -129,7 +129,7 @@
                 this.hasSidelines = this.sidelines.length > 0;
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .remove(evt.detail)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify('Remove sideline')

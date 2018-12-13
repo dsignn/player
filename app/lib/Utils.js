@@ -45,7 +45,10 @@ class Utils {
         readStream.pipe(writeStream);
     }
 
-    static removeDir(path) {
+    /**
+     * @param {dir} path
+     */
+    static removeDirSync(path) {
         let fs = require('fs');
         if( fs.existsSync(path) ) {
             fs.readdirSync(path).forEach(function(file,index){

@@ -54,7 +54,7 @@ class GenericFile {
     getPath() {
         let path = null;
         if (typeof this.location === 'object' && this.location !== null) {
-            path = require('path').normalize(this.location.path + this.location.name);
+            path = require('path').normalize(`${this.location.path}/${this.location.name}`);
         }
         return path;
     }

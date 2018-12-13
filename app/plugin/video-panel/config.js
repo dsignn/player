@@ -1,49 +1,49 @@
 /**
  *
  */
-class SidelineConfig extends PluginConfig {
+class VideoPanelConfig extends PluginConfig {
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get NAME_SERVICE() { return 'sideline.service'; };
+    static get NAME_SERVICE() { return 'video-panel.service'; };
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get RESOURCE_SERVICE() { return 'sideline.resource.service'; };
+    static get RESOURCE_SERVICE() { return 'video-panel.resource.service'; };
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get NAME_STORAGE() { return 'sideline.data'; };
+    static get NAME_STORAGE() { return 'video-panel.data'; };
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get RESOURCE_STORAGE() { return 'sideline.resource.data'; };
+    static get RESOURCE_STORAGE() { return 'video-panel.resource.data'; };
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get NAME_COLLECTION() { return 'sideline'; };
+    static get NAME_COLLECTION() { return 'video-panel'; };
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get RESOURCE_COLLECTION() { return 'sideline-resource'; };
+    static get RESOURCE_COLLECTION() { return 'videoPanel-resource'; };
 
     /**
      *
@@ -51,7 +51,7 @@ class SidelineConfig extends PluginConfig {
     init() {
         this._loadResourceMosaicHydrator();
         this._loadMonitorMosaicWrapperHydrator();
-        this._loadSidelineMosaicWrapperHydrator();
+        this._loadVideoPanelMosaicWrapperHydrator();
         this._loadHydrator();
         this._loadResourceHydrator();
         this._loadStorage();
@@ -70,7 +70,7 @@ class SidelineConfig extends PluginConfig {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(
                         {
-                            "name": SidelineConfig.NAME_COLLECTION,
+                            "name": VideoPanelConfig.NAME_COLLECTION,
                             "index": [
                                 "++id", "name", "height", "width"
                             ]
@@ -88,13 +88,13 @@ class SidelineConfig extends PluginConfig {
                             let storage = new Storage(
                                 new VideoPanelDexieCollection(
                                     serviceManager.get('DexieManager'),
-                                    SidelineConfig.NAME_COLLECTION
+                                    VideoPanelConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('sidelineHydrator')
+                                serviceManager.get('HydratorPluginManager').get('videoPanelHydrator')
                             );
 
                             serviceManager.get('StoragePluginManager').set(
-                                SidelineConfig.NAME_SERVICE,
+                                VideoPanelConfig.NAME_SERVICE,
                                 storage
                             );
 
@@ -126,9 +126,9 @@ class SidelineConfig extends PluginConfig {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(
                         {
-                            "name": SidelineConfig.RESOURCE_COLLECTION,
+                            "name": VideoPanelConfig.RESOURCE_COLLECTION,
                             "index": [
-                                "++id", "sidelineId", "resourceId"
+                                "++id", "videoPanelId", "resourceId"
                             ]
                         }
                     );
@@ -142,22 +142,22 @@ class SidelineConfig extends PluginConfig {
                             let storage = new Storage(
                                 new DexieCollection(
                                     serviceManager.get('DexieManager'),
-                                    SidelineConfig.RESOURCE_COLLECTION
+                                    VideoPanelConfig.RESOURCE_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('sidelineResourceHydrator')
+                                serviceManager.get('HydratorPluginManager').get('videoPanelResourceHydrator')
                             );
 
                             serviceManager.get('StoragePluginManager').set(
-                                SidelineConfig.RESOURCE_SERVICE,
+                                VideoPanelConfig.RESOURCE_SERVICE,
                                 storage
                             );
 
                             serviceManager.set('VideoPanelResourceService', new VideoPanelResourceService(
                                 serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
-                                serviceManager.get('StoragePluginManager').get(SidelineConfig.NAME_SERVICE),
+                                serviceManager.get('StoragePluginManager').get(VideoPanelConfig.NAME_SERVICE),
                                 serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE),
                                 serviceManager.get('HydratorPluginManager').get('monitorMosaicWrapperHydrator'),
-                                serviceManager.get('HydratorPluginManager').get('sidelineMosaicWrapperHydrator'),
+                                serviceManager.get('HydratorPluginManager').get('videoPanelMosaicWrapperHydrator'),
                                 serviceManager.get('HydratorPluginManager').get('resourceMosaicHydrator'),
                                 serviceManager.get('HydratorPluginManager').get('monitorHydrator')
                             ));
@@ -181,7 +181,7 @@ class SidelineConfig extends PluginConfig {
         monitorHydrator.enableHydrateProperty('id')
             .enableExtractProperty('id');
 
-        let sidelineHydrator = new PropertyHydrator(
+        let videoPanelHydrator = new PropertyHydrator(
             new Sideline(),
             {
                 width: new NumberStrategy(),
@@ -190,14 +190,14 @@ class SidelineConfig extends PluginConfig {
             }
         );
 
-        sidelineHydrator.enableHydrateProperty('id')
+        videoPanelHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('width')
             .enableHydrateProperty('height')
             .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('sidelines');
 
-        sidelineHydrator.enableExtractProperty('id')
+        videoPanelHydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('width')
             .enableExtractProperty('height')
@@ -205,18 +205,18 @@ class SidelineConfig extends PluginConfig {
             .enableExtractProperty('sidelines');
 
 
-        sidelineHydrator.addStrategy(
+        videoPanelHydrator.addStrategy(
             'monitor',
             new HydratorStrategy(monitorHydrator)
         ).addStrategy(
-            'sidelines',
-            new HydratorStrategy(sidelineHydrator)
+            'videoPanels',
+            new HydratorStrategy(videoPanelHydrator)
         );
 
 
         this.serviceManager.get('HydratorPluginManager').set(
-            'sidelineHydrator',
-            sidelineHydrator
+            'videoPanelHydrator',
+            videoPanelHydrator
         );
     }
 
@@ -224,33 +224,33 @@ class SidelineConfig extends PluginConfig {
      * @private
      */
     _loadResourceHydrator() {
-        let sidelineResourceHydrator = new PropertyHydrator(
+        let videoPanelResourceHydrator = new PropertyHydrator(
             new SidelineResource(),
             {
                 sidelineReference : new HydratorStrategy(new PropertyHydrator(new SidelineReference()))
             },
         );
 
-        sidelineResourceHydrator.enableHydrateProperty('id')
+        videoPanelResourceHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('nameResource')
             .enableHydrateProperty('sidelineReference')
             .enableHydrateProperty('resourcesInSideline');
 
-        sidelineResourceHydrator.enableExtractProperty('id')
+        videoPanelResourceHydrator.enableExtractProperty('id')
             .enableExtractProperty('nameResource')
             .enableExtractProperty('sidelineReference')
             .enableExtractProperty('resourcesInSideline');
 
         this.serviceManager.get('HydratorPluginManager').set(
-            'sidelineResourceHydrator',
-            sidelineResourceHydrator
+            'videoPanelResourceHydrator',
+            videoPanelResourceHydrator
         );
     }
 
     /**
      * @private
      */
-    _loadSidelineMosaicWrapperHydrator() {
+    _loadVideoPanelMosaicWrapperHydrator() {
         let monitorHydrator = new PropertyHydrator(
             new Monitor(),
         );
@@ -258,7 +258,7 @@ class SidelineConfig extends PluginConfig {
         monitorHydrator.enableHydrateProperty('id')
             .enableExtractProperty('id');
 
-        let sidelineHydrator = new PropertyHydrator(
+        let videoPanelHydrator = new PropertyHydrator(
             new SidelineMosaicWrapper(),
             {
                 width: new NumberStrategy(),
@@ -267,7 +267,7 @@ class SidelineConfig extends PluginConfig {
             }
         );
 
-        sidelineHydrator.enableHydrateProperty('id')
+        videoPanelHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('width')
             .enableHydrateProperty('height')
@@ -275,7 +275,7 @@ class SidelineConfig extends PluginConfig {
             .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('sidelines');
 
-        sidelineHydrator.enableExtractProperty('id')
+        videoPanelHydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('width')
             .enableExtractProperty('height')
@@ -284,17 +284,17 @@ class SidelineConfig extends PluginConfig {
             .enableExtractProperty('sidelines');
 
 
-        sidelineHydrator.addStrategy(
+        videoPanelHydrator.addStrategy(
             'monitor',
             new HydratorStrategy(monitorHydrator)
         ).addStrategy(
             'sidelines',
-            new HydratorStrategy(sidelineHydrator)
+            new HydratorStrategy(videoPanelHydrator)
         );
 
         this.serviceManager.get('HydratorPluginManager').set(
-            'sidelineMosaicWrapperHydrator',
-            sidelineHydrator
+            'videoPanelMosaicWrapperHydrator',
+            videoPanelHydrator
         );
     }
 
@@ -383,4 +383,4 @@ class SidelineConfig extends PluginConfig {
     }
 }
 
-module.exports = SidelineConfig;
+module.exports = VideoPanelConfig;

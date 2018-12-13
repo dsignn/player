@@ -100,11 +100,12 @@ class Storage extends HydratorAware {
      * @return {Promise}
      */
     update(obj) {
-        let data = this.hydrator ? this.hydrator.extract(obj) : obj;
 
         let promise = new Promise((resolve, reject) => {
 
             this.eventManager.fire(Storage.STORAGE_PRE_UPDATE, obj);
+
+            let data = this.hydrator ? this.hydrator.extract(obj) : obj;
 
             this.adapter.update(data)
                 .then(
@@ -222,7 +223,7 @@ class Storage extends HydratorAware {
                 .then(
                     (data) => {
                         this.eventManager.fire(Storage.STORAGE_POST_REMOVE, obj);
-                        resolve(data);
+                        resolve(obj);
                     }
                 ).catch(
                 (err) => {
@@ -231,9 +232,7 @@ class Storage extends HydratorAware {
                 }
             );
         });
-
         return promise;
-
     }
 
 

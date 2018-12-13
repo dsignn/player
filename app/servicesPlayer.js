@@ -44,6 +44,9 @@ serviceManager.set(
             'player'
         );
 
+        application.setBasePath(__dirname);
+        application.setResourcePath(`${__dirname}/storage/resource`);
+
         application.setServiceToLoad(
             'timeslot',
             ['Hydrator', 'Storage', 'TimeslotDataInjectorService']

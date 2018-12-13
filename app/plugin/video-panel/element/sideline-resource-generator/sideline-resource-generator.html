@@ -106,7 +106,7 @@
             _searctSidelineChanged(evt) {
 
                 serviceManager.get('StoragePluginManager')
-                    .get(SidelineConfig.NAME_SERVICE)
+                    .get(VideoPanelConfig.NAME_SERVICE)
                     .getAll({name : evt.detail.value})
                     .then((data) => {
                         evt.detail.target.suggestions(data);
