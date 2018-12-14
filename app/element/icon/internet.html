@@ -55,20 +55,12 @@
               icon : {
                   type: String,
                   value : 'world'
-              },
-              labelActive : {
-                  type: String,
-                  value: 'Internet active'
-              },
-              labelDisabled : {
-                  type: String,
-                  value: 'Internet disabled'
               }
           }
       }
 
       _internetChanged(newValue, oldValue) {
-          this.set('label', newValue ? this.labelActive : this.labelDisabled);
+          this.set('label', newValue ? 'Internet active' : 'Internet disabled');
           this.$.internet.style.display = newValue ? 'none' : 'block';
       }
 

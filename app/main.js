@@ -9,183 +9,274 @@ const HydratorStrategy = require('./lib/hydrator/strategy/HydratorStrategy');
 const NumberStrategy = require('./lib/hydrator/strategy/NumberStrategy');
 const HydratorManager = require('./lib/hydrator/pluginManager/HydratorPluginManager');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let config;
-let monitorsWrapper = null;
-let hydratorManager = new HydratorManager();
+class App {
 
-let monitorHydrator = new PropertyHydrator(
-    new Monitor(),
-    {
-        width: new NumberStrategy(),
-        height: new NumberStrategy(),
-        offsetX: new NumberStrategy(),
-        offsetY: new NumberStrategy()
+    /**
+     * @return {string}
+     */
+    static get PATH_MONITOR_FILE_CONFIG() {
+        return path.join(__dirname, '/config/monitor-config.json');
+    };
+
+    /**
+     * @return {string}
+     */
+    static get PATH_APP_FILE_CONFIG() {
+        return path.join(__dirname, '/config/application.json');
+    };
+
+    /**
+     *
+     */
+    constructor() {
+
+        /**
+         * @type {BrowserWindow|null}
+         */
+        this.dashboard = null;
+
+        /**
+         * @type {VirtualMonitor}
+         */
+        this.monitorsWrapper = new VirtualMonitor();
+
+        /**
+         * @type {Object}
+         */
+        this.config = JSON.parse(
+            fs.readFileSync(App.PATH_APP_FILE_CONFIG, {'encoding': 'UTF8'})
+        );
+
+        /**
+         * Inject hydratorManager
+         */
+        this._injectHydratorManager();
+
+        /**
+         * Laod Last monitors config
+         */
+        this._loadMonitorsConfig();
     }
-);
+
+    /**
+     * @param {Object} data
+     * @return {App}
+     */
+    setMonitorWrapperFromObject(data) {
+        this.monitorsWrapper = this.hydratorManager.get('virtualHydrator').hydrate(data);
+        return this;
+    }
+
+    /**
+     * @return {VirtualMonitor}
+     */
+    getMonitorWrapper() {
+        return this.monitorsWrapper;
+    }
+
+    /**
+     * @return {BrowserWindow}
+     */
+    getDashboard() {
+        return this.dashboard;
+    }
+
+    /**
+     * @return {App}
+     */
+    createWindowDashboard() {
+        // App
+        this.dashboard = new BrowserWindow({
+            width: 1170,
+            height: 800,
+            titleBarStyle: 'hidden',
+            x: 2400,
+            y: 200,
+            autoHideMenuBar: true,
+            icon: path.join(__dirname, '../build/icon256x256.png'),
+            title : `Dsign Dashboard`
+        });
+
+        this.dashboard.loadURL(url.format({
+            pathname: path.join(__dirname, '/dashboard.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+
+        // Emitted when the window is closed.
+        this.dashboard.on('closed', () => {
+            this.dashboard = null
+        });
+
+        return this;
+    }
+
+    /**
+     * @param {Monitor} monitor
+     * @returns {BrowserWindow}
+     */
+    createWindowPlayer(monitor) {
+
+        let browserWindows = new BrowserWindow({
+            width: parseInt(monitor.width),
+            height: parseInt(monitor.height),
+            x: parseInt(monitor.offsetX),
+            y: parseInt(monitor.offsetY),
+            movable: true,
+            resizable: false,
+            frame: false,
+            enableLargerThanScreen: true,
+            hasShadow: false,
+            icon: path.join(__dirname, '../build/icon256x256.png'),
+            title :  `Dsign Screen [${monitor.name.toUpperCase()}]`
+
+        });
+
+        browserWindows.webContents.on('did-finish-load', () => {
+            browserWindows.send('player-monitor-config', monitor);
+        });
+
+        if (this.config && this.config.debug === true) {
+            browserWindows.webContents.openDevTools({detached: true});
+        }
+
+        browserWindows.loadURL(url.format({
+            pathname: path.join(__dirname, '/player.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+
+        return browserWindows;
+    }
+
+    /**
+     * @return {App}
+     */
+    createWindowsPlayer() {
+        let monitors = this.monitorsWrapper.getMonitors();
+        if (monitors.length > 0) {
+            for (let cont = 0; monitors.length > cont; cont++) {
+                monitors[cont].browserWindows = this.createWindowPlayer(monitors[cont]);
+            }
+        }
+        return this;
+    }
+
+    /**
+     * @return {App}
+     */
+    closeWindowsPlayer() {
+
+        let monitors = this.monitorsWrapper.getMonitors();
+        for (let cont = 0; monitors.length > cont; cont++) {
+            monitors[cont].browserWindows.close();
+        }
+
+        this.monitorsWrapper.clearMonitors();
+        return this;
+    }
+
+    /**
+     * @return {App}
+     * @private
+     */
+    _loadMonitorsConfig() {
+
+        if (!fs.existsSync(App.PATH_MONITOR_FILE_CONFIG)) {
+            return;
+        }
+
+        let monitorsData = JSON.parse(fs.readFileSync(App.PATH_MONITOR_FILE_CONFIG, {'encoding': 'UTF8'}));
+
+        if (monitorsData && monitorsData.monitorConfig) {
+            this.setMonitorWrapperFromObject(monitorsData.monitorConfig);
+        }
+        return this;
+    }
+
+    /**
+     * @private
+     */
+    _injectHydratorManager() {
+        this.hydratorManager = new HydratorManager();
+
+        let monitorHydrator = new PropertyHydrator(
+            new Monitor(),
+            {
+                width: new NumberStrategy(),
+                height: new NumberStrategy(),
+                offsetX: new NumberStrategy(),
+                offsetY: new NumberStrategy()
+            }
+        );
+
+        monitorHydrator.addStrategy(
+            'monitors',
+            new HydratorStrategy(monitorHydrator)
+        );
+
+        let virtualHydrator = new PropertyHydrator(
+            new VirtualMonitor(),
+            {
+                'monitors' :  new HydratorStrategy(monitorHydrator)
+            }
+        );
+
+        this.hydratorManager.set('virtualHydrator', virtualHydrator)
+            .set('monitorHydrator', monitorHydrator);
+    }
+
+    /**
+     * @return {App}
+     */
+    loadGlobalShortcut() {
+
+        /**
+         * dashboard Atop Enable
+         */
+        globalShortcut.register('Control+A+E', () => {
+            console.log('ENABLE-----');
+            application.getDashboard().setAlwaysOnTop(true);
+            application.getDashboard().send('enable-atop', {context : 'dashboard'});
+        });
+
+        /**
+         *  dashboard Atop Disable
+         */
+        globalShortcut.register('Control+A+D', () => {
+            console.log('DISABLE----');
+            application.getDashboard().setAlwaysOnTop(false);
+            application.getDashboard().send('disable-atop', {context : 'dashboard'});
+        });
+
+        return this;
+    }
+
+    /**
+     * Run application
+     */
+    run() {
+
+        this.createWindowDashboard();
+        this.createWindowsPlayer();
+        this.loadGlobalShortcut();
+    }
+}
+
+
+let application = new App();
 
 /**
- * Enable autoplay
+ * Enable autoplay tag video
  */
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
-monitorHydrator.addStrategy(
-    'monitors',
-    new HydratorStrategy(monitorHydrator)
-);
-
-let virtualHydrator = new PropertyHydrator(
-    new VirtualMonitor(),
-    {
-        'monitors' :  new HydratorStrategy(monitorHydrator)
-    }
-);
-
-
-hydratorManager.set('virtualHydrator', virtualHydrator)
-    .set('monitorHydrator', monitorHydrator);
-
 /**
- * @return {string}
+ * Run application
  */
-let getMonitorConfigPath = () => {
-    return path.join(__dirname, '/config/monitor-config.json');
-};
-
-/**
- * @return {string}
- */
-let getAppConfigPath = () => {
-    return path.join(__dirname, '/config/application.json');
-};
-
-function loadConfig () {
-    config = JSON.parse(fs.readFileSync( getAppConfigPath(), {'encoding': 'UTF8'}));
-    // TODO controll the flow of data
-    delete config.modules;
-}
-
-
-function createWindowDashboard () {
-
-    loadConfig();
-    loadAppConfig();
-
-    // App
-    dashboard = new BrowserWindow({
-        width: 1170,
-        height: 800,
-        titleBarStyle: 'hidden',
-        x: 2400,
-        y: 200,
-        autoHideMenuBar: true,
-        icon: path.join(__dirname, '../build/icon256x256.png')
-    });
-
-    dashboard.loadURL(url.format({
-        pathname: path.join(__dirname, '/dashboard.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
-
-    // Emitted when the window is closed.
-    dashboard.on('closed', () => {
-        dashboard = null
-    });
-
-
-    if (config && config.debug === true) {
-        dashboard.webContents.openDevTools({detached: true});
-    }
-}
-
-/**
- * @param monitorsConfig
- * @returns {MonitorsManager}
- */
-function createWindowsPlayer(monitorsConfig) {
-
-    let monitorWrapper = hydratorManager.get('virtualHydrator').hydrate(monitorsConfig);
-
-    for (let cont = 0; monitorWrapper.monitors.length > cont; cont++) {
-
-        monitorWrapper.monitors[cont].browserWindows = createWindowPlayer(monitorWrapper.monitors[cont]);
-    }
-    return monitorWrapper;
-}
-
-/**
- * @param monitor
- * @returns {Electron.AllElectron.BrowserWindow}
- */
-function createWindowPlayer(monitor) {
-
-    let browserWindows = new BrowserWindow({
-        width: parseInt(monitor.width),
-        height: parseInt(monitor.height),
-        x: parseInt(monitor.offsetX),
-        y: parseInt(monitor.offsetY),
-        movable: true,
-        resizable: false,
-        frame: false,
-        enableLargerThanScreen: true,
-        hasShadow: false
-
-    });
-
-    browserWindows.on('closed', () => {
-        win = null
-    });
-
-    browserWindows.webContents.on('did-finish-load', () => {
-        browserWindows.send('player-monitor-config', monitor);
-    });
-
-    if (config && config.debug === true) {
-        browserWindows.webContents.openDevTools({detached: true});
-    }
-
-    browserWindows.loadURL(url.format({
-        pathname: path.join(__dirname, '/player.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
-
-    return browserWindows;
-}
-
-
-function loadAppConfig () {
-    let path = getMonitorConfigPath();
-    if (!fs.existsSync(path)) {
-        return;
-    }
-    let appConfig = JSON.parse(fs.readFileSync(path, {'encoding': 'UTF8'}));
-    if (appConfig && appConfig.monitorConfig) {
-
-        monitorsWrapper = createWindowsPlayer(appConfig.monitorConfig);
-    }
-}
-
-
-function closeWindowsPlayer() {
-
-    if (!monitorsWrapper) {
-        return;
-    }
-
-    for (let cont = 0; monitorsWrapper.monitors.length > cont; cont++) {
-        monitorsWrapper.monitors[cont].browserWindows.close();
-    }
-    monitorsWrapper.clearMonitors();
-}
-
-/**
- *  This method will be called when Electron has finished initialization and is ready
- *  to create browser windows. Some APIs can only be used after this event occurs.
- */
-app.on('ready', createWindowDashboard);
+app.on('ready', () => {
+    application.run();
+});
 
 /**
  * Quit when all windows are closed.
@@ -198,29 +289,25 @@ app.on('window-all-closed', () => {
     }
 });
 
-app.on('activate', () => {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (dashboard === null) {
-        createWindowDashboard()
-    }
-})
-
+/***********************************************************************************************************************
+                                               IPC EVENT MESSAGE
+***********************************************************************************************************************/
 /**
- * Impostazione di una nuova configurazione
+ * New default configuration monitor
  */
 ipcMain.on('change-monitors-configuration', (event, message) => {
 
     fs.writeFile(
-        getMonitorConfigPath(),
+        App.PATH_MONITOR_FILE_CONFIG,
         JSON.stringify({'monitorConfig' : message}, null, 4),
         function(err) {
             if(err) {
                 return console.log("ReloadMonitor save error: " + err);
             }
 
-            closeWindowsPlayer();
-            monitorsWrapper = createWindowsPlayer(message);
+            application.closeWindowsPlayer();
+            application.setMonitorWrapperFromObject(message);
+            application.createWindowsPlayer();
         }
     );
 });
@@ -233,14 +320,15 @@ ipcMain.on('update-enable-monitor-configuration', (event, message) => {
     if (message.monitors && Array.isArray(message.monitors) && message.monitors.length > 0) {
 
         fs.writeFile(
-            getMonitorConfigPath(),
+            App.PATH_MONITOR_FILE_CONFIG,
             JSON.stringify({'monitorConfig' : message}, null, 4),
             function(err) {
                 if(err) {
                     return console.log("UpdateMonitor save error: " + err);
                 }
 
-                let virtualMonitor = hydratorManager.get('virtualHydrator').hydrate(message);
+                let virtualMonitor = application.hydratorManager.get('virtualHydrator').hydrate(message);
+                let monitorsWrapper = application.getMonitorWrapper();
 
                 for (let cont = 0; monitorsWrapper.monitors.length > cont; cont++) {
                     monitorsWrapper.monitors[cont].remove = true;
@@ -252,7 +340,7 @@ ipcMain.on('update-enable-monitor-configuration', (event, message) => {
 
                     switch (true) {
                         case currentMonitor === undefined :
-                            virtualMonitor.monitors[cont].browserWindows = createWindowPlayer(virtualMonitor.monitors[cont]);
+                            virtualMonitor.monitors[cont].browserWindows = application.createWindowPlayer(virtualMonitor.monitors[cont]);
                             monitorsWrapper.pushMonitor(virtualMonitor.monitors[cont]);
                             break;
 
@@ -287,6 +375,7 @@ ipcMain.on('update-enable-monitor-configuration', (event, message) => {
 
 ipcMain.on('play-timeslot', (event, message) => {
 
+    let monitorsWrapper = application.getMonitorWrapper();
     switch (true) {
         case message.timeslot.virtualMonitorReference.virtualMonitorId === monitorsWrapper.id:
             /**
@@ -302,12 +391,13 @@ ipcMain.on('play-timeslot', (event, message) => {
             }
             break;
         default:
-            // TODO broadcast on other application on comunication each other
+        // TODO broadcast on other application on comunication each other
     }
 });
 
 ipcMain.on('stop-timeslot', (event, message) => {
 
+    let monitorsWrapper = application.getMonitorWrapper();
     switch (true) {
         case message.timeslot.virtualMonitorReference.virtualMonitorId === monitorsWrapper.id:
             /**
@@ -329,6 +419,7 @@ ipcMain.on('stop-timeslot', (event, message) => {
 
 ipcMain.on('pause-timeslot', (event, message) => {
 
+    let monitorsWrapper = application.getMonitorWrapper();
     switch (true) {
         case message.timeslot.virtualMonitorReference.virtualMonitorId === monitorsWrapper.id:
             /**
@@ -350,6 +441,7 @@ ipcMain.on('pause-timeslot', (event, message) => {
 
 ipcMain.on('resume-timeslot', (event, message) => {
 
+    let monitorsWrapper = application.getMonitorWrapper();
     switch (true) {
         case message.timeslot.virtualMonitorReference.virtualMonitorId === monitorsWrapper.id:
             /**
@@ -379,6 +471,7 @@ ipcMain.on('proxy', (event, message) => {
         return;
     }
 
+    let monitorsWrapper = application.getMonitorWrapper();
     if (!monitorsWrapper || !monitorsWrapper.monitors || !Array.isArray(monitorsWrapper.monitors)) {
         return;
     }
@@ -386,4 +479,12 @@ ipcMain.on('proxy', (event, message) => {
     for (let cont = 0; monitorsWrapper.monitors.length > cont; cont++) {
         monitorsWrapper.monitors[cont].browserWindows.send(message.nameMessage, message.data);
     }
+});
+
+
+/**
+ * enable atop
+ */
+ipcMain.on('enable-atop', (event, message) => {
+
 });

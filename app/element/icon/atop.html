@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<dom-module id="element-atop">
+  <template>
+    <style>
+      paper-toggle-button {
+        cursor: pointer;
+        --paper-toggle-button-checked-bar-color:  var(--paper-green-500);
+        --paper-toggle-button-checked-button-color:  var(--paper-green-500);
+        --paper-toggle-button-checked-ink-color: var(--paper-green-500);
+        --paper-toggle-button-unchecked-bar-color:  var(--paper-pink-500);
+        --paper-toggle-button-unchecked-button-color:  var(--paper-pink-500);
+        --paper-toggle-button-unchecked-ink-color: var(--paper-pink-500);
+      }
+    </style>
+    <paper-toggle-button id="paperToggleEnable" title="{{label}}"></paper-toggle-button>
+  </template>
+
+  <script>
+      class ElementAtop extends Polymer.Element {
+
+          static get is() {
+              return 'element-atop';
+          }
+
+          // Declare properties for the element's public API
+          static get properties() {
+              return {
+                  label : {
+                      type: String
+                  }
+              }
+          }
+
+          constructor() {
+              super();
+
+              require('electron').ipcRenderer.on('enable-atop', this._enableAtop.bind(this));
+              require('electron').ipcRenderer.on('disable-atop', this._disableAtop.bind(this));
+              // TODO DEFAULT
+          }
+
+          /**
+           * @param evt
+           * @param msg
+           * @private
+           */
+          _enableAtop(evt, msg) {
+              if (msg && msg.context !== 'dashboard') {
+                  return;
+              }
+
+              this.$.paperToggleEnable.checked = true;
+              this.label = 'Atop enable';
+          }
+
+          /**
+           * @param evt
+           * @param msg
+           * @private
+           */
+          _disableAtop(evt, msg) {
+              if (msg && msg.context !== 'dashboard') {
+                  return;
+              }
+
+              this.$.paperToggleEnable.checked = false;
+              this.label = 'Atop disable';
+          }
+
+      }
+
+      window.customElements.define(ElementAtop.is, ElementAtop);
+
+  </script>
+</dom-module>
