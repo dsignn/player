@@ -95,7 +95,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 <app-toolbar>
                     <paper-icon-button icon="app:menu" on-click="toggle"></paper-icon-button>
                     <div main-title>{{nameApplication}}</div>
-                    <element-always-on-top></element-always-on-top>
+                    <element-always-on-top context="dashboard"></element-always-on-top>
                     <element-backup-icon></element-backup-icon>
                     <div class="separator"></div>
                     <element-internet></element-internet>
@@ -146,7 +146,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                        type: String,
                        reflectToAttribute: true,
                        observer: '_pageChanged',
-                       value: 'resource-index'
+                       value: 'monitor-index'
                    },
 
                    nameApplication: {

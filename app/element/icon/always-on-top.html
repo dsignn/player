@@ -14,11 +14,15 @@
         --paper-toggle-button-unchecked-ink-color: var(--paper-pink-500);
       }
     </style>
-    <paper-toggle-button id="paperToggleEnable" title="{{label}}"></paper-toggle-button>
+    <paper-toggle-button id="paperToggleEnable" title="{{label}}" checked="{{value}}"></paper-toggle-button>
   </template>
 
   <script>
       class ElementAlwayOnTop extends Polymer.Element {
+
+          static  get DASHBOARD() { return "dashboard"; };
+
+          static  get MONITOR() { return "monitor"; };
 
           static get is() {
               return 'element-always-on-top';
@@ -29,6 +33,20 @@
               return {
                   label : {
                       type: String
+                  },
+
+                  context : {
+                      type: String
+                  },
+
+                  monitor : {
+                      type: Object
+                  },
+
+                  value : {
+                      type: Boolean,
+                      notify: true,
+
                   }
               }
           }
@@ -40,8 +58,13 @@
               require('electron').ipcRenderer.on('disable-always-on-top', this._disableAtop.bind(this));
 
               this.$.paperToggleEnable.addEventListener('change', this._change.bind(this));
-              this.$.paperToggleEnable.checked = serviceManager.get('Config').dashboard.alwaysOnTop;
-              // TODO DEFAULT
+
+             switch (this.context) {
+                 case ElementAlwayOnTop.DASHBOARD:
+                     this.$.paperToggleEnable.checked = serviceManager.get('Config').dashboard.alwaysOnTop;
+                     break;
+             }
+              this._setLabelFromChecker(this.$.paperToggleEnable.checked);
           }
 
           /**
@@ -50,7 +73,11 @@
            * @private
            */
           _enableAtop(evt, msg) {
-              if (msg && msg.context !== 'dashboard') {
+              if (msg && msg.context !== this.context) {
+                  return;
+              }
+
+              if (this.monitor && msg.context !== ElementAlwayOnTop.MONITOR && msg.monitorId !== this.monitor.id) {
                   return;
               }
 
@@ -64,7 +91,11 @@
            * @private
            */
           _disableAtop(evt, msg) {
-              if (msg && msg.context !== 'dashboard') {
+              if (msg && msg.context !== this.context) {
+                  return;
+              }
+
+              if (this.monitor && msg.context !== ElementAlwayOnTop.MONITOR && msg.monitorId !== this.monitor.id) {
                   return;
               }
 
@@ -77,13 +108,22 @@
            * @private
            */
           _change(evt) {
-
+              this._setLabelFromChecker(evt.target.checked);
               require('electron').ipcRenderer.send(
                   'toggle-always-on-top',
                   {
-                      context: 'dashboard',
-                      status: evt.target.checked === true ? 'enable' : 'disable'
+                      context: this.context,
+                      status: evt.target.checked === true ? 'enable' : 'disable',
+                      monitorId : this.monitor ? this.monitor.id : null
                   });
+          }
+
+          /**
+           * @param checker
+           * @private
+           */
+          _setLabelFromChecker(checker) {
+              this.label = checker ? 'Always on top enable' : 'Always on top sisable';
           }
       }
 

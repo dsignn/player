@@ -7,11 +7,14 @@
 <link rel="import" href="../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+
 <link rel="import" href="../iconset/iconset.html">
 
+<link rel="import" href="../../../../element/icon/always-on-top.html">
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 
@@ -46,12 +49,21 @@
                 margin-left: 30px;
             }
 
+            element-always-on-top {
+                display: flex;
+                align-items: center;
+            }
+
             .paper-monitor paper-input,
             .paper-sub-monitor paper-input,
             .paper-monitor paper-autocomplete,
             .paper-sub-monitor paper-autocomplete {
                 padding-left: 6px;
             }
+            paper-listbox.auto {
+               min-width:initial;
+            }
+
 
             paper-icon-button {
 
@@ -73,6 +85,7 @@
                         <template is="dom-repeat" items="{{monitors}}" as="monitor">
                             <paper-card class="paper-monitor">
                                 <paper-input name="name" label="Name" value="{{monitor.name}}" required style="flex-basis: 30%;"></paper-input>
+                                <element-always-on-top context="monitor" monitor="{{monitor}}" value="{{monitor.alwaysOnTop}}" on-change="changeAlwaysOnTop"></element-always-on-top>
                                 <paper-autocomplete
                                         default-timeslot
                                         label="Default timeslot"
@@ -117,8 +130,12 @@
                                 <paper-input name="offsetY" label="Offeset Y" type="number" value="{{monitor.offsetY}}" required style="flex-basis: 10%;"></paper-input>
                                 <paper-input name="backgroundColor" label="Background color" type="color" value="{{monitor.backgroundColor}}" required style="flex-basis: 10%;"></paper-input>
                                 <div class="flex flex-center" style="flex-basis: 10%;">
-                                    <paper-icon-button item="{{monitor}}" icon="app:trash" index="{{index}}" class="circle-small" title="Delete" on-tap="deleteMonitor">
-                                    </paper-icon-button>
+                                    <paper-menu-button ignore-select>
+                                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                                        <paper-listbox slot="dropdown-content" class="auto" multi>
+                                            <paper-item item="{{monitor}}"  on-click="_remove">Elimina</paper-item>
+                                        </paper-listbox>
+                                    </paper-menu-button>
                                 </div>
                             </paper-card>
                             <template submonitor-repeat is="dom-repeat" items="{{monitor.monitors}}" as="submonitor">
@@ -152,8 +169,7 @@
                                                     color: #999;
                                                 }
                                             </style>
-                                            <paper-item class="account-item" on-tap="_onSelect" role="option"
-                                                        aria-selected="false">
+                                            <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                                 <div>
                                                     <div class="service-name">[[item.name]]</div>
                                                 </div>
@@ -168,8 +184,12 @@
                                     <paper-input name="offsetY" label="Offeset Y" type="number" value="{{submonitor.offsetY}}" required style="flex-basis: 9%;"></paper-input>
                                     <paper-input name="backgroundColor" label="Background color" type="color" value="{{submonitor.backgroundColor}}" required style="flex-basis: 9%;"></paper-input>
                                     <div class="flex flex-center" style="flex-basis: 9%;">
-                                        <paper-icon-button item="{{submonitor}}" icon="app:trash" index="{{index}}" class="circle-small" title="Delete" on-tap="deleteMonitor">
-                                        </paper-icon-button>
+                                        <paper-menu-button ignore-select>
+                                            <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                                            <paper-listbox slot="dropdown-content" class="auto" multi>
+                                                <paper-item item="{{submonitor}}"  on-click="_remove">Elimina</paper-item>
+                                            </paper-listbox>
+                                        </paper-menu-button>
                                     </div>
                                 </paper-card>
                             </template>
@@ -412,7 +432,7 @@
             /**
              * @param evt
              */
-            deleteMonitor(evt) {
+            _remove(evt) {
                 this.monitor.removeMonitor(evt.target.item)
                 this.set('monitors', []);
                 this.set('monitors', this.monitor.getMonitors());
@@ -508,6 +528,20 @@
                 this.$.formMonitor.reset();
                 this.$.monitor._selectedOption = null;
                 this.set('monitors', []);
+            }
+
+            /**
+             * @param evt
+             */
+            changeAlwaysOnTop(evt) {
+                console.log('update', evt.target.monitor);
+               serviceManager.get('StoragePluginManager')
+                   .get(MonitorConfig.NAME_SERVICE).
+                   update(this.monitor).then(
+                   (data) => {
+                       console.log('update monitor alway on top');
+                   }
+               );
             }
         }
 
