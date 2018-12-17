@@ -1,5 +1,5 @@
 {
-  "name": "dsign-monitor-plugin",
+  "name": "dsign-monitor-module",
   "version": "0.1.0",
   "author": "antonino visalli <antonino.visalli@gmail.com>",
   "description": "Dsign monitor plugin",

@@ -1,0 +1,39 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<dom-module id="element-restore-icon">
+  <template>
+    <paper-icon-button id="restore" icon="app:restore" title="{{label}}" on-tap="restore"></paper-icon-button>
+  </template>
+
+  <script>
+      class ElementRestoreIcon extends Polymer.Element {
+
+          static get is() { return 'element-restore-icon'; }
+
+          static get properties() {
+              return {
+                  label : {
+                      type: String,
+                      value: 'Restore data'
+                  }
+              }
+          }
+
+          ready() {
+              super.ready();
+          }
+
+          /**
+           * @param evt
+           */
+          restore(evt) {
+       // TODO
+              console.log('RESTORE');
+          }
+      }
+
+      window.customElements.define(ElementRestoreIcon.is, ElementRestoreIcon);
+  </script>
+</dom-module>

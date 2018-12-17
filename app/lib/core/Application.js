@@ -99,7 +99,7 @@ class Application {
          */
         for (let cont = 0; moduleObj.autoloads.length > cont; cont++) {
             // TODO CONTROLLARE SE ESISTE IL FILE
-            let importClass = require(`${__dirname}/plugin/${moduleObj.name}/${moduleObj.autoloads[cont]}`);
+            let importClass = require(`${__dirname}/module/${moduleObj.name}/${moduleObj.autoloads[cont]}`);
             global[importClass.name] = importClass;
         }
 
@@ -109,14 +109,14 @@ class Application {
 
         for (let cont = 0; moduleObj.autoloadWs.length > cont; cont++) {
             Polymer.importHref(
-                `${__dirname}/plugin/${moduleObj.name}/${moduleObj.autoloadWs[cont]}`
+                `${__dirname}/module/${moduleObj.name}/${moduleObj.autoloadWs[cont]}`
             );
         }
 
 
         if (moduleObj.configFile) {
 
-            let config = require(`${__dirname}/plugin/${moduleObj.name}/${moduleObj.configFile}`);
+            let config = require(`${__dirname}/module/${moduleObj.name}/${moduleObj.configFile}`);
 
             let pluginConfig = new config(serviceManager);
             global[pluginConfig.constructor.name] = config;
@@ -125,7 +125,7 @@ class Application {
 
         for (let cont = 0; moduleObj.widgets.length > cont; cont++) {
             Polymer.importHref(
-                `${__dirname}/plugin/${moduleObj.name}/${moduleObj.widgets[cont].src}`
+                `${__dirname}/module/${moduleObj.name}/${moduleObj.widgets[cont].src}`
             );
         }
 

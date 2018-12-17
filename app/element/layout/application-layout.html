@@ -24,6 +24,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../element/iconset/iconset.html">
 <link rel="import" href="../icon/internet.html">
 <link rel="import" href="../icon/backup.html">
+<link rel="import" href="../icon/restore.html">
 <link rel="import" href="../icon/always-on-top.html">
 
 <link rel="import" href="view/view-404.html">
@@ -84,11 +85,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 justify-content: center;
             }
 
-            .separator {
-                height: 100%;
-                width: 8px;
-            }
-
         </style>
         <app-header-layout>
             <app-header slot="header" fixed condenses effects="waterfall">
@@ -96,8 +92,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                     <paper-icon-button icon="app:menu" on-click="toggle"></paper-icon-button>
                     <div main-title>{{nameApplication}}</div>
                     <element-always-on-top context="dashboard"></element-always-on-top>
+                    <element-restore-icon></element-restore-icon>
                     <element-backup-icon></element-backup-icon>
-                    <div class="separator"></div>
                     <element-internet></element-internet>
                 </app-toolbar>
             </app-header>
@@ -242,7 +238,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
            _pageChanged(page) {
                // Load page import on demand. Show 404 page if fails
                let path = page.split("-");
-               let resolvedPageUrl = this.resolveUrl(`../../plugin/${this._getNameDirectoryFromPage(page)}/${this._getNameFileFromPage(page)}.html`);
+               let resolvedPageUrl = this.resolveUrl(`../../module/${this._getNameDirectoryFromPage(page)}/${this._getNameFileFromPage(page)}.html`);
                Polymer.importHref(
                    resolvedPageUrl,
                    null,

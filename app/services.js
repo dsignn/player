@@ -156,7 +156,7 @@ serviceManager.set(
             restore : (path) => {
 
                 // TODO riscrivere
-                let pathDirBk = `${__dirname}/storage/tmp/backup`;
+                let pathDirBk = `${__dirname}/../tmp`;
                 let zip = new admZip(path);
 
                 fsExtra.emptyDirSync(pathDirBk);
