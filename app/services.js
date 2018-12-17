@@ -90,7 +90,8 @@ serviceManager.set(
     function (sm) {
 
         let serviceM = sm;
-        let path = sm.get('Config').backup.path;
+        let pathToExtract =  sm.get('Config').backup.pathToExtract;
+        let pathBk = sm.get('Config').backup.pathTmp;
         let listeners = {
             progress: [],
             close : []
@@ -117,7 +118,7 @@ serviceManager.set(
                 // TODO riscrivere
                 let archive = new Archive(
                     'zip',
-                    `${path}bk.zip`,
+                    `${pathToExtract}/bk.zip`,
                     { zlib: { level: 9 } }
                 );
 
@@ -155,15 +156,15 @@ serviceManager.set(
 
             restore : (path) => {
 
-                // TODO riscrivere
-                let pathDirBk = `${__dirname}/../tmp`;
+
+                fsExtra.emptyDirSync(pathBk);
+
                 let zip = new admZip(path);
+                zip.extractAllTo(pathBk, true);
 
-                fsExtra.emptyDirSync(pathDirBk);
+                let promises = [];
 
-                zip.extractAllTo(pathDirBk, true);
-
-                fsExtra.move(`${pathDirBk}/resource`, `${__dirname}/storage/resource`, {overwrite:true}, (err) => {
+                fsExtra.move(`${pathBk}/resource`, `${__dirname}/storage/resource`, {overwrite:true}, (err) => {
                     if (err) {
                         return console.error(err)
                     }
@@ -171,41 +172,32 @@ serviceManager.set(
                     console.info('Move Backup resource');
                 });
 
-                fs.readdir(pathDirBk, function(err, items) {
+                fs.readdir(pathBk, function(err, items) {
 
 
                     for (let cont=0; cont < items.length; cont++) {
 
-                        let promises = [];
                         if (items[cont].indexOf(".json") > 0) {
-                            fs.readFile(`${pathDirBk}/${items[cont]}`, (err, data) => {
+                            fs.readFile(`${pathBk}/${items[cont]}`, (err, data) => {
                                 if (err) {
                                     throw err;
                                 }
 
-                                try {
-                                    let jsonData = JSON.parse(data.toString());
+                                let jsonData = JSON.parse(data.toString());
 
-                                    if (jsonData.length > 0) {
+                                if (jsonData.length > 0) {
 
-                                        let storage = serviceM.get('StoragePluginManager').get(items[cont].replace('.json', ''));
-                                        for (let contI = 0; jsonData.length > contI; contI++) {
-                                            promises.push(storage.update(storage.hydrator.hydrate(jsonData[contI])));
-                                        }
-
+                                    promises = [];
+                                    let storage = serviceM.get('StoragePluginManager').get(items[cont].replace('.json', ''));
+                                    for (let contI = 0; jsonData.length > contI; contI++) {
+                                        promises.push(storage.update(storage.hydrator.hydrate(jsonData[contI])));
                                     }
-                                } catch (e) {
-                                    throw e;
+
+                                    Promise.all(promises).then(function(values) {
+                                        console.log(items[cont].replace('.json', ''), values);
+                                    });
                                 }
                             });
-                        }
-
-                        if (promises.length > 0) {
-                            Promise.all(promises).then(
-                                () => {
-                                    console.info('Storage import complete');
-                                }
-                            );
                         }
                     }
                 });

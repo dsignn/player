@@ -37,8 +37,7 @@
     "file-metadata": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^7.0.1",
-    "image-size": "^0.6.2",
-    "node-fetch": "^2.2.0"
+    "image-size": "^0.6.2"
   },
   "nyc": {
     "reporter": [

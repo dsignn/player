@@ -1,209 +1,210 @@
 {
-  "indexedDB": {
-    "name": "Dsign"
-  },
-  "localoStorage": {
-    "namespace": "Dsign"
-  },
-  "backup" : {
-      "path": "/home/bastoni/Videos/"
-  },
-  "tcpClient": {
-    "port": 8002,
-    "ip": "127.0.0.1"
-  },
-  "dashboard" : {
-      "alwaysOnTop" : true
-  },
-  "soccerApi": {
-    "path": "https://sportsop-soccer-sports-open-data-v1.p.mashape.com/v1/",
-    "headers": {
-      "X-Mashape-Key": "IbI4cMXMwKmshMzcSlBmv4HE9Q5Mp1nT28Wjsn4mkHEnIuuWWT",
-      "X-Mashape-Host": "sportsop-soccer-sports-open-data-v1.p.mashape.com"
-    }
-  },
-  "debug": true,
-  "modules": [
-    {
-      "icon": "app:widget",
-      "nameWc": "dashboard-index",
-      "label": "Dashboard",
-      "plugin": true,
-      "customeStyle": {
-        "color": " green"
-      },
-      "name": "dashboard",
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/Widget.js"
-      ]
+    "indexedDB": {
+        "name": "Dsign"
     },
-    {
-      "icon": "app:monitor",
-      "nameWc": "monitor-index",
-      "label": "Monitor",
-      "customeStyle": {
-        "color": " green"
-      },
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/Monitor.js",
-        "src/model/VirtualMonitor.js",
-        "src/model/VirtualMonitorReference.js"
-      ],
-      "name": "monitor"
+    "localoStorage": {
+        "namespace": "Dsign"
     },
-    {
-      "icon": "app:resource",
-      "nameWc": "resource-index",
-      "label": "Resource",
-      "customeStyle": {
-        "color": "green"
-      },
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/GenericFile.js",
-        "src/model/Image.js",
-        "src/model/Video.js",
-        "src/model/Audio.js",
-        "src/model/SourcePath.js",
-        "src/model/LocationPath.js"
-      ],
-      "name": "resource"
+    "backup": {
+        "pathToExtract": "/home/bastoni/Project/dsign/player",
+        "pathTmp":"/home/bastoni/Project/dsign/player/tmp"
     },
-    {
-      "icon": "app:timeslot",
-      "nameWc": "timeslot-index",
-      "label": "Timeslot",
-      "customeStyle": {
-        "color": "green"
-      },
-      "configFile": "config.js",
-      "autoloads": [
-        "src/TimeslotService.js",
-        "src/model/Timeslot.js",
-        "src/model/TimeslotDataReference.js",
-        "src/injector/AbstractInjector.js",
-        "src/injector/TimeslotDataInjectorServicePluginManager.js",
-        "src/injector/Test1.js",
-        "src/injector/Test2.js"
-      ],
-      "name": "timeslot",
-      "widgets": [
-        {
-          "src": "widget/timeslot-tags.html",
-          "description": "Widget to view tagged timeslot",
-          "name": "Timeslot tags",
-          "wc": "timeslot-tags",
-          "dataProperty": "tags",
-          "dataLabel": "tags",
-          "dataRequired": true
+    "tcpClient": {
+        "port": 8002,
+        "ip": "127.0.0.1"
+    },
+    "dashboard": {
+        "alwaysOnTop": false
+    },
+    "soccerApi": {
+        "path": "https://sportsop-soccer-sports-open-data-v1.p.mashape.com/v1/",
+        "headers": {
+            "X-Mashape-Key": "IbI4cMXMwKmshMzcSlBmv4HE9Q5Mp1nT28Wjsn4mkHEnIuuWWT",
+            "X-Mashape-Host": "sportsop-soccer-sports-open-data-v1.p.mashape.com"
         }
-      ]
     },
-    {
-      "icon": "app:playlist",
-      "nameWc": "playlist-index",
-      "label": "Playlist",
-      "customeStyle": {
-        "color": "green"
-      },
-      "configFile": "config.js",
-      "autoloads": [
-        "src/PlaylistService.js",
-        "src/model/Playlist.js"
-      ],
-      "name": "playlist"
-    },
-    {
-      "configFile": "config.js",
-      "name": "player",
-      "autoloadWs": [
-        "element/player-timeslot/player-timeslot.html",
-        "element/player-monitor/player-monitor.html",
-        "element/player-monitor-manager/player-monitor-manager.html"
-      ]
-    },
-    {
-      "name": "video-panel",
-      "label": "Video panel",
-      "customeStyle": {
-        "color": " green"
-      },
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/Sideline.js",
-        "src/model/SidelineReference.js",
-        "src/model/SidelineResource.js",
-        "src/model/mosaic/MonitorMosaicWrapper.js",
-        "src/model/mosaic/SidelineMosaicWrapper.js",
-        "src/model/mosaic/ResourceMosaic.js",
-        "src/model/mosaic/Mosaic.js",
-        "src/SidelineResourceGenerator.js",
-        "src/VideoPanelResourceService.js",
-        "src/ffmpg/SidelineMosaic.js"
-      ],
-      "autoloadWs": [],
-      "widgets": [],
-      "icon": "app:video-panel",
-      "nameWc": "video-panel-index"
-    },
-    {
-      "icon": "app:devices",
-      "nameWc": "media-device-index",
-      "label": "Device",
-      "plugin": true,
-      "customeStyle": {
-        "color": " green"
-      },
-      "name": "media-device",
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/MediaDevice.js",
-        "src/injector/MediaDeviceDataInjector"
-      ]
-    },
-    {
-      "icon": "app:timer",
-      "nameWc": "timer-index",
-      "label": "Timer",
-      "plugin": true,
-      "customeStyle": {
-        "color": " green"
-      },
-      "name": "timer",
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/Timer.js",
-        "src/TimerService",
-        "src/injector/TimerDataInjector"
-      ]
-    },
-    {
-      "icon": "app:soccer",
-      "nameWc": "soccer-index",
-      "label": "Soccer",
-      "plugin": true,
-      "customeStyle": {
-        "color": " green"
-      },
-      "name": "soccer",
-      "configFile": "config.js",
-      "autoloads": [
-        "src/model/Goal.js",
-        "src/model/Card.js",
-        "src/model/Replacement.js",
-        "src/model/MatchSoccer.js",
-        "src/model/PlayerSoccer.js",
-        "src/model/TeamSoccer.js",
-        "src/SoccerService.js",
-        "src/injector/HomePlayerDataInjector.js",
-        "src/injector/GuestPlayerDataInjector.js",
-        "src/injector/BenchPlayersDataInjector.js",
-        "src/injector/LastCardsDataInjector.js",
-        "src/injector/LastGoalDataInjector.js",
-        "src/injector/LastReplacementDataInjector.js"
-      ]
-    }
-  ]
+    "debug": true,
+    "modules": [
+        {
+            "icon": "app:widget",
+            "nameWc": "dashboard-index",
+            "label": "Dashboard",
+            "plugin": true,
+            "customeStyle": {
+                "color": " green"
+            },
+            "name": "dashboard",
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Widget.js"
+            ]
+        },
+        {
+            "icon": "app:monitor",
+            "nameWc": "monitor-index",
+            "label": "Monitor",
+            "customeStyle": {
+                "color": " green"
+            },
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Monitor.js",
+                "src/model/VirtualMonitor.js",
+                "src/model/VirtualMonitorReference.js"
+            ],
+            "name": "monitor"
+        },
+        {
+            "icon": "app:resource",
+            "nameWc": "resource-index",
+            "label": "Resource",
+            "customeStyle": {
+                "color": "green"
+            },
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/GenericFile.js",
+                "src/model/Image.js",
+                "src/model/Video.js",
+                "src/model/Audio.js",
+                "src/model/SourcePath.js",
+                "src/model/LocationPath.js"
+            ],
+            "name": "resource"
+        },
+        {
+            "icon": "app:timeslot",
+            "nameWc": "timeslot-index",
+            "label": "Timeslot",
+            "customeStyle": {
+                "color": "green"
+            },
+            "configFile": "config.js",
+            "autoloads": [
+                "src/TimeslotService.js",
+                "src/model/Timeslot.js",
+                "src/model/TimeslotDataReference.js",
+                "src/injector/AbstractInjector.js",
+                "src/injector/TimeslotDataInjectorServicePluginManager.js",
+                "src/injector/Test1.js",
+                "src/injector/Test2.js"
+            ],
+            "name": "timeslot",
+            "widgets": [
+                {
+                    "src": "widget/timeslot-tags.html",
+                    "description": "Widget to view tagged timeslot",
+                    "name": "Timeslot tags",
+                    "wc": "timeslot-tags",
+                    "dataProperty": "tags",
+                    "dataLabel": "tags",
+                    "dataRequired": true
+                }
+            ]
+        },
+        {
+            "icon": "app:playlist",
+            "nameWc": "playlist-index",
+            "label": "Playlist",
+            "customeStyle": {
+                "color": "green"
+            },
+            "configFile": "config.js",
+            "autoloads": [
+                "src/PlaylistService.js",
+                "src/model/Playlist.js"
+            ],
+            "name": "playlist"
+        },
+        {
+            "configFile": "config.js",
+            "name": "player",
+            "autoloadWs": [
+                "element/player-timeslot/player-timeslot.html",
+                "element/player-monitor/player-monitor.html",
+                "element/player-monitor-manager/player-monitor-manager.html"
+            ]
+        },
+        {
+            "name": "video-panel",
+            "label": "Video panel",
+            "customeStyle": {
+                "color": " green"
+            },
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Sideline.js",
+                "src/model/SidelineReference.js",
+                "src/model/SidelineResource.js",
+                "src/model/mosaic/MonitorMosaicWrapper.js",
+                "src/model/mosaic/SidelineMosaicWrapper.js",
+                "src/model/mosaic/ResourceMosaic.js",
+                "src/model/mosaic/Mosaic.js",
+                "src/SidelineResourceGenerator.js",
+                "src/VideoPanelResourceService.js",
+                "src/ffmpg/SidelineMosaic.js"
+            ],
+            "autoloadWs": [],
+            "widgets": [],
+            "icon": "app:video-panel",
+            "nameWc": "video-panel-index"
+        },
+        {
+            "icon": "app:devices",
+            "nameWc": "media-device-index",
+            "label": "Device",
+            "plugin": true,
+            "customeStyle": {
+                "color": " green"
+            },
+            "name": "media-device",
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/MediaDevice.js",
+                "src/injector/MediaDeviceDataInjector"
+            ]
+        },
+        {
+            "icon": "app:timer",
+            "nameWc": "timer-index",
+            "label": "Timer",
+            "plugin": true,
+            "customeStyle": {
+                "color": " green"
+            },
+            "name": "timer",
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Timer.js",
+                "src/TimerService",
+                "src/injector/TimerDataInjector"
+            ]
+        },
+        {
+            "icon": "app:soccer",
+            "nameWc": "soccer-index",
+            "label": "Soccer",
+            "plugin": true,
+            "customeStyle": {
+                "color": " green"
+            },
+            "name": "soccer",
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Goal.js",
+                "src/model/Card.js",
+                "src/model/Replacement.js",
+                "src/model/MatchSoccer.js",
+                "src/model/PlayerSoccer.js",
+                "src/model/TeamSoccer.js",
+                "src/SoccerService.js",
+                "src/injector/HomePlayerDataInjector.js",
+                "src/injector/GuestPlayerDataInjector.js",
+                "src/injector/BenchPlayersDataInjector.js",
+                "src/injector/LastCardsDataInjector.js",
+                "src/injector/LastGoalDataInjector.js",
+                "src/injector/LastReplacementDataInjector.js"
+            ]
+        }
+    ]
 }

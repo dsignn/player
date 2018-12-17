@@ -9,8 +9,6 @@ class  HttpClient  {
         this.url = url;
 
         this.headers = headers;
-
-        this.client = require('node-fetch');
     }
 
     /**
@@ -21,14 +19,6 @@ class  HttpClient  {
     get(attachPath, headers) {
 
 
-        // TODO merge headers
-        // TODO compute path
 
-        return this.client(
-            `${this.url}${attachPath}`,
-            {
-                headers: this.headers
-            }
-        );
     }
 }
