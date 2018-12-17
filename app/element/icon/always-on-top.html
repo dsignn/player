@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
-<dom-module id="element-atop">
+<dom-module id="element-always-on-top">
   <template>
     <style>
       paper-toggle-button {
@@ -18,10 +18,10 @@
   </template>
 
   <script>
-      class ElementAtop extends Polymer.Element {
+      class ElementAlwayOnTop extends Polymer.Element {
 
           static get is() {
-              return 'element-atop';
+              return 'element-always-on-top';
           }
 
           // Declare properties for the element's public API
@@ -33,11 +33,14 @@
               }
           }
 
-          constructor() {
-              super();
+          ready() {
+              super.ready();
 
-              require('electron').ipcRenderer.on('enable-atop', this._enableAtop.bind(this));
-              require('electron').ipcRenderer.on('disable-atop', this._disableAtop.bind(this));
+              require('electron').ipcRenderer.on('enable-always-on-top', this._enableAtop.bind(this));
+              require('electron').ipcRenderer.on('disable-always-on-top', this._disableAtop.bind(this));
+
+              this.$.paperToggleEnable.addEventListener('change', this._change.bind(this));
+              this.$.paperToggleEnable.checked = serviceManager.get('Config').dashboard.alwaysOnTop;
               // TODO DEFAULT
           }
 
@@ -52,7 +55,7 @@
               }
 
               this.$.paperToggleEnable.checked = true;
-              this.label = 'Atop enable';
+              this.label = 'Always on top enable';
           }
 
           /**
@@ -66,12 +69,24 @@
               }
 
               this.$.paperToggleEnable.checked = false;
-              this.label = 'Atop disable';
+              this.label = 'Always on top disable';
           }
 
+          /**
+           * @param evt
+           * @private
+           */
+          _change(evt) {
+
+              require('electron').ipcRenderer.send(
+                  'toggle-always-on-top',
+                  {
+                      context: 'dashboard',
+                      status: evt.target.checked === true ? 'enable' : 'disable'
+                  });
+          }
       }
 
-      window.customElements.define(ElementAtop.is, ElementAtop);
-
+      window.customElements.define(ElementAlwayOnTop.is, ElementAlwayOnTop);
   </script>
 </dom-module>

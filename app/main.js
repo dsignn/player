@@ -82,6 +82,108 @@ class App {
     }
 
     /**
+     * @param {boolean} status
+     * @return {App}
+     */
+    setDashboardAlwaysOnTop(status) {
+        this.dashboard.setAlwaysOnTop(status);
+        this.config.dashboard.alwaysOnTop = status;
+        this._saveConfigSettings();
+        return this;
+    }
+
+    /**
+     * @param {boolean} status
+     * @param {string} id
+     */
+    setMonitorAlwaysOnTop(status, id) {
+        let monitor = this.monitorsWrapper.getMonitor(id);
+
+        if(!monitor) {
+            return;
+        }
+
+        monitor.browserWindows.setAlwaysOnTop(status);
+        monitor.alwaysOnTop = status;
+        this._saveMonitorsSettings();
+        return this;
+    }
+
+    /**
+     * @private
+     */
+    _saveConfigSettings() {
+        fs.writeFile(
+            App.PATH_APP_FILE_CONFIG,
+            JSON.stringify(this.config, null, 4),
+            function(err) {
+                if(err) {
+                    console.error("Save config error: " + err);
+                    return;
+                }
+            }
+        );
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     * @private
+     */
+    static getMonitoHydrator() {
+        let monitorHydrator = new PropertyHydrator(
+            new Monitor(),
+            {
+                width: new NumberStrategy(),
+                height: new NumberStrategy(),
+                offsetX: new NumberStrategy(),
+                offsetY: new NumberStrategy()
+            }
+        );
+
+        monitorHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('offsetX')
+            .enableExtractProperty('offsetY')
+            .enableExtractProperty('height')
+            .enableExtractProperty('width')
+            .enableExtractProperty('backgroundColor')
+            .enableExtractProperty('polygon')
+            .enableExtractProperty('monitors')
+            .enableExtractProperty('defaultTimeslotId');
+
+        monitorHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('offsetX')
+            .enableHydrateProperty('offsetY')
+            .enableHydrateProperty('height')
+            .enableHydrateProperty('width')
+            .enableHydrateProperty('backgroundColor')
+            .enableHydrateProperty('polygon')
+            .enableHydrateProperty('monitors')
+            .enableHydrateProperty('defaultTimeslotId');
+
+        return monitorHydrator;
+    }
+
+    /**
+     * @private
+     */
+    _saveMonitorsSettings() {
+        let data = this.hydratorManager.get('virtualHydrator').extract(this.monitorsWrapper);
+        console.log('DATA', data);
+        fs.writeFile(
+            App.PATH_MONITOR_FILE_CONFIG,
+            JSON.stringify({'monitorConfig' : data}, null, 4),
+            function(err) {
+                if(err) {
+                    console.error("Save monitor error: " + err);
+                    return;
+                }
+            }
+        );
+    }
+
+    /**
      * @return {App}
      */
     createWindowDashboard() {
@@ -97,11 +199,17 @@ class App {
             title : `Dsign Dashboard`
         });
 
+        this.dashboard.setAlwaysOnTop(this.config.dashboard.alwaysOnTop);
+
         this.dashboard.loadURL(url.format({
             pathname: path.join(__dirname, '/dashboard.html'),
             protocol: 'file:',
             slashes: true
         }));
+
+        if (this.config && this.config.debug === true) {
+            this.dashboard.openDevTools({detached: true});
+        }
 
         // Emitted when the window is closed.
         this.dashboard.on('closed', () => {
@@ -131,6 +239,8 @@ class App {
             title :  `Dsign Screen [${monitor.name.toUpperCase()}]`
 
         });
+
+        browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
             browserWindows.send('player-monitor-config', monitor);
@@ -198,21 +308,22 @@ class App {
      * @private
      */
     _injectHydratorManager() {
+
         this.hydratorManager = new HydratorManager();
 
-        let monitorHydrator = new PropertyHydrator(
-            new Monitor(),
-            {
-                width: new NumberStrategy(),
-                height: new NumberStrategy(),
-                offsetX: new NumberStrategy(),
-                offsetY: new NumberStrategy()
-            }
-        );
+        let monitorHydrator = App.getMonitoHydrator();
+
+        monitorHydrator.enableExtractProperty('alwaysOnTop');
+        monitorHydrator.enableHydrateProperty('alwaysOnTop');
 
         monitorHydrator.addStrategy(
             'monitors',
-            new HydratorStrategy(monitorHydrator)
+            new HydratorStrategy(App.getMonitoHydrator())
+        );
+
+        this.hydratorManager.set(
+            'monitorHydrator',
+            monitorHydrator
         );
 
         let virtualHydrator = new PropertyHydrator(
@@ -235,18 +346,38 @@ class App {
          * dashboard Atop Enable
          */
         globalShortcut.register('Control+A+E', () => {
-            console.log('ENABLE-----');
-            application.getDashboard().setAlwaysOnTop(true);
-            application.getDashboard().send('enable-atop', {context : 'dashboard'});
+            application.setDashboardAlwaysOnTop(true);
+            application.getDashboard().send('enable-always-on-top', {context : 'dashboard'});
         });
 
         /**
          *  dashboard Atop Disable
          */
         globalShortcut.register('Control+A+D', () => {
+            application.setDashboardAlwaysOnTop(false);
+            application.getDashboard().send('disable-always-on-top', {context : 'dashboard'});
+        });
+
+        /**
+         *  Screen Atop Disable
+         */
+        globalShortcut.register('Alt+A+E', () => {
+            console.log('ENABLE----');
+            let monitors = application.getMonitorWrapper().getMonitors();
+            for (let cont = 0; monitors.length > cont; cont++) {
+                application.setMonitorAlwaysOnTop(true, monitors[cont].id);
+            }
+        });
+
+        /**
+         *  Screen Atop Disable
+         */
+        globalShortcut.register('Alt+A+D', () => {
             console.log('DISABLE----');
-            application.getDashboard().setAlwaysOnTop(false);
-            application.getDashboard().send('disable-atop', {context : 'dashboard'});
+            let monitors = application.getMonitorWrapper().getMonitors();
+            for (let cont = 0; monitors.length > cont; cont++) {
+                application.setMonitorAlwaysOnTop(false, monitors[cont].id);
+            }
         });
 
         return this;
@@ -485,6 +616,11 @@ ipcMain.on('proxy', (event, message) => {
 /**
  * enable atop
  */
-ipcMain.on('enable-atop', (event, message) => {
+ipcMain.on('toggle-always-on-top', (event, message) => {
 
+    switch (message.context) {
+        case 'dashboard' :
+            application.setDashboardAlwaysOnTop(message.status === 'enable' ? true : false);
+            break;
+    }
 });

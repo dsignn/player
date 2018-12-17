@@ -360,7 +360,6 @@
                                     } else {
 
                                         if (data.enable > 0 && data.id === enableMonitor.id) {
-                                            console.log('modificaaaaaaaaaaa', enableMonitor, data);
                                             PluginMonitorIndex.electronIpc.send('update-enable-monitor-configuration', data)
                                         }
                                     }

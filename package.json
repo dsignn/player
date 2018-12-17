@@ -33,7 +33,7 @@
     "app-module-path": "^2.2.0",
     "archiver": "^3.0.0",
     "dexie": "^2.0.4",
-    "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git",
+    "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v2.2.3",
     "file-metadata": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^7.0.1",
