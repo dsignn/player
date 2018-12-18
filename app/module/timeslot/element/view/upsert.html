@@ -129,7 +129,7 @@
                             </template>
                         </paper-autocomplete>
                         <div id="listResource"></div>
-                        <data-injector-input id="dataRefernces"></data-injector-input>
+                        <data-injector-input id="dataReferences"></data-injector-input>
                         <paper-chip-input values="{{timeslot.tags}}"></paper-chip-input>
                         <paper-autocomplete
                                 id="bind"
@@ -275,10 +275,10 @@
 
                 this.timeslot.dataReferences = [];
 
-                if (this.$.dataRefernces.data && this.$.dataRefernces.service) {
+                if (this.$.dataReferences.data && this.$.dataReferences.service) {
                     let timeslotData = new TimeslotDataReference();
-                    timeslotData.name = this.$.dataRefernces.service.serviceName;
-                    timeslotData.data = this.$.dataRefernces.service.extractTimeslot(this.$.dataRefernces.data);
+                    timeslotData.name = this.$.dataReferences.service.serviceName;
+                    timeslotData.data = this.$.dataReferences.service.extractTimeslot(this.$.dataReferences.data);
                     this.timeslot.dataReferences.push(timeslotData);
                 }
 
@@ -336,21 +336,21 @@
                 if (Array.isArray(this.timeslot.dataReferences) && this.timeslot.dataReferences.length > 0) {
                     let dataReferences = this.timeslot.dataReferences[0];
 
-                    let service = this.$.dataRefernces.$.serviceInput.source.find(
+                    let service = this.$.dataReferences.$.serviceInput.source.find(
                         (element) => {
                             return element.serviceName == dataReferences.name;
                         }
                     );
 
                     if (service) {
-                        this.$.dataRefernces.service = service;
-                        this.$.dataRefernces.$.serviceInput.text = service.serviceLabel;
-                        this.$.dataRefernces.hideDataInput = false;
+                        this.$.dataReferences.service = service;
+                        this.$.dataReferences.$.serviceInput.text = service.serviceLabel;
+                        this.$.dataReferences.hideDataInput = false;
 
                         service.getTimeslotData(dataReferences.data)
                             .then((data) => {
-                                this.$.dataRefernces.data = data;
-                                this.$.dataRefernces.$.dataInput.text = this.$.dataRefernces.service.extractMedatadaFromData(data, dataReferences);
+                                this.$.dataReferences.data = data;
+                                this.$.dataReferences.$.dataInput.text = this.$.dataReferences.service.extractMedatadaFromData(data, dataReferences);
                             });
 
                     }
@@ -550,7 +550,7 @@
                 this.$.listResource.innerHTML = '';
                 this.$.bind.clear();
                 this.$.listBind.innerHTML = '';
-                this.$.dataRefernces.clear();
+                this.$.dataReferences.clear();
             }
         }
 

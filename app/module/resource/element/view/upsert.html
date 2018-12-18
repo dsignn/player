@@ -4,6 +4,7 @@
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
 <link rel="import" href="../iconset/iconset.html">
 <link rel="import" href="../../../../css/global-layout.html">
@@ -19,6 +20,7 @@
                 <div>
                     <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
                     <file-upload id="fileUpload" tmp-relative-path="/../tmp/" rename-single-file="resource"></file-upload>
+                    <paper-chip-input id="tags" values="{{resource.tags}}"></paper-chip-input>
                 </div>
                 <div>
                     <div class="flex flex-horizontal-end" style="margin-top: 20px;">
@@ -88,6 +90,7 @@
                     let resource = serviceManager.get('HydratorPluginManager').get('resourceHydrator').hydrate(file);
                     resource.setTmpSourcePath(new SourcePath(file.path));
                     resource.name = this.$.name.value;
+                    resource.tags = this.$.tags.values;
                     if (this.resource.id) {
                         resource.id = this.resource.id;
                     }
