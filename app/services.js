@@ -205,4 +205,9 @@ serviceManager.set(
             }
         };
     }
+).set(
+    'P2p',
+    (function () {
+        let p2p = new P2p(3000, 2000, 'dashboard');
+    })()
 );
