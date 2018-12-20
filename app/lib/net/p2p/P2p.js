@@ -24,6 +24,12 @@ class P2p {
 
         /**
          * @type {Number}
+         * @private
+         */
+        this._id = Utils.uid;
+
+        /**
+         * @type {Number}
          */
         this.retransmissionTimer = retransmissionTimer;
 
@@ -60,6 +66,8 @@ class P2p {
 
         this.broadcaster.on('message', this._onBroadcasterMessage.bind(this));
 
+        this.broadcaster.on('error', this._onBroadcasterError.bind(this));
+
         this.broadcaster.bind(this.port);
     }
 
@@ -91,6 +99,7 @@ class P2p {
      */
     generateMessage() {
         return {
+            'id' : this._id,
             'debugString' : this.debugString,
             'ip' : this.ip
         };
@@ -110,7 +119,16 @@ class P2p {
      * @private
      */
     _onBroadcasterMessage(message, info) {
-        console.log('BROADCASTER MESSAGE', info.address, info.port, message.toString());
+        let jsonMessage = JSON.parse(message.toString());
+        console.log('BROADCASTER MESSAGE', info.address, info.port, jsonMessage);
+    }
+
+    /**
+     * @param error
+     * @private
+     */
+    _onBroadcasterError(error) {
+        console.log('BROADCASTER ERROR', error);
     }
 
     /**
@@ -120,7 +138,7 @@ class P2p {
         setTimeout(
             () =>  {
                 let stringMessage = JSON.stringify(this.generateMessage());
-                this.broadcaster.send(stringMessage, 0 , stringMessage.length, this.port);
+                this.broadcaster.send(stringMessage, 0, stringMessage.length, this.port, '255.255.255.255');
                 this._loopAlive();
             },
             this.retransmissionTimer
