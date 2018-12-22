@@ -93,7 +93,6 @@ class P2p {
      */
     _onBroadcasterMessage(message, info) {
         let jsonMessage = JSON.parse(message.toString());
-        console.log('BROADCASTER MESSAGE', info.address, info.port, jsonMessage);
 
         /**
          * me
@@ -101,7 +100,7 @@ class P2p {
         if (jsonMessage.id === this.identifier) {
 
             if (!this.adapterServer) {
-
+                console.log('CREARE SERVER', info.address, info.port, jsonMessage);
                 let net = require('net');
 
                 this.adapterServer = net.createServer((socket) => {
@@ -116,8 +115,26 @@ class P2p {
         }
 
         if (!this.hasIpClient(info.address)) {
-            console.log('CREARE connection');
+            console.log('CREARE CLIENT', info.address);
           //  this.clients.push(P2p.createConnectionAdapter(info.address));
+            let net = require('net');
+
+            var client = new net.Socket();
+            client.connect(jsonMessage.port, info.address, function() {
+                console.log('Connected');
+                client.write('Hello, server! Love, Client.');
+            });
+
+            client.on('data', function(data) {
+                console.log('Received: ' + data);
+                client.destroy(); // kill client after server's response
+            });
+
+            client.on('close', function() {
+                console.log('Connection closed');
+            });
+
+            this.adapterClients.push(client);
         }
     }
 
@@ -127,7 +144,7 @@ class P2p {
      */
     hasIpClient(ip) {
         // TODO
-        return false;
+        return this.adapterClients.length > 0;
     }
 
     /**
