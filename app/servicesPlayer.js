@@ -59,9 +59,4 @@ serviceManager.set(
 
         return application;
     })()
-).set(
-    'P2p',
-    (function () {
-        let p2p = new P2p(3001, 3000, 2000, 'player', 1);
-    })()
-);;
+);

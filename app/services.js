@@ -208,7 +208,7 @@ serviceManager.set(
 ).set(
     'P2p',
     (function (sm) {
-  console.log(serviceManager.get('Config').p2p.broadcasting);
+
         let p2p = new P2p(
             serviceManager.get('Config').p2p.broadcasting,
             {},
