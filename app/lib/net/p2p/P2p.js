@@ -73,7 +73,8 @@ class P2p {
      */
     generateMessage() {
         return {
-            'id' : this.identifier
+            'id' : this.identifier,
+            'port' : this.clientOptions.port
         };
     }
 
@@ -93,6 +94,27 @@ class P2p {
     _onBroadcasterMessage(message, info) {
         let jsonMessage = JSON.parse(message.toString());
         console.log('BROADCASTER MESSAGE', info.address, info.port, jsonMessage);
+
+        /**
+         * me
+         */
+        if (jsonMessage.id === this.identifier) {
+
+            if (!this.adapterServer) {
+
+                let net = require('net');
+
+                this.adapterServer = net.createServer((socket) => {
+                    socket.write('Echo server\r\n');
+                    socket.pipe(socket);
+                });
+
+                this.adapterServer.listen(this.adapterClients.port,  info.address);
+
+            }
+            return;
+        }
+
         if (!this.hasIpClient(info.address)) {
             console.log('CREARE connection');
           //  this.clients.push(P2p.createConnectionAdapter(info.address));

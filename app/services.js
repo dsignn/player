@@ -211,7 +211,7 @@ serviceManager.set(
 
         let p2p = new P2p(
             serviceManager.get('Config').p2p.broadcasting,
-            {},
+            serviceManager.get('Config').p2p.adapter,
             serviceManager.get('Config').p2p.identifier
         );
     })()
