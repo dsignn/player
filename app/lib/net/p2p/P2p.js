@@ -4,94 +4,63 @@ class P2p {
 
     static get ETHERNET() { return 'ethernet'};
 
+    static get BROADCASTER_IP() { return '255.255.255.255'};
+
     /**
-     * @param {Number} port
-     * @param {Number} retransmissionTimer
-     * TODO REMOVE debug string, cont
+     * @param {Object} updClienOptions
+     * @param {Object} clientOptions
+     * @param debugString
      */
-    constructor(port, retransmissionTimer, debugString) {
-
-        this.debugString = debugString;
-        /**
-         * @type {Number}
-         */
-        this.port = port;
+    constructor(updClienOptions, clientOptions, debugString) {
 
         /**
-         * @type {String|null}
+         * @type {Object}
          */
-        this.ip = null;
+        this.updClienOptions = updClienOptions;
 
         /**
-         * @type {Number}
-         * @private
+         * @type {Object}
          */
-        this._id = Utils.uid;
-
-        /**
-         * @type {Number}
-         */
-        this.retransmissionTimer = retransmissionTimer;
+        this.clientOptions = clientOptions;
 
         /**
          * @type {module:dgram.Socket|null}
          */
-        this.broadcaster = null;
+        this.updClient = this._createUdpClientBroadcaster();
 
         /**
          * @type {Array}
          */
-        this.clients = [];
+        this.adapterClients = [];
 
         /**
          * @type {null}
          */
-        this.server = null;
+        this.adapterServer = null;
 
-        this._createUdpClientBroadcaster();
-
-        this._setDefaultIp();
-
+        /**
+         * Config
+         */
         this._loopAlive();
     }
 
     /**
+     * @return {module:dgram.Socket}
      * @private
      */
     _createUdpClientBroadcaster() {
 
-        this.broadcaster = require('dgram').createSocket("udp4");
+        let updClient = require('dgram').createSocket("udp4");
 
-        this.broadcaster.on('listening', this._onBroadcasterListening.bind(this));
+        updClient.on('listening', this._onBroadcasterListening.bind(this));
 
-        this.broadcaster.on('message', this._onBroadcasterMessage.bind(this));
+        updClient.on('message', this._onBroadcasterMessage.bind(this));
 
-        this.broadcaster.on('error', this._onBroadcasterError.bind(this));
+        updClient.on('error', this._onBroadcasterError.bind(this));
 
-        this.broadcaster.bind(this.port);
-    }
+        updClient.bind(this.updClienOptions.portListening);
 
-    /**
-     * @param {String} ip
-     */
-    setIp(ip) {
-        this.ip = ip;
-    }
-
-    /**
-     * @return {string}
-     */
-    getIp() {
-        return this.ip;
-    }
-
-    /**
-     * @param cont
-     * @private
-     */
-    _setDefaultIp() {
-        let listIp = P2p.getLocalIp();
-        this.ip = listIp.length > 0 ? listIp[0] : null;
+        return updClient;
     }
 
     /**
@@ -99,9 +68,8 @@ class P2p {
      */
     generateMessage() {
         return {
-            'id' : this._id,
-            'debugString' : this.debugString,
-            'ip' : this.ip
+            'id' : 'test',
+            'debugString' : 'test1'
         };
     }
 
@@ -110,7 +78,7 @@ class P2p {
      */
     _onBroadcasterListening() {
         console.log('BROADCASTER LISTENING');
-        this.broadcaster.setBroadcast(true);
+        this.updClient.setBroadcast(true);
     }
 
     /**
@@ -121,6 +89,10 @@ class P2p {
     _onBroadcasterMessage(message, info) {
         let jsonMessage = JSON.parse(message.toString());
         console.log('BROADCASTER MESSAGE', info.address, info.port, jsonMessage);
+        if (!this.hasIpClient(info.address)) {
+            console.log('CREARE connection');
+          //  this.clients.push(P2p.createConnectionAdapter(info.address));
+        }
     }
 
     /**
@@ -138,47 +110,10 @@ class P2p {
         setTimeout(
             () =>  {
                 let stringMessage = JSON.stringify(this.generateMessage());
-                this.broadcaster.send(stringMessage, 0, stringMessage.length, this.port, '255.255.255.255');
+                this.updClient.send(stringMessage, 0, stringMessage.length, this.updClienOptions.portSender, '255.255.255.255');
                 this._loopAlive();
             },
             this.retransmissionTimer
         );
-    }
-
-    /**
-     * @return {Array}
-     */
-    static getLocalIp() {
-
-        let os = require('os');
-        let networkInterfaces = os.networkInterfaces();
-        let result = [];
-        let networkInterface = {};
-
-        Object.keys(networkInterfaces).forEach(function (networkInterfaceName) {
-            let alias = 0;
-
-            networkInterfaces[networkInterfaceName].forEach(function (loopNetworkInterface) {
-                if ('IPv4' !== loopNetworkInterface.family || loopNetworkInterface.internal !== false) {
-                    // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-                    return;
-                }
-
-                networkInterface = {
-                    name : networkInterfaceName,
-                    ip : loopNetworkInterface.address
-                };
-
-                if (alias >= 1) {
-                    networkInterface.alias = alias;
-                }
-
-                result.push(networkInterface);
-
-                ++alias;
-            });
-        });
-
-        return result;
     }
 }

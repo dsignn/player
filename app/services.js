@@ -208,6 +208,6 @@ serviceManager.set(
 ).set(
     'P2p',
     (function () {
-        let p2p = new P2p(3000, 2000, 'dashboard');
+        let p2p = new P2p(3000, 3001, 2000, 'Dashboard', 1);
     })()
 );
