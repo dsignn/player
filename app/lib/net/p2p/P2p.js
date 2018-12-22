@@ -9,9 +9,14 @@ class P2p {
     /**
      * @param {Object} updClienOptions
      * @param {Object} clientOptions
-     * @param debugString
+     * @param {string} identifier
      */
-    constructor(updClienOptions, clientOptions, debugString) {
+    constructor(updClienOptions, clientOptions, identifier) {
+
+        /**
+         * @type {string}
+         */
+        this.identifier = identifier;
 
         /**
          * @type {Object}
@@ -68,8 +73,7 @@ class P2p {
      */
     generateMessage() {
         return {
-            'id' : 'test',
-            'debugString' : 'test1'
+            'id' : this.identifier
         };
     }
 
@@ -96,6 +100,15 @@ class P2p {
     }
 
     /**
+     * @param {string} ip
+     * @return {boolean}
+     */
+    hasIpClient(ip) {
+        // TODO
+        return false;
+    }
+
+    /**
      * @param error
      * @private
      */
@@ -113,7 +126,7 @@ class P2p {
                 this.updClient.send(stringMessage, 0, stringMessage.length, this.updClienOptions.portSender, '255.255.255.255');
                 this._loopAlive();
             },
-            this.retransmissionTimer
+            this.updClienOptions.transmissionTimeout
         );
     }
 }

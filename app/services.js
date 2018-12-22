@@ -207,7 +207,12 @@ serviceManager.set(
     }
 ).set(
     'P2p',
-    (function () {
-        let p2p = new P2p(3000, 3001, 2000, 'Dashboard', 1);
+    (function (sm) {
+  console.log(serviceManager.get('Config').p2p.broadcasting);
+        let p2p = new P2p(
+            serviceManager.get('Config').p2p.broadcasting,
+            {},
+            serviceManager.get('Config').p2p.identifier
+        );
     })()
 );
