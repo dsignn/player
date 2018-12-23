@@ -207,12 +207,13 @@ serviceManager.set(
     }
 ).set(
     'P2p',
-    (function (sm) {
+    function (sm) {
 
-        let p2p = new P2p(
-            serviceManager.get('Config').p2p.broadcasting,
-            serviceManager.get('Config').p2p.adapter,
-            serviceManager.get('Config').p2p.identifier
+        return new P2p(
+            sm.get('Config').p2p.broadcasting,
+            sm.get('Config').p2p.adapter,
+            sm.get('Config').p2p.identifier
         );
-    })()
-);
+});
+
+let test = serviceManager.get('P2p');

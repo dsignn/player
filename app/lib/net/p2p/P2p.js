@@ -8,10 +8,10 @@ class P2p {
 
     /**
      * @param {Object} updClienOptions
-     * @param {Object} clientOptions
+     * @param {Object} serverOptions
      * @param {string} identifier
      */
-    constructor(updClienOptions, clientOptions, identifier) {
+    constructor(updClienOptions, serverOptions, identifier) {
 
         /**
          * @type {string}
@@ -26,7 +26,7 @@ class P2p {
         /**
          * @type {Object}
          */
-        this.clientOptions = clientOptions;
+        this.serverOptions = serverOptions;
 
         /**
          * @type {module:dgram.Socket|null}
@@ -74,7 +74,7 @@ class P2p {
     generateMessage() {
         return {
             'id' : this.identifier,
-            'port' : this.clientOptions.port
+            'port' : this.serverOptions.port
         };
     }
 
@@ -93,49 +93,40 @@ class P2p {
      */
     _onBroadcasterMessage(message, info) {
         let jsonMessage = JSON.parse(message.toString());
-
+       // console.log("RECEIVE MESSAGE", jsonMessage);
         /**
          * me
          */
         if (jsonMessage.id === this.identifier) {
 
             if (!this.adapterServer) {
-                console.log('CREARE SERVER', info.address, info.port, jsonMessage);
-                let net = require('net');
-
-                this.adapterServer = net.createServer((socket) => {
-                    socket.write('Echo server\r\n');
-                    socket.pipe(socket);
-                });
-
-                this.adapterServer.listen(this.adapterClients.port,  info.address);
-
+                this.createServer(info.address);
             }
             return;
         }
 
-        if (!this.hasIpClient(info.address)) {
+        if (!this.hasIpClient(info.address) && this.adapterServer) {
             console.log('CREARE CLIENT', info.address);
           //  this.clients.push(P2p.createConnectionAdapter(info.address));
             try {
                 let net = require('net');
 
                 var client = new net.Socket();
-                client.connect(jsonMessage.port, info.address, function() {
+                client.connect(jsonMessage.port, info.address, () => {
                     console.log('Connected');
                     client.write('Hello, server! Love, Client.');
+                    this.adapterClients.push(client);
                 });
 
-                client.on('data', function(data) {
+                client.on('data', (data) => {
                     console.log('Received: ' + data);
                     client.destroy(); // kill client after server's response
                 });
 
-                client.on('close', function() {
+                client.on('close', () => {
                     console.log('Connection closed');
                 });
 
-                this.adapterClients.push(client);
             } catch (e) {
                 console.error(e);
             }
@@ -166,10 +157,36 @@ class P2p {
         setTimeout(
             () =>  {
                 let stringMessage = JSON.stringify(this.generateMessage());
+                console.log("SEND MESSAGE", stringMessage);
                 this.updClient.send(stringMessage, 0, stringMessage.length, this.updClienOptions.portSender, '255.255.255.255');
                 this._loopAlive();
             },
             this.updClienOptions.transmissionTimeout
         );
+    }
+
+    /**
+     * @return {null}
+     */
+    getServer() {
+        return this.adapterServer;
+    }
+
+    /**
+     * @param ip
+     */
+    createServer(ip) {
+        let net = require('net');
+        console.log('CREATE SERVER',this.serverOptions.port,  ip);
+        this.adapterServer = net.createServer((socket) => {
+            socket.write('Echo server\r\n');
+            socket.pipe(socket);
+
+            socket.on('data', function (data) {
+                console.log('ADAPTER DATA', data);
+            });
+        });
+
+        this.adapterServer.listen(this.serverOptions.port,  ip);
     }
 }
