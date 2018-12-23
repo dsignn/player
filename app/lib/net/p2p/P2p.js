@@ -178,7 +178,7 @@ class P2p {
         let net = require('net');
         console.log('CREATE SERVER',this.serverOptions.port,  ip);
         this.adapterServer = net.createServer((socket) => {
-            socket.write('Echo server\r\n');
+            socket.write('Echo server' + this.identifier);
             socket.pipe(socket);
 
             socket.on('data', function (data) {
