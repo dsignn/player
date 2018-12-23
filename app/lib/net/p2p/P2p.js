@@ -193,7 +193,7 @@ class P2p {
      * @param message
      */
     send(message) {
-        for (let cont = 0; this.adapterClients.length > cont; cont) {
+        for (let cont = 0; this.adapterClients.length > cont; cont++) {
             this.adapterClients[cont].write(message);
         }
     }
