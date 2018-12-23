@@ -106,25 +106,24 @@ class P2p {
         }
 
         if (!this.hasIpClient(info.address) && this.adapterServer) {
-            console.log('CREARE CLIENT', info.address);
+            console.log('CLIENT CREAZIONE', info.address);
           //  this.clients.push(P2p.createConnectionAdapter(info.address));
             try {
                 let net = require('net');
 
                 var client = new net.Socket();
                 client.connect(jsonMessage.port, info.address, () => {
-                    console.log('Connected');
-                    client.write('Hello, server! Love, Client.');
+                    console.log('CLIENT CONNESSO');
                     this.adapterClients.push(client);
                 });
 
                 client.on('data', (data) => {
-                    console.log('Received: ' + data);
-                    client.destroy(); // kill client after server's response
+                    console.log('CLIENT RICEZIONE', data.toString());
+                //    client.destroy(); // kill client after server's response
                 });
 
                 client.on('close', () => {
-                    console.log('Connection closed');
+                    console.log('CLIENT CHIUSO');
                 });
 
             } catch (e) {
@@ -157,7 +156,7 @@ class P2p {
         setTimeout(
             () =>  {
                 let stringMessage = JSON.stringify(this.generateMessage());
-                console.log("SEND MESSAGE", stringMessage);
+                // console.log("SEND MESSAGE", stringMessage);
                 this.updClient.send(stringMessage, 0, stringMessage.length, this.updClienOptions.portSender, '255.255.255.255');
                 this._loopAlive();
             },
@@ -183,10 +182,19 @@ class P2p {
             socket.pipe(socket);
 
             socket.on('data', function (data) {
-                console.log('ADAPTER DATA', data);
+                console.log('RICEZIONE SERVER', data.toString());
             });
         });
 
         this.adapterServer.listen(this.serverOptions.port,  ip);
+    }
+
+    /**
+     * @param message
+     */
+    send(message) {
+        for (let cont = 0; this.adapterClients.length > cont; cont) {
+            this.adapterClients[cont].write(message);
+        }
     }
 }
