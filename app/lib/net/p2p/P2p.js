@@ -122,9 +122,10 @@ class P2p {
                 //    client.destroy(); // kill client after server's response
                 });
 
-                client.on('close', () => {
+                client.on('close', function() {
                     console.log('CLIENT CHIUSO');
-                });
+                    this.p2p.clearEndConnection();
+                }.bind({client : client, p2p : this}));
 
             } catch (e) {
                 console.error(e);
@@ -195,6 +196,20 @@ class P2p {
     send(message) {
         for (let cont = 0; this.adapterClients.length > cont; cont++) {
             this.adapterClients[cont].write(message);
+        }
+    }
+
+    /**
+     *
+     */
+    clearEndConnection() {
+        let length = this.adapterClients.length;
+        for (let cont = 0; length > cont; cont++) {
+            if (this.adapterClients[cont] && !this.adapterClients[cont].connecting) {
+                this.adapterClients[cont].destroy();
+                this.adapterClients.splice(cont, 1);
+                console.log(this.adapterClients, 'dai porco dio');
+            }
         }
     }
 }
