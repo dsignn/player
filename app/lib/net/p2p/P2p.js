@@ -1,8 +1,16 @@
+try {
+    EvtManager = require('./../EvtManager');
+}
+catch(err) {
+
+    EvtManager = require(__dirname + '/lib/event/EvtManager.js');
+}
+
 class P2p {
 
-    static get WIFI() { return 'wifi'};
+    static get SERVER_MESSAGE() { return 'message'};
 
-    static get ETHERNET() { return 'ethernet'};
+    static get ADAPTER_TCP() { return 'tcp'};
 
     static get BROADCASTER_IP() { return '255.255.255.255'};
 
@@ -44,6 +52,15 @@ class P2p {
         this.adapterServer = null;
 
         /**
+         *
+         */
+        this.eventManager = new EvtManager();
+
+        this.senderParser = null;
+
+        this.receiverParser = null;
+
+        /**
          * Config
          */
         this._loopAlive();
@@ -66,6 +83,16 @@ class P2p {
         updClient.bind(this.updClienOptions.portListening);
 
         return updClient;
+    }
+
+    /**
+     * @param {string} ip
+     * @return {boolean}
+     */
+    hasIpClient(ip) {
+        return this.adapterClients.findIndex((element) => {
+            return element.remoteAddress === ip;
+        }) >= 0;
     }
 
     /**
@@ -93,7 +120,7 @@ class P2p {
      */
     _onBroadcasterMessage(message, info) {
         let jsonMessage = JSON.parse(message.toString());
-       // console.log("RECEIVE MESSAGE", jsonMessage);
+
         /**
          * me
          */
@@ -106,40 +133,8 @@ class P2p {
         }
 
         if (!this.hasIpClient(info.address) && this.adapterServer) {
-            console.log('CLIENT CREAZIONE', info.address);
-          //  this.clients.push(P2p.createConnectionAdapter(info.address));
-            try {
-                let net = require('net');
-
-                var client = new net.Socket();
-                client.connect(jsonMessage.port, info.address, () => {
-                    console.log('CLIENT CONNESSO');
-                    this.adapterClients.push(client);
-                });
-
-                client.on('data', (data) => {
-                    console.log('CLIENT RICEZIONE', data.toString());
-                //    client.destroy(); // kill client after server's response
-                });
-
-                client.on('close', function() {
-                    console.log('CLIENT CHIUSO');
-                    this.p2p.clearEndConnection();
-                }.bind({client : client, p2p : this}));
-
-            } catch (e) {
-                console.error(e);
-            }
+            this.createClient(info.address, jsonMessage.port);
         }
-    }
-
-    /**
-     * @param {string} ip
-     * @return {boolean}
-     */
-    hasIpClient(ip) {
-        // TODO
-        return this.adapterClients.length > 0;
     }
 
     /**
@@ -148,6 +143,24 @@ class P2p {
      */
     _onBroadcasterError(error) {
         console.log('BROADCASTER ERROR', error);
+    }
+
+    /**
+     * @param message
+     * @private
+     */
+    _onServerMessage(message) {
+        let parsedMessage = this.receiverParser.parse(message);
+        console.log('SERVER MESSAGE', parsedMessage);
+        this.eventManager.fire(P2p.SERVER_MESSAGE, parsedMessage);
+    }
+
+    /**
+     * @param message
+     * @private
+     */
+    _onClientMessage(message) {
+        //console.log('CLIENT MESSAGE', message.toString());
     }
 
     /**
@@ -176,26 +189,77 @@ class P2p {
      * @param ip
      */
     createServer(ip) {
-        let net = require('net');
-        console.log('CREATE SERVER',this.serverOptions.port,  ip);
-        this.adapterServer = net.createServer((socket) => {
-            socket.write('Echo server' + this.identifier);
-            socket.pipe(socket);
 
-            socket.on('data', function (data) {
-                console.log('RICEZIONE SERVER', data.toString());
-            });
-        });
+        console.log('CREATE SERVER',this.serverOptions.port,  ip, this.serverOptions.type);
+        switch (this.serverOptions.type) {
+            case P2p.ADAPTER_TCP:
+                let net = require('net');
 
-        this.adapterServer.listen(this.serverOptions.port,  ip);
+                this.adapterServer = net.createServer((socket) => {
+                    socket.write('Echo server' + this.identifier);
+                    socket.pipe(socket);
+
+                    socket.on('data', this._onServerMessage.bind(this));
+                });
+
+                this.adapterServer.listen(this.serverOptions.port,  ip);
+                break;
+            default:
+                throw 'Type adapter not found';
+                break
+        }
+    }
+
+    /**
+     * @param ip
+     * @param port
+     */
+    createClient(ip, port) {
+        switch (this.serverOptions.type) {
+            case P2p.ADAPTER_TCP:
+                console.log('CLIENT CREAZIONE', ip);
+                //  this.clients.push(P2p.createConnectionAdapter(info.address));
+                try {
+                    let net = require('net');
+
+                    var client = new net.Socket();
+                    client.connect(port, ip, () => {
+                        console.log('CLIENT CONNESSO');
+                        this.adapterClients.push(client);
+                    });
+
+                    client.on('data', this._onClientMessage.bind(this));
+
+                    client.on('close', function() {
+                        console.log('CLIENT CHIUSO');
+                        this.p2p.clearEndConnection();
+                    }.bind({client : client, p2p : this}));
+
+                } catch (e) {
+                    console.error(e);
+                }
+                break;
+            default:
+                throw 'Type adapter not found';
+                break
+        }
+    }
+
+    /**
+     * @param event
+     * @param callback
+     */
+    on(event, callback) {
+        this.eventManager.on(event, callback);
     }
 
     /**
      * @param message
      */
     send(message) {
+        let parsedMessage = this.senderParser.parse(message);
         for (let cont = 0; this.adapterClients.length > cont; cont++) {
-            this.adapterClients[cont].write(message);
+            this.adapterClients[cont].write(parsedMessage);
         }
     }
 
@@ -208,8 +272,39 @@ class P2p {
             if (this.adapterClients[cont] && !this.adapterClients[cont].connecting) {
                 this.adapterClients[cont].destroy();
                 this.adapterClients.splice(cont, 1);
-                console.log(this.adapterClients, 'dai porco dio');
             }
         }
+    }
+
+    /**
+     * @return {null|*}
+     */
+    getSenderParser() {
+        return this.senderParser;
+    }
+
+    /**
+     * @param value
+     * @return {P2p}
+     */
+    setSenderParser(value) {
+        this.senderParser = value;
+        return this;
+    }
+
+    /**
+     * @return {null|*}
+     */
+    getReceiverParser() {
+        return this.receiverParser;
+    }
+
+    /**
+     * @param value
+     * @return {P2p}
+     */
+    setReceiverParser(value) {
+        this.receiverParser = value;
+        return this;
     }
 }

@@ -209,11 +209,17 @@ serviceManager.set(
     'P2p',
     function (sm) {
 
-        return new P2p(
+        let p2p = new P2p(
             sm.get('Config').p2p.broadcasting,
             sm.get('Config').p2p.adapter,
             sm.get('Config').p2p.identifier
         );
+
+        p2p.setSenderParser(new ObjectToString());
+        p2p.setReceiverParser(new BufferToObject());
+
+        return p2p;
 });
 
 let test = serviceManager.get('P2p');
+test.on(P2p.SERVER_MESSAGE, (m) => {console.log('EVENTO MESSAGGIO', m)});
