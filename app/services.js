@@ -8,6 +8,7 @@ const fs = require('fs');
 const fsExtra = require('fs-extra')
 const archiver = require('archiver');
 const admZip = require('adm-zip');
+const dsign = require('dsign-library');
 
 /**
  * inject default services
@@ -116,7 +117,7 @@ serviceManager.set(
 
             archive: () => {
                 // TODO riscrivere
-                let archive = new Archive(
+                let archive = new dsign.Archive(
                     'zip',
                     `${pathToExtract}/bk.zip`,
                     { zlib: { level: 9 } }
@@ -201,7 +202,6 @@ serviceManager.set(
                         }
                     }
                 });
-
             }
         };
     }

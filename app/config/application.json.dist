@@ -6,7 +6,8 @@
     "namespace": "Dsign"
   },
   "backup": {
-    "path": "/home/bastoni/Videos/"
+    "pathToExtract": "/home/visa/Project/dsign/player/tmp",
+    "pathTmp": "/home/visa/Project/dsign/player/tmp"
   },
   "tcpClient": {
     "port": 8002,
@@ -18,6 +19,10 @@
       "portListening": 4000,
       "portSender": 4000,
       "transmissionTimeout": 2000
+    },
+    "adapter": {
+      "type": "tcp",
+      "port": 4500
     }
   },
   "dashboard": {

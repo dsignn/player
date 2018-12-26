@@ -11,7 +11,7 @@
     "electron-builder": "~20.11.1",
     "mocha": "*",
     "nyc": "^11.7.1",
-    "polymer-cli": "^1.5.4"
+    "polymer-cli": "^1.9.4"
   },
   "scripts": {
     "postinstall": "install-app-deps",
@@ -33,6 +33,7 @@
     "app-module-path": "^2.2.0",
     "archiver": "^3.0.0",
     "dexie": "^2.0.4",
+    "dsign-library": "git+ssh://git@github.com/dsignn/library.git",
     "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v2.2.3",
     "file-metadata": "^1.0.0",
     "fluent-ffmpeg": "^2.1.2",
