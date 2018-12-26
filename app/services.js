@@ -13,7 +13,7 @@ const dsign = require('dsign-library');
 /**
  * inject default services
  */
-Application.injectServices(serviceManager);
+dsign.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
     ServiceManager.LOAD_SERVICE,
@@ -58,7 +58,7 @@ serviceManager.set(
         const fs = require('fs');
         let application = null;
         if (!application)  {
-            application = new Application(
+            application = new dsign.Application(
                 JSON.parse(fs.readFileSync(__dirname + '/config/application.json')),
                 'dashboard'
             );
