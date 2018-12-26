@@ -1,7 +1,7 @@
 /**
  *
  */
-class VideoPanelConfig extends PluginConfig {
+class VideoPanelConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *
@@ -65,7 +65,7 @@ class VideoPanelConfig extends PluginConfig {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
         serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(
@@ -121,7 +121,7 @@ class VideoPanelConfig extends PluginConfig {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
         serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(

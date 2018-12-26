@@ -1,7 +1,7 @@
 /**
  *
  */
-class TimerConfig extends PluginConfig {
+class TimerConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *
@@ -114,7 +114,7 @@ class TimerConfig extends PluginConfig {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
         serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(

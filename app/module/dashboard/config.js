@@ -1,7 +1,7 @@
 /**
  *
  */
-class DashboardConfig extends PluginConfig {
+class DashboardConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *

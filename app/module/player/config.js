@@ -1,7 +1,7 @@
 /**
  *
  */
-class PlayerConfig extends PluginConfig {
+class PlayerConfig extends require('dsign-library').ModuleConfig {
 
 
     /**

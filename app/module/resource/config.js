@@ -1,7 +1,7 @@
 /**
  *
  */
-class ResourceConfig extends PluginConfig {
+class ResourceConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *
@@ -36,7 +36,7 @@ class ResourceConfig extends PluginConfig {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
         serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(

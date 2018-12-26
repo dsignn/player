@@ -1,7 +1,7 @@
 /**
  *
  */
-class MonitorConfig extends PluginConfig {
+class MonitorConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *
@@ -34,14 +34,14 @@ class MonitorConfig extends PluginConfig {
     _loadHydrator() {
 
 
-        let monitorHydrator = this._getMonitoHydrator()
+        let monitorHydrator = this._getMonitoHydrator();
 
         monitorHydrator.enableExtractProperty('alwaysOnTop');
         monitorHydrator.enableHydrateProperty('alwaysOnTop');
 
         monitorHydrator.addStrategy(
             'monitors',
-            new HydratorStrategy(this._getMonitoHydrator())
+            new dsign.hydrator.strategy.HydratorStrategy(this._getMonitoHydrator())
         );
 
         this.serviceManager.get('HydratorPluginManager').set(
@@ -49,10 +49,10 @@ class MonitorConfig extends PluginConfig {
             monitorHydrator
         );
 
-        let virtualMonitorHydrator = new PropertyHydrator(
+        let virtualMonitorHydrator = new dsign.hydrator.PropertyHydrator(
             new VirtualMonitor(),
             {
-                'monitors' :  new HydratorStrategy(
+                'monitors' :  new dsign.hydrator.strategy.HydratorStrategy(
                     monitorHydrator
                 )
             }
@@ -80,13 +80,13 @@ class MonitorConfig extends PluginConfig {
      * @private
      */
     _getMonitoHydrator() {
-        let monitorHydrator = new PropertyHydrator(
+        let monitorHydrator = new dsign.hydrator.PropertyHydrator(
             new Monitor(),
             {
-                width: new NumberStrategy(),
-                height: new NumberStrategy(),
-                offsetX: new NumberStrategy(),
-                offsetY: new NumberStrategy()
+                width: new dsign.hydrator.strategy.NumberStrategy(),
+                height: new dsign.hydrator.strategy.NumberStrategy(),
+                offsetX: new dsign.hydrator.strategy.NumberStrategy(),
+                offsetY: new dsign.hydrator.strategy.NumberStrategy()
             }
         );
 
@@ -118,8 +118,8 @@ class MonitorConfig extends PluginConfig {
     _loadStorage() {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
-        serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+        this.serviceManager.eventManager.on(
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(

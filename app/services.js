@@ -3,12 +3,12 @@
  *
  * @type {ServiceManager}
  */
-const serviceManager = new ServiceManager();
 const fs = require('fs');
 const fsExtra = require('fs-extra')
 const archiver = require('archiver');
 const admZip = require('adm-zip');
 const dsign = require('dsign-library');
+const serviceManager = new dsign.ServiceManager();
 
 /**
  * inject default services
@@ -16,7 +16,7 @@ const dsign = require('dsign-library');
 dsign.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
-    ServiceManager.LOAD_SERVICE,
+    dsign.ServiceManager.LOAD_SERVICE,
     function(evt) {
         if (evt.data.name === 'Application') {
 
@@ -35,7 +35,7 @@ serviceManager.eventManager.on(
  */
 serviceManager.set(
     'PaperToastNotification',
-    new PaperToastNotification('notification')
+    new dsign.core.PaperToastNotification('notification')
 ).set(
     'Config',
     function (sm) {

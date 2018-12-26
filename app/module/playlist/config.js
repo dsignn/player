@@ -1,7 +1,7 @@
 /**
  *
  */
-class PlaylistConfig extends PluginConfig {
+class PlaylistConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *
@@ -99,7 +99,7 @@ class PlaylistConfig extends PluginConfig {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
         serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(
@@ -151,7 +151,7 @@ class PlaylistConfig extends PluginConfig {
      */
     _loadPlaylistService() {
         this.serviceManager.get('StoragePluginManager').eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function (evt) {
                 if (evt.data.name === PlaylistConfig.NAME_SERVICE) {
                     let playlistService =  new PlaylistService(

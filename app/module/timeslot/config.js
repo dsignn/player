@@ -1,7 +1,7 @@
 /**
  *
  */
-class TimeslotConfig extends PluginConfig {
+class TimeslotConfig extends require('dsign-library').ModuleConfig {
 
     /**
      *
@@ -122,7 +122,7 @@ class TimeslotConfig extends PluginConfig {
     _loadTimeslotService() {
 
         serviceManager.get('StoragePluginManager').eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name ===  TimeslotConfig.NAME_SERVICE) {
 
@@ -147,7 +147,7 @@ class TimeslotConfig extends PluginConfig {
         let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
 
         serviceManager.eventManager.on(
-            ServiceManager.LOAD_SERVICE,
+            dsign.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name === 'DexieManager') {
                     serviceManager.get('DexieManager').pushSchema(
