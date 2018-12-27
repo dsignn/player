@@ -339,7 +339,7 @@
 
                 serviceManager.get('StoragePluginManager')
                     .get(MonitorConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
                 );
             }
 

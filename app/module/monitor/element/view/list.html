@@ -76,12 +76,12 @@
 
               serviceManager.get('StoragePluginManager')
                   .get(MonitorConfig.NAME_SERVICE)
-                  .eventManager.on(Storage.STORAGE_POST_SAVE, this._loadResource.bind(this)
+                  .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._loadResource.bind(this)
               );
 
               serviceManager.get('StoragePluginManager')
                   .get(MonitorConfig.NAME_SERVICE)
-                  .eventManager.on(Storage.STORAGE_POST_UPDATE, this._loadResource.bind(this)
+                  .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._loadResource.bind(this)
               );
           }
 

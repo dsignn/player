@@ -87,7 +87,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
                 evt.data.location.getPath() :
                 `${serviceManager.get('Application').getBasePath()}/${evt.data.location.getPath()}`;
 
-            Utils.removeDirSync(path);
+            dsign.Utils.removeDirSync(path);
         } else {
             let path = evt.data.location.isAbsolute() ?
                 evt.data.getPath() :
@@ -127,7 +127,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
 
         let fs = require('fs');
 
-        Utils.removeDirSync( `${serviceManager.get('Application').getResourcePath()}/${evt.data.id}`);
+        dsign.Utils.removeDirSync( `${serviceManager.get('Application').getResourcePath()}/${evt.data.id}`);
 
         ResourceConfig._initFileResource(evt.data);
 

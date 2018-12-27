@@ -44,7 +44,7 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
             new dsign.hydrator.strategy.HydratorStrategy(this._getMonitoHydrator())
         );
 
-        this.getServiveManager().get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'monitorHydrator',
             monitorHydrator
         );
@@ -68,7 +68,7 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('enable')
             .enableHydrateProperty('monitors');
 
-        this.getServiveManager().get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'virtualMonitorHydrator',
             virtualMonitorHydrator
         );
@@ -116,11 +116,11 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
     }
 
     _loadStorage() {
-        this.getServiveManager().eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
             (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    this.getServiveManager().get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": MonitorConfig.NAME_COLLECTION,
                             "index": [
@@ -132,21 +132,21 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    this.getServiveManager().get('DexieManager').onReady(
+                    this.getServiceManager().get('DexieManager').onReady(
                         (evt) => {
 
                             let MonitorDexieCollection = require('../monitor/src/storage/indexed-db/dexie/MonitorDexieCollection');
 
                             let storage = new dsign.storage.Storage(
                                 new MonitorDexieCollection(
-                                    this.getServiveManager().get('DexieManager'),
+                                    this.getServiceManager().get('DexieManager'),
                                     MonitorConfig.NAME_COLLECTION
                                 ),
-                                this.getServiveManager().get('HydratorPluginManager').get('virtualMonitorHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('virtualMonitorHydrator')
                             );
 
 
-                            this.getServiveManager().get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 MonitorConfig.NAME_SERVICE,
                                 storage
                             );
