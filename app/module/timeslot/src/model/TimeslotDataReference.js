@@ -1,6 +1,7 @@
-
+/**
+ *
+ */
 class TimeslotDataReference {
-
 
     constructor() {
 

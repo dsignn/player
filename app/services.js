@@ -13,7 +13,7 @@ const serviceManager = new dsign.serviceManager.ServiceManager();
 /**
  * inject default services
  */
-dsign.Application.injectServices(serviceManager);
+dsign.core.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
     dsign.serviceManager.ServiceManager.LOAD_SERVICE,
@@ -58,7 +58,7 @@ serviceManager.set(
         const fs = require('fs');
         let application = null;
         if (!application)  {
-            application = new dsign.Application(
+            application = new dsign.core.Application(
                 JSON.parse(fs.readFileSync(__dirname + '/config/application.json')),
                 'dashboard'
             );
@@ -101,7 +101,7 @@ serviceManager.set(
 
             archive: () => {
                 // TODO riscrivere
-                let archive = new dsign.Archive(
+                let archive = new dsign.archive.Archive(
                     'zip',
                     `${pathToExtract}/bk.zip`,
                     { zlib: { level: 9 } }

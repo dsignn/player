@@ -60,12 +60,15 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadHydrator() {
-        let timeslotHydrator = new PropertyHydrator(
+        let timeslotHydrator = new dsign.hydrator.PropertyHydrator(
             new Timeslot(),
             {
-                'resources' : new HydratorStrategy(this.serviceManager.get('HydratorPluginManager').get('resourceHydrator')),
-                'virtualMonitorReference' : new HydratorStrategy(new PropertyHydrator(new VirtualMonitorReference())),
-                'dataReferences' : new HydratorStrategy(new PropertyHydrator(new TimeslotDataReference())),
+                'resources' : new dsign.hydrator.strategy.HydratorStrategy(
+                    this.getServiceManager().get('HydratorPluginManager').get('resourceHydrator')),
+                'virtualMonitorReference' : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())),
+                'dataReferences' : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new TimeslotDataReference())),
             }
         );
 
@@ -97,23 +100,21 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('rotation')
             .enableExtractProperty('filters');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'timeslotHydrator',
             timeslotHydrator
         );
     }
 
     _loadDataServiceInjectorService() {
-        let timeslotDataInjectorServicePluginManager = new TimeslotDataInjectorServicePluginManager();
-        this.serviceManager.set('TimeslotDataInjectorService', timeslotDataInjectorServicePluginManager);
+        this.getServiceManager().set('TimeslotDataInjectorService', new TimeslotDataInjectorServicePluginManager());
     }
 
     /**
      * @private
      */
     _loadTimeslotSender() {
-        this.serviceManager.get('SenderPluginManager')
-            .set('timeslotSender', require('electron').ipcRenderer);
+        this.getServiceManager().get('SenderPluginManager').set('timeslotSender', require('electron').ipcRenderer);
     }
 
     /**
@@ -121,19 +122,19 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadTimeslotService() {
 
-        serviceManager.get('StoragePluginManager').eventManager.on(
+        this.getServiceManager().get('StoragePluginManager').eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name ===  TimeslotConfig.NAME_SERVICE) {
 
                     let timeslotService = new TimeslotService(
-                        this.serviceManager.get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE),
-                        this.serviceManager.get('SenderPluginManager').get('timeslotSender'),
-                        this.serviceManager.get('Timer'),
-                        this.serviceManager.get('TimeslotDataInjectorService')
+                        this.getServiceManager().get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE),
+                        this.getServiceManager().get('SenderPluginManager').get('timeslotSender'),
+                        this.getServiceManager().get('Timer'),
+                        this.getServiceManager().get('TimeslotDataInjectorService')
                     );
 
-                    this.serviceManager.set('TimeslotService', timeslotService);
+                    this.getServiceManager().set('TimeslotService', timeslotService);
                 }
             }.bind(this)
         );
@@ -143,14 +144,11 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadStorage() {
-
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": TimeslotConfig.NAME_COLLECTION,
                             "index": [
@@ -169,25 +167,25 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
                             let TimeslotDexieCollection = require('../timeslot/src/storage/indexed-db/dexie/TimeslotDexieCollection');
 
-                            let storage = new Storage(
+                            let storage = new dsign.storage.Storage(
                                 new TimeslotDexieCollection(
-                                    serviceManager.get('DexieManager'),
+                                    this.getServiceManager().get('DexieManager'),
                                     TimeslotConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('timeslotHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('timeslotHydrator')
                             );
 
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 TimeslotConfig.NAME_SERVICE,
                                 storage
                             );
-                        }.bind(this)
+                        }
                     );
                 }
             }

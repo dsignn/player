@@ -10,7 +10,7 @@ const serviceManager = new dsign.serviceManager.ServiceManager();
 /**
  * inject default services
  */
-dsign.Application.injectServices(serviceManager);
+dsign.core.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
     dsign.serviceManager.ServiceManager.LOAD_SERVICE,
@@ -41,7 +41,7 @@ serviceManager.set(
     'Application',
     (function(sm){
         const fs = require('fs');
-        let application =  new dsign.Application(
+        let application =  new dsign.core.Application(
             JSON.parse(fs.readFileSync(__dirname + '/config/application.json')),
             'player'
         );

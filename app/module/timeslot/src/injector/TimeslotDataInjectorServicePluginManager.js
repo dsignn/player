@@ -1,11 +1,7 @@
-try {
-    ServiceManager = require('../../../../lib/service-manager/ServiceManager');
-}
-catch(err) {
-    ServiceManager = require(__dirname + '/lib/service-manager/ServiceManager');
-}
-
-class TimeslotDataInjectorServicePluginManager extends ServiceManager {
+/**
+ *
+ */
+class TimeslotDataInjectorServicePluginManager extends require('dsign-library').serviceManager.ServiceManager {
 
     /**
      * @returns TimeslotDataServicePluginManager

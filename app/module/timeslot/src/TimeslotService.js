@@ -1,11 +1,3 @@
-try {
-    EvtManager = require('./../../../lib/event/EvtManager');
-}
-catch(err) {
-
-    EvtManager = require(__dirname + '/lib/event/EvtManager.js');
-}
-
 /**
  *
  */
@@ -50,7 +42,7 @@ class TimeslotService {
         /**
          * Event manager
          */
-        this.eventManager = new EvtManager();
+        this.eventManager = new (require('dsign-library').event.EvtManager)();
 
         /**
          * List running timeslots
@@ -120,9 +112,9 @@ class TimeslotService {
     }
 
     /**
-     *
-     * @param timeslot
-     * @return {null}
+     * @param monitorId
+     * @param context
+     * @return {Object}
      */
     getRunningTimeslot(monitorId, context) {
         return this.runningTimeslots[`${monitorId}-${context}`];

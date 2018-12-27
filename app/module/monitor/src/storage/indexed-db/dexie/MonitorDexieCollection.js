@@ -1,9 +1,7 @@
-DexieCollection = require('dsign-library').storage.adapter.DexieCollection;
-
 /**
  *
  */
-class MonitorDexieCollection extends DexieCollection {
+class MonitorDexieCollection extends require('dsign-library').storage.adapter.DexieCollection {
 
     /**
      * @param {Table} table
