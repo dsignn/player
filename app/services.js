@@ -8,7 +8,7 @@ const fsExtra = require('fs-extra')
 const archiver = require('archiver');
 const admZip = require('adm-zip');
 const dsign = require('dsign-library');
-const serviceManager = new dsign.ServiceManager();
+const serviceManager = new dsign.serviceManager.ServiceManager();
 
 /**
  * inject default services
@@ -16,13 +16,13 @@ const serviceManager = new dsign.ServiceManager();
 dsign.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
-    dsign.ServiceManager.LOAD_SERVICE,
+    dsign.serviceManager.ServiceManager.LOAD_SERVICE,
     function(evt) {
         if (evt.data.name === 'Application') {
 
             serviceManager.set(
                 'DexieManager',
-                new DexieManager(serviceManager.get('Application').config.indexedDB.name)
+                new dsign.storage.adapter.manager.DexieManager(serviceManager.get('Application').config.indexedDB.name)
             );
 
             serviceManager.get('DexieManager').init();
@@ -70,22 +70,6 @@ serviceManager.set(
 
         return application;
     })()
-).set(
-    'TcpServer',
-    function(sm){
-        let config = sm.get('Config');
-
-        return new TcpServer(
-            config.tcpClient ? config.tcpClient : {}
-        );
-    }
-).set(
-    'SoccerClient',
-    function(sm){
-        let config = sm.get('Config');
-
-        return new HttpClient(config.soccerApi.path, config.soccerApi.headers)
-    }
 ).set(
     'Backup',
     function (sm) {
@@ -209,17 +193,17 @@ serviceManager.set(
     'P2p',
     function (sm) {
 
-        let p2p = new P2p(
+        let p2p = new dsign.net.P2p(
             sm.get('Config').p2p.broadcasting,
             sm.get('Config').p2p.adapter,
             sm.get('Config').p2p.identifier
         );
 
-        p2p.setSenderParser(new ObjectToString());
-        p2p.setReceiverParser(new BufferToObject());
+        p2p.setSenderParser(new dsign.parse.ObjectToString());
+        p2p.setReceiverParser(new dsign.parse.BufferToObject());
 
         return p2p;
 });
 
 let test = serviceManager.get('P2p');
-test.on(P2p.SERVER_MESSAGE, (m) => {console.log('EVENTO MESSAGGIO', m)});
+test.on(dsign.net.P2p.SERVER_MESSAGE, (m) => {console.log('EVENTO MESSAGGIO', m)});

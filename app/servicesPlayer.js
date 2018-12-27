@@ -5,7 +5,7 @@
  */
 const fs = require('fs');
 const dsign = require('dsign-library');
-const serviceManager = new dsign.ServiceManager();
+const serviceManager = new dsign.serviceManager.ServiceManager();
 
 /**
  * inject default services
@@ -13,13 +13,13 @@ const serviceManager = new dsign.ServiceManager();
 dsign.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
-    dsign.ServiceManager.LOAD_SERVICE,
+    dsign.serviceManager.ServiceManager.LOAD_SERVICE,
     function(evt) {
         if (evt.data.name === 'Application') {
 
             serviceManager.set(
                 'DexieManager',
-                new DexieManager(serviceManager.get('Application').config.indexedDB.name)
+                new  dsign.storage.adapter.manager.DexieManager(serviceManager.get('Application').config.indexedDB.name)
             );
 
             serviceManager.get('DexieManager').init();

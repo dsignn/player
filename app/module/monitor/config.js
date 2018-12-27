@@ -1,7 +1,7 @@
 /**
  *
  */
-class MonitorConfig extends require('dsign-library').ModuleConfig {
+class MonitorConfig extends require('dsign-library').core.ModuleConfig {
 
     /**
      *
@@ -44,7 +44,7 @@ class MonitorConfig extends require('dsign-library').ModuleConfig {
             new dsign.hydrator.strategy.HydratorStrategy(this._getMonitoHydrator())
         );
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiveManager().get('HydratorPluginManager').set(
             'monitorHydrator',
             monitorHydrator
         );
@@ -52,7 +52,7 @@ class MonitorConfig extends require('dsign-library').ModuleConfig {
         let virtualMonitorHydrator = new dsign.hydrator.PropertyHydrator(
             new VirtualMonitor(),
             {
-                'monitors' :  new dsign.hydrator.strategy.HydratorStrategy(
+                'monitors' : new dsign.hydrator.strategy.HydratorStrategy(
                     monitorHydrator
                 )
             }
@@ -68,7 +68,7 @@ class MonitorConfig extends require('dsign-library').ModuleConfig {
             .enableHydrateProperty('enable')
             .enableHydrateProperty('monitors');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiveManager().get('HydratorPluginManager').set(
             'virtualMonitorHydrator',
             virtualMonitorHydrator
         );
@@ -116,13 +116,11 @@ class MonitorConfig extends require('dsign-library').ModuleConfig {
     }
 
     _loadStorage() {
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        this.serviceManager.eventManager.on(
-            dsign.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+        this.getServiveManager().eventManager.on(
+            dsign.serviceManager.ServiceManager.LOAD_SERVICE,
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiveManager().get('DexieManager').pushSchema(
                         {
                             "name": MonitorConfig.NAME_COLLECTION,
                             "index": [
@@ -134,25 +132,25 @@ class MonitorConfig extends require('dsign-library').ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiveManager().get('DexieManager').onReady(
+                        (evt) => {
 
                             let MonitorDexieCollection = require('../monitor/src/storage/indexed-db/dexie/MonitorDexieCollection');
 
-                            let storage = new Storage(
+                            let storage = new dsign.storage.Storage(
                                 new MonitorDexieCollection(
-                                    serviceManager.get('DexieManager'),
+                                    this.getServiveManager().get('DexieManager'),
                                     MonitorConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('virtualMonitorHydrator')
+                                this.getServiveManager().get('HydratorPluginManager').get('virtualMonitorHydrator')
                             );
 
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiveManager().get('StoragePluginManager').set(
                                 MonitorConfig.NAME_SERVICE,
                                 storage
                             );
-                        }.bind(this)
+                        }
                     );
                 }
             }

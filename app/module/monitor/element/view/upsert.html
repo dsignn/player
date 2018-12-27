@@ -93,8 +93,7 @@
                                         value-property="id"
                                         value="{{monitor.defaultTimeslotId}}"
                                         remote-source
-                                        on-autocomplete-change="_timeslotChanged"
-                                        on-autocomplete-reset-blur="_resetData">
+                                        on-autocomplete-change="_timeslotChanged">
                                     <template slot="autocomplete-custom-template">
                                         <style>
                                             :host {
@@ -148,8 +147,7 @@
                                             value-property="id"
                                             value="{{submonitor.defaultTimeslotId}}"
                                             remote-source
-                                            on-autocomplete-change="_timeslotChanged"
-                                            on-autocomplete-reset-blur="_resetData">
+                                            on-autocomplete-change="_timeslotChanged">
                                         <template slot="autocomplete-custom-template">
                                             <style>
                                                 :host {
@@ -219,8 +217,7 @@
                                             value-property="name"
                                             remote-source
                                             _selected-option="{{data}}"
-                                            on-autocomplete-change="_dataValueChanged"
-                                            on-autocomplete-reset-blur="_resetData">
+                                            on-autocomplete-change="_dataValueChanged">
                                         <template slot="autocomplete-custom-template">
                                             <style>
                                                 :host {
@@ -408,7 +405,7 @@
                 evt.preventDefault();
 
                 let data = this.$.formSubMonitor.serializeForm();
-                data.id = Utils.uid;
+                data.id = dsign.Utils.uid;
 
                 let monitor = serviceManager.get('HydratorPluginManager')
                     .get('monitorHydrator')

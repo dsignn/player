@@ -1,6 +1,8 @@
+DexieCollection = require('dsign-library').storage.adapter.DexieCollection;
 
-DexieCollection = require('../../../../../../lib/storage/indexed-db/dexie/DexieCollection');
-
+/**
+ *
+ */
 class MonitorDexieCollection extends DexieCollection {
 
     /**

@@ -1,7 +1,7 @@
 /**
  *
  */
-class DashboardConfig extends require('dsign-library').ModuleConfig {
+class DashboardConfig extends require('dsign-library').core.ModuleConfig {
 
     /**
      *
@@ -35,16 +35,15 @@ class DashboardConfig extends require('dsign-library').ModuleConfig {
      * @private
      */
     _loadStorage() {
-
-        let storage = new Storage(
-            new LocalStorage(
-                'Dsign', // TODO refactor
+        let storage = new dsign.storage.Storage(
+            new dsign.storage.adapter.LocalStorage(
+                this.getServiveManager().get('Config').indexedDB.name,
                 DashboardConfig.NAME_COLLECTION
             ),
-            serviceManager.get('HydratorPluginManager').get('widgetHydrator')
+            this.getServiveManager().get('HydratorPluginManager').get('widgetHydrator')
         );
 
-        serviceManager.get('StoragePluginManager').set(
+        this.getServiveManager().get('StoragePluginManager').set(
             DashboardConfig.NAME_WIDGET_SERVICE,
             storage
         );
@@ -74,7 +73,7 @@ class DashboardConfig extends require('dsign-library').ModuleConfig {
             .enableHydrateProperty('wc')
             .enableHydrateProperty('data');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiveManager().get('HydratorPluginManager').set(
             'widgetHydrator',
             widgetHydrator
         );

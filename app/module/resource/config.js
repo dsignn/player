@@ -1,7 +1,7 @@
 /**
  *
  */
-class ResourceConfig extends require('dsign-library').ModuleConfig {
+class ResourceConfig extends require('dsign-library').core.ModuleConfig {
 
     /**
      *
@@ -33,13 +33,11 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
     }
 
     _loadStorage() {
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
-            dsign.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+        this.getServiceManager().eventManager.on(
+            dsign.serviceManager.ServiceManager.LOAD_SERVICE,
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": ResourceConfig.NAME_COLLECTION,
                             "index": [
@@ -51,30 +49,30 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
-                            let storage = new Storage(
-                                new DexieCollection(
-                                    serviceManager.get('DexieManager'),
+                            let storage = new dsign.storage.Storage(
+                                new dsign.storage.adapter.DexieCollection(
+                                    this.getServiceManager().get('DexieManager'),
                                     ResourceConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('resourceHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('resourceHydrator')
                             );
 
-                            storage.eventManager.on(Storage.STORAGE_PRE_SAVE, this.onSave.bind(storage))
-                                .on(Storage.STORAGE_PRE_UPDATE, this.onUpdate.bind(storage))
-                                .on(Storage.STORAGE_PRE_REMOVE, this.onRemove.bind(storage)
+                            storage.eventManager.on(dsign.storage.Storage.STORAGE_PRE_SAVE, this.onSave.bind(storage))
+                                .on(dsign.storage.Storage.STORAGE_PRE_UPDATE, this.onUpdate.bind(storage))
+                                .on(dsign.storage.Storage.STORAGE_PRE_REMOVE, this.onRemove.bind(storage)
                             );
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 ResourceConfig.NAME_SERVICE,
                                 storage
                             );
-                        }.bind(this)
+                        }
                     );
                 }
-            }.bind(this)
+            }
         );
     }
 
@@ -193,22 +191,22 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
         this._loadAudioHydrator();
         this._loadZipHydrator();
 
-        let hydrator = new AggregatePropertyHydrator('type');
+        let hydrator = new dsign.hydrator.AggregatePropertyHydrator('type');
         hydrator.addHydratorMap(
-            this.serviceManager.get('HydratorPluginManager').get('imageHydrator'),
+            this.getServiceManager().get('HydratorPluginManager').get('imageHydrator'),
             ['image/jpeg', 'image/png']
         ).addHydratorMap(
-            this.serviceManager.get('HydratorPluginManager').get('videoHydrator'),
+            this.getServiceManager().get('HydratorPluginManager').get('videoHydrator'),
             ['video/mp4']
         ).addHydratorMap(
-            this.serviceManager.get('HydratorPluginManager').get('genericHydrator'),
+            this.getServiceManager().get('HydratorPluginManager').get('genericHydrator'),
             ['application/zip', 'text/html']
         ).addHydratorMap(
-            this.serviceManager.get('HydratorPluginManager').get('audioHydrator'),
+            this.getServiceManager().get('HydratorPluginManager').get('audioHydrator'),
             ['audio/mp3']
         );
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'resourceHydrator',
             hydrator
         );
@@ -220,10 +218,10 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
      * @private
      */
     _loadVideoHydrator() {
-        let videoHydrator = new PropertyHydrator(
+        let videoHydrator = new dsign.hydrator.PropertyHydrator(
             new Video(),
             {
-                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+                location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         );
         videoHydrator.enableHydrateProperty('id')
@@ -246,7 +244,7 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
             .enableExtractProperty('duration')
             .enableExtractProperty('dimension');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'videoHydrator',
             videoHydrator
         );
@@ -258,10 +256,10 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
      * @private
      */
     _loadImageHydrator() {
-        let imageHydrator = new PropertyHydrator(
+        let imageHydrator = new dsign.hydrator.PropertyHydrator(
             new Image(),
             {
-                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+                location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         )
         ;
@@ -283,7 +281,7 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
             .enableExtractProperty('lastModified')
             .enableExtractProperty('dimension');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'imageHydrator',
             imageHydrator
         );
@@ -295,10 +293,10 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
      * @private
      */
     _loadAudioHydrator() {
-        let imageHydrator = new PropertyHydrator(
+        let imageHydrator = new dsign.hydrator.PropertyHydrator(
             new Audio(),
             {
-                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+                location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         );
 
@@ -320,7 +318,7 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
             .enableExtractProperty('lastModified')
             .enableExtractProperty('duration');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'audioHydrator',
             imageHydrator
         );
@@ -331,10 +329,10 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
      * @private
      */
     _loadZipHydrator() {
-        let genericHydrator = new PropertyHydrator(
+        let genericHydrator = new dsign.hydrator.PropertyHydrator(
             new GenericFile(),
             {
-                location : new HydratorStrategy(new PropertyHydrator(new LocationPath()))
+                location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         );
 
@@ -356,7 +354,7 @@ class ResourceConfig extends require('dsign-library').ModuleConfig {
             .enableExtractProperty('location')
             .enableExtractProperty('lastModified');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'genericHydrator',
             genericHydrator
         );
