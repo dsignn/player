@@ -51,7 +51,7 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadHydrator() {
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new MediaDevice()
         );
 
@@ -65,12 +65,12 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('groupId')
             .enableHydrateProperty('type');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'mediaDeviceHydrator',
             hydrator
         );
 
-        hydrator = new PropertyHydrator(
+        hydrator = new dsign.hydrator.PropertyHydrator(
             new MediaDevice(),
             {},
             {
@@ -90,7 +90,7 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('groupId')
             .enableHydrateProperty('kind');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'mediaDeviceFromApiApiHydrator',
             hydrator
         );
@@ -100,14 +100,11 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadStorage() {
-
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": MediaDeviceConfig.NAME_COLLECTION,
                             "index": [
@@ -119,29 +116,29 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
-                            let storage = new Storage(
-                                new DexieCollection(
-                                    serviceManager.get('DexieManager'),
+                            let storage = new dsign.storage.Storage(
+                                new dsign.storage.adapter.DexieCollection(
+                                    this.getServiceManager().get('DexieManager'),
                                     MediaDeviceConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('mediaDeviceHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('mediaDeviceHydrator')
                             );
 
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 MediaDeviceConfig.NAME_SERVICE,
                                 storage
                             );
 
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('MediaDeviceDataInjector',new MediaDeviceDataInjector(
                                     storage
                                 ));
 
-                        }.bind(this)
+                        }
                     );
                 }
             }

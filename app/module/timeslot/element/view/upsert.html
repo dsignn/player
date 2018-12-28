@@ -266,13 +266,6 @@
                 evt.preventDefault();
 
                 let method = 'save';
-
-                if (this.timeslot.id) {
-                    method = 'update';
-                } else {
-                    this.timeslot.id = Utils.uid;
-                }
-
                 this.timeslot.dataReferences = [];
 
                 if (this.$.dataReferences.data && this.$.dataReferences.service) {

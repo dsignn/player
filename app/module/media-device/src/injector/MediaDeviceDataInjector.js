@@ -1,4 +1,3 @@
-
 class MediaDeviceDataInjector extends AbstractInjector {
 
     constructor(mediaDeviceStorage) {
