@@ -1,13 +1,4 @@
-try {
-    Match = require('./../../../../lib/sport/model/Match');
-
-}
-catch(err) {
-    Match = require(__dirname + '/lib/sport/model/Match');
-
-}
-
-class MatchSoccer extends Match {
+class MatchSoccer extends require('dsign-library').sport.model.Match {
 
     /**
      * @costant

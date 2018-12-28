@@ -1,7 +1,7 @@
-
-DexieCollection = require('../../../../../../lib/storage/indexed-db/dexie/DexieCollection');
-
-class SoccerDexieCollection extends DexieCollection {
+/**
+ *
+ */
+class SoccerDexieCollection extends require('dsign-library').storage.adapter.DexieCollection {
 
     /**
      * @param {Table} table

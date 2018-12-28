@@ -56,15 +56,15 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
          */
         this._loadTeamHydrator();
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new MatchSoccer(),
             {
-                enable : new NumberStrategy(),
-                guestTeam : new HydratorStrategy(
-                    this.serviceManager.get('HydratorPluginManager').get('teamSoccerHydrator')
+                enable : new dsign.hydrator.strategy.NumberStrategy(),
+                guestTeam : new dsign.hydrator.strategy.HydratorStrategy(
+                    this.getServiceManager().get('HydratorPluginManager').get('teamSoccerHydrator')
                 ),
-                homeTeam: new HydratorStrategy(
-                    this.serviceManager.get('HydratorPluginManager').get('teamSoccerHydrator')
+                homeTeam: new dsign.hydrator.strategy.HydratorStrategy(
+                    this.getServiceManager().get('HydratorPluginManager').get('teamSoccerHydrator')
                 )
             }
         );
@@ -85,7 +85,7 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('guestTeam')
             .enableHydrateProperty('homeTeam');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'matchSoccerHydrator',
             hydrator
         );
@@ -95,14 +95,11 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadStorage() {
-
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": SoccerConfig.NAME_COLLECTION,
                             "index": [
@@ -114,61 +111,60 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
                             let SoccerDexieCollection = require('../soccer/src/storage/indexed-db/dexie/SoccerDexieCollection');
 
-                            let storage = new Storage(
+                            let storage = new dsign.storage.Storage(
                                 new SoccerDexieCollection(
-                                    serviceManager.get('DexieManager'),
+                                    this.getServiceManager().get('DexieManager'),
                                     SoccerConfig.NAME_COLLECTION
                                 ),
                                 serviceManager.get('HydratorPluginManager').get('matchSoccerHydrator')
                             );
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 SoccerConfig.NAME_SERVICE,
                                 storage
                             );
 
-                            serviceManager.set(
+                            this.getServiceManager().set(
                                 'SoccerService',
                                 new SoccerService(storage)
                             );
 
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('HomePlayerDataInjector',new HomePlayerDataInjector(
-                                    serviceManager.get('SoccerService')
+                                    this.getServiceManager().get('SoccerService')
                                 ));
 
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('GuestPlayerDataInjector',new GuestPlayerDataInjector(
-                                    serviceManager.get('SoccerService')
+                                    this.getServiceManager().get('SoccerService')
                                 ));
 
-
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('BenchPlayersDataInjector',new BenchPlayersDataInjector(
-                                    serviceManager.get('SoccerService')
+                                    this.getServiceManager().get('SoccerService')
                                 ));
 
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('LastCardsDataInjector',new LastCardsDataInjector(
-                                    serviceManager.get('SoccerService')
+                                    this.getServiceManager().get('SoccerService')
                                 ));
 
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('LastGoalDataInjector',new LastGoalDataInjector(
-                                    serviceManager.get('SoccerService')
+                                    this.getServiceManager().get('SoccerService')
                                 ));
 
-                            serviceManager.get('TimeslotDataInjectorService')
+                            this.getServiceManager().get('TimeslotDataInjectorService')
                                 .set('LastReplacementDataInjector',new LastReplacementDataInjector(
-                                    serviceManager.get('SoccerService')
+                                    this.getServiceManager().get('SoccerService')
                                 ));
 
-                        }.bind(this)
+                        }
                     );
                 }
             }
@@ -177,10 +173,10 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
 
     _loadPlayerHydrator() {
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new PlayerSoccer(),
             {
-                shirtNumber: new NumberStrategy()
+                shirtNumber: new dsign.hydrator.strategy.NumberStrategy()
             }
         );
 
@@ -205,15 +201,15 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('status')
         ;
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'playerSoccerHydrator',
             hydrator
         );
 
-        hydrator = new PropertyHydrator(
+        hydrator = new dsign.hydrator.PropertyHydrator(
             new PlayerSoccer(),
             {
-                shirtNumber: new NumberStrategy(),
+                shirtNumber: new dsign.hydrator.strategy.NumberStrategy(),
             },
             {
                 identifier : 'id',
@@ -240,7 +236,7 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('nationality')
             .enableHydrateProperty('goals');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'playerSoccerApiHydrator',
             hydrator
         );
@@ -256,20 +252,20 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
 
         this._loadGoalHydrator();
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
                 new TeamSoccer(),
                 {
-                    'players' : new HydratorStrategy(
-                        this.serviceManager.get('HydratorPluginManager').get('playerSoccerHydrator')
+                    'players' : new dsign.hydrator.strategy.HydratorStrategy(
+                        this.getServiceManager().get('HydratorPluginManager').get('playerSoccerHydrator')
                     ),
-                    'replacemens' :  new HydratorStrategy(
-                        this.serviceManager.get('HydratorPluginManager').get('replacementSoccerHydrator')
+                    'replacemens' :  new dsign.hydrator.strategy.HydratorStrategy(
+                        this.getServiceManager().get('HydratorPluginManager').get('replacementSoccerHydrator')
                     ),
-                    'cards' :  new HydratorStrategy(
-                        this.serviceManager.get('HydratorPluginManager').get('cardSoccerHydrator')
+                    'cards' :  new dsign.hydrator.strategy.HydratorStrategy(
+                        this.getServiceManager().get('HydratorPluginManager').get('cardSoccerHydrator')
                     ),
-                    'goals' :  new HydratorStrategy(
-                        this.serviceManager.get('HydratorPluginManager').get('goalSoccerHydrator')
+                    'goals' :  new dsign.hydrator.strategy.HydratorStrategy(
+                        this.getServiceManager().get('HydratorPluginManager').get('goalSoccerHydrator')
                     ),
                 }
             );
@@ -292,16 +288,16 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('cards')
             .enableHydrateProperty('goals');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'teamSoccerHydrator',
             hydrator
         );
 
-        hydrator = new PropertyHydrator(
+        hydrator = new dsign.hydrator.PropertyHydrator(
             new TeamSoccer(),
             {
-                'players' : new HydratorStrategy(
-                    this.serviceManager.get('HydratorPluginManager').get('playerSoccerApiHydrator')
+                'players' : new dsign.hydrator.strategy.HydratorStrategy(
+                    this.getServiceManager().get('HydratorPluginManager').get('playerSoccerApiHydrator')
                 ),
             }
         );
@@ -318,7 +314,7 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('players')
             .enableHydrateProperty('staff');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'teamSoccerApiHydrator',
             hydrator
         );
@@ -326,10 +322,10 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
 
     _loadCardHydrator() {
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Card(),
             {
-                time: new NumberStrategy()
+                time: new dsign.hydrator.strategy.NumberStrategy()
             }
         );
 
@@ -341,7 +337,7 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('time')
             .enableHydrateProperty('playerId');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'cardSoccerHydrator',
             hydrator
         );
@@ -349,10 +345,10 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
 
     _loadGoalHydrator() {
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Goal(),
             {
-                time: new NumberStrategy()
+                time: new dsign.hydrator.strategy.NumberStrategy()
             }
         );
 
@@ -364,14 +360,14 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('time')
             .enableHydrateProperty('playerId');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'goalSoccerHydrator',
             hydrator
         );
     }
 
     _loadReplacementHydrator() {
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Replacement()
         );
 
@@ -383,7 +379,7 @@ class SoccerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('playerIdOut')
             .enableHydrateProperty('time');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'replacementSoccerHydrator',
             hydrator
         );

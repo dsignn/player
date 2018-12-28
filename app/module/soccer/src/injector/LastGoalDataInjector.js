@@ -1,4 +1,6 @@
-
+/**
+ *
+ */
 class LastGoalDataInjector extends AbstractInjector {
 
     constructor(soccerService) {

@@ -1,4 +1,6 @@
-
+/**
+ *
+ */
 class BenchPlayersDataInjector extends AbstractInjector {
 
     constructor(soccerService) {

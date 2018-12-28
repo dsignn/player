@@ -1,13 +1,7 @@
-try {
-    Team = require('./../../../../lib/sport/model/Team');
-
-}
-catch(err) {
-    Team = require(__dirname + '/lib/sport/model/Team');
-
-}
-
-class TeamSoccer extends Team {
+/**
+ *
+ */
+class TeamSoccer extends require('dsign-library').sport.model.Team {
 
     static get NUMBER_HOLDER() { return 11; };
 

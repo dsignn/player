@@ -1,4 +1,6 @@
-
+/**
+ *
+ */
 class LastReplacementDataInjector extends AbstractInjector {
 
     constructor(soccerService) {

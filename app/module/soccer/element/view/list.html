@@ -89,12 +89,12 @@
                 super.ready();
                 serviceManager.get('StoragePluginManager')
                     .get(SoccerConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
                 );
 
                 serviceManager.get('StoragePluginManager')
                     .get(SoccerConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
                 );
             }
 

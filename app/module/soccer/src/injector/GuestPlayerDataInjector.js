@@ -1,4 +1,6 @@
-
+/**
+ *
+ */
 class GuestPlayerDataInjector extends AbstractInjector {
 
     constructor(soccerService) {
