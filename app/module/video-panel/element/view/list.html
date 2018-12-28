@@ -84,12 +84,12 @@
                 super.ready();
                 serviceManager.get('StoragePluginManager')
                     .get(VideoPanelConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getSidelines.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._getSidelines.bind(this)
                 );
 
                 serviceManager.get('StoragePluginManager')
                     .get(VideoPanelConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getSidelines.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._getSidelines.bind(this)
                 );
             }
 

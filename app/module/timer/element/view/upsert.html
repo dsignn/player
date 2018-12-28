@@ -128,7 +128,7 @@
 
                 serviceManager.get('StoragePluginManager')
                     .get(TimerConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearResource.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearResource.bind(this)
                 );
 
                 this.$.formResource.addEventListener('iron-form-presubmit', this.submitResource.bind(this));

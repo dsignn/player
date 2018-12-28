@@ -188,6 +188,9 @@ class App {
     createWindowDashboard() {
         // App
         this.dashboard = new BrowserWindow({
+            webPreferences : {
+                nodeIntegration: true,
+            },
             width: 1170,
             height: 800,
             titleBarStyle: 'hidden',
@@ -225,6 +228,9 @@ class App {
     createWindowPlayer(monitor) {
 
         let browserWindows = new BrowserWindow({
+            webPreferences : {
+                nodeIntegration: true,
+            },
             width: parseInt(monitor.width),
             height: parseInt(monitor.height),
             x: parseInt(monitor.offsetX),

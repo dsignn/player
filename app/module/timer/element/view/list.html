@@ -28,7 +28,7 @@
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
         <div hidden$="{{hasResources}}">
-            Non sono presenti file
+            Non sono presenti timer
         </div>
     </template>
 
@@ -84,12 +84,12 @@
                 super.ready();
                 serviceManager.get('StoragePluginManager')
                     .get(TimerConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
                 );
 
                 serviceManager.get('StoragePluginManager')
                     .get(TimerConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
                 );
             }
 

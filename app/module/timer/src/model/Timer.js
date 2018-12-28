@@ -1,12 +1,6 @@
-
-try {
-    EvtManager = require('./../../../../lib/event/EvtManager');
-}
-catch(err) {
-
-    EvtManager = require(__dirname + '/lib/event/EvtManager.js');
-}
-
+/**
+ *
+ */
 class Timer {
 
     static get TYPE_COUNTDOWN() { return 'countdown'; }
@@ -49,7 +43,7 @@ class Timer {
         /**
          * Event manager
          */
-        this.eventManager = new EvtManager();
+        this.eventManager = new (require('dsign-library').event.EvtManager)();
 
         /**
          * @type {easytimer}

@@ -28,7 +28,7 @@
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
         <div hidden$="{{hasResources}}">
-            Non sono presenti match
+            Non sono presenti media device
         </div>
     </template>
 
@@ -144,7 +144,8 @@
              * @param evt
              */
             displayUpdateView(evt) {
-                this.resourceSelected = evt.target.match;
+                // TODO NOT USE
+                this.resourceSelected = evt.target.mediaDevice;
                 this.selected = 2;
             }
         }

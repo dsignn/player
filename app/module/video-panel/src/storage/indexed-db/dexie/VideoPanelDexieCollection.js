@@ -1,7 +1,7 @@
-
-DexieCollection = require('../../../../../../lib/storage/indexed-db/dexie/DexieCollection');
-
-class VideoPanelDexieCollection extends DexieCollection {
+/**
+ *
+ */
+class VideoPanelDexieCollection extends require('dsign-library').storage.adapter.DexieCollection {
 
     /**
      * @param {Table} table

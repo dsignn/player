@@ -62,13 +62,11 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadStorage() {
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": VideoPanelConfig.NAME_COLLECTION,
                             "index": [
@@ -80,37 +78,37 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
                             let VideoPanelDexieCollection = require('.//src/storage/indexed-db/dexie/VideoPanelDexieCollection');
 
-                            let storage = new Storage(
+                            let storage = new dsign.storage.Storage(
                                 new VideoPanelDexieCollection(
-                                    serviceManager.get('DexieManager'),
+                                    this.getServiceManager().get('DexieManager'),
                                     VideoPanelConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('videoPanelHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('videoPanelHydrator')
                             );
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 VideoPanelConfig.NAME_SERVICE,
                                 storage
                             );
 
-                            this.serviceManager.set(
+                            this.getServiceManager().set(
                                 'SidelineResourceGenerator',
                                 new SidelineResourceGenerator(
-                                    serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
-                                    serviceManager.get('HydratorPluginManager').get('resourceHydrator'),
-                                    serviceManager.get('Application').getBasePath()
+                                    this.getServiceManager().get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
+                                    this.getServiceManager().get('HydratorPluginManager').get('resourceHydrator'),
+                                    this.getServiceManager().get('Application').getBasePath()
                                 )
                             );
 
-                        }.bind(this)
+                        }
                     );
                 }
-            }.bind(this)
+            }
         );
     }
 
@@ -118,13 +116,11 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadResourceStorage() {
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": VideoPanelConfig.RESOURCE_COLLECTION,
                             "index": [
@@ -136,36 +132,36 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
-                            let storage = new Storage(
-                                new DexieCollection(
-                                    serviceManager.get('DexieManager'),
+                            let storage = new dsign.storage.Storage(
+                                new dsign.storage.adapter.DexieCollection(
+                                    this.getServiceManager().get('DexieManager'),
                                     VideoPanelConfig.RESOURCE_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('videoPanelResourceHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('videoPanelResourceHydrator')
                             );
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 VideoPanelConfig.RESOURCE_SERVICE,
                                 storage
                             );
 
-                            serviceManager.set('VideoPanelResourceService', new VideoPanelResourceService(
-                                serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
-                                serviceManager.get('StoragePluginManager').get(VideoPanelConfig.NAME_SERVICE),
-                                serviceManager.get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE),
-                                serviceManager.get('HydratorPluginManager').get('monitorMosaicWrapperHydrator'),
-                                serviceManager.get('HydratorPluginManager').get('videoPanelMosaicWrapperHydrator'),
-                                serviceManager.get('HydratorPluginManager').get('resourceMosaicHydrator'),
-                                serviceManager.get('HydratorPluginManager').get('monitorHydrator')
+                            this.getServiceManager().set('VideoPanelResourceService', new VideoPanelResourceService(
+                                this.getServiceManager().get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
+                                this.getServiceManager().get('StoragePluginManager').get(VideoPanelConfig.NAME_SERVICE),
+                                this.getServiceManager().get('StoragePluginManager').get(ResourceConfig.NAME_SERVICE),
+                                this.getServiceManager().get('HydratorPluginManager').get('monitorMosaicWrapperHydrator'),
+                                this.getServiceManager().get('HydratorPluginManager').get('videoPanelMosaicWrapperHydrator'),
+                                this.getServiceManager().get('HydratorPluginManager').get('resourceMosaicHydrator'),
+                                this.getServiceManager().get('HydratorPluginManager').get('monitorHydrator')
                             ));
 
-                        }.bind(this)
+                        }
                     );
                 }
-            }.bind(this)
+            }
         );
     }
 
@@ -174,19 +170,20 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadHydrator() {
 
-        let monitorHydrator = new PropertyHydrator(
+        let monitorHydrator = new dsign.hydrator.PropertyHydrator(
             new Monitor(),
         );
 
         monitorHydrator.enableHydrateProperty('id')
             .enableExtractProperty('id');
 
-        let videoPanelHydrator = new PropertyHydrator(
+        let videoPanelHydrator = new dsign.hydrator.PropertyHydrator(
             new Sideline(),
             {
-                width: new NumberStrategy(),
-                height: new NumberStrategy(),
-                virtualMonitorReference : new HydratorStrategy(new PropertyHydrator(new VirtualMonitorReference())),
+                width: new dsign.hydrator.strategy.NumberStrategy(),
+                height: new dsign.hydrator.strategy.NumberStrategy(),
+                virtualMonitorReference : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())),
             }
         );
 
@@ -207,14 +204,14 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
 
         videoPanelHydrator.addStrategy(
             'monitor',
-            new HydratorStrategy(monitorHydrator)
+            new dsign.hydrator.strategy.HydratorStrategy(monitorHydrator)
         ).addStrategy(
             'videoPanels',
-            new HydratorStrategy(videoPanelHydrator)
+            new dsign.hydrator.strategy.HydratorStrategy(videoPanelHydrator)
         );
 
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'videoPanelHydrator',
             videoPanelHydrator
         );
@@ -224,10 +221,10 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadResourceHydrator() {
-        let videoPanelResourceHydrator = new PropertyHydrator(
+        let videoPanelResourceHydrator = new dsign.hydrator.PropertyHydrator(
             new SidelineResource(),
             {
-                sidelineReference : new HydratorStrategy(new PropertyHydrator(new SidelineReference()))
+                sidelineReference : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new SidelineReference()))
             },
         );
 
@@ -241,7 +238,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('sidelineReference')
             .enableExtractProperty('resourcesInSideline');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'videoPanelResourceHydrator',
             videoPanelResourceHydrator
         );
@@ -251,19 +248,21 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadVideoPanelMosaicWrapperHydrator() {
-        let monitorHydrator = new PropertyHydrator(
+        let monitorHydrator = new dsign.hydrator.PropertyHydrator(
             new Monitor(),
         );
 
         monitorHydrator.enableHydrateProperty('id')
             .enableExtractProperty('id');
 
-        let videoPanelHydrator = new PropertyHydrator(
+        let videoPanelHydrator = new dsign.hydrator.PropertyHydrator(
             new SidelineMosaicWrapper(),
             {
-                width: new NumberStrategy(),
-                height: new NumberStrategy(),
-                virtualMonitorReference : new HydratorStrategy(new PropertyHydrator(new VirtualMonitorReference())),
+                width: new dsign.hydrator.strategy.NumberStrategy(),
+                height: new dsign.hydrator.strategy.NumberStrategy(),
+                virtualMonitorReference : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())
+                ),
             }
         );
 
@@ -286,13 +285,13 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
 
         videoPanelHydrator.addStrategy(
             'monitor',
-            new HydratorStrategy(monitorHydrator)
+            new dsign.hydrator.strategy.HydratorStrategy(monitorHydrator)
         ).addStrategy(
             'sidelines',
-            new HydratorStrategy(videoPanelHydrator)
+            new dsign.hydrator.strategy.HydratorStrategy(videoPanelHydrator)
         );
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'videoPanelMosaicWrapperHydrator',
             videoPanelHydrator
         );
@@ -303,12 +302,14 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadMonitorMosaicWrapperHydrator() {
 
-        let monitorMosaicWrapperHydrator = new PropertyHydrator(
+        let monitorMosaicWrapperHydrator = new dsign.hydrator.PropertyHydrator(
             new MonitorMosaicWrapper(),
             {
-                width: new NumberStrategy(),
-                height: new NumberStrategy(),
-                virtualMonitorReference : new HydratorStrategy(new PropertyHydrator(new VirtualMonitorReference())),
+                width: new dsign.hydrator.strategy.NumberStrategy(),
+                height: new dsign.hydrator.strategy.NumberStrategy(),
+                virtualMonitorReference : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())
+                ),
             }
         );
 
@@ -339,10 +340,10 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
 
         monitorMosaicWrapperHydrator.addStrategy(
             'monitors',
-            new HydratorStrategy(monitorMosaicWrapperHydrator)
+            new dsign.hydrator.strategy.HydratorStrategy(monitorMosaicWrapperHydrator)
         );
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'monitorMosaicWrapperHydrator',
              monitorMosaicWrapperHydrator
         );
@@ -354,7 +355,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadResourceMosaicHydrator() {
-        let resourceMosaicHydrator = new PropertyHydrator(new ResourceMosaic());
+        let resourceMosaicHydrator = new dsign.hydrator.PropertyHydrator(new ResourceMosaic());
 
         resourceMosaicHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
@@ -376,7 +377,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('dimension')
             .enableExtractProperty('computedWidth');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'resourceMosaicHydrator',
             resourceMosaicHydrator
         );

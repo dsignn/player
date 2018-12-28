@@ -1,4 +1,6 @@
-
+/**
+ *
+ */
 class TimerDataInjector extends AbstractInjector {
 
     constructor(timerStorage, timerService) {

@@ -1,11 +1,6 @@
-try {
-    EvtManager = require('./../../../lib/event/EvtManager');
-}
-catch(err) {
-
-    EvtManager = require(__dirname + '/lib/event/EvtManager.js');
-}
-
+/**
+ *
+ */
 class TimerService {
 
     static get PLAY()  { return 'play-timer'; }
@@ -40,7 +35,7 @@ class TimerService {
         /**
          * Event manager
          */
-        this.eventManager = new EvtManager();
+        this.eventManager = new (require('dsign-library').event.EvtManager)();
     }
 
     /**

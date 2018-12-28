@@ -1,7 +1,7 @@
-
-DexieCollection = require('../../../../../../lib/storage/indexed-db/dexie/DexieCollection');
-
-class TimerDexieCollection extends DexieCollection {
+/**
+ *
+ */
+class TimerDexieCollection extends require('dsign-library').storage.adapter.DexieCollection {
 
     /**
      * @param {Table} table

@@ -226,7 +226,7 @@
 
                 serviceManager.get('StoragePluginManager')
                     .get(VideoPanelConfig.RESOURCE_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
                 );
 
                 this.$.formSidelineResource.addEventListener('iron-form-presubmit', this.submitSidelineResource.bind(this));
