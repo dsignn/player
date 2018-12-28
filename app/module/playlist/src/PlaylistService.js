@@ -1,11 +1,3 @@
-
-try {
-    EvtManager = require('./../../../lib/event/EvtManager');
-}
-catch(err) {
-
-    EvtManager = require(__dirname + '/lib/event/EvtManager.js');
-}
 /**
  *
  */

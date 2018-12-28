@@ -60,10 +60,10 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadHydrator() {
 
-        let hydrator = new PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Playlist(),
             {
-                'timeslots' : new HydratorStrategy(this.serviceManager.get('HydratorPluginManager').get('timeslotHydrator'))
+                'timeslots' : new dsign.hydrator.strategy.HydratorStrategy(this.getServiceManager().get('HydratorPluginManager').get('timeslotHydrator'))
             }
         );
 
@@ -85,7 +85,7 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('binds')
             .enableHydrateProperty('timeslots');
 
-        this.serviceManager.get('HydratorPluginManager').set(
+        this.getServiceManager().get('HydratorPluginManager').set(
             'playlistHydrator',
             hydrator
         );
@@ -95,14 +95,11 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadStorage() {
-
-        let indexedDBConfig =  this.serviceManager.get('Config')['indexedDB'];
-
-        serviceManager.eventManager.on(
+        this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function(evt) {
+            (evt) => {
                 if (evt.data.name === 'DexieManager') {
-                    serviceManager.get('DexieManager').pushSchema(
+                    this.getServiceManager().get('DexieManager').pushSchema(
                         {
                             "name": PlaylistConfig.NAME_COLLECTION,
                             "index": [
@@ -115,23 +112,23 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
                     /**
                      *
                      */
-                    serviceManager.get('DexieManager').onReady(
-                        function (evt) {
+                    this.getServiceManager().get('DexieManager').onReady(
+                        (evt) => {
 
-                            let storage = new Storage(
-                                new DexieCollection(
-                                    serviceManager.get('DexieManager'),
+                            let storage = new dsign.storage.Storage(
+                                new dsign.storage.adapter.DexieCollection(
+                                    this.getServiceManager().get('DexieManager'),
                                     PlaylistConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('playlistHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('playlistHydrator')
                             );
 
 
-                            serviceManager.get('StoragePluginManager').set(
+                            this.getServiceManager().get('StoragePluginManager').set(
                                 PlaylistConfig.NAME_SERVICE,
                                 storage
                             );
-                        }.bind(this)
+                        }
                     );
                 }
             }
@@ -142,25 +139,24 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadPlaylistSender() {
-        this.serviceManager.get('SenderPluginManager')
-            .set('playlistSender', require('electron').ipcRenderer);
+        this.getServiceManager().get('SenderPluginManager').set('playlistSender', require('electron').ipcRenderer);
     }
 
     /**
      * @private
      */
     _loadPlaylistService() {
-        this.serviceManager.get('StoragePluginManager').eventManager.on(
+        this.getServiceManager().get('StoragePluginManager').eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-            function (evt) {
+            (evt) => {
                 if (evt.data.name === PlaylistConfig.NAME_SERVICE) {
                     let playlistService =  new PlaylistService(
-                        serviceManager.get('StoragePluginManager').get(PlaylistConfig.NAME_SERVICE),
-                        serviceManager.get('SenderPluginManager').get('playlistSender'),
-                        serviceManager.get('Timer'),
-                        serviceManager.get('TimeslotDataInjectorService')
+                        this.getServiceManager().get('StoragePluginManager').get(PlaylistConfig.NAME_SERVICE),
+                        this.getServiceManager().get('SenderPluginManager').get('playlistSender'),
+                        this.getServiceManager().get('Timer'),
+                        this.getServiceManager().get('TimeslotDataInjectorService')
                     );
-                    serviceManager.set('PlaylistService', playlistService);
+                    this.getServiceManager().set('PlaylistService', playlistService);
                 }
 
             }

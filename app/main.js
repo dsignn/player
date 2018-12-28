@@ -1,13 +1,13 @@
-const {app, BrowserWindow, globalShortcut, ipcMain} = require('electron')
+const {app, BrowserWindow, globalShortcut, ipcMain} = require('electron');
 const fs    = require('fs');
 const url   = require('url');
 const path  = require('path');
 const Monitor = require('./module/monitor/src/model/Monitor');
 const VirtualMonitor = require('./module/monitor/src/model/VirtualMonitor');
-const PropertyHydrator = require('./lib/hydrator/PropertyHydrator');
-const HydratorStrategy = require('./lib/hydrator/strategy/HydratorStrategy');
-const NumberStrategy = require('./lib/hydrator/strategy/NumberStrategy');
-const HydratorManager = require('./lib/hydrator/pluginManager/HydratorPluginManager');
+const PropertyHydrator = require('dsign-library').hydrator.PropertyHydrator;
+const HydratorStrategy = require('dsign-library').hydrator.strategy.HydratorStrategy;
+const NumberStrategy = require('dsign-library').hydrator.strategy.NumberStrategy;
+const HydratorManager = require('dsign-library').hydrator.HydratorPluginManager;
 
 class App {
 
