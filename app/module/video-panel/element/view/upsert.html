@@ -20,8 +20,11 @@
                 padding: 8px;
             }
 
-            .paper-sideline {
-                padding: 8px;
+            .paper-sideline,
+            .paper-sub-sideline {
+                padding: 6px;
+                margin-top: 10px;
+                display: flex;
             }
 
             .padding-left {
@@ -29,10 +32,22 @@
             }
 
             .paper-sideline paper-input,
-            .paper-sub-monitor paper-input,
+            .paper-sub-sideline paper-input,
             .paper-sideline paper-autocomplete,
-            .paper-sub-monitor paper-autocomplete {
+            .paper-sub-sideline paper-autocomplete {
                 padding-left: 6px;
+            }
+
+            #sidelineSubMonitor {
+                padding-left: 4px;
+            }
+
+            paper-listbox.auto {
+                min-width:initial;
+            }
+
+            #cardSubSideline {
+                width: 100%;
             }
 
         </style>
@@ -90,7 +105,7 @@
                             </paper-autocomplete>
                         </paper-card>
                         <template subSideline-repeat is="dom-repeat" items="{{sideline.sidelines}}" as="subSideline">
-                            <paper-card class="paper-sideline flex padding-left">
+                            <paper-card class="paper-sub-sideline flex padding-left">
                                 <paper-input name="name" label="Name" value="{{subSideline.name}}" required style="flex-basis: 30%;"></paper-input>
                                 <paper-input name="width" label="Width" type="number" value="{{subSideline.width}}" required></paper-input>
                                 <paper-input name="height" label="Height" type="number" value="{{subSideline.height}}" required></paper-input>
@@ -136,8 +151,12 @@
 
                                 </paper-autocomplete>
                                 <div class="flex flex-center">
-                                    <paper-icon-button item="{{subSideline}}" icon="app:trash" index="{{index}}" class="circle-small" title="Delete" on-tap="deleteSideline">
-                                    </paper-icon-button>
+                                    <paper-menu-button ignore-select style="padding: 0">
+                                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                                        <paper-listbox slot="dropdown-content" class="auto" multi>
+                                            <paper-item item="{{subSideline}}"  on-click="deleteSideline">Elimina</paper-item>
+                                        </paper-listbox>
+                                    </paper-menu-button>
                                 </div>
                             </paper-card>
                         </template>
@@ -149,7 +168,7 @@
                     </form>
                 </iron-form>
             </div>
-            <div id="sidelineSubMonitor" class="flex flex-horizontal-end ">
+            <div id="sidelineSubMonitor" class="flex flex-horizontal-end">
                 <paper-card id="cardSubSideline" heading="Sideline" alt="Sideline">
                     <iron-form id="formSubSideline">
                         <form method="post" action="">
@@ -471,7 +490,8 @@
              * @private
              */
             _searchSidelineChanged(evt) {
-                let filter = this.sideline.getSidelines({nested:true}).filter(
+                // TODO PORCATA
+                let filter = this.sideline.getSidelines({nested:true}).concat(this.sideline).filter(
                     element => {
                         return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
                     }

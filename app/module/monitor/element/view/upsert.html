@@ -60,18 +60,14 @@
             .paper-sub-monitor paper-autocomplete {
                 padding-left: 6px;
             }
+
             paper-listbox.auto {
                min-width:initial;
             }
 
-
-            paper-icon-button {
-
-                color: var(--accent-color);
-            }
-
             #cardMonitor {
                 padding: 8px;
+                width: 100%;
             }
 
         </style>
@@ -128,8 +124,8 @@
                                 <paper-input name="offsetX" label="Offeset X" type="number" value="{{monitor.offsetX}}" required style="flex-basis: 10%;"></paper-input>
                                 <paper-input name="offsetY" label="Offeset Y" type="number" value="{{monitor.offsetY}}" required style="flex-basis: 10%;"></paper-input>
                                 <paper-input name="backgroundColor" label="Background color" type="color" value="{{monitor.backgroundColor}}" required style="flex-basis: 10%;"></paper-input>
-                                <div class="flex flex-center" style="flex-basis: 10%;">
-                                    <paper-menu-button ignore-select>
+                                <div class="flex flex-center">
+                                    <paper-menu-button ignore-select style="padding: 0">
                                         <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                         <paper-listbox slot="dropdown-content" class="auto" multi>
                                             <paper-item item="{{monitor}}"  on-click="_remove">Elimina</paper-item>
@@ -181,8 +177,8 @@
                                     <paper-input name="offsetX" label="Offeset X" type="number" value="{{submonitor.offsetX}}" required style="flex-basis: 9%;"></paper-input>
                                     <paper-input name="offsetY" label="Offeset Y" type="number" value="{{submonitor.offsetY}}" required style="flex-basis: 9%;"></paper-input>
                                     <paper-input name="backgroundColor" label="Background color" type="color" value="{{submonitor.backgroundColor}}" required style="flex-basis: 9%;"></paper-input>
-                                    <div class="flex flex-center" style="flex-basis: 9%;">
-                                        <paper-menu-button ignore-select>
+                                    <div class="flex flex-center">
+                                        <paper-menu-button ignore-select style="padding: 0">
                                             <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                             <paper-listbox slot="dropdown-content" class="auto" multi>
                                                 <paper-item item="{{submonitor}}"  on-click="_remove">Elimina</paper-item>
