@@ -23,3 +23,6 @@ clear-project:
 	rm -rf app/bower_components; \
 	rm -f ./app/config/application.json;
 
+## generate-test-videos 	Generate test videos
+generate-test-videos:
+	./test/createFilesTest.sh
