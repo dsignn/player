@@ -7,6 +7,7 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
+
 <link rel="import" href="../video-panel-resource/video-panel-resource.html">
 
 <dom-module id="video-panel-view-resource-list">
@@ -22,7 +23,7 @@
 
         <slot name="header"></slot>
         <div hidden$="{{!hasSidelines}}">
-            <template is="dom-repeat" items="[[sidelineResources]]" as="sidelineResource">
+            <template is="dom-repeat" items="[[resources]]" as="sidelineResource">
                 <video-panel-resource-wc sideline-resource="{{sidelineResource}}" on-update-view="displayUpdateView" on-remove="remove"></video-panel-resource-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
@@ -42,7 +43,7 @@
             static get properties() {
                 return {
 
-                    sidelineResources: {
+                    resources: {
                         type: Array,
                         value: []
                     },

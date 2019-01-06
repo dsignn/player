@@ -40,7 +40,7 @@
                     <div id="list">
                         <video-panel-view-list selected="{{viewSelected}}" resource-selected="{{sideline}}">
                             <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
-                                <div>Lista file</div>
+                                <div>Lista video panel</div>
                                 <paper-icon-button
                                         class="circle"
                                         on-tap="displayAddView"
@@ -58,19 +58,19 @@
                                         on-tap="displayListView"
                                         title="Torna alla lista delle configurazioni">
                                 </paper-icon-button>
-                                <div>Aggiungi fila</div>
+                                <div>Aggiungi video panel</div>
                             </div>
                         </video-panel-view-upsert>
                     </div>
                     <div id="edit">
-                        <video-panel-view-upsert sideline="{{sideline}}">
+                        <video-panel-view-upsert resource="{{sideline}}">
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
                                         on-tap="displayListView"
                                         title="Torna alla lista delle file">
                                 </paper-icon-button>
-                                <div>Modifica fila</div>
+                                <div>Modifica video panel</div>
                             </div>
                         </video-panel-view-upsert>
                     </div>

@@ -9,6 +9,7 @@
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
 
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
@@ -16,61 +17,99 @@
 <dom-module id="video-panel-view-upsert">
     <template>
         <style>
-            #cardSubSideline {
-                padding: 8px;
-            }
 
-            .paper-sideline,
-            .paper-sub-sideline {
+
+            .paper-panel {
                 padding: 6px;
                 margin-top: 10px;
                 display: flex;
             }
 
-            .padding-left {
-                margin-left: 30px;
-            }
 
-            .paper-sideline paper-input,
-            .paper-sub-sideline paper-input,
-            .paper-sideline paper-autocomplete,
-            .paper-sub-sideline paper-autocomplete {
+            .paper-panel paper-input,
+            .paper-video-panel paper-input,
+            .paper-panel paper-autocomplete,
+            .paper-video-panel paper-autocomplete{
                 padding-left: 6px;
-            }
-
-            #sidelineSubMonitor {
-                padding-left: 4px;
             }
 
             paper-listbox.auto {
                 min-width:initial;
             }
 
-            #cardSubSideline {
-                height: fit-content;
-                width: 100%;
+            .paper-video-panel {
+                margin-left: 30px;
             }
 
+            .paper-panel,
+            .paper-video-panel {
+                margin-bottom: 8px;
+            }
+
+            #videoPanel {
+                padding: 8px;
+                width: 100%;
+            }
         </style>
         <style include="global-layout"></style>
         <style include="global-style"></style>
         <slot name="header"></slot>
         <div class="flex flex-horizontal">
-            <div id="sidelineMonitor">
-                <iron-form id="formSideline">
+            <div class="flex-basis-70" style="padding-right:16px;">
+                <iron-form id="formPanel">
                     <form method="post">
-                        <paper-card id="rootSideline" class="paper-sideline flex">
-                            <paper-input id="name" name="name" label="Name" value="{{sideline.name}}" required></paper-input>
-                            <paper-input id="width" name="width" label="Width" type="number" value="{{sideline.width}}" required></paper-input>
-                            <paper-input id="height" name="height" label="Height" type="number" value="{{sideline.height}}" required></paper-input>
+                        <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                        <template is="dom-if" if="{{hasVideoPanel}}" >
+                            <paper-card class="paper-panel flex">
+                                <div class="flex flex-1">
+                                    <paper-input id="name" name="name" label="Name" value="{{resource.videoPanel.name}}" required></paper-input>
+                                    <paper-input id="width" name="width" label="Width" type="number" value="{{resource.videoPanel.width}}" required></paper-input>
+                                    <paper-input id="height" name="height" label="Height" type="number" value="{{resource.videoPanel.height}}" required></paper-input>
+                                </div>
+                                <div class="flex flex-center">
+                                    <paper-menu-button ignore-select style="padding: 0">
+                                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                                        <paper-listbox slot="dropdown-content" class="auto" multi>
+                                            <paper-item item="{{resource.videoPanel}}"  on-click="_remove">Elimina</paper-item>
+                                        </paper-listbox>
+                                    </paper-menu-button>
+                                </div>
+                            </paper-card>
+                            <template submonitor-repeat is="dom-repeat" items="{{resource.videoPanel.videoPanels}}" as="videoPanel">
+                                <paper-card class="paper-video-panel flex">
+                                    <div class="flex flex-1">
+                                        <paper-input id="name" name="name" label="Name" value="{{videoPanel.name}}" required></paper-input>
+                                        <paper-input id="width" name="width" label="Width" type="number" value="{{videoPanel.width}}" required></paper-input>
+                                        <paper-input id="height" name="height" label="Height" type="number" value="{{videoPanel.height}}" required></paper-input>
+                                    </div>
+                                    <div class="flex flex-center">
+                                        <paper-menu-button ignore-select style="padding: 0">
+                                            <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                                            <paper-listbox slot="dropdown-content" class="auto" multi>
+                                                <paper-item item="{{videoPanel}}"  on-click="_remove">Elimina</paper-item>
+                                            </paper-listbox>
+                                        </paper-menu-button>
+                                    </div>
+                                </paper-card>
+                            </template>
+                        </template>
+                    </form>
+                </iron-form>
+            </div>
+            <div class="flex-basis-30">
+                <paper-card id="videoPanel" heading="Video panel">
+                    <iron-form id="formVideoPanel">
+                        <form method="post" action="">
+                            <paper-input id="name" name="name" label="Name" value="{{videoPanel.name}}" required></paper-input>
+                            <paper-input id="videoPanelHeight" name="height" type="number" label="Height" value="{{videoPanel.height}}" required></paper-input>
+                            <paper-input id="videoPanelWidth" name="width" type="number" label="Width" value="{{videoPanel.width}}" required></paper-input>
                             <paper-autocomplete
-                                    id="monitor"
+                                    id="monitorSelector"
                                     label="Monitor"
-                                    sidelineId="{{sideline.id}}"
                                     text-property="name"
                                     value-property="name"
-                                    text="{{sideline.virtualMonitorReference.name}}"
                                     remote-source
+                                    _selected-option="{{data}}"
                                     on-autocomplete-selected="_selectMonitor"
                                     on-autocomplete-change="_searchMonitorChanged">
                                 <template slot="autocomplete-custom-template">
@@ -95,30 +134,24 @@
                                     <paper-item class="account-item" on-tap="_onSelect" role="option"
                                                 aria-selected="false">
                                         <div>
-                                            <div class="service-name">[[item.monitor.name]]</div>
-                                            <div class="service-description">Width [[item.monitor.width]]px Height
-                                                [[item.monitor.height]]px
+                                            <div class="service-name">[[item.name]]</div>
+                                            <div class="service-description">Width [[item.width]]px Height
+                                                [[item.height]]px
                                             </div>
                                         </div>
                                         <paper-ripple></paper-ripple>
                                     </paper-item>
                                 </template>
                             </paper-autocomplete>
-                        </paper-card>
-                        <template subSideline-repeat is="dom-repeat" items="{{sideline.sidelines}}" as="subSideline">
-                            <paper-card class="paper-sub-sideline flex padding-left">
-                                <paper-input name="name" label="Name" value="{{subSideline.name}}" required style="flex-basis: 30%;"></paper-input>
-                                <paper-input name="width" label="Width" type="number" value="{{subSideline.width}}" required></paper-input>
-                                <paper-input name="height" label="Height" type="number" value="{{subSideline.height}}" required></paper-input>
+                            <div hidden$="[[!hasVideoPanel]]">
                                 <paper-autocomplete
-                                        label="Monitor"
-                                        sidelineId="{{subSideline.id}}"
+                                        id="videoPanelSelector"
+                                        label="Video Panel"
                                         text-property="name"
                                         value-property="name"
-                                        text="{{subSideline.virtualMonitorReference.name}}"
                                         remote-source
-                                        on-autocomplete-selected="_selectMonitor"
-                                        on-autocomplete-change="_searchMonitorChanged">
+                                        _selected-option="{{data}}"
+                                        on-autocomplete-change="_searchResourceChanged">
                                     <template slot="autocomplete-custom-template">
                                         <style>
                                             :host {
@@ -138,139 +171,31 @@
                                                 color: #999;
                                             }
                                         </style>
-                                        <paper-item class="account-item" on-tap="_onSelect" role="option"
-                                                    aria-selected="false">
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                             <div>
-                                                <div class="service-name">[[item.monitor.name]]</div>
-                                                <div class="service-description">Width [[item.monitor.width]]px Height
-                                                    [[item.monitor.height]]px
-                                                </div>
+                                                <div class="service-name">[[item.name]]</div>
+                                                <div class="service-description">Width [[item.width]]px Height [[item.height]]px</div>
                                             </div>
                                             <paper-ripple></paper-ripple>
                                         </paper-item>
                                     </template>
-
                                 </paper-autocomplete>
-                                <div class="flex flex-center">
-                                    <paper-menu-button ignore-select style="padding: 0">
-                                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
-                                        <paper-listbox slot="dropdown-content" class="auto" multi>
-                                            <paper-item item="{{subSideline}}"  on-click="deleteSideline">Elimina</paper-item>
-                                        </paper-listbox>
-                                    </paper-menu-button>
-                                </div>
-                            </paper-card>
-                        </template>
-                        <div>
-                            <div class="flex flex-horizontal-end" style="margin-top: 20px;">
-                                <paper-button on-tap="submitSidelineButton">{{labelAction}}</paper-button>
                             </div>
-                        </div>
-                    </form>
-                </iron-form>
-            </div>
-            <div id="sidelineSubMonitor" class="flex flex-horizontal-end">
-                <paper-card id="cardSubSideline" heading="Sideline" alt="Sideline">
-                    <iron-form id="formSubSideline">
-                        <form method="post" action="">
-                            <div class="card-content">
-                                <paper-input name="name" label="Name" value="{{subSideline.name}}" required></paper-input>
-                                <paper-input name="height" type="number" label="Height" value="{{subSideline.height}}" required></paper-input>
-                                <paper-input name="width" type="number" label="Width" value="{{subSideline.width}}" required></paper-input>
-                                <div hidden$="[[!_isMethod('save')]]">
-                                    <paper-autocomplete
-                                            id="parentMonitor"
-                                            label="Monitor"
-                                            text-property="name"
-                                            value-property="name"
-                                            remote-source
-                                            _selected-option="{{data}}"
-                                            on-autocomplete-selected="_selectSubMonitor"
-                                            on-autocomplete-change="_searchMonitorChanged">
-                                        <template slot="autocomplete-custom-template">
-                                            <style>
-                                                :host {
-                                                    display: block;
-                                                }
-
-                                                paper-item.account-item {
-                                                    padding: 8px 16px;
-                                                }
-
-                                                .service-name {
-                                                    color: #333;
-                                                }
-
-                                                .service-description {
-                                                    margin-top: 4px;
-                                                    color: #999;
-                                                }
-                                            </style>
-                                            <paper-item class="account-item" on-tap="_onSelect" role="option"
-                                                        aria-selected="false">
-                                                <div>
-                                                    <div class="service-name">[[item.name]]</div>
-                                                    <div class="service-description">Width [[item.width]]px Height
-                                                        [[item.height]]px
-                                                    </div>
-                                                </div>
-                                                <paper-ripple></paper-ripple>
-                                            </paper-item>
-                                        </template>
-                                    </paper-autocomplete>
-                                </div>
-                                <div hidden$="[[_isMethod('update')]]">
-                                    <paper-autocomplete
-                                            id="parentSideline"
-                                            label="Sideline"
-                                            text-property="name"
-                                            value-property="name"
-                                            remote-source
-                                            _selected-option="{{data}}"
-                                            on-autocomplete-selected="_selectSideline"
-                                            on-autocomplete-change="_searchSidelineChanged">
-                                        <template slot="autocomplete-custom-template">
-                                            <style>
-                                                :host {
-                                                    display: block;
-                                                }
-
-                                                paper-item.account-item {
-                                                    padding: 8px 16px;
-                                                }
-
-                                                .service-name {
-                                                    color: #333;
-                                                }
-
-                                                .service-description {
-                                                    margin-top: 4px;
-                                                    color: #999;
-                                                }
-                                            </style>
-                                            <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                                                <div>
-                                                    <div class="service-name">[[item.name]]</div>
-                                                    <div class="service-description">Width [[item.width]]px Height [[item.height]]px</div>
-                                                </div>
-                                                <paper-ripple></paper-ripple>
-                                            </paper-item>
-                                        </template>
-                                    </paper-autocomplete>
-                                </div>
-                            </div>
-                            <div class="flex flex-horizontal-center">
-                                <paper-button on-tap="submitSubSidelineButton">Add</paper-button>
+                            <div class="flex flex-horizontal-end">
+                                <paper-button on-tap="submitVideoPanelButton">Add</paper-button>
                             </div>
                         </form>
                     </iron-form>
                 </paper-card>
             </div>
         </div>
+        <div class="flex flex-horizontal-end" style="padding-top: 10px; padding-right: 8px;">
+            <paper-button on-tap="submitPanelButton">{{labelAction}}</paper-button>
+        </div>
     </template>
 
     <script>
-        class ElementVideoPanelViewUpsert extends Polymer.Element {
+        class ElementVideoPanelViewUpsert extends StorageBehaviour {
 
             static get is() {
                 return 'video-panel-view-upsert';
@@ -279,27 +204,231 @@
             static get properties() {
                 return {
 
-                    sideline: {
-                        type: Object,
-                        notify: true,
-                        value: new Sideline(),
-                        observer: '_sidelineChanged'
+                    videoPanel : {
+                        value: new VideoPanel()
                     },
 
-                    subSideline: {
+                    resource: {
                         type: Object,
                         notify: true,
-                        value: new Sideline()
+                        value: new Panel()
                     },
-
 
                     labelAction: {
                         type: String,
                         value: 'Save'
-                    }
+                    },
+
+                    hasVideoPanel: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: VideoPanelConfig.NAME_SERVICE
+
+                    },
                 }
             }
 
+            static get observers() {
+                return [
+                    '_changeResource(resource)'
+                ]
+            }
+
+
+            ready() {
+                super.ready();
+
+                this.$.formVideoPanel.addEventListener('iron-form-presubmit', this.submitVideoPanel.bind(this));
+                this.$.formPanel.addEventListener('iron-form-presubmit', this.submitResource.bind(this));
+
+            }
+
+            /**
+             * @param {undefined|Panel} evt
+             */
+            _changeResource(resource) {
+                if (!resource) {
+                    return;
+                }
+                console.log('MODIFICA');
+                this.hasVideoPanel = resource.hasVideoPanel();
+            }
+
+            /**
+             * @param evt
+             */
+            _searchResourceChanged(evt) {
+                let filter = this.resource.getVideoPanel().getVideoPanels({nested:true}).filter(
+                    element => {
+                        return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                    }
+                );
+
+                evt.detail.target.suggestions(
+                    filter
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            _searchMonitorChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(MonitorConfig.NAME_SERVICE)
+                    .getAll()
+                    .then((data) => {
+                        let monitors = [];
+
+                        if (this.resource.hasVideoPanel()) {
+                            let index = data.findIndex((element) => {
+                                return element.id === this.resource.getVideoPanel().virtualMonitorReference.virtualMonitorId;
+                            });
+                            data = [
+                                data[index]
+                            ];
+                        }
+
+                        for (let cont = 0; data.length > cont; cont++) {
+                            let internalMonitor = data[cont].getMonitors({nested: this.resource.hasVideoPanel()});
+                            for (let index = 0; internalMonitor.length > index; index++) {
+                                monitors.push({
+                                    monitor: internalMonitor[index],
+                                    config: data[cont],
+                                    name: internalMonitor[index].name
+                                });
+                            }
+                        }
+
+                        let filter = monitors.filter(
+                            element => {
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            _selectMonitor(evt) {
+                let ref = new VirtualMonitorReference();
+                ref.virtualMonitorId = evt.detail.option.config.id;
+                ref.monitorId = evt.detail.option.monitor.id;
+                ref.name = evt.detail.option.monitor.name;
+                this.videoPanel.virtualMonitorReference = ref;
+            }
+
+            /**
+             * @param evt
+             */
+            submitVideoPanelButton(evt) {
+                this.$.formVideoPanel.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitVideoPanel(evt) {
+                evt.preventDefault();
+                this.videoPanel.id = require('dsign-library').Utils.uid;
+
+                if (this.resource.hasVideoPanel()) {
+                    let videoPanel = this.resource.getVideoPanel()
+                        .getVideoPanel(this.$.videoPanelSelector._selectedOption.id);
+
+                    videoPanel.appendVideoPanel(
+                        serviceManager.get('HydratorPluginManager').get('videoPanelsHydrator').hydrate(this.videoPanel)
+                    );
+                } else {
+                    this.resource.setVideoPanel(
+                        serviceManager.get('HydratorPluginManager').get('videoPanelsHydrator').hydrate(this.videoPanel)
+                    );
+                    this.hasVideoPanel = true;
+                }
+
+                this.videoPanel = new VideoPanel();
+                this._resetVideoPanel();
+                this.render();
+            }
+
+            /**
+             *
+             */
+            render() {
+               let elements = this.root.querySelectorAll('dom-repeat');
+               for (let cont = 0; elements.length > cont; cont++) {
+                   elements[cont].render();
+               }
+            }
+
+            /**
+             * @param evt
+             */
+            submitPanelButton(evt) {
+                this.$.formPanel.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitResource(evt) {
+                evt.preventDefault();
+
+                let method = this.getStorageMethod();
+                this.storage[method](this.resource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' video panel');
+                        this._resetPanel();
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+            /**
+             *
+             */
+            _resetVideoPanel() {
+                this.$.formVideoPanel.reset();
+                this.$.videoPanelSelector.reset();
+                this.$.monitorSelector.reset();
+            }
+
+            /**
+             *
+             */
+            _resetPanel() {
+                this.resource = new Panel();
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /**
             ready() {
                 super.ready();
 
@@ -312,16 +441,12 @@
                 this.$.formSubSideline.addEventListener('iron-form-presubmit', this.submitSubSideline.bind(this));
             }
 
-            /**
-             *
-             */
+
             submitSidelineButton(evt) {
                 this.$.formSideline.submit();
             }
 
-            /**
-             *
-             */
+
             submitSideline(evt) {
                 evt.preventDefault();
 
@@ -337,16 +462,12 @@
                     );
             }
 
-            /**
-             *
-             */
+
             submitSubSidelineButton(evt) {
                 this.$.formSubSideline.submit();
             }
 
-            /**
-             *
-             */
+
             submitSubSideline(evt) {
                 evt.preventDefault();
                 // TODO VALIDATION
@@ -363,9 +484,7 @@
                 this._clearSubSideline();
             }
 
-            /**
-             * @private
-             */
+
             _clearSideline() {
                 this.sideline = new Sideline();
             }
@@ -376,11 +495,7 @@
                 this.subSideline = new Sideline();
             }
 
-            /**
-             * @param newValue
-             * @param oldValue
-             * @private
-             */
+
             _sidelineChanged(newValue, oldValue) {
 
                 switch (true) {
@@ -414,9 +529,7 @@
                 }
             }
 
-            /**
-             * @param evt
-             */
+
             _searchMonitorChanged(evt) {
 
                 serviceManager.get('StoragePluginManager')
@@ -448,10 +561,7 @@
                     });
             }
 
-            /**
-             * @param evt
-             * @private
-             */
+
             _selectMonitor(evt) {
                 let ref = new VirtualMonitorReference();
                 ref.virtualMonitorId = evt.detail.option.config.id;
@@ -460,10 +570,7 @@
                 this.sideline.virtualMonitorReference = ref;
             }
 
-            /**
-             * @param evt
-             * @private
-             */
+
             _selectSubMonitor(evt) {
                 let ref = new VirtualMonitorReference();
                 ref.virtualMonitorId = evt.detail.option.config.id;
@@ -478,18 +585,12 @@
 
             }
 
-            /**
-             *
-             * @private
-             */
+
             _selectSideline(evt) {
                 this.sideline.monitor = evt.detail.option.monitor;
             }
 
-            /**
-             * @param evt
-             * @private
-             */
+
             _searchSidelineChanged(evt) {
                 // TODO PORCATA
                 let filter = this.sideline.getSidelines({nested:true}).concat(this.sideline).filter(
@@ -510,9 +611,7 @@
                 this._refreshSideline();
             }
 
-            /**
-             *
-             */
+
             _refreshSideline() {
                 let templates = this.root.querySelectorAll('dom-repeat');
 
@@ -522,11 +621,7 @@
             }
 
 
-            /**
-             * @param method
-             * @returns {boolean}
-             * @private
-             */
+
             _isMethod(method) {
                 let isMethod = false;
                 switch (true) {
@@ -540,6 +635,7 @@
 
                 return isMethod;
             }
+             */
         }
 
         window.customElements.define(ElementVideoPanelViewUpsert.is, ElementVideoPanelViewUpsert);

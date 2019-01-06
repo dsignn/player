@@ -1,0 +1,134 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+
+<dom-module id="storage-behaviour">
+    <script>
+        class StorageBehaviour extends Polymer.Element {
+
+            static get is() {
+                return 'storage-behaviour';
+            }
+
+            static get properties() {
+                return {
+
+                    resource: {
+                        type: Object,
+                        notify: true
+                    },
+
+                    resources: {
+                        type: Array,
+                        notify: true
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true
+
+                    },
+
+                    storage: {
+                        type: Object,
+                        readOnly: true
+                    },
+
+                    page: {
+                        type: Number,
+                        value: 1
+                    },
+
+                    itemPerPage: {
+                        type: Number,
+                        value: 20
+                    },
+
+                    totalItems: {
+                        type: Number,
+                        readOnly: true,
+                        value: 0
+                    },
+
+                    removeLabelNotify: {
+                        type: String,
+                        value: 'Remove placeholder'
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    '_searchResources(page, itemPerPage, storage)'
+                ]
+            }
+
+            ready() {
+                super.ready();
+
+                if (!this.storageName || !serviceManager.get('StoragePluginManager').has(this.storageName)) {
+                    throw `No storage set "${this.storageName}"`
+                }
+
+                this._setStorage(serviceManager.get('StoragePluginManager').get(this.storageName));
+
+                this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this));
+                this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this.getResources.bind(this));
+            }
+
+            /**
+             * @param page
+             * @param itemPerPage
+             * @private
+             */
+            _searchResources(page, itemPerPage, storage) {
+                if (page === undefined || itemPerPage === undefined || storage === undefined) {
+                    return;
+                }
+
+                this.getResources();
+            }
+
+            /**
+             *
+             */
+            getResources() {
+
+                this.storage.getPaged(this.page, this.itemPerPage)
+                    .then((data) => {
+                        this.set('resources', data);
+                        this._setTotalItems(data.totalItems);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            removeResource(evt) {
+
+                let index = null;
+                this.resources.find((element, ind) => {
+                    if (element.id === evt.detail.id) {
+                        index = ind;
+                        return element;
+                    }
+                });
+
+                this.splice('resources', index, 1);
+
+                this.storage.remove(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Remove sideline')
+                    });
+            }
+
+            /**
+             * @return string
+             */
+            getStorageMethod() {
+                return this.resource.id ? 'update' : 'save';
+            }
+        }
+
+        window.customElements.define(StorageBehaviour.is, StorageBehaviour);
+
+    </script>
+</dom-module>

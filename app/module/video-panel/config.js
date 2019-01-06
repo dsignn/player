@@ -49,10 +49,11 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      *
      */
     init() {
+        this._loadPanelHydrator();
         this._loadResourceMosaicHydrator();
         this._loadMonitorMosaicWrapperHydrator();
         this._loadVideoPanelMosaicWrapperHydrator();
-        this._loadHydrator();
+    //    this._loadHydrator();
         this._loadResourceHydrator();
         this._loadStorage();
         this._loadResourceStorage();
@@ -88,7 +89,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
                                     this.getServiceManager().get('DexieManager'),
                                     VideoPanelConfig.NAME_COLLECTION
                                 ),
-                                this.getServiceManager().get('HydratorPluginManager').get('videoPanelHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('panelHydrator')
                             );
 
                             this.getServiceManager().get('StoragePluginManager').set(
@@ -167,7 +168,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
 
     /**
      * @private
-     */
+
     _loadHydrator() {
 
         let monitorHydrator = new dsign.hydrator.PropertyHydrator(
@@ -216,6 +217,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
             videoPanelHydrator
         );
     }
+     */
 
     /**
      * @private
@@ -346,6 +348,80 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
         this.getServiceManager().get('HydratorPluginManager').set(
             'monitorMosaicWrapperHydrator',
              monitorMosaicWrapperHydrator
+        );
+    }
+
+    /**
+     * @private
+     */
+    _loadVideoPanelHydrator() {
+
+        let videoPanelHydrator = new dsign.hydrator.PropertyHydrator(
+            new VideoPanel(),
+            {
+                width: new dsign.hydrator.strategy.NumberStrategy(),
+                height: new dsign.hydrator.strategy.NumberStrategy(),
+                videoPanels : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VideoPanel())
+                ),
+                virtualMonitorReference : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())
+                )
+            }
+        );
+
+        videoPanelHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('width')
+            .enableHydrateProperty('height')
+            .enableHydrateProperty('videoPanels')
+            .enableHydrateProperty('virtualMonitorReference');
+
+        videoPanelHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('width')
+            .enableExtractProperty('height')
+            .enableExtractProperty('videoPanels')
+            .enableExtractProperty('virtualMonitorReference');
+
+        videoPanelHydrator.addStrategy(
+            'videoPanels',
+            new dsign.hydrator.strategy.HydratorStrategy(videoPanelHydrator)
+        );
+
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'videoPanelsHydrator',
+            videoPanelHydrator
+        );
+    }
+
+    /**
+     * @private
+     */
+    _loadPanelHydrator() {
+
+        this._loadVideoPanelHydrator();
+
+        let panelHydrator = new dsign.hydrator.PropertyHydrator(
+            new Panel(),
+            {
+                videoPanel : new dsign.hydrator.strategy.HydratorStrategy(
+                    this.getServiceManager().get('HydratorPluginManager').get('videoPanelsHydrator')
+                ),
+            }
+        );
+
+        panelHydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('videoPanel');
+
+        panelHydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('videoPanel');
+
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'panelHydrator',
+            panelHydrator
         );
     }
 
