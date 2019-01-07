@@ -32,7 +32,7 @@
                 color: #3c3c3c;
             }
         </style>
-        <div class="header">Timeslot tags: <span class="tags"> {{_computeHeaderTags()}}</span></div>
+       <!-- <div class="header">Timeslot tags: <span class="tags"> {{_computeHeaderTags()}}</span></div>-->
         <template is="dom-repeat" items="[[timeslots]]" as="timeslot">
             <timeslot-wc
                     timeslot="{{timeslot}}"
@@ -139,6 +139,20 @@
                 serviceManager.get('TimeslotService').pause(
                     evt.detail
                 );
+            }
+
+            /**
+             * @return {string}
+             */
+            getTitle() {
+                return 'Timeslot tag';
+            }
+
+            /**
+             * @return {string}
+             */
+            getSubTitle() {
+                return this._computeHeaderTags();
             }
         }
 
