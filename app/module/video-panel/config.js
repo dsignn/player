@@ -29,7 +29,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @return {string}
      * @constructor
      */
-    static get RESOURCE_STORAGE() { return 'video-panel.resource.data'; };
+    static get RESOURCE_STORAGE() { return 'video-panel-resource.data'; };
 
     /**
      *
@@ -43,7 +43,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      * @return {string}
      * @constructor
      */
-    static get RESOURCE_COLLECTION() { return 'videoPanel-resource'; };
+    static get RESOURCE_COLLECTION() { return 'video-panel-resource'; };
 
     /**
      *

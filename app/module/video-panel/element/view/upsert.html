@@ -70,7 +70,7 @@
                                     <paper-menu-button ignore-select style="padding: 0">
                                         <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                         <paper-listbox slot="dropdown-content" class="auto" multi>
-                                            <paper-item item="{{resource.videoPanel}}"  on-click="_remove">Elimina</paper-item>
+                                            <paper-item item="{{resource.videoPanel}}"  on-click="_removeVideoPanel">Elimina</paper-item>
                                         </paper-listbox>
                                     </paper-menu-button>
                                 </div>
@@ -86,7 +86,7 @@
                                         <paper-menu-button ignore-select style="padding: 0">
                                             <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                             <paper-listbox slot="dropdown-content" class="auto" multi>
-                                                <paper-item item="{{videoPanel}}"  on-click="_remove">Elimina</paper-item>
+                                                <paper-item item="{{videoPanel}}"  on-click="_removeVideoPanel">Elimina</paper-item>
                                             </paper-listbox>
                                         </paper-menu-button>
                                     </div>
@@ -254,10 +254,12 @@
              */
             _changeResource(resource) {
                 if (!resource) {
+                    this.labelAction ='Save';
                     return;
                 }
-                console.log('MODIFICA');
+
                 this.hasVideoPanel = resource.hasVideoPanel();
+                this.labelAction = resource.id ? 'Update' : 'Save';
             }
 
             /**
@@ -389,7 +391,10 @@
                 this.storage[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' video panel');
-                        this._resetPanel();
+                        if (method === 'save') {
+                            this._resetPanel();
+                        }
+
                     })
                     .catch((err) => {
                             console.log(err)
@@ -413,229 +418,13 @@
                 this.resource = new Panel();
             }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             /**
-            ready() {
-                super.ready();
-
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearSideline.bind(this)
-                );
-
-                this.$.formSideline.addEventListener('iron-form-presubmit', this.submitSideline.bind(this));
-                this.$.formSubSideline.addEventListener('iron-form-presubmit', this.submitSubSideline.bind(this));
-            }
-
-
-            submitSidelineButton(evt) {
-                this.$.formSideline.submit();
-            }
-
-
-            submitSideline(evt) {
-                evt.preventDefault();
-
-                let method = this.sideline.id ? 'update' : 'save';
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.NAME_SERVICE)[method](this.sideline)
-                    .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' sideline');
-                    })
-                    .catch((err) => {
-                            console.log(err)
-                        }
-                    );
-            }
-
-
-            submitSubSidelineButton(evt) {
-                this.$.formSubSideline.submit();
-            }
-
-
-            submitSubSideline(evt) {
-                evt.preventDefault();
-                // TODO VALIDATION
-                if (this.$.parentSideline._selectedOption) {
-                    this.subSideline.id = Utils.uid;
-                    this.$.parentSideline._selectedOption.pushSideline(this.subSideline);
-                    this.notifyPath('sideline.sidelines');
-                    let render = this.root.querySelectorAll('dom-repeat[subSideline-repeat]');
-                    for (let cont = 0; render.length > cont; cont++) {
-                        render[cont].render();
-                    }
-                }
-
-                this._clearSubSideline();
-            }
-
-
-            _clearSideline() {
-                this.sideline = new Sideline();
-            }
-
-            _clearSubSideline() {
-                this.$.parentSideline.clear();
-                this.$.parentMonitor.clear();
-                this.subSideline = new Sideline();
-            }
-
-
-            _sidelineChanged(newValue, oldValue) {
-
-                switch (true) {
-                    case newValue.id === undefined:
-                        this.labelAction = 'Save';
-                        this.$.sidelineSubMonitor.style.visibility = 'hidden';
-                        this.$.rootSideline.classList.add("flex-vertical");
-                        this.$.rootSideline.classList.remove("flex-horizontal");
-
-                        this.$.sidelineMonitor.classList.add("flex-basis-100");
-                        this.$.sidelineMonitor.classList.remove("flex-basis-70");
-
-                        this.$.sidelineSubMonitor.classList.remove("flex-basis-30");
-                        this.$.sidelineSubMonitor.classList.add("no-display");
-
-                        break;
-                    default:
-                        this.labelAction = 'Update';
-                        this.$.sidelineSubMonitor.style.visibility = 'visible';
-                        this.$.rootSideline.classList.add("flex-horizontal");
-                        this.$.rootSideline.classList.remove("flex-vertical");
-
-                        this.$.sidelineMonitor.classList.add("flex-basis-70");
-                        this.$.sidelineMonitor.classList.remove("flex-basis-100");
-
-                        this.$.sidelineSubMonitor.classList.add("flex-basis-30");
-                        this.$.sidelineSubMonitor.classList.remove("no-display");
-
-                        break;
-
-                }
-            }
-
-
-            _searchMonitorChanged(evt) {
-
-                serviceManager.get('StoragePluginManager')
-                    .get(MonitorConfig.NAME_SERVICE)
-                    .getAll()
-                    .then((data) => {
-                        let monitors = [];
-
-                        for (let cont = 0; data.length > cont; cont++) {
-                            let internalMonitor = data[cont].getMonitors({nested: true});
-                            for (let index = 0; internalMonitor.length > index; index++) {
-                                monitors.push({
-                                    monitor: internalMonitor[index],
-                                    config: data[cont],
-                                    name: internalMonitor[index].name
-                                });
-                            }
-                        }
-
-                        let filter = monitors.filter(
-                            element => {
-                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
-                            }
-                        );
-
-                        evt.detail.target.suggestions(
-                            filter
-                        );
-                    });
-            }
-
-
-            _selectMonitor(evt) {
-                let ref = new VirtualMonitorReference();
-                ref.virtualMonitorId = evt.detail.option.config.id;
-                ref.monitorId = evt.detail.option.monitor.id;
-                ref.name = evt.detail.option.monitor.name;
-                this.sideline.virtualMonitorReference = ref;
-            }
-
-
-            _selectSubMonitor(evt) {
-                let ref = new VirtualMonitorReference();
-                ref.virtualMonitorId = evt.detail.option.config.id;
-                ref.monitorId = evt.detail.option.monitor.id;
-                ref.name = evt.detail.option.monitor.name;
-
-                if (evt.target.sideline !== undefined) {
-                    evt.target.sideline.virtualMonitorReference = ref;
-                } else {
-                    this.subSideline.virtualMonitorReference = ref;
-                }
-
-            }
-
-
-            _selectSideline(evt) {
-                this.sideline.monitor = evt.detail.option.monitor;
-            }
-
-
-            _searchSidelineChanged(evt) {
-                // TODO PORCATA
-                let filter = this.sideline.getSidelines({nested:true}).concat(this.sideline).filter(
-                    element => {
-                        return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
-                    }
-                );
-
-                evt.detail.target.suggestions(
-                    filter
-                );
-            }
-
-            deleteSideline(evt) {
-                this.sideline.removeSideline(evt.target.item);
-              //  this.set('monitors', []);
-              //  this.set('monitors', this.monitor.getMonitors());
-                this._refreshSideline();
-            }
-
-
-            _refreshSideline() {
-                let templates = this.root.querySelectorAll('dom-repeat');
-
-                for (let cont = 0; templates.length > cont; cont++) {
-                    templates[cont].render();
-                }
-            }
-
-
-
-            _isMethod(method) {
-                let isMethod = false;
-                switch (true) {
-                    case method === 'update' && this.sideline.id !== undefined:
-                        isMethod = true;
-                        break;
-                    case method === 'save' && this.sideline.id === undefined:
-                        isMethod = true;
-                        break;
-                }
-
-                return isMethod;
-            }
+             *
              */
+            _removeVideoPanel(evt) {
+                this.resource.getVideoPanel().removeVideoPanel(evt.target.item);
+                this.render();
+            }
         }
 
         window.customElements.define(ElementVideoPanelViewUpsert.is, ElementVideoPanelViewUpsert);

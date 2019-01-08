@@ -68,6 +68,31 @@ class VideoPanel {
     }
 
     /**
+     * @param videoPanel
+     * @return {boolean}
+     */
+    removeVideoPanel(videoPanel) {
+        let remove = false;
+        if (this.videoPanels.length > 0) {
+            for (let cont = 0; this.videoPanels.length > cont; cont++) {
+
+                switch (true) {
+                    case videoPanel.id === this.videoPanels[cont].id :
+                        this.videoPanels.splice(cont, 1);
+                        return true;
+                        break;
+
+                    case typeof this.monitors[cont].removeVideoPanel === "function":
+                        remove = remove || this.videoPanels[cont].removeVideoPanel(videoPanel);
+                        break
+                }
+
+            }
+        }
+        return remove;
+    }
+
+    /**
      * @param id
      * @returns {*}
      */

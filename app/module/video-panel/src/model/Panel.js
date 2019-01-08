@@ -44,7 +44,6 @@ class Panel {
 
         return Object.keys(this.videoPanel).length === 0 && this.videoPanel.constructor === Object ? false : true;
     }
-
 }
 
 module.exports = Panel;
