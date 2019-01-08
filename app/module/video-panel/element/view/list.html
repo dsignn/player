@@ -23,8 +23,8 @@
 
         <slot name="header"></slot>
         <div hidden$="{{!totalItems}}">
-            <template is="dom-repeat" items="[[resources]]" as="sideline">
-                <video-panel-wc sideline="{{sideline}}" on-update-view="displayUpdateView" on-remove="removeResource"></video-panel-wc>
+            <template is="dom-repeat" items="[[resources]]" as="panel">
+                <video-panel-wc panel="{{panel}}" on-update-view="displayUpdateView" on-remove="removeResource"></video-panel-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>

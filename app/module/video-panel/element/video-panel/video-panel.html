@@ -45,7 +45,7 @@
       <div class="card-content flex flex-horizontal">
         <div class="data flex-basis-85 flex flex-vertical">
           <div class="dataWrapper">
-            <div>{{sideline.name}} {{sideline.width}}px {{sideline.height}}px</div>
+            <div>{{panel.name}} {{panel.videoPanel.width}}px {{panel.videoPanel.height}}px</div>
           </div>
         </div>
         <div class="flex-basis-15 flex flex-vertical">
@@ -71,19 +71,19 @@
       static get properties() {
           return {
 
-              sideline: {
+              panel: {
                   type: Object,
-                  value: new Sideline()
+                  value: new Panel()
               }
           };
       }
 
       _remove(evt) {
-          this.dispatchEvent(new CustomEvent('remove', {detail: this.sideline}));
+          this.dispatchEvent(new CustomEvent('remove', {detail: this.panel}));
       }
 
       _update(evt) {
-          this.dispatchEvent(new CustomEvent('update-view', {detail: this.sideline}));
+          this.dispatchEvent(new CustomEvent('update-view', {detail: this.panel}));
       }
     }
 
