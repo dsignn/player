@@ -80,7 +80,8 @@
                 "src/model/Video.js",
                 "src/model/Audio.js",
                 "src/model/SourcePath.js",
-                "src/model/LocationPath.js"
+                "src/model/LocationPath.js",
+                "src/model/ResourceReference.js"
             ],
             "name": "resource"
         },
@@ -147,6 +148,9 @@
             "autoloads": [
                 "src/model/Panel.js",
                 "src/model/VideoPanel.js",
+                "src/model/PanelResource.js",
+                "src/model/VideoPanelResource.js",
+
                 "src/model/Sideline.js",
                 "src/model/SidelineReference.js",
                 "src/model/SidelineResource.js",

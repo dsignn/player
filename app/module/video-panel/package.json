@@ -11,6 +11,10 @@
   "autoloads": [
     "src/model/Panel.js",
     "src/model/VideoPanel.js",
+    "src/model/PanelResource.js",
+    "src/model/VideoPanelResource.js",
+
+
     "src/model/Sideline.js",
     "src/model/SidelineReference.js",
     "src/model/SidelineResource.js",

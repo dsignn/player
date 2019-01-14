@@ -8,6 +8,8 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
 
+<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
+
 <link rel="import" href="../video-panel-resource/video-panel-resource.html">
 
 <dom-module id="video-panel-view-resource-list">
@@ -23,18 +25,18 @@
 
         <slot name="header"></slot>
         <div hidden$="{{!hasSidelines}}">
-            <template is="dom-repeat" items="[[resources]]" as="sidelineResource">
-                <video-panel-resource-wc sideline-resource="{{sidelineResource}}" on-update-view="displayUpdateView" on-remove="remove"></video-panel-resource-wc>
+            <template is="dom-repeat" items="[[resources]]" as="panelResource">
+                <video-panel-resource-wc resource="{{panelResource}}" on-update-view="displayUpdateView" on-remove="removeResource"></video-panel-resource-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
-        <div hidden$="{{hasSidelines}}">
-            Non sono presenti file
+        <div hidden$="{{totalItems}}">
+            Non sono risorse
         </div>
     </template>
 
     <script>
-        class ElementVideoPanelViewResourceList extends Polymer.Element {
+        class ElementVideoPanelViewResourceList extends StorageBehaviour {
 
             static get is() {
                 return 'video-panel-view-resource-list';
@@ -42,11 +44,6 @@
 
             static get properties() {
                 return {
-
-                    resources: {
-                        type: Array,
-                        value: []
-                    },
 
                     resourceSelected: {
                         type: Object,
@@ -59,85 +56,13 @@
                         notify: true
                     },
 
-                    page: {
-                        type: Number,
-                        value: 1
-                    },
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: VideoPanelConfig.RESOURCE_SERVICE
 
-                    itemPerPage: {
-                        type: Number,
-                        value: 20
                     },
-
-                    totalItem: {
-                        type: Number,
-                    }
                 };
-            }
-
-            static get observers() {
-                return [
-                    '_querySidelines(page, itemPerPage)'
-                ]
-            }
-
-            ready() {
-                super.ready();
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.RESOURCE_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._getSidelineResources.bind(this)
-                );
-
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.RESOURCE_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._getSidelineResources.bind(this)
-                );
-            }
-
-            _querySidelines(page, itemPerPage) {
-                if (page === undefined || itemPerPage === undefined) {
-                    return;
-                }
-                this._getSidelineResources();
-            }
-
-            /**
-             *
-             */
-            _getSidelineResources() {
-
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.RESOURCE_SERVICE)
-                    .getPaged(this.page, this.itemPerPage)
-                    .then((data) => {
-                        this.set('sidelineResources', data);
-                        this.hasSidelines = data.length > 0;
-                        this.totalItems = data.totalItems;
-                    });
-            }
-
-            /**
-             * @param evt
-             */
-            remove(evt) {
-
-                let index = null;
-                this.sidelineResources.find((element, ind) => {
-                    if (element.id === evt.detail.id) {
-                        index = ind;
-                        return element;
-                    }
-                });
-
-                this.splice('sidelineResources', index, 1);
-                this.hasSidelines = this.sidelineResources.length > 0;
-
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.RESOURCE_SERVICE)
-                    .remove(evt.detail)
-                    .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify('Remove sideline resource')
-                    });
             }
 
             /**

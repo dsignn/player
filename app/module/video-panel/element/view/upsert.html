@@ -352,11 +352,11 @@
                         .getVideoPanel(this.$.videoPanelSelector._selectedOption.id);
 
                     videoPanel.appendVideoPanel(
-                        serviceManager.get('HydratorPluginManager').get('videoPanelsHydrator').hydrate(this.videoPanel)
+                        serviceManager.get('HydratorPluginManager').get('videoPanelHydrator').hydrate(this.videoPanel)
                     );
                 } else {
                     this.resource.setVideoPanel(
-                        serviceManager.get('HydratorPluginManager').get('videoPanelsHydrator').hydrate(this.videoPanel)
+                        serviceManager.get('HydratorPluginManager').get('videoPanelHydrator').hydrate(this.videoPanel)
                     );
                     this.hasVideoPanel = true;
                 }

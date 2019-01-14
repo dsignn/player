@@ -50,12 +50,16 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
      */
     init() {
         this._loadPanelHydrator();
+        this._loadVideoPanelHydrator();
+        this._loadStorage();
+
+        this._loadPanelResourceHydrator();
+        this._loadVideoPanelResourceHydrator();
+        this._loadResourceStorage();
+
         this._loadResourceMosaicHydrator();
         this._loadMonitorMosaicWrapperHydrator();
         this._loadVideoPanelMosaicWrapperHydrator();
-        this._loadResourceHydrator();
-        this._loadStorage();
-        this._loadResourceStorage();
     }
 
     /**
@@ -140,7 +144,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
                                     this.getServiceManager().get('DexieManager'),
                                     VideoPanelConfig.RESOURCE_COLLECTION
                                 ),
-                                this.getServiceManager().get('HydratorPluginManager').get('videoPanelResourceHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('panelResourceHydrator')
                             );
 
                             this.getServiceManager().get('StoragePluginManager').set(
@@ -162,33 +166,6 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
                     );
                 }
             }
-        );
-    }
-
-    /**
-     * @private
-     */
-    _loadResourceHydrator() {
-        let videoPanelResourceHydrator = new dsign.hydrator.PropertyHydrator(
-            new SidelineResource(),
-            {
-                sidelineReference : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new SidelineReference()))
-            },
-        );
-
-        videoPanelResourceHydrator.enableHydrateProperty('id')
-            .enableHydrateProperty('nameResource')
-            .enableHydrateProperty('sidelineReference')
-            .enableHydrateProperty('resourcesInSideline');
-
-        videoPanelResourceHydrator.enableExtractProperty('id')
-            .enableExtractProperty('nameResource')
-            .enableExtractProperty('sidelineReference')
-            .enableExtractProperty('resourcesInSideline');
-
-        this.getServiceManager().get('HydratorPluginManager').set(
-            'videoPanelResourceHydrator',
-            videoPanelResourceHydrator
         );
     }
 
@@ -298,9 +275,10 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
     }
 
     /**
+     * @return {PropertyHydrator}
      * @private
      */
-    _loadVideoPanelHydrator() {
+    _getVideoPanelHydrator() {
 
         let videoPanelHydrator = new dsign.hydrator.PropertyHydrator(
             new VideoPanel(),
@@ -331,28 +309,35 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('virtualMonitorReference');
 
         videoPanelHydrator.addStrategy(
-            'videoPanels',
+            'videoPanel',
             new dsign.hydrator.strategy.HydratorStrategy(videoPanelHydrator)
         );
 
-        this.getServiceManager().get('HydratorPluginManager').set(
-            'videoPanelsHydrator',
-            videoPanelHydrator
-        );
+        return videoPanelHydrator;
     }
 
     /**
      * @private
      */
-    _loadPanelHydrator() {
+    _loadVideoPanelHydrator() {
 
-        this._loadVideoPanelHydrator();
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'videoPanelHydrator',
+            this._getVideoPanelHydrator()
+        );
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     * @private
+     */
+    _getPanelHydrator() {
 
         let panelHydrator = new dsign.hydrator.PropertyHydrator(
             new Panel(),
             {
                 videoPanel : new dsign.hydrator.strategy.HydratorStrategy(
-                    this.getServiceManager().get('HydratorPluginManager').get('videoPanelsHydrator')
+                    this._getVideoPanelHydrator()
                 ),
             }
         );
@@ -365,9 +350,96 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('name')
             .enableExtractProperty('videoPanel');
 
+        return panelHydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadPanelHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
             'panelHydrator',
-            panelHydrator
+            this._getPanelHydrator()
+        );
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     * @private
+     */
+    _getPanelResourceHydrator() {
+
+        let panelResourceHydrator = this._getPanelHydrator();
+        panelResourceHydrator.setObjectPrototype(new PanelResource());
+
+        panelResourceHydrator.addStrategy(
+            'resourceReference',
+            new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new ResourceReference()))
+        ).addStrategy(
+            'videoPanel',
+            new dsign.hydrator.strategy.HydratorStrategy(this._getVideoPanelResourceHydrator()));
+
+        panelResourceHydrator.enableHydrateProperty('resourceReference')
+            .enableHydrateProperty('nested');
+
+        panelResourceHydrator.enableExtractProperty('resourceReference')
+            .enableExtractProperty('nested');
+
+        return panelResourceHydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadPanelResourceHydrator() {
+
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'panelResourceHydrator',
+            this._getPanelResourceHydrator()
+        );
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     * @private
+     */
+    _getVideoPanelResourceHydrator() {
+
+        let videoPanelResourceHydrator = this._getVideoPanelHydrator();
+        videoPanelResourceHydrator.setObjectPrototype(new VideoPanelResource());
+
+        videoPanelResourceHydrator.addStrategy(
+            'esclude',
+            new dsign.hydrator.strategy.HybridStrategy(
+                dsign.hydrator.strategy.HybridStrategy.BOOLEAN_TYPE,
+                dsign.hydrator.strategy.HybridStrategy.NUMBER_TYPE
+            )
+        ).addStrategy(
+            'resources',
+            new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new ResourceReference()))
+        ).addStrategy(
+            'videoPanels',
+            new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new VideoPanelResource()))
+        );
+
+        videoPanelResourceHydrator.enableHydrateProperty('esclude')
+            .enableHydrateProperty('resources');
+
+        videoPanelResourceHydrator.enableExtractProperty('esclude')
+            .enableExtractProperty('resources');
+
+        return videoPanelResourceHydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadVideoPanelResourceHydrator() {
+
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'videoPanelResourceHydrator',
+            this._getVideoPanelResourceHydrator()
         );
     }
 

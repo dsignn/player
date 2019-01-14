@@ -25,4 +25,4 @@ clear-project:
 
 ## generate-test-videos 	Generate test videos
 generate-test-videos:
-	./test/createFilesTest.sh
+	bash ./test/createFilesTest.sh

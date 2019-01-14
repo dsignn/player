@@ -11,35 +11,53 @@
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip-icons.html">
+<link rel="import" href="../../../../bower_components/paper-material/paper-material.html">
 
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
 
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 
 <dom-module id="video-panel-view-resource-upsert">
     <template>
+        <style>
+            paper-material {
+                padding: 8px 12px;
+                background-color: #fffff0;
+                margin-right: 4px;
+            }
+
+            paper-material .title {
+                font-size: 20px;
+            }
+
+            paper-material .subtitle {
+                font-style: italic;
+            }
+        </style>
         <style include="global-layout"></style>
         <style include="global-style"></style>
         <slot name="header"></slot>
-        <iron-form id="formSidelineResource">
+        <iron-form id="formPanelResource">
             <form method="post" action="">
                 <div>
-                    <paper-input id="name" name="name" label="Name resource" value="{{sidelineResource.nameResource}}" required></paper-input>
+                    <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                    <paper-input id="nameResource" name="name" label="Name resource" value="{{resource.resourceReference.name}}" required></paper-input>
                     <div class="flex flex-horizontal">
-                        <paper-checkbox id="checkSingle" class="flex flex-vertical-end" style="padding-bottom: 10px; padding-right: 20px;" checked="{{hideSingleSection}}">
+                        <paper-checkbox id="checkSingle" class="flex flex-vertical-end" style="padding-bottom: 10px; padding-right: 20px;" checked="{{resource.nested}}">
                             Single row content
                         </paper-checkbox>
                         <paper-autocomplete
                                 style="flex: 1;"
-                                id="sideline"
-                                label="Sideline"
+                                id="panel"
+                                label="Panel"
                                 text-property="name"
                                 value-property="name"
                                 remote-source
-                                on-autocomplete-selected="_selectSideline"
-                                on-autocomplete-change="_searctSidelineChanged"
-                                on-autocomplete-reset-blur="_resetSideline">
+                                on-autocomplete-selected="_autocompletePanelSelect"
+                                on-autocomplete-change="_autocompletePanelChanged"
+                                on-autocomplete-reset-blur="autocompletePanelReset">
                             <template slot="autocomplete-custom-template">
                                 <style>
                                     :host {
@@ -62,8 +80,9 @@
                                 <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                     <div>
                                         <div class="service-name">[[item.name]]</div>
-                                        <div class="service-description">Width [[item.width]]px Height
-                                            [[item.height]]px
+                                        <div class="service-description">
+                                            Width [[item.videoPanel.width]]px
+                                            Height [[item.videoPanel.height]]px
                                         </div>
                                     </div>
                                     <paper-ripple></paper-ripple>
@@ -72,61 +91,70 @@
                         </paper-autocomplete>
                     </div>
                     <div hidden$="{{!hideResourceSection}}">
-                        <div id="single" hidden$="{{!hideSingleSection}}">
-                            <paper-autocomplete
-                                    style="flex: 1;"
-                                    id="singleResource"
-                                    label="Select resource"
-                                    text-property="name"
-                                    value-property="name"
-                                    remote-source
-                                    on-autocomplete-selected="_selectMultipleResource"
-                                    on-autocomplete-change="_searchResourceChanged">
-                                <template slot="autocomplete-custom-template">
-                                    <style>
-                                        :host {
-                                            display: block;
-                                        }
+                        <div id="single" hidden$="{{!resource.nested}}">
+                            <paper-material class="flex-1">
+                                <paper-autocomplete
+                                        style="flex: 1;"
+                                        id="singleResource"
+                                        label="Select resource"
+                                        text-property="name"
+                                        value-property="name"
+                                        remote-source
+                                        on-autocomplete-selected="_autocompleteResourceSelect"
+                                        on-autocomplete-change="_autocompleteResourceChanged">
+                                    <template slot="autocomplete-custom-template">
+                                        <style>
+                                            :host {
+                                                display: block;
+                                            }
 
-                                        paper-item.account-item {
-                                            padding: 8px 16px;
-                                        }
+                                            paper-item.account-item {
+                                                padding: 8px 16px;
+                                            }
 
-                                        .service-name {
-                                            color: #333;
-                                        }
+                                            .service-name {
+                                                color: #333;
+                                            }
 
-                                        .service-description {
-                                            margin-top: 4px;
-                                            color: #999;
-                                        }
-                                    </style>
-                                    <paper-item class="account-item" on-tap="_onSelect" role="option"
-                                                aria-selected="false">
-                                        <div>
-                                            <div class="service-name">[[item.name]]</div>
-                                            <div class="service-description">Width [[item.width]]px Height
-                                                [[item.height]]px
+                                            .service-description {
+                                                margin-top: 4px;
+                                                color: #999;
+                                            }
+                                        </style>
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div>
+                                                <div class="service-name">[[item.name]]</div>
+                                                <div class="service-description">Width [[item.width]]px Height
+                                                    [[item.height]]px
+                                                </div>
                                             </div>
-                                        </div>
-                                        <paper-ripple></paper-ripple>
-                                    </paper-item>
-                                </template>
-                            </paper-autocomplete>
-                            <div id="singleSidelineResource" class="listClass"></div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                                <div id="singleSidelineResource" class="listClass">
+                                    <template is="dom-repeat" items="[[resource.videoPanel.resources]]" as="resource">
+                                        <paper-chip removable single-line index="{{index}}">
+                                            {{resource.name}}
+                                        </paper-chip>
+                                    </template>
+                                </div>
+                            </paper-material>
                         </div>
-                        <div id="multi" hidden$="{{hideSingleSection}}">
+                        <div id="multi" hidden$="{{resource.nested}}">
                             <div class="flex flex-horizontal">
-                                <template is="dom-repeat" items="[[sidelines]]" as="sideline">
-                                    <div class="flex-1" style="padding-right: 6px;" sideline="{{sideline}}" sidelinemultiresource>
-                                        <div class="flex flex-horizontal-center">{{sideline.name}}</div>
+                                <template is="dom-repeat" items="[[videoPanels]]" as="videoPanel">
+                                    <paper-material videoPanel="videoPanel" class="flex-1" id="{{videoPanel.id}}">
+                                        <div class="flex flex-horizontal-center title">{{videoPanel.name}}</div>
+                                        <div class="flex flex-horizontal-center subtitle"> height {{videoPanel.height}} px - width {{videoPanel.width}} px</div>
                                         <paper-autocomplete
                                                 label="Select resource"
                                                 text-property="name"
                                                 value-property="name"
                                                 remote-source
-                                                on-autocomplete-selected="_selectMultipleResource"
-                                                on-autocomplete-change="_searchResourceChanged">
+                                                video-panel="{{videoPanel}}"
+                                                on-autocomplete-selected="_autocompleteResourceSelect"
+                                                on-autocomplete-change="_autocompleteResourceChanged">
                                             <template slot="autocomplete-custom-template">
                                                 <style>
                                                     :host {
@@ -155,8 +183,15 @@
                                                 </paper-item>
                                             </template>
                                         </paper-autocomplete>
-                                        <div class="listClass"></div>
-                                    </div>
+                                        <div class="listClass">
+                                            <template is="dom-repeat" items="[[videoPanel.resources]]" as="resource">
+                                                <paper-chip removable single-line index="{{index}}">
+                                                    {{resource.name}}
+                                                </paper-chip>
+                                            </template>
+                                        </div>
+                                        <paper-checkbox checked="{{videoPanel.esclude}}">Esclude video panel</paper-checkbox>
+                                    </paper-material>
                                 </template>
                             </div>
                         </div>
@@ -164,16 +199,16 @@
                 </div>
                 <div>
                     <div class="flex flex-horizontal-end" style="margin-top: 20px;">
+                        <paper-button on-tap="createResource">Create resource</paper-button>
                         <paper-button on-tap="submitSidelineResourceButton">{{labelAction}}</paper-button>
                     </div>
                 </div>
             </form>
         </iron-form>
-        <paper-button on-tap="createResource">Create resource</paper-button>
     </template>
 
     <script>
-        class ElementVideoPanelViewResourceUpsert extends Polymer.Element {
+        class ElementVideoPanelViewResourceUpsert extends StorageBehaviour {
 
             static get is() {
                 return 'video-panel-view-resource-upsert';
@@ -181,20 +216,14 @@
 
             static get properties() {
                 return {
-                    sidelineResource: {
+
+                    resource: {
                         type: Object,
                         notify: true,
-                        value: new SidelineResource(),
-                        observer: '_changeSidelineResource'
+                        value: new PanelResource()
                     },
 
-                    sideline: {
-                        type: Object,
-                        readOnly: true,
-                        observer: '_changeSideline'
-                    },
-
-                    sidelines: {
+                    videoPanels: {
                         type: Array,
                         readOnly: true,
                         notify: true,
@@ -217,42 +246,173 @@
                         type: String,
                         notify: true,
                         value: 'Save'
-                    }
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: VideoPanelConfig.RESOURCE_SERVICE
+
+                    },
                 }
             }
+
+            static get observers() {
+                return [
+                    '_changeResource(resource)'
+                ]
+            }
+
             ready() {
                 super.ready();
 
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.RESOURCE_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
-                );
-
-                this.$.formSidelineResource.addEventListener('iron-form-presubmit', this.submitSidelineResource.bind(this));
+             //   this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this));
+                this.$.formPanelResource.addEventListener('iron-form-presubmit', this.submitPanelResource.bind(this));
             }
 
             /**
-             * @param newValue
+             * @param {null|PanelResource} resource
              */
-            _changeSideline(newValue) {
-
-                this.hideResourceSection = !!newValue;
-
-                if (!newValue) {
+            _changeResource(resource) {
+                if (!resource) {
+                    this.labelAction ='Save';
                     return;
                 }
 
-                this._setSidelines(newValue.sidelines ? newValue.sidelines : []);
-                this.labelAction = newValue && newValue.id ? 'Update' : 'Save';
+                this.hideResourceSection = true;
+                this._setVideoPanels(resource.hasVideoPanel()
+                    ? resource.getVideoPanel().getVideoPanels()
+                    : []
+                );
+                this.labelAction = resource.id ? 'Update' : 'Save';
             }
 
+            /**
+             * @param evt
+             */
+            _autocompletePanelChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(VideoPanelConfig.NAME_SERVICE)
+                    .getAll({name: evt.detail.value})
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            _autocompletePanelSelect(evt) {
+
+                this.hideResourceSection = true;
+                let videoPanel = evt.detail.option.hasVideoPanel()
+                    ? serviceManager.get('HydratorPluginManager')
+                        .get('videoPanelResourceHydrator').hydrate(evt.detail.option.getVideoPanel())
+                    : {};
+
+                this.resource.setVideoPanel(videoPanel);
+
+                this.$.singleResource.videoPanel = this.resource.getVideoPanel();
+                this.notifyPath('resource.videoPanel.resources');
+
+                this._setVideoPanels(this.resource.hasVideoPanel()
+                    ? this.resource.getVideoPanel().getVideoPanels()
+                    : []
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            autocompletePanelReset(evt) {
+                this.hideResourceSection = false;
+                this.resource.setVideoPanel({});
+            }
+
+            /**
+             *
+             */
             createResource() {
                 this.$.resourceGenerator.create();
             }
 
             /**
-             * @param newValue
+             * @param evt
              */
+            _autocompleteResourceChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .getAll({name: evt.detail.value})
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                });
+            }
+            /**
+             * @param evt
+             */
+
+            _autocompleteResourceSelect(evt) {
+
+                evt.target.videoPanel.appendResource(
+                    new ResourceReference(
+                        evt.detail.option.id,
+                        evt.detail.option.name
+                    )
+                );
+
+                evt.target.parentElement.querySelector('dom-repeat').render();
+
+                setTimeout(
+                    function () {
+                        this.clear();
+                    }.bind(evt.target),
+                    200
+                );
+            }
+
+            /**
+             *
+             */
+            submitSidelineResourceButton() {
+                this.$.formPanelResource.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitPanelResource(evt) {
+                evt.preventDefault();
+
+                let method = this.getStorageMethod();
+                this.storage[method](this.resource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' video panel resource');
+                        if (method === 'save') {
+                            this.resetResource();
+                        }
+
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+            /**
+             *
+             */
+            resetResource() {
+
+                this.$.formPanelResource.reset();
+                this.hideResourceSection = false;
+                this.resource = new PanelResource();
+            }
+
+            /**
+
+
             _changeSidelineResource(newValue) {
 
                 if (!newValue || !newValue.id) {
@@ -312,97 +472,12 @@
                     });
             }
 
-            /**
-             * @param evt
-             * @private
-             */
-            _selectSideline(evt) {
 
-                this._setSideline(evt.detail.option);
-            }
-
-            /**
-             * @param evt
-             * @private
-             */
-            _resetSideline(evt) {
-
-                this._setSideline(null);
-            }
-
-            /**
-             * @param evt
-             */
-            _searctSidelineChanged(evt) {
-
-                serviceManager.get('StoragePluginManager')
-                    .get(VideoPanelConfig.NAME_SERVICE)
-                    .getAll({name: evt.detail.value})
-                    .then((data) => {
-                        evt.detail.target.suggestions(data);
-                    });
-            }
-
-            /**
-             * @param evt
-             */
-            _searchResourceChanged(evt) {
-                serviceManager.get('StoragePluginManager')
-                    .get(ResourceConfig.NAME_SERVICE)
-                    .getAll({name: evt.detail.value})
-                    .then((data) => {
-                        evt.detail.target.suggestions(data);
-                    });
-            }
-
-            /**
-             * @param evt
-             */
-            _selectMultipleResource(evt) {
-                evt.target.parentElement
-                    .querySelector('div.listClass')
-                    .appendChild(this._createChip(evt.detail.option));
-
-                setTimeout(
-                    function () {
-                        this.clear();
-                    }.bind(evt.target),
-                    200
-                );
-
-            }
-
-            /**
-             * @param resource
-             * @return chip
-             * @private
-             */
-            _createChip(resource) {
-
-                let chip = document.createElement("paper-chip");
-                chip.setAttribute('removable', true);
-                chip.setAttribute('single-line', true);
-
-                let div = document.createElement("div");
-                div.setAttribute('slot', 'label');
-                div.innerHTML = resource.name;
-
-                chip.appendChild(div);
-                chip.resource = resource;
-
-                return chip;
-            }
-
-            /**
-             * @param evt
-             */
             submitSidelineResourceButton() {
                 this.$.formSidelineResource.submit();
             }
 
-            /**
-             * @param evt
-             */
+
             submitSidelineResource(evt) {
                 evt.preventDefault();
 
@@ -451,12 +526,7 @@
                     );
             }
 
-            /**
-             * @param {Sideline} sideline
-             * @param {Sideline|null} parentSideline
-             * @return SidelineReference
-             * @private
-             */
+
             _generateSidelineReference(sideline, parentSideline = null) {
                 let reference = new SidelineReference();
                 reference.sidelineId = sideline.id;
@@ -465,12 +535,7 @@
                 return reference;
             }
 
-            /**
-             * @param {SidelineReference} sidelineReference
-             * @param paperChips
-             * @return Object
-             * @private
-             */
+
             _generateResourceInSideline(sidelineReference, paperChips) {
 
                 let resourceInSideline = {
@@ -485,16 +550,15 @@
                 return resourceInSideline;
             }
 
-            /**
-             * @param evt
-             * @private
-             */
+
             _clearData(evt) {
                 this.$.name.value = null;
                 this.$.checkSingle.checked = false;
                 this.$.sideline.clear();
                 this._setSideline(null);
             }
+
+             */
         }
 
         window.customElements.define(ElementVideoPanelViewResourceUpsert.is, ElementVideoPanelViewResourceUpsert);

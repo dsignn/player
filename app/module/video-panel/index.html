@@ -38,7 +38,7 @@
             <div>
                 <iron-pages id="ironPages" selected="{{viewSelected}}">
                     <div id="list">
-                        <video-panel-view-list selected="{{viewSelected}}" resource-selected="{{sideline}}">
+                        <video-panel-view-list selected="{{viewSelected}}" resource-selected="{{videoPanel}}">
                             <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
                                 <div>Lista video panel</div>
                                 <paper-icon-button
@@ -63,7 +63,7 @@
                         </video-panel-view-upsert>
                     </div>
                     <div id="edit">
-                        <video-panel-view-upsert resource="{{sideline}}">
+                        <video-panel-view-upsert resource="{{videoPanel}}">
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
@@ -79,9 +79,9 @@
             <div>
                 <iron-pages id="ironPages" selected="{{viewResourceSelected}}">
                     <div id="listResource">
-                        <video-panel-view-resource-list selected="{{viewResourceSelected}}" resource-selected="{{sidelineResource}}">
+                        <video-panel-view-resource-list selected="{{viewResourceSelected}}" resource-selected="{{videoPanelResource}}">
                             <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
-                                <div>Lista risorse delle sideline</div>
+                                <div>Lista risorse </div>
                                 <paper-icon-button
                                         class="circle"
                                         on-tap="displayAddViewResource"
@@ -104,7 +104,7 @@
                         </video-panel-view-resource-upsert>
                     </div>
                     <div id="editResource">
-                        <video-panel-view-resource-upsert sideline-resource="{{sidelineResource}}">
+                        <video-panel-view-resource-upsert resource="{{videoPanelResource}}">
                             <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                                 <paper-icon-button
                                         icon="app:back"
@@ -131,7 +131,7 @@
 
                     selected: {
                         type: Number,
-                        value: 0
+                        value: 1
                     },
 
                     viewSelected: {
@@ -141,7 +141,7 @@
 
                     viewResourceSelected: {
                         type: Number,
-                        value: 0
+                        value: 1
                     }
                 }
             }
