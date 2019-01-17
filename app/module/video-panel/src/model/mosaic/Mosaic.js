@@ -4,26 +4,26 @@
 class Mosaic {
 
     /**
-     * @param {MonitorMosaicWrapper} monitorMosaicWrapper
-     * @param {SidelineMosaicWrapper} sidelineMosaicWrapper
+     * @param {MonitorMosaic} monitorMosaic
+     * @param {PanelResource} panelMosaic
      * @param backgroundColor
      */
-    constructor(monitorMosaicWrapper, sidelineMosaicWrapper, backgroundColor = 'black') {
+    constructor(monitorMosaic, panelMosaic, backgroundColor = 'black') {
 
         let ffmpeg = require('fluent-ffmpeg');
         this.command = new ffmpeg();
 
         /**
-         * @type {MonitorMosaicWrapper}
+         * @type {VirtualMonitor}
          * @private
          */
-        this._monitorMosaicWrapper = monitorMosaicWrapper;
+        this._monitorMosaic = monitorMosaic;
 
         /**
-         * @type {SidelineMosaicWrapper}
+         * @type {PanelResource}
          * @private
          */
-        this._sidelineMosaicWrapper= sidelineMosaicWrapper;
+        this._panelMosaic= panelMosaic;
 
         /**
          * @type String
@@ -56,17 +56,17 @@ class Mosaic {
     }
 
     /**
-     * @return {MonitorMosaicWrapper}
+     * @return {MonitorMosaic}
      */
-    getMonitorMosaicWrapper() {
-        return this._monitorMosaicWrapper;
+    getMonitorMosaic() {
+        return this._monitorMosaic;
     }
 
     /**
-     * @return {SidelineMosaicWrapper}
+     * @return {PanelMosaic}
      */
-    getSidelineMosaicWrapper() {
-        return this._sidelineMosaicWrapper;
+    getPanelMosaic() {
+        return this._panelMosaic;
     }
 
     /**
@@ -75,8 +75,8 @@ class Mosaic {
      */
     addResource(resource, sideline) {
 
-        let wrapSideline = this._sidelineMosaicWrapper.getSideline(sideline.id);
-        let wrapMonitor = this._monitorMosaicWrapper.getMonitor(wrapSideline.virtualMonitorReference.monitorId);
+        let wrapSideline = this._panelMosaic.getSideline(sideline.id);
+        let wrapMonitor = this._monitorMosaic.getMonitor(wrapSideline.virtualMonitorReference.monitorId);
 
 
 
@@ -138,8 +138,8 @@ class Mosaic {
     /**
      *
      * @param label
-     * @param {MonitorMosaicWrapper} wrapMonitor
-     * @param {SidelineMosaicWrapper} wrapSideline
+     * @param {MonitorMosaic} wrapMonitor
+     * @param {PanelMosaic} wrapSideline
      * @param {ResourceMosaic} resource
      * @private
      */
@@ -162,10 +162,10 @@ class Mosaic {
         );
         console.table(
             {
-                'Sideline computed width' : wrapSideline.comutedWidth,
-                'Sideline remaining width' : wrapSideline.getRemainingWidth(),
-                'Sideline Height' : wrapSideline.height,
-                'Sideline width' : wrapSideline.width
+                'panel computed width' : wrapSideline.comutedWidth,
+                'panel remaining width' : wrapSideline.getRemainingWidth(),
+                'panel Height' : wrapSideline.height,
+                'panel width' : wrapSideline.width
             }
         );
         console.groupEnd();
@@ -189,7 +189,7 @@ class Mosaic {
      */
     _getBaseStringComplexFilter(duration) {
         let computedDuration = duration === undefined ? '' : duration;
-        return `color=s=${this._monitorMosaicWrapper.width}x${this._monitorMosaicWrapper.width}:c=${this.backgroundColor}${computedDuration} [base0]`;
+        return `color=s=${this._monitorMosaic.width}x${this._monitorMosaic.width}:c=${this.backgroundColor}${computedDuration} [base0]`;
     }
 
     /**
@@ -222,20 +222,20 @@ class Mosaic {
      */
     _initializeXY(id) {
 
-        let wrapMonitor = this._monitorMosaicWrapper.getMonitor(id);
+        let wrapMonitor = this._monitorMosaic.getMonitor(id);
 
         wrapMonitor.progressOffsetX = 0;
         wrapMonitor.progressOffsetY = 0;
-        let parent = this._monitorMosaicWrapper.getParent(wrapMonitor.id);
+        let parent = this._monitorMosaic.getParent(wrapMonitor.id);
 
         // Retrive parent monitor offset and skip last
-        while (this._monitorMosaicWrapper.getParent(parent.id)) {
+        while (this._monitorMosaic.getParent(parent.id)) {
             wrapMonitor.progressOffsetX =+ parent.offsetX;
             wrapMonitor.progressOffsetY =+ parent.offsetY;
-            parent = this._monitorMosaicWrapper.getParent(parent.id);
+            parent = this._monitorMosaic.getParent(parent.id);
         }
 
-        let monitor = this._monitorMosaicWrapper.getMonitor(wrapMonitor.id);
+        let monitor = this._monitorMosaic.getMonitor(wrapMonitor.id);
 
         wrapMonitor.progressOffsetX =+ monitor.offsetX;
         wrapMonitor.progressOffsetY =+ monitor.offsetY;
@@ -303,8 +303,6 @@ class Mosaic {
         let backgroundColor = 'black';
         complexFilter.push(`color=s=${8640}x${90}:c=${backgroundColor} [base0]`);
 
-        command = command.addInput('test/2880x90.mp4');
-
         complexFilter.push({
             filter: 'setpts=PTS-STARTPTS',
             inputs: `${0}:v`, outputs: `block${0}`
@@ -336,6 +334,7 @@ class Mosaic {
         });
         console.log('COMPLEX FILTER', complexFilter);
 
+        command = command.addInput('test/2880x90.mp4');
         command = command.addInput('test/2880x90.mp4');
         command = command.addInput('test/2880x90.mp4');
 

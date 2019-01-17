@@ -13,7 +13,7 @@ class VideoPanelResource extends VideoPanel {
         /**
          * @type {boolean}
          */
-        this.esclude = false;
+        this.singleResource = false;
 
         /**
          * @type {Array}

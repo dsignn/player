@@ -57,9 +57,10 @@ class VideoPanel {
         if (options && typeof options === 'object' && options.nested) {
             for (let cont = 0; this.videoPanels.length > cont; cont++) {
                 if (typeof this.videoPanels[cont].getVideoPanels === "function") {
-                    let nestedvideoPanel = this.videoPanels[cont].getVideoPanels(options);
-                    if (nestedvideoPanel.length > 0) {
-                        videoPanels = videoPanels.concat(nestedvideoPanel);
+                    options.withoutRoot = true;
+                    let nestedVideoPanel = this.videoPanels[cont].getVideoPanels(options);
+                    if (nestedVideoPanel.length > 0) {
+                        videoPanels = videoPanels.concat(nestedVideoPanel);
                     }
                 }
             }

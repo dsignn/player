@@ -151,16 +151,15 @@
                 "src/model/PanelResource.js",
                 "src/model/VideoPanelResource.js",
 
-                "src/model/Sideline.js",
-                "src/model/SidelineReference.js",
-                "src/model/SidelineResource.js",
-                "src/model/mosaic/MonitorMosaicWrapper.js",
-                "src/model/mosaic/SidelineMosaicWrapper.js",
+                "src/model/mosaic/MonitorMosaic.js",
+                "src/model/mosaic/VideoPanelMosaic.js",
                 "src/model/mosaic/ResourceMosaic.js",
                 "src/model/mosaic/Mosaic.js",
-                "src/SidelineResourceGenerator.js",
+
+                "src/ffmpg/Mosaic2.js",
+                "src/ffmpg/filter/Crop.js",
+                "src/ffmpg/filter/Default.js",
                 "src/VideoPanelResourceService.js",
-                "src/ffmpg/SidelineMosaic.js"
             ],
             "autoloadWs": [],
             "widgets": [],

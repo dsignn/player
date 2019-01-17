@@ -1,0 +1,20 @@
+<dom-module id="wc-resource-abstract">
+    <script>
+        class WcResourceAbstract extends Polymer.Element {
+
+            static get is() {
+                return 'wc-resource-abstract';
+            }
+
+            /**
+             *
+             */
+            generateMockData() {
+               throw 'Must be implement';
+            }
+        }
+
+        window.customElements.define(WcResourceAbstract.is, WcResourceAbstract);
+
+    </script>
+</dom-module>

@@ -28,28 +28,38 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
     init() {
 
         this._loadHydrator();
+        this._loadMonitorHydrator();
         this._loadStorage();
     }
 
+    /**
+     * @private
+     */
     _loadHydrator() {
 
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'virtualMonitorHydrator',
+            MonitorConfig.getVirtualMonitorHydrator()
+        );
 
-        let monitorHydrator = this._getMonitoHydrator();
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     */
+    static getVirtualMonitorHydrator() {
+
+        let monitorHydrator = MonitorConfig.getMonitorHydrator();
 
         monitorHydrator.enableExtractProperty('alwaysOnTop');
         monitorHydrator.enableHydrateProperty('alwaysOnTop');
 
         monitorHydrator.addStrategy(
             'monitors',
-            new dsign.hydrator.strategy.HydratorStrategy(this._getMonitoHydrator())
+            new dsign.hydrator.strategy.HydratorStrategy(MonitorConfig.getMonitorHydrator())
         );
 
-        this.getServiceManager().get('HydratorPluginManager').set(
-            'monitorHydrator',
-            monitorHydrator
-        );
-
-        let virtualMonitorHydrator = new dsign.hydrator.PropertyHydrator(
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new VirtualMonitor(),
             {
                 'monitors' : new dsign.hydrator.strategy.HydratorStrategy(
@@ -58,29 +68,35 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
             }
         );
 
-        virtualMonitorHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('enable')
             .enableExtractProperty('monitors');
 
-        virtualMonitorHydrator.enableHydrateProperty('id')
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('enable')
             .enableHydrateProperty('monitors');
 
-        this.getServiceManager().get('HydratorPluginManager').set(
-            'virtualMonitorHydrator',
-            virtualMonitorHydrator
-        );
+        return hydrator;
+    }
 
+    /**
+     * @private
+     */
+    _loadMonitorHydrator() {
+
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'monitorHydrator',
+            MonitorConfig.getMonitorHydrator()
+        );
     }
 
     /**
      * @return {PropertyHydrator}
-     * @private
      */
-    _getMonitoHydrator() {
-        let monitorHydrator = new dsign.hydrator.PropertyHydrator(
+    static getMonitorHydrator() {
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Monitor(),
             {
                 width: new dsign.hydrator.strategy.NumberStrategy(),
@@ -90,7 +106,7 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
             }
         );
 
-        monitorHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('offsetX')
             .enableExtractProperty('offsetY')
@@ -101,7 +117,7 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('monitors')
             .enableExtractProperty('defaultTimeslotId');
 
-        monitorHydrator.enableHydrateProperty('id')
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('offsetX')
             .enableHydrateProperty('offsetY')
@@ -112,9 +128,12 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('defaultTimeslotId');
 
-        return monitorHydrator;
+        return hydrator;
     }
 
+    /**
+     * @private
+     */
     _loadStorage() {
         this.getServiceManager().eventManager.on(
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,

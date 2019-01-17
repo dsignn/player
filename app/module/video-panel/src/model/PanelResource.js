@@ -14,11 +14,6 @@ class PanelResource extends Panel {
          * @type {null}
          */
         this.resourceReference = {};
-
-        /**
-         * @type {boolean}
-         */
-        this.nested = false;
     }
 }
 

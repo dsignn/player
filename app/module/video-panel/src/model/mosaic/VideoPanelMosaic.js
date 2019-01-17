@@ -1,4 +1,4 @@
-class SidelineMosaicWrapper extends Sideline {
+class VideoPanelMosaic extends VideoPanel {
 
     /**
      *
@@ -20,4 +20,4 @@ class SidelineMosaicWrapper extends Sideline {
     }
 }
 
-module.exports = SidelineMosaicWrapper;
+module.exports = VideoPanelMosaic;

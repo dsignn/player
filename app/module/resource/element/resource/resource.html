@@ -1,11 +1,13 @@
 <link rel="import" href="../../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
 
 <link rel="import" href="../../../../css/global-layout.html">
@@ -55,8 +57,33 @@
                 color: var(--app-primary-color);
             }
 
+            paper-dialog {
+                position: fixed;
+                top: 60px;
+                left: 40%;
+                overflow: auto;
+            }
+
+            paper-dialog  div.title {
+                margin-top: 10px;
+                font-size: 22px;
+                text-align: center;
+            }
+
+            paper-dialog  div#contentPreview {
+                margin-top: 6px;
+            }
+
         </style>
-        <paper-card id="design">
+        <paper-card id="design" class="setting">
+            <div class="card-setting">
+                <paper-icon-button
+                        id="previewIcon"
+                        title="Preview"
+                        icon="resource:preview"
+                        on-tap="_tapPreview">
+                </paper-icon-button>
+            </div>
             <div class="card-content flex flex-horizontal">
                 <div class="data flex-basis-85 flex flex-vertical">
                     <div>{{resource.name}}</div>
@@ -73,6 +100,10 @@
             <div class="card-actions"></div>
             <div id="rightSection" class="rate-image"></div>
         </paper-card>
+        <paper-dialog id="previewDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" on-iron-overlay-closed="_closePreview">
+            <div class="title">Preview</div>
+            <div id="contentPreview"></div>
+        </paper-dialog>
     </template>
 
     <script>
@@ -92,7 +123,11 @@
                 };
             }
 
-
+            /**
+             * @param {GenericFile} newValue
+             * @param {null|GenericFile} oldValue
+             * @private
+             */
             _resourceChanged(newValue, oldValue) {
                 if (!newValue) {
                     return;
@@ -119,6 +154,10 @@
                 this.sizeLabel = size[1];
             }
 
+            /**
+             * @param {Number} byte
+             * @private
+             */
             _byteConverter(byte) {
                 var unit, units = ["TB", "GB", "MB", "KB", "Byte"];
                 for (unit = units.pop(); units.length && byte >= 1024; unit = units.pop()) {
@@ -127,12 +166,93 @@
                 return [byte, unit];
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _remove(evt) {
                 this.dispatchEvent(new CustomEvent('remove', {detail: this.resource}));
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _update(evt) {
                 this.dispatchEvent(new CustomEvent('update-view', {detail: this.resource}));
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _tapPreview(evt) {
+                console.log('SUCA');
+                let element  = null;
+                switch (true) {
+                    case this.resource instanceof Image === true:
+                        element = document.createElement('img');
+                        element.src = this.resource.getPath();
+                        break;
+                    case this.resource instanceof Audio === true:
+                    case this.resource instanceof Video === true:
+                        element = document.createElement('video');
+                        element.src = this.resource.getPath();
+                        element.setAttribute('autoplay', true);
+                        element.setAttribute('controls', true);
+                        break;
+                    case this.resource instanceof GenericFile === true:
+                        this._loadWsFromResource(this.resource).then(
+                            () => {
+                                element = document.createElement(this.resource.wcName);
+                                element.generateMockData();
+                                this.$.contentPreview.append(element);
+                                this.$.previewDialog.open();
+                            }
+                        );
+                        break;
+                }
+
+                if (element) {
+                    this.$.contentPreview.append(element);
+                    this.$.previewDialog.open();
+                }
+            }
+
+            /**
+             * @private
+             */
+            _closePreview() {
+                let element = this.$.contentPreview.firstChild;
+                switch (true) {
+                    case this.resource instanceof Audio === true:
+                    case this.resource instanceof Image === true:
+                    case this.resource instanceof Video === true:
+                        element.src = '';
+                        break;
+                }
+                this.$.contentPreview.innerHTML = '';
+            }
+
+            /**
+             * @param resource
+             * @private
+             */
+            _loadWsFromResource(resource) {
+
+                return new Promise((resolve, reject) => {
+                    if (!customElements.get(resource.wcName)) {
+
+                        Polymer.importHref(
+                            resource.getPath(),
+                            () => { resolve() },
+                            (err) => {reject(err)},
+                            true
+                        );
+                    } else {
+                        resolve()
+                    }
+                });
             }
         }
 

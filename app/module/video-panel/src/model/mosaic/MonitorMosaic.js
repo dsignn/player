@@ -1,4 +1,4 @@
-class MonitorMosaicWrapper extends Monitor {
+class MonitorMosaic extends Monitor {
 
     /**
      *
@@ -32,4 +32,4 @@ class MonitorMosaicWrapper extends Monitor {
     }
 }
 
-module.exports = MonitorMosaicWrapper;
+module.exports = MonitorMosaic;
