@@ -24,7 +24,7 @@
         </style>
 
         <slot name="header"></slot>
-        <div hidden$="{{!hasSidelines}}">
+        <div hidden$="{{!hasResources}}">
             <template is="dom-repeat" items="[[resources]]" as="panelResource">
                 <video-panel-resource-wc resource="{{panelResource}}" on-update-view="displayUpdateView" on-remove="removeResource"></video-panel-resource-wc>
             </template>

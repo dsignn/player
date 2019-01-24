@@ -1,4 +1,4 @@
-class VideoPanelMosaic extends VideoPanel {
+class VideoPanelMosaic extends VideoPanelResource {
 
     /**
      *
@@ -9,14 +9,23 @@ class VideoPanelMosaic extends VideoPanel {
         /**
          * @type {Number|null}
          */
-        this.comutedWidth = 0;
+        this.computedWidth = 0;
     }
 
     /**
      * @return {Number}
      */
     getRemainingWidth() {
-        return this.width - this.comutedWidth;
+        return this.width - this.computedWidth;
+    }
+
+    /**
+     * @param {Number} addend
+     * @return {VideoPanelMosaic}
+     */
+    sumRemainingWidth(addend) {
+        this.computedWidth += addend;
+        return this;
     }
 }
 

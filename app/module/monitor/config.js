@@ -102,7 +102,8 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
                 width: new dsign.hydrator.strategy.NumberStrategy(),
                 height: new dsign.hydrator.strategy.NumberStrategy(),
                 offsetX: new dsign.hydrator.strategy.NumberStrategy(),
-                offsetY: new dsign.hydrator.strategy.NumberStrategy()
+                offsetY: new dsign.hydrator.strategy.NumberStrategy(),
+                polygon: new dsign.hydrator.strategy.NullStrategy()
             }
         );
 

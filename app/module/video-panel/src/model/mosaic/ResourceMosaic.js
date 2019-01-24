@@ -40,6 +40,15 @@ class ResourceMosaic extends GenericFile {
     getRemainingWidth() {
         return this.getWidth() - this.computedWidth;
     }
+
+    /**
+     * @param {Number} addend
+     * @return {ResourceMosaic}
+     */
+    sumRemainingWidth(addend) {
+        this.computedWidth += addend;
+        return this;
+    }
 }
 
 module.exports = ResourceMosaic;

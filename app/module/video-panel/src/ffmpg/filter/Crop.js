@@ -36,7 +36,7 @@ class Crop {
      * @return {string}
      */
     toString() {
-        return  `crop=${this.width}:${this.height}:${this.y}:${this.x}`;
+        return  `crop=${this.width}:${this.height}:${this.x}:${this.y}`;
     }
 }
 

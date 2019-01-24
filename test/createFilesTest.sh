@@ -7,7 +7,6 @@ for nameFile in test/img/*; do
     spitString=${nameFile/-/$IFS}
     spitString=${spitString/./$IFS}
 
-
     arrayData=(echo ${spitString})
     arraySize=(echo ${arrayData[4]/x/$IFS})
 

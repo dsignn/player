@@ -69,6 +69,18 @@ class VideoPanel {
     }
 
     /**
+     * @param {Number} index
+     * @return {VideoPanel}
+     */
+    getVideoPanelByIndex(index) {
+        if (index < 0 && index > this.videoPanels.length) {
+            return null;
+        }
+
+        return this.videoPanels[index];
+    }
+
+    /**
      * @param videoPanel
      * @return {boolean}
      */

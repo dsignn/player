@@ -132,7 +132,7 @@
                                         </paper-item>
                                     </template>
                                 </paper-autocomplete>
-                                <div id="singleSidelineResource" class="listClass">
+                                <div class="listClass">
                                     <template is="dom-repeat" items="[[resource.videoPanel.resources]]" as="resource">
                                         <paper-chip removable single-line index="{{index}}">
                                             {{resource.name}}
@@ -174,8 +174,7 @@
                                                         color: #999;
                                                     }
                                                 </style>
-                                                <paper-item class="account-item" on-tap="_onSelect" role="option"
-                                                            aria-selected="false">
+                                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                                     <div>
                                                         <div class="service-name">[[item.name]]</div>
                                                     </div>
@@ -184,8 +183,8 @@
                                             </template>
                                         </paper-autocomplete>
                                         <div class="listClass">
-                                            <template is="dom-repeat" items="[[videoPanel.resources]]" as="resource">
-                                                <paper-chip removable single-line index="{{index}}">
+                                            <template is="dom-repeat" items="{{videoPanel.resources}}" as="resource">
+                                                <paper-chip removable single-line index="{{index}}" on-remove="removeResource" video-panel="{{videoPanel}}">
                                                     {{resource.name}}
                                                 </paper-chip>
                                             </template>
@@ -202,7 +201,7 @@
                 <div>
                     <div class="flex flex-horizontal-end" style="margin-top: 20px;">
                         <paper-button on-tap="createResource">Create resource</paper-button>
-                        <paper-button on-tap="submitSidelineResourceButton">{{labelAction}}</paper-button>
+                        <paper-button on-tap="submitVideoPanelResourceButton">{{labelAction}}</paper-button>
                     </div>
                 </div>
             </form>
@@ -379,7 +378,7 @@
             /**
              *
              */
-            submitSidelineResourceButton() {
+            submitVideoPanelResourceButton() {
                 this.$.formPanelResource.submit();
             }
 
@@ -453,13 +452,33 @@
              * @param evt
              */
             resetCheckBox(evt) {
-                let elements = this.shadowRoot.querySelectorAll('paper-checkbox[single-resource]');7
+                let elements = this.shadowRoot.querySelectorAll('paper-checkbox[single-resource]');
 
                 for (let cont = 0; elements.length > cont; cont++) {
                     if (evt.target.parentElement.id !== elements[cont].parentElement.id) {
                         elements[cont].checked = false;
                     }
                 }
+            }
+
+            /**
+             * @param evt
+             */
+            removeResource(evt) {
+                let remove = evt.target.videoPanel.removeResourceByIndex(evt.target.index);
+
+                let resources = evt.target.videoPanel.resources;
+                let domRepeat =  evt.target.parentElement.querySelector('dom-repeat');
+                domRepeat.items = [];
+                setTimeout(
+                    () => {
+                        domRepeat.items = resources;
+                    },
+                    100
+                );
+              //  evt.target.parentElement.querySelector('dom-repeat').items = evt.target.videoPanel.resources;
+
+                console.log('removeResource', remove);
             }
         }
 

@@ -30,6 +30,17 @@ class VideoPanelResource extends VideoPanel {
         return this;
     }
 
+    /**
+     * @return {null|ResourceReference}
+     */
+    removeResourceByIndex(index) {
+        let returnValue = null;
+        if (this.resources.length > index) {
+            returnValue = this.resources.splice(index, 1)[0];
+        }
+        return returnValue;
+    }
+
 }
 
 module.exports = VideoPanelResource;

@@ -154,9 +154,8 @@
                 "src/model/mosaic/MonitorMosaic.js",
                 "src/model/mosaic/VideoPanelMosaic.js",
                 "src/model/mosaic/ResourceMosaic.js",
-                "src/model/mosaic/Mosaic.js",
 
-                "src/ffmpg/Mosaic2.js",
+                "src/ffmpg/Mosaic.js",
                 "src/ffmpg/filter/Crop.js",
                 "src/ffmpg/filter/Default.js",
                 "src/VideoPanelResourceService.js",

@@ -1,7 +1,7 @@
 /**
  *
  */
-class Mosaic2 {
+class Mosaic {
 
     /**
      * @param defaultFilter
@@ -53,7 +53,7 @@ class Mosaic2 {
      * @param path
      * @param name
      * @param extension
-     * @return {Mosaic2}
+     * @return {Mosaic}
      */
     setDestination(path, name, extension = 'mp4') {
 
@@ -72,7 +72,7 @@ class Mosaic2 {
      * @param {Number}height
      * @param {string} backgroundColor
      * @param {null|Number} duration
-     * @return {Mosaic2}
+     * @return {Mosaic}
      */
     setBasePanel(width, height, backgroundColor = 'black', duration = null) {
 
@@ -150,7 +150,6 @@ class Mosaic2 {
      */
     _getComplexFilter() {
         let complexFilter = [];
-
         /**
          * Add base filter
          */
@@ -178,7 +177,7 @@ class Mosaic2 {
         for (let cont = 0; this._resourceDestination.length > cont; cont++) {
             command.addInput('/home/bastoni/Project/dsign/player/app/' + this._resourceDestination[cont]);
         }
-
+        console.log('END', `base${this._index}`);
         command
             .complexFilter(
                 this._getComplexFilter(),
@@ -202,4 +201,4 @@ class Mosaic2 {
     }
 }
 
-module.exports = Mosaic2;
+module.exports = Mosaic;

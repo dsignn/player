@@ -77,7 +77,7 @@
 
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
-                    .eventManager.on(Storage.STORAGE_POST_UPDATE, this.loadData.bind(this)
+                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this.loadData.bind(this)
                 );
             }
 

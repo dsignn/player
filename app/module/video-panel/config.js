@@ -195,7 +195,7 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('virtualMonitorReference');
 
         hydrator.addStrategy(
-            'videoPanel',
+            'videoPanels',
             new dsign.hydrator.strategy.HydratorStrategy(hydrator)
         );
 
@@ -391,6 +391,11 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
         let hydrator = MonitorConfig.getMonitorHydrator();
         hydrator.setObjectPrototype(new MonitorMosaic());
 
+        hydrator.addStrategy(
+            'monitors',
+            new dsign.hydrator.strategy.HydratorStrategy(hydrator)
+        );
+
         hydrator.enableHydrateProperty('progressOffsetX')
             .enableHydrateProperty('progressOffsetY');
 
@@ -407,13 +412,20 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
     static getPanelMosaicHydrator() {
         let hydrator = VideoPanelConfig.getPanelHydrator();
 
-        let videoPanelHydrator = VideoPanelConfig.getVideoPanelHydrator();
-        videoPanelHydrator.enableHydrateProperty('comutedWidth')
-            .enableExtractProperty('comutedWidth');
+        let videoPanelHydrator = VideoPanelConfig.getVideoPanelResourceHydrator();
+        videoPanelHydrator.enableHydrateProperty('computedWidth')
+            .enableExtractProperty('computedWidth');
+
+        videoPanelHydrator.setObjectPrototype(new VideoPanelMosaic);
+
+        videoPanelHydrator.addStrategy(
+            'videoPanels',
+            new dsign.hydrator.strategy.HydratorStrategy(videoPanelHydrator)
+        );
 
         hydrator.addStrategy(
             'videoPanel',
-            new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new VideoPanelMosaic()))
+            new dsign.hydrator.strategy.HydratorStrategy(videoPanelHydrator)
         );
 
         return hydrator;

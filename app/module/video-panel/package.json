@@ -2,7 +2,7 @@
   "name": "dsign-video-panel-module",
   "version": "0.1.0",
   "author": "antonino visalli <antonino.visalli@gmail.com>",
-  "description": "Dsign sideline plugin",
+  "description": "Dsign video panel plugin",
   "homepage": "www.visa4.it",
   "customeStyle": {
     "color": " green"
@@ -17,10 +17,11 @@
     "src/model/mosaic/MonitorMosaic.js",
     "src/model/mosaic/VideoPanelMosaic.js",
     "src/model/mosaic/ResourceMosaic.js",
-    "src/model/mosaic/Mosaic.js",
-    "src/ffmpg/Mosaic2.js",
+
+    "src/ffmpg/Mosaic.js",
     "src/ffmpg/filter/Crop.js",
     "src/ffmpg/filter/Default.js",
+
     "src/VideoPanelResourceService.js"
   ],
   "autoloadWs" : [],
