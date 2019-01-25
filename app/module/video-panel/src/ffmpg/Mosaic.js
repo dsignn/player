@@ -170,7 +170,7 @@ class Mosaic {
 
             // TODO refactor
             for (let cont = 0; this._resourceDestination.length > cont; cont++) {
-                command.addInput('/home/bastoni/Project/dsign/player/app/' + this._resourceDestination[cont]);
+                command.addInput(this._resourceDestination[cont]);
             }
 
             command

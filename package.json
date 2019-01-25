@@ -15,7 +15,7 @@
   },
   "scripts": {
     "postinstall": "install-app-deps",
-    "start": "electron --inspect=5858 ./app --enable-logging",
+    "start": "electron --inspect=5858 ./app",
     "dev": "NODE_ENV='development' npm run start",
     "dist": "build -l --x64 --ia32",
     "test": "nyc mocha app/**/Test*.js"

@@ -43,6 +43,15 @@ class LocationPath {
     }
 
     /**
+     * @param path
+     * @return {LocationPath}
+     */
+    setPath(path) {
+        this.path = path;
+        return this;
+    }
+
+    /**
      * @return {*}
      */
     getExtension() {

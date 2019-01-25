@@ -10,6 +10,7 @@ class VideoPanelResourceService {
      * @param {AbstractHydrator} panelMosaicHydrator
      * @param {AbstractHydrator} resourceMosaicHydrator
      * @param {AbstractHydrator} monitorHydrator
+     * @param {string} relativeStoragePath
      */
     constructor(
         storageMonitor,
@@ -18,7 +19,9 @@ class VideoPanelResourceService {
         virtualMonitorMosaicHydrator,
         panelMosaicHydrator,
         resourceMosaicHydrator,
-        monitorHydrator) {
+        monitorHydrator,
+        relativeStoragePath = null
+    ) {
 
         /**
          * @type {Storage}
@@ -54,6 +57,11 @@ class VideoPanelResourceService {
          * @type {AbstractHydrator}
          */
         this.monitorHydrator = monitorHydrator;
+
+        /**
+         * @type {string|null}
+         */
+        this.relativeStoragePath = relativeStoragePath;
     }
 
     /**
@@ -116,10 +124,20 @@ class VideoPanelResourceService {
                         await this.storageResource.get(resources[cont].referenceId)
                     );
 
+                    /**
+                     * Check if resource has an absolute path
+                     */
+                    if (!resourceMosaic.location.isAbsolute()) {
+                        resourceMosaic.location.setPath(`${this.relativeStoragePath}/${resourceMosaic.location.getPath()}`);
+                    }
+
                     while (resourceMosaic.getRemainingWidth() > 0) {
 
 
                         switch (true) {
+                            /**
+                             * TODO comment
+                             */
                             case resourceMosaic.getRemainingWidth() > currentInternalChildVideoPanel.getRemainingWidth():
                                 crop = new Crop(
                                     currentInternalChildVideoPanel.getRemainingWidth(),
@@ -138,12 +156,12 @@ class VideoPanelResourceService {
                                 parentVideoPanel.sumRemainingWidth(currentInternalChildVideoPanel.getRemainingWidth());
                                 resourceMosaic.sumRemainingWidth(resourceMosaic.getRemainingWidth());
                                 /**
-                                 * Dubug
+                                 * Debug
                                  */
-                              //  console.log('FINE RIGA');
-                                this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
+                                //  console.log('FINE RIGA');
+                                //this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
-                            /***
+                            /**
                              * TODO comment
                              */
                             case resourceMosaic.getRemainingWidth() === currentInternalMonitor.getRemainingWidth():
@@ -166,10 +184,10 @@ class VideoPanelResourceService {
                                 currentInternalMonitor.resetProgressOffsetX();
                                 currentInternalMonitor.sumProgressOffsetY(currentInternalChildVideoPanel.height);
                                 /**
-                                 * Dubug
+                                 * Debug
                                  */
                                 //console.log('UGUALE');
-                                this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
+                                //this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                             /***
                              * TODO comment
@@ -194,10 +212,10 @@ class VideoPanelResourceService {
                                 currentInternalMonitor.resetProgressOffsetX();
                                 currentInternalMonitor.sumProgressOffsetY(currentInternalChildVideoPanel.height);
                                 /**
-                                 * Dubug
+                                 * Debug
                                  */
-                               // console.log('MAGGIORE');
-                                this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
+                                // console.log('MAGGIORE');
+                                //this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                             /***
                              * TODO comment
@@ -221,10 +239,10 @@ class VideoPanelResourceService {
                                 currentInternalMonitor.sumProgressOffsetX(resourceMosaic.getRemainingWidth());
                                 resourceMosaic.sumRemainingWidth(resourceMosaic.getRemainingWidth());
                                 /**
-                                 * Dubug
+                                 * Debug
                                  */
-                             //   console.log('MINORE');
-                                this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
+                                //   console.log('MINORE');
+                                // this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                         }
                     }
@@ -240,6 +258,10 @@ class VideoPanelResourceService {
 
             currentInternalMonitor = virtualMonitorMosaic.getMonitor(currentInternalChildVideoPanel.virtualMonitorReference.monitorId);
             currentInternalMonitor.initMonitor();
+            if (container.id === currentInternalMonitor.id) {
+                currentInternalMonitor.progressOffsetY = 0;
+                console.log('PORCO DIO');
+            }
         }
 
         return mosaic.generate();
@@ -327,98 +349,6 @@ class VideoPanelResourceService {
         }
 
         console.groupEnd();
-    }
-
-    _test() {
-        this.ffmpeg = require('fluent-ffmpeg');
-        let command = new this.ffmpeg();
-        let complexFilter = [];
-        let backgroundColor = 'black';
-        complexFilter.push(`color=s=${8640}x${90}:c=${backgroundColor} [base0]`);
-
-        command = command.addInput('test/2880x90.mp4');
-
-        complexFilter.push({
-            filter: 'setpts=PTS-STARTPTS',
-            inputs: `${0}:v`, outputs: `block${0}`
-        });
-
-        complexFilter.push({
-            filter: 'setpts=PTS-STARTPTS',
-            inputs: `${1}:v`, outputs: `block${1}`
-        });
-
-        complexFilter.push({
-            filter: 'setpts=PTS-STARTPTS',
-            inputs: `${2}:v`, outputs: `block${2}`
-        });
-
-        complexFilter.push({
-            filter: 'overlay', options: { shortest:1, x: 0, y:  0},
-            inputs: [`base${0}`, `block${0}`], outputs: `base${1}`
-        });
-
-        complexFilter.push({
-            filter: 'overlay', options: { shortest:1, x: 2880, y:  0},
-            inputs: [`base${1}`, `block${1}`], outputs: `base${2}`
-        });
-
-        complexFilter.push({
-            filter: 'overlay', options: { shortest:1, x: 5760, y:  0},
-            inputs: [`base${2}`, `block${2}`], outputs: `base${3}`
-        });
-        console.log('COMPLEX FILTER', complexFilter);
-
-        command = command.addInput('test/2880x90.mp4');
-        command = command.addInput('test/2880x90.mp4');
-
-
-        command
-            .complexFilter(complexFilter, 'base3')
-            .save('test/8640x90.mp4')
-            .on('error', function(err) {
-                console.log(err.message);
-            })
-            .on('progress', () =>{console.log('default progress')})
-            .on('end', function(data) {
-                console.log('ok');
-            });
-
-    }
-
-    _testCrop() {
-        this.ffmpeg = require('fluent-ffmpeg');
-        let command = new this.ffmpeg();
-        let complexFilter = [];
-        let backgroundColor = 'white';
-        complexFilter.push(`color=s=${1920}x${1080}:c=${backgroundColor} [base0]`);
-
-        command = command.addInput('test/test.mp4');
-
-        complexFilter.push({
-            filter: 'crop=400:90:0:0',
-            inputs: `${0}:v`,
-            outputs: `filter${0}`
-        });
-
-        complexFilter.push({
-            filter: 'overlay',
-            options: { shortest:1, x: 100, y:  100},
-            inputs: [`base${0}`, `filter${0}`],
-            outputs: `overlay${1}`
-        });
-
-        console.log('COMPLEX FILTER', complexFilter);
-        command
-            .complexFilter(complexFilter, 'overlay1')
-            .save('test/croptest2.mp4')
-            .on('error', function(err) {
-                console.log(err.message);
-            })
-            .on('progress', () =>{console.log('default progress')})
-            .on('end', function(data) {
-                console.log('finito');
-            });
     }
 }
 

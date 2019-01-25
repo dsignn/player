@@ -149,7 +149,8 @@ class VideoPanelConfig extends require('dsign-library').core.ModuleConfig {
                                 this.getServiceManager().get('HydratorPluginManager').get('virtualMonitorMosaicHydrator'),
                                 this.getServiceManager().get('HydratorPluginManager').get('panelMosaicHydrator'),
                                 this.getServiceManager().get('HydratorPluginManager').get('resourceMosaicHydrator'),
-                                this.getServiceManager().get('HydratorPluginManager').get('monitorHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('monitorHydrator'),
+                                this.getServiceManager().get('Application').getBasePath()
                             ));
 
                         }
