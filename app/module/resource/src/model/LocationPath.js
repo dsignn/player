@@ -1,3 +1,4 @@
+
 /**
  *
  */
@@ -30,7 +31,7 @@ class LocationPath {
     /**
      * @return {string}
      */
-    getName() {
+    getFullName() {
         return this.name;
     }
 
@@ -39,6 +40,32 @@ class LocationPath {
      */
     getPath() {
         return this.path;
+    }
+
+    /**
+     * @return {*}
+     */
+    getExtension() {
+        let extension = null;
+        if (this.name) {
+            let split = this.name.split('.');
+            extension = split.length > 1 ? split[1] : extension;
+        }
+        return extension;
+    }
+
+    /**
+     * @return {string}
+     */
+    getName() {
+        return this.name.split('.')[0];
+    }
+
+    /*
+     * @return {string}
+     */
+    getFullPath() {
+        return `${this.path}/${this.name}`;
     }
 }
 

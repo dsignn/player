@@ -15,7 +15,7 @@ class Mosaic {
         this._basePanel = {};
 
         /**
-         * @type {Object}
+         * @type {LocationPath}
          */
         this._destination = {};
 
@@ -50,19 +50,12 @@ class Mosaic {
     }
 
     /**
-     * @param path
-     * @param name
-     * @param extension
+     * @param {LocationPath} dest
      * @return {Mosaic}
      */
-    setDestination(path, name, extension = 'mp4') {
+    setDestination(dest) {
 
-        this._destination = {
-            path : path,
-            name : name,
-            extension : extension
-        };
-
+        this._destination = dest;
         return this;
     }
 
@@ -108,7 +101,7 @@ class Mosaic {
      */
     _getBasePanelString() {
 
-        let computedDuration = this._basePanel.duration === undefined ? '' : `:duration=${this._basePanel.duration}`;
+        let computedDuration = !this._basePanel.duration ? '' : `:duration=${this._basePanel.duration}`;
         return `color=s=${this._basePanel.width}x${this._basePanel.height}:c=${this._basePanel.backgroundColor}${computedDuration} [base0]`;
     }
 
@@ -117,7 +110,7 @@ class Mosaic {
      * @private
      */
     _getDestinationString() {
-        return `${this._destination.path}/${this._destination.name}.${this._destination.extension}`;
+        return this._destination.getFullPath();
     }
 
     /**
@@ -163,41 +156,42 @@ class Mosaic {
             complexFilter.push(this._complexFilterOverlay[cont]);
         }
 
-        console.log('COMPLEX FILTER', complexFilter);
         return complexFilter;
     }
 
     /**
-     *
+     * @return {Promise}
      */
     generate() {
-        let ffmpeg = require('fluent-ffmpeg');
-        let command = new ffmpeg();
 
-        for (let cont = 0; this._resourceDestination.length > cont; cont++) {
-            command.addInput('/home/bastoni/Project/dsign/player/app/' + this._resourceDestination[cont]);
-        }
-        console.log('END', `base${this._index}`);
-        command
-            .complexFilter(
-                this._getComplexFilter(),
-                `base${this._index}`
-            ).save(
+        return new Promise((resolve, reject) => {
+            let ffmpeg = require('fluent-ffmpeg');
+            let command = new ffmpeg();
+
+            // TODO refactor
+            for (let cont = 0; this._resourceDestination.length > cont; cont++) {
+                command.addInput('/home/bastoni/Project/dsign/player/app/' + this._resourceDestination[cont]);
+            }
+
+            command
+                .complexFilter(
+                    this._getComplexFilter(),
+                    `base${this._index}`
+                ).save(
                 this._getDestinationString()
             ).on(
                 'error',
                 (err) => {
-                    console.log(err.message);
+                    reject(err);
                 }
-            ).on(
-                'progress',
-                (data) => {console.log('Progress', data)}
             ).on(
                 'end',
                 (data) => {
-                    console.log('Complete', data);
+                    console.log('command', data, command);
+                    resolve(command);
                 }
             );
+        });
     }
 }
 

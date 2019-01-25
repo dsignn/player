@@ -337,7 +337,15 @@
              *
              */
             createResource() {
-                serviceManager.get('VideoPanelResourceService').generateResource(this.resource);
+
+                serviceManager.get('VideoPanelResourceService').generateResource(
+                    this.resource,
+                    new LocationPath(`${dsign.Utils.uid}.mp4`, serviceManager.get('Application').getBasePath('../tmp'))
+                ).then((data) => {
+                    console.log('complete', data);
+                }).catch((error) => {
+                    console.error(error);
+                });
             }
 
             /**
@@ -476,9 +484,6 @@
                     },
                     100
                 );
-              //  evt.target.parentElement.querySelector('dom-repeat').items = evt.target.videoPanel.resources;
-
-                console.log('removeResource', remove);
             }
         }
 

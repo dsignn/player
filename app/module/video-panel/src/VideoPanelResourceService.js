@@ -58,8 +58,10 @@ class VideoPanelResourceService {
 
     /**
      * @param {PanelResource} panelResource
+     * @param {LocationPath} locationPath
+     * @return {Promise}
      */
-    async generateResource(panelResource) {
+    async generateResource(panelResource, locationPath) {
 
         /** @type {VirtualMonitor} */
         let virtualMonitorMosaic = this.virtualMonitorMosaicHydrator.hydrate(
@@ -83,8 +85,8 @@ class VideoPanelResourceService {
         let mosaic = new Mosaic();
         let container = this.getMosaicMonitorContainer(virtualMonitorMosaic, panelMosaic);
 
-        mosaic.setBasePanel(container.width, container.height, 'black', 2);
-        mosaic.setDestination('test', 'mosaic', 'mp4');
+        mosaic.setBasePanel(container.width, container.height, 'black');
+        mosaic.setDestination(locationPath);
 
         let crop = null;
 
@@ -138,7 +140,7 @@ class VideoPanelResourceService {
                                 /**
                                  * Dubug
                                  */
-                                console.log('FINE RIGA');
+                              //  console.log('FINE RIGA');
                                 this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                             /***
@@ -166,7 +168,7 @@ class VideoPanelResourceService {
                                 /**
                                  * Dubug
                                  */
-                                console.log('UGUALE');
+                                //console.log('UGUALE');
                                 this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                             /***
@@ -194,7 +196,7 @@ class VideoPanelResourceService {
                                 /**
                                  * Dubug
                                  */
-                                console.log('MAGGIORE');
+                               // console.log('MAGGIORE');
                                 this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                             /***
@@ -221,7 +223,7 @@ class VideoPanelResourceService {
                                 /**
                                  * Dubug
                                  */
-                                console.log('MINORE');
+                             //   console.log('MINORE');
                                 this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
                                 break;
                         }
@@ -240,7 +242,7 @@ class VideoPanelResourceService {
             currentInternalMonitor.initMonitor();
         }
 
-        mosaic.generate();
+        return mosaic.generate();
     }
 
     /**
@@ -270,6 +272,7 @@ class VideoPanelResourceService {
      * @param {ResourceMosaic} resource
      */
     log(container, child, currentMonitor, resource = null, cropString =null) {
+        return;
         console.group('Cicle');
         console.log(
             'CONTAINER MOSAIC',
