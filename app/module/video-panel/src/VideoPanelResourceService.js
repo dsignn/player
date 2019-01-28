@@ -260,7 +260,6 @@ class VideoPanelResourceService {
             currentInternalMonitor.initMonitor();
             if (container.id === currentInternalMonitor.id) {
                 currentInternalMonitor.progressOffsetY = 0;
-                console.log('PORCO DIO');
             }
         }
 

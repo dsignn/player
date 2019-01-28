@@ -1,13 +1,11 @@
 {
-  "name": "dsign-timer-module",
+  "name": "dsign-timeline-module",
   "version": "0.1.0",
   "author": "antonino visalli <antonino.visalli@gmail.com>",
-  "description": "Dsign timer module",
+  "description": "Dsign timeline module",
   "homepage": "https://github.com/dsign",
   "config": "config.js",
   "autoloads": [
-    "src/model/Timer.js",
-    "src/TimerService",
-    "src/injector/TimerDataInjector"
+    "src/model/Timeline.js"
   ]
 }

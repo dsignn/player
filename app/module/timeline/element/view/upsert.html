@@ -1,0 +1,128 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="timeline-view-upsert">
+    <template>
+        <style>
+
+        </style>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <slot name="header"></slot>
+        <div class="flex flex-horizontal">
+            <iron-form id="formTimeline">
+                <form method="post" action="">
+                    <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                </form>
+            </iron-form>
+        </div>
+        <div class="flex flex-horizontal-end" style="padding-top: 10px; padding-right: 8px;">
+            <paper-button on-tap="submitTimlineButton">{{labelAction}}</paper-button>
+        </div>
+    </template>
+
+    <script>
+        class ElementTimelineViewUpsert extends StorageBehaviour {
+
+            static get is() {
+                return 'timeline-view-upsert';
+            }
+
+            static get properties() {
+                return {
+
+                    videoPanel : {
+                        value: new VideoPanel()
+                    },
+
+                    resource: {
+                        type: Object,
+                        notify: true,
+                        value: new Panel()
+                    },
+
+                    labelAction: {
+                        type: String,
+                        value: 'Save'
+                    },
+
+                    hasVideoPanel: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimelineConfig.NAME_SERVICE
+
+                    },
+
+                    resource: {
+                        type: Object,
+                        notify: true,
+                        value: new Timeline()
+                    }
+                }
+            }
+
+            ready() {
+                super.ready();
+                this.$.formTimeline.addEventListener('iron-form-presubmit', this.submitTimeline.bind(this));
+
+            }
+
+            /**
+             * @param evt
+             */
+            submitTimlineButton(evt) {
+                this.$.formTimeline.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitTimeline(evt) {
+                evt.preventDefault();
+
+                let method = this.getStorageMethod();
+                this.storage[method](this.resource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' timeline ');
+                        if (method === 'save') {
+                            this._reset();
+                        }
+
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+            /**
+             * @private
+             */
+            _reset() {
+                this.resource = new Timeline();
+            }
+        }
+
+        window.customElements.define(ElementTimelineViewUpsert.is, ElementTimelineViewUpsert);
+
+    </script>
+</dom-module>

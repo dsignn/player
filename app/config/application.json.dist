@@ -6,15 +6,11 @@
         "namespace": "Dsign"
     },
     "backup": {
-        "pathToExtract": "/home/visa/Project/dsign/player/tmp/bk",
-        "pathTmp": "/home/visa/Project/dsign/player/tmp"
-    },
-    "tcpClient": {
-        "port": 8002,
-        "ip": "127.0.0.1"
+        "pathToExtract": "/home/bastoni/Project/dsign/player/tmp",
+        "pathTmp": "/home/bastoni/Project/dsign/player/tmp/bk"
     },
     "p2p": {
-        "identifier": "dashboard",
+        "identifier": "player-3333",
         "broadcasting": {
             "portListening": 4000,
             "portSender": 4000,
@@ -116,6 +112,15 @@
             ]
         },
         {
+            "configFile": "config.js",
+            "name": "player",
+            "autoloadWs": [
+                "element/player-timeslot/player-timeslot.html",
+                "element/player-monitor/player-monitor.html",
+                "element/player-monitor-manager/player-monitor-manager.html"
+            ]
+        },
+        {
             "icon": "app:playlist",
             "nameWc": "playlist-index",
             "label": "Playlist",
@@ -128,42 +133,6 @@
                 "src/model/Playlist.js"
             ],
             "name": "playlist"
-        },
-        {
-            "configFile": "config.js",
-            "name": "player",
-            "autoloadWs": [
-                "element/player-timeslot/player-timeslot.html",
-                "element/player-monitor/player-monitor.html",
-                "element/player-monitor-manager/player-monitor-manager.html"
-            ]
-        },
-        {
-            "name": "video-panel",
-            "label": "Video panel",
-            "customeStyle": {
-                "color": " green"
-            },
-            "configFile": "config.js",
-            "autoloads": [
-                "src/model/Panel.js",
-                "src/model/VideoPanel.js",
-                "src/model/PanelResource.js",
-                "src/model/VideoPanelResource.js",
-
-                "src/model/mosaic/MonitorMosaic.js",
-                "src/model/mosaic/VideoPanelMosaic.js",
-                "src/model/mosaic/ResourceMosaic.js",
-
-                "src/ffmpg/Mosaic.js",
-                "src/ffmpg/filter/Crop.js",
-                "src/ffmpg/filter/Default.js",
-                "src/VideoPanelResourceService.js",
-            ],
-            "autoloadWs": [],
-            "widgets": [],
-            "icon": "app:video-panel",
-            "nameWc": "video-panel-index"
         },
         {
             "icon": "app:devices",
@@ -220,6 +189,47 @@
                 "src/injector/LastCardsDataInjector.js",
                 "src/injector/LastGoalDataInjector.js",
                 "src/injector/LastReplacementDataInjector.js"
+            ]
+        },
+        {
+            "name": "video-panel",
+            "label": "Video panel",
+            "customeStyle": {
+                "color": " green"
+            },
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Panel.js",
+                "src/model/VideoPanel.js",
+                "src/model/PanelResource.js",
+                "src/model/VideoPanelResource.js",
+
+                "src/model/mosaic/MonitorMosaic.js",
+                "src/model/mosaic/VideoPanelMosaic.js",
+                "src/model/mosaic/ResourceMosaic.js",
+
+                "src/ffmpg/Mosaic.js",
+                "src/ffmpg/filter/Crop.js",
+                "src/ffmpg/filter/Default.js",
+                "src/VideoPanelResourceService.js"
+            ],
+            "autoloadWs": [],
+            "widgets": [],
+            "icon": "app:video-panel",
+            "nameWc": "video-panel-index"
+        },
+        {
+            "icon": "app:timeline",
+            "nameWc": "timeline-index",
+            "label": "Timeline",
+            "plugin": true,
+            "customeStyle": {
+                "color": " green"
+            },
+            "name": "timeline",
+            "configFile": "config.js",
+            "autoloads": [
+                "src/model/Timeline.js"
             ]
         }
     ]

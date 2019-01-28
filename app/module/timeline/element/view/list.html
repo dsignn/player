@@ -1,0 +1,79 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
+
+<link rel="import" href="../timeline/timeline.html">
+
+<dom-module id="timeline-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            /** TODO insert style    */
+            :host ::slotted(.header) {
+                margin-bottom: 16px;
+            }
+        </style>
+
+        <slot name="header"></slot>
+        <div hidden$="{{!totalItems}}">
+            <template is="dom-repeat" items="[[resources]]" as="timeline">
+                <timeline-wc timeline="{{timeline}}" on-update-view="displayUpdateView" on-remove="removeResource"></timeline-wc>
+            </template>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{totalItems}}">
+            Non sono presenti timeline
+        </div>
+    </template>
+
+    <script>
+        class ElementTimelineViewList extends StorageBehaviour {
+
+            static get is() {
+                return 'timeline-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    resourceSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimelineConfig.NAME_SERVICE
+
+                    },
+                };
+            }
+
+            /**
+             * @param evt
+             */
+            displayUpdateView(evt) {
+                this.resourceSelected = evt.detail;
+                this.selected = 2;
+            }
+        }
+
+        window.customElements.define(ElementTimelineViewList.is, ElementTimelineViewList);
+
+    </script>
+</dom-module>

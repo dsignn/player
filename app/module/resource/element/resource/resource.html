@@ -192,12 +192,12 @@
                 switch (true) {
                     case this.resource instanceof Image === true:
                         element = document.createElement('img');
-                        element.src = this.resource.getPath();
+                        element.src = this.resource.getPath()  + '?' + new Date().getTime();
                         break;
                     case this.resource instanceof Audio === true:
                     case this.resource instanceof Video === true:
                         element = document.createElement('video');
-                        element.src = this.resource.getPath();
+                        element.src = this.resource.getPath() + '?' + new Date().getTime();
                         element.setAttribute('autoplay', true);
                         element.setAttribute('controls', true);
                         break;

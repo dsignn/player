@@ -262,8 +262,6 @@
              * @param evt
              */
             submitTimeslot(evt) {
-                evt.preventDefault();
-
                 let method = !this.timeslot.id ? 'save' : 'update';
                 this.timeslot.dataReferences = [];
 

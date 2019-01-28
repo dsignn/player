@@ -52,9 +52,6 @@
                     <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
                     <paper-input id="nameResource" name="name" label="Name resource" value="{{resource.resourceReference.name}}" required></paper-input>
                     <div class="flex flex-horizontal">
-                        <paper-checkbox id="checkSingle" on-tap="resetCheckBox" single-resource class="flex flex-vertical-end" style="padding-bottom: 10px; padding-right: 20px;" checked="{{resource.videoPanel.singleResource}}">
-                            Single content
-                        </paper-checkbox>
                         <paper-autocomplete
                                 style="flex: 1;"
                                 id="panel"
@@ -98,57 +95,7 @@
                         </paper-autocomplete>
                     </div>
                     <div hidden$="{{!hideResourceSection}}">
-                        <div id="single" hidden$="{{!resource.videoPanel.singleResource}}">
-                            <paper-material class="flex-1">
-                                <paper-autocomplete
-                                        style="flex: 1;"
-                                        id="singleResource"
-                                        label="Select resource"
-                                        text-property="name"
-                                        value-property="name"
-                                        remote-source
-                                        on-autocomplete-selected="_autocompleteResourceSelect"
-                                        on-autocomplete-change="_autocompleteResourceChanged">
-                                    <template slot="autocomplete-custom-template">
-                                        <style>
-                                            :host {
-                                                display: block;
-                                            }
-
-                                            paper-item.account-item {
-                                                padding: 8px 16px;
-                                            }
-
-                                            .service-name {
-                                                color: #333;
-                                            }
-
-                                            .service-description {
-                                                margin-top: 4px;
-                                                color: #999;
-                                            }
-                                        </style>
-                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                                            <div>
-                                                <div class="service-name">[[item.name]]</div>
-                                                <div class="service-description">Width [[item.width]]px Height
-                                                    [[item.height]]px
-                                                </div>
-                                            </div>
-                                            <paper-ripple></paper-ripple>
-                                        </paper-item>
-                                    </template>
-                                </paper-autocomplete>
-                                <div class="listClass">
-                                    <template is="dom-repeat" items="[[resource.videoPanel.resources]]" as="resource">
-                                        <paper-chip removable single-line index="{{index}}">
-                                            {{resource.name}}
-                                        </paper-chip>
-                                    </template>
-                                </div>
-                            </paper-material>
-                        </div>
-                        <div id="multi" hidden$="{{resource.videoPanel.singleResource}}">
+                        <div id="multi">
                             <div class="flex flex-horizontal">
                                 <template is="dom-repeat" items="[[videoPanels]]" as="videoPanel">
                                     <paper-material videoPanel="videoPanel" class="flex-1" id="{{videoPanel.id}}">
@@ -245,12 +192,6 @@
                         value: false
                     },
 
-                    hideSingleSection: {
-                        type: Boolean,
-                        notify: true,
-                        value: false
-                    },
-
                     labelAction: {
                         type: String,
                         notify: true,
@@ -294,8 +235,7 @@
                     return;
                 }
 
-                this.$.singleResource.videoPanel = this.resource.getVideoPanel();
-                this.$.panel.text = this.resource.getVideoPanel().name;
+                this.$.panel.text = this.resource.getVideoPanel().virtualMonitorReference ? this.resource.getVideoPanel().virtualMonitorReference.name : '';
                 this.hideResourceSection = true;
                 this._setVideoPanels(resource.hasVideoPanel()
                     ? resource.getVideoPanel().getVideoPanels()
@@ -330,7 +270,6 @@
 
                 this.resource.setVideoPanel(videoPanel);
 
-                this.$.singleResource.videoPanel = this.resource.getVideoPanel();
                 this.notifyPath('resource.videoPanel.resources');
 
                 this._setVideoPanels(this.resource.hasVideoPanel()
