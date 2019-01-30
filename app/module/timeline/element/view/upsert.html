@@ -11,26 +11,142 @@
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
 <link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
 
+<link rel="import" href="../timeline-item/timeline-item.html">
+
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 
 <dom-module id="timeline-view-upsert">
     <template>
         <style>
+            .pd-r {
+                padding-right: 6px;
+            }
+
+            .search-timeslot {
+                padding-right: 6px;
+                padding-left: 6px;
+                display: flex;
+                align-items: center;
+            }
+
+            paper-button {
+                height: 46px;
+            }
+
+            paper-button.save {
+                margin-left: 10px;
+            }
+
+            .timeline {
+                margin-top: 10px;
+                height: 500px;
+                display: flex;
+                justify-content: flex-start;
+                /* You can set flex-wrap and
+                   flex-direction individually */
+                flex-direction: column;
+                flex-wrap: wrap;
+                /* Or do it all in one line
+                  with flex flow */
+                flex-flow: column wrap;
+                /* tweak where items line
+                   up on the row
+                   valid values are: flex-start,
+                   flex-end, space-between,
+                   space-around, stretch */
+                align-content: flex-start;
+            }
+
+            timeline-item-wc {
+                margin-bottom: 6px;
+                margin-right: 6px;
+                align-self: flex-start
+            }
 
         </style>
         <style include="global-layout"></style>
         <style include="global-style"></style>
         <slot name="header"></slot>
-        <div class="flex flex-horizontal">
-            <iron-form id="formTimeline">
+        <div id="container" class="flex flex-horizontal">
+            <iron-form id="formTimeline" class="flex-1">
                 <form method="post" action="">
                     <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                    <div class="flex-horizontal flex" style="width: 100%;">
+                        <div class="flex-basis-33">
+                            <paper-input label="Start hours" value="{{resource.time.hours}}" type="number" required></paper-input>
+                        </div>
+                        <div class="pd-r"></div>
+                        <div class="flex-basis-33">
+                            <paper-input label="Start minutes" value="{{resource.time.minutes}}" type="number" required></paper-input>
+                        </div>
+                        <div class="pd-r"></div>
+                        <div class="flex-basis-33">
+                            <paper-input label="Start seconds" value="{{resource.time.seconds}}" type="number" required></paper-input>
+                        </div>
+                    </div>
+                    <div class="flex flex-vertical-center">
+                        <paper-card class="search-timeslot flex-1">
+                            <div class="flex-1">
+                                <paper-input label="Start hours" value="{{time.hours}}" type="number"></paper-input>
+                            </div>
+                            <div class="pd-r"></div>
+                            <div class="flex-1">
+                                <paper-input label="Start minutes"  min="0" max="60" value="{{time.minutes}}" type="number"></paper-input>
+                            </div>
+                            <div class="pd-r"></div>
+                            <div class="flex-1">
+                                <paper-input label="Start seconds" value="{{time.seconds}}" type="number"></paper-input>
+                            </div>
+                            <div class="pd-r"></div>
+                            <div class="flex-1">
+                                <paper-autocomplete
+                                        id="autocompleteTimeslot"
+                                        label="Timelosts"
+                                        text-property="name"
+                                        value-property="name"
+                                        remote-source
+                                        on-autocomplete-change="_searchTimeslotChanged">
+                                    <template slot="autocomplete-custom-template">
+                                        <style>
+                                            :host {
+                                                display: block;
+                                            }
+
+                                            paper-item.account-item {
+                                                padding: 8px 16px;
+                                            }
+
+                                            .service-name {
+                                                color: #333;
+                                            }
+
+                                            .service-description {
+                                                margin-top: 4px;
+                                                color: #999;
+                                            }
+                                        </style>
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div>
+                                                <div class="service-name">[[item.name]]</div>
+                                            </div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                            </div>
+                            <div class="pd-r"></div>
+                            <paper-button  on-tap="addToTimeline" class="button-search">Add to timeline</paper-button>
+                        </paper-card>
+                        <paper-button on-tap="submitTimlineButton" class="save">{{labelAction}}</paper-button>
+                    </div>
+                    <div id="listItems" class="timeline">
+                        <template is="dom-repeat" id="timelineItems" items="[[resource.timelineItems]]" as="timelineItem">
+                            <timeline-item-wc timeline-item="{{timelineItem}}" on-remove="removeItem"></timeline-item-wc>
+                        </template>
+                    </div>
                 </form>
             </iron-form>
-        </div>
-        <div class="flex flex-horizontal-end" style="padding-top: 10px; padding-right: 8px;">
-            <paper-button on-tap="submitTimlineButton">{{labelAction}}</paper-button>
         </div>
     </template>
 
@@ -48,10 +164,9 @@
                         value: new VideoPanel()
                     },
 
-                    resource: {
+                    time: {
                         type: Object,
-                        notify: true,
-                        value: new Panel()
+                        value: new Time()
                     },
 
                     labelAction: {
@@ -84,6 +199,53 @@
                 super.ready();
                 this.$.formTimeline.addEventListener('iron-form-presubmit', this.submitTimeline.bind(this));
 
+                window.addEventListener("resize", () => {
+                    this._debouncer = Polymer.Debouncer.debounce(
+                        this._debouncer,
+                        Polymer.Async.timeOut.after(200), () => {
+                            this._setHeightListItem();
+                    });
+                });
+            }
+
+            /**
+             *  @private
+             */
+            _setHeightListItem() {
+                let height = window.innerHeight - this.$.listItems.offsetTop - 10;
+                this.$.listItems.style.height = `${height}px`;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            async _searchTimeslotChanged(evt) {
+
+                let search = {};
+                if (this.resource.timelineItems.length === 0) {
+                    search.name = evt.detail.value;
+                } else {
+                    let timeslot = await serviceManager.get('StoragePluginManager')
+                        .get(TimeslotConfig.NAME_SERVICE)
+                        .get(this.resource.timelineItems[0].timeslotReferences[0].referenceId);
+
+                    search['monitorId+name'] = [
+                        timeslot.virtualMonitorReference.monitorId,
+                        evt.detail.value
+                    ]
+                }
+
+                serviceManager.get('StoragePluginManager')
+                    .get(TimeslotConfig.NAME_SERVICE)
+                    .getAll(search)
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
             }
 
             /**
@@ -112,6 +274,32 @@
                             console.log(err)
                         }
                     );
+            }
+
+            /**
+             * @param evt
+             */
+            addToTimeline(evt) {
+
+                this.resource.addItem(this.time, this.$.autocompleteTimeslot._selectedOption);
+
+
+                let list = this.resource.timelineItems;
+                this.resource.timelineItems = [];
+                this.$.timelineItems.render();
+                this.resource.timelineItems = list;
+                this.$.timelineItems.render();
+
+                this.$.autocompleteTimeslot.reset();
+                this.time = new Time();
+            }
+
+            /**
+             * @param evt
+             */
+            removeItem(evt) {
+                this.resource.removeItem(evt.detail.time);
+                this.$.timelineItems.render();
             }
 
             /**

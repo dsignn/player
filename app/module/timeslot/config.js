@@ -30,7 +30,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
     init(service = []) {
 
         if (service.length === 0) {
-            this._loadHydrator();
+            this._loadTimeslotHydrator();
             this._loadStorage();
             this._loadTimeslotSender();
             this._loadTimeslotService();
@@ -39,7 +39,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             for (let cont = 0; service.length > cont; cont++) {
                 switch (true) {
                     case service[cont] === 'Hydrator':
-                        this._loadHydrator();
+                        this._loadTimeslotHydrator();
                         break;
                     case service[cont] === 'Storage':
                         this._loadStorage();
@@ -59,12 +59,24 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
     /**
      * @private
      */
-    _loadHydrator() {
-        let timeslotHydrator = new dsign.hydrator.PropertyHydrator(
+    _loadTimeslotHydrator() {
+
+        this.getServiceManager().get('HydratorPluginManager').set(
+            'timeslotHydrator',
+            TimeslotConfig.getTimeslotHydrator()
+        );
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     */
+    static getTimeslotHydrator() {
+
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Timeslot(),
             {
                 'resources' : new dsign.hydrator.strategy.HydratorStrategy(
-                    this.getServiceManager().get('HydratorPluginManager').get('resourceHydrator')),
+                    ResourceConfig.getResourceHydrator()),
                 'virtualMonitorReference' : new dsign.hydrator.strategy.HydratorStrategy(
                     new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())),
                 'dataReferences' : new dsign.hydrator.strategy.HydratorStrategy(
@@ -72,7 +84,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             }
         );
 
-        timeslotHydrator.enableHydrateProperty('id')
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('status')
             .enableHydrateProperty('binds')
@@ -86,7 +98,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('rotation')
             .enableHydrateProperty('filters');
 
-        timeslotHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('status')
             .enableExtractProperty('binds')
@@ -100,12 +112,30 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('rotation')
             .enableExtractProperty('filters');
 
-        this.getServiceManager().get('HydratorPluginManager').set(
-            'timeslotHydrator',
-            timeslotHydrator
-        );
+        return hydrator;
     }
 
+    /**
+     * @return {PropertyHydrator}
+     */
+    static getTimeslotReferenceHydrator() {
+
+        let hydrator = new dsign.hydrator.PropertyHydrator(
+            new TimeslotReference()
+        );
+
+        hydrator.enableHydrateProperty('referenceId')
+            .enableHydrateProperty('name');
+
+        hydrator.enableExtractProperty('referenceId')
+            .enableExtractProperty('name');
+
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
     _loadDataServiceInjectorService() {
         this.getServiceManager().set('TimeslotDataInjectorService', new TimeslotDataInjectorServicePluginManager());
     }

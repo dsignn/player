@@ -29,7 +29,7 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
      */
     init(service = []) {
         if (service.length === 0) {
-            this._loadHydrator();
+            this._loadTimelineHydrator();
             this._loadStorage();
         } else {
             for (let cont = 0; service.length > cont; cont++) {
@@ -46,17 +46,67 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
     }
 
     /**
-     * @private
+     * @return {PropertyHydrator}
      */
-    _loadHydrator() {
+    static getTimelineHydrator() {
 
         let hydrator = new dsign.hydrator.PropertyHydrator(
-            new Timeline()
+            new Timeline(),
+            {
+                time: new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new Time())
+                ),
+                timelineItems: new dsign.hydrator.strategy.HydratorStrategy(
+                    TimelineConfig.getTimelineItemHydrator()
+                )
+            }
         );
 
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('time')
+            .enableExtractProperty('timelineItems');
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('time')
+            .enableHydrateProperty('timelineItems');
+
+        return hydrator;
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     */
+    static getTimelineItemHydrator() {
+        let hydrator = new dsign.hydrator.PropertyHydrator(
+            new TimelineItem(),
+            {
+                time: new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new Time())
+                ),
+                timeslotReferences:  new dsign.hydrator.strategy.HydratorStrategy(
+                    TimeslotConfig.getTimeslotReferenceHydrator()
+                )
+            }
+        );
+
+        hydrator.enableExtractProperty('timeslotReferences')
+            .enableExtractProperty('time');
+
+        hydrator.enableHydrateProperty('timeslotReferences')
+            .enableHydrateProperty('time');
+
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadTimelineHydrator() {
         this.getServiceManager().get('HydratorPluginManager').set(
             'timelineHydrator',
-            hydrator
+            TimelineConfig.getTimelineHydrator()
         );
     }
 
@@ -73,7 +123,7 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
                         {
                             "name": TimelineConfig.NAME_COLLECTION,
                             "index": [
-                                "++id", "place", "date", "homeTeam", "guestTeam", "enable", "status"
+                                "++id", "name", "time"
                             ]
                         }
                     );

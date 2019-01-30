@@ -93,6 +93,7 @@
                 "src/TimeslotService.js",
                 "src/model/Timeslot.js",
                 "src/model/TimeslotDataReference.js",
+                "src/model/TimeslotReference.js"
                 "src/injector/AbstractInjector.js",
                 "src/injector/TimeslotDataInjectorServicePluginManager.js",
                 "src/injector/Test1.js",
@@ -229,7 +230,9 @@
             "name": "timeline",
             "configFile": "config.js",
             "autoloads": [
-                "src/model/Timeline.js"
+               "src/model/Time.js",
+               "src/model/Timeline.js",
+               "src/model/TimelineItem.js"
             ]
         }
     ]

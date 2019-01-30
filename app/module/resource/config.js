@@ -28,7 +28,11 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
      *
      */
     init() {
-        this._loadHydrator();
+        this._loadVideoHydrator();
+        this._loadImageHydrator();
+        this._loadAudioHydrator();
+        this._loadZipHydrator();
+        this._loadResourceHydrator();
         this._loadStorage();
     }
 
@@ -52,8 +56,10 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
                     this.getServiceManager().get('DexieManager').onReady(
                         (evt) => {
 
+                            let TimeslotDexieCollection = require('../resource/src/storage/indexed-db/dexie/ResourceDexieCollection');
+
                             let storage = new dsign.storage.Storage(
-                                new dsign.storage.adapter.DexieCollection(
+                                new TimeslotDexieCollection(
                                     this.getServiceManager().get('DexieManager'),
                                     ResourceConfig.NAME_COLLECTION
                                 ),
@@ -180,51 +186,51 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
     }
 
     /**
-     *
      * @return {AggregatePropertyHydrator}
-     * @private
      */
-    _loadHydrator() {
-
-        this._loadVideoHydrator();
-        this._loadImageHydrator();
-        this._loadAudioHydrator();
-        this._loadZipHydrator();
+    static getResourceHydrator() {
 
         let hydrator = new dsign.hydrator.AggregatePropertyHydrator('type');
+
         hydrator.addHydratorMap(
-            this.getServiceManager().get('HydratorPluginManager').get('imageHydrator'),
+            ResourceConfig.getImageHydrator(),
             ['image/jpeg', 'image/png']
         ).addHydratorMap(
-            this.getServiceManager().get('HydratorPluginManager').get('videoHydrator'),
+            ResourceConfig.getVideoHydrator(),
             ['video/mp4']
         ).addHydratorMap(
-            this.getServiceManager().get('HydratorPluginManager').get('genericHydrator'),
+            ResourceConfig.getZipHydrator(),
             ['application/zip', 'text/html']
         ).addHydratorMap(
-            this.getServiceManager().get('HydratorPluginManager').get('audioHydrator'),
+            ResourceConfig.getAudioHydrator(),
             ['audio/mp3']
         );
 
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadResourceHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
             'resourceHydrator',
-            hydrator
+            ResourceConfig.getResourceHydrator()
         );
     }
 
     /**
-     *
      * @return {PropertyHydrator}
-     * @private
      */
-    _loadVideoHydrator() {
-        let videoHydrator = new dsign.hydrator.PropertyHydrator(
+    static getVideoHydrator() {
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Video(),
             {
                 location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         );
-        videoHydrator.enableHydrateProperty('id')
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
@@ -234,7 +240,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('duration')
             .enableHydrateProperty('dimension');
 
-        videoHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('size')
             .enableExtractProperty('type')
@@ -244,26 +250,33 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('duration')
             .enableExtractProperty('dimension');
 
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadVideoHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
             'videoHydrator',
-            videoHydrator
+            ResourceConfig.getVideoHydrator()
         );
     }
 
     /**
-     *
      * @return {PropertyHydrator}
-     * @private
      */
-    _loadImageHydrator() {
-        let imageHydrator = new dsign.hydrator.PropertyHydrator(
+    static getImageHydrator() {
+
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Image(),
             {
                 location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
-        )
-        ;
-        imageHydrator.enableHydrateProperty('id')
+        );
+
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
@@ -272,7 +285,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('lastModified')
             .enableHydrateProperty('dimension');
 
-        imageHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('size')
             .enableExtractProperty('type')
@@ -281,26 +294,33 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('lastModified')
             .enableExtractProperty('dimension');
 
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadImageHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
             'imageHydrator',
-            imageHydrator
+            ResourceConfig.getImageHydrator()
         );
     }
 
     /**
-     *
      * @return {PropertyHydrator}
-     * @private
      */
-    _loadAudioHydrator() {
-        let imageHydrator = new dsign.hydrator.PropertyHydrator(
+    static getAudioHydrator() {
+
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Audio(),
             {
                 location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         );
 
-        imageHydrator.enableHydrateProperty('id')
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
@@ -309,7 +329,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('lastModified')
             .enableHydrateProperty('duration');
 
-        imageHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('size')
             .enableExtractProperty('type')
@@ -318,25 +338,33 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('lastModified')
             .enableExtractProperty('duration');
 
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadAudioHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
             'audioHydrator',
-            imageHydrator
+            ResourceConfig.getAudioHydrator()
         );
     }
 
     /**
      * @return {PropertyHydrator}
-     * @private
      */
-    _loadZipHydrator() {
-        let genericHydrator = new dsign.hydrator.PropertyHydrator(
+    static getZipHydrator() {
+
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new GenericFile(),
             {
                 location : new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new LocationPath()))
             }
         );
 
-        genericHydrator.enableHydrateProperty('id')
+        hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
             .enableHydrateProperty('wcName')
@@ -345,7 +373,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('location')
             .enableHydrateProperty('lastModified');
 
-        genericHydrator.enableExtractProperty('id')
+        hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('size')
             .enableExtractProperty('wcName')
@@ -354,9 +382,17 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('location')
             .enableExtractProperty('lastModified');
 
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadZipHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
             'genericHydrator',
-            genericHydrator
+            ResourceConfig.getZipHydrator()
         );
     }
 }

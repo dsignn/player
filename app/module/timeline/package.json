@@ -6,6 +6,8 @@
   "homepage": "https://github.com/dsign",
   "config": "config.js",
   "autoloads": [
-    "src/model/Timeline.js"
+    "src/model/Time.js",
+    "src/model/Timeline.js",
+    "src/model/TimelineItem.js"
   ]
 }

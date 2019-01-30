@@ -3,18 +3,22 @@
  */
 class TimelineItem {
 
-    constructor() {
+    /**
+     * @param {Array} timeslots
+     * @param {Time} time
+     */
+    constructor(timeslots = [], time = new Time()) {
 
         /**
          * @type {Array}
          */
-        this.timeslotReferences = [];
+        this.timeslotReferences = timeslots;
 
 
         /**
-         * @type {Number}
+         * @type {Time}
          */
-        this.second = 0;
+        this.time = time;
     }
 }
 

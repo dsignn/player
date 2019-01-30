@@ -1,0 +1,155 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+
+
+<dom-module id="timeline-item-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            :host {
+                display: block;
+                width: 250px;
+            }
+
+
+            paper-card {
+                height: 40px;
+                width: 250px;
+            }
+
+            .dataWrapper {
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            .time {
+                font-style: italic;
+            }
+            
+        </style>
+        <paper-card>
+            <div class="goal-container goal-content flex flex-horizontal">
+                <div class="data flex-1 flex flex-vertical flex-horizontal-center">
+                    <div class="dataWrapper">
+                        <div class="time">{{hours}}:{{minutes}}:{{seconds}}</div>
+                    </div>
+                </div>
+                <div class="flex flex-horizontal">
+                    <paper-icon-button icon="timeline:list"></paper-icon-button>
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementTimelineItem extends Polymer.Element {
+
+            static get is() {
+                return 'timeline-item-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    timelineItem: {
+                        type: Object,
+                        notify : true,
+                        value: new TimelineItem(),
+                        observer: '_changeTimelineItem'
+                    },
+
+                    hours: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    minutes: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    seconds: {
+                        type: Number,
+                        notify: true
+                    }
+                };
+            }
+
+            _changeTimelineItem(newValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                this.hours = this._computeHours();
+                this.minutes = this._computeMinutes();
+                this.seconds = this._computeSeconds();
+            }
+
+            /**
+             * @private
+             * @return {*}
+             */
+            _computeHours() {
+                if (!this.timelineItem.time) {
+                    return '';
+                }
+
+                return this.timelineItem.time.getHours() < 10 ? `0${this.timelineItem.time.getHours()}` : this.timelineItem.time.getHours();
+            }
+
+            /**
+             * @private
+             * @return {*}
+             */
+            _computeMinutes() {
+                if (!this.timelineItem.time) {
+                    return '';
+                }
+
+                return this.timelineItem.time.getMinutes() < 10 ? `0${this.timelineItem.time.getMinutes()}` : this.timelineItem.time.getMinutes();
+            }
+
+            /**
+             * @private
+             * @return {*}
+             */
+            _computeSeconds() {
+                if (!this.timelineItem.time) {
+                    return '';
+                }
+
+                return this.timelineItem.time.getSeconds() < 10 ? `0${this.timelineItem.time.getSeconds()}` : this.timelineItem.time.getSeconds();
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('remove', {detail: this.timelineItem}));
+            }
+        }
+
+        window.customElements.define(ElementTimelineItem.is, ElementTimelineItem);
+
+    </script>
+</dom-module>
