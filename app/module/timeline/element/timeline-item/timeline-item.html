@@ -13,13 +13,13 @@
         <style>
             :host {
                 display: block;
-                width: 250px;
+                width: 200px;
             }
 
 
             paper-card {
                 height: 40px;
-                width: 250px;
+                width: 200px;
             }
 
             .dataWrapper {
@@ -38,17 +38,39 @@
             .time {
                 font-style: italic;
             }
+
+            paper-dialog {
+                margin: 0;
+                margin-top: 6px;
+                padding: 8px;
+                min-width: 200px;
+            }
+
+            paper-dialog div {
+                font-size: 18px;
+            }
+
+
+            paper-dialog div.title {
+                font-size: 20px;
+            }
+
+            .no-thickness {
+                margin: 0;
+                padding: 0;
+            }
             
         </style>
         <paper-card>
             <div class="goal-container goal-content flex flex-horizontal">
                 <div class="data flex-1 flex flex-vertical flex-horizontal-center">
-                    <div class="dataWrapper">
+                    <div class="dataWrapper flex flex-horizontal flex-horizontal-space-between">
                         <div class="time">{{hours}}:{{minutes}}:{{seconds}}</div>
+                        <div>{{count}}</div>
                     </div>
                 </div>
                 <div class="flex flex-horizontal">
-                    <paper-icon-button icon="timeline:list"></paper-icon-button>
+                    <paper-icon-button icon="timeline:list" on-tap="openDialog"></paper-icon-button>
                     <paper-menu-button ignore-select disabled="{{hideCrud}}">
                         <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                         <paper-listbox slot="dropdown-content" multi>
@@ -57,6 +79,15 @@
                     </paper-menu-button>
                 </div>
             </div>
+            <paper-dialog id="timelineItemDialog"  no-overlap horizontal-align="right" vertical-align="top" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+                <div class="title no-thickness">Timeslot</div>
+                <template id="repeatTimeslot" is="dom-repeat" items="[[timelineItem.timeslotReferences]]" as="timeslotReference">
+                    <div class="flex flex-horizontal no-thickness ">
+                        <div class=" flex flex-1 flex-vertical-center">{{timeslotReference.name}}</div>
+                        <paper-icon-button icon="timeline:remove" ref={{timeslotReference}} on-click="_removeReference"></paper-icon-button>
+                    </div>
+                </template>
+            </paper-dialog>
         </paper-card>
     </template>
 
@@ -77,6 +108,11 @@
                         observer: '_changeTimelineItem'
                     },
 
+                    count: {
+                        type: Number,
+                        notify: true
+                    },
+
                     hours: {
                         type: Number,
                         notify: true
@@ -90,18 +126,55 @@
                     seconds: {
                         type: Number,
                         notify: true
+                    },
+
+                    identifier: {
+                        readOnly: true,
+                        notify: true,
+                        reflectToAttribute : true,
                     }
                 };
             }
 
+            /**
+             *
+             */
+            connectedCallback() {
+                super.connectedCallback();
+                this._setIdentifier(this.timelineItem.time.toString());
+            }
+
+            /**
+             * @param newValue
+             */
             _changeTimelineItem(newValue) {
                 if (!newValue) {
                     return;
                 }
 
+                this.updateData();
+            }
+
+            /**
+             *
+             */
+            updateData() {
+                this.count = this._computeCount();
                 this.hours = this._computeHours();
                 this.minutes = this._computeMinutes();
                 this.seconds = this._computeSeconds();
+                this.$.repeatTimeslot.render();
+            }
+
+            /**
+             * @private
+             * @return {*}
+             */
+            _computeCount() {
+                if (!this.timelineItem.time) {
+                    return '';
+                }
+                return this.timelineItem.timeslotReferences.length;
             }
 
             /**
@@ -145,7 +218,32 @@
              * @private
              */
             _remove(evt) {
-                this.dispatchEvent(new CustomEvent('remove', {detail: this.timelineItem}));
+                this.dispatchEvent(new CustomEvent('remove',
+                    {detail: {
+                        timelineItem: this.timelineItem,
+                        timeslotReference: null
+                    }
+                }));
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _removeReference(evt) {
+                this.dispatchEvent(new CustomEvent('remove-reference', {
+                    detail: {
+                        timelineItem: this.timelineItem,
+                        timeslotReference: evt.target.ref
+                    }
+                }));
+            }
+
+            /**
+             *
+             */
+            openDialog(evt) {
+                this.$.timelineItemDialog.open();
             }
         }
 

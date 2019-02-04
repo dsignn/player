@@ -3,22 +3,27 @@
  */
 class Time {
 
-    constructor() {
+    /**
+     * @param {number} hours
+     * @param {number} minutes
+     * @param {number} seconds
+     */
+    constructor(hours = 0, minutes = 0, seconds = 0) {
 
         /**
          * @type {number}
          */
-        this.hours = 0;
+        this.hours = hours;
 
         /**
          * @type {number}
          */
-        this.minutes = 0;
+        this.minutes = minutes;
 
         /**
          * @type {number}
          */
-        this.seconds = 0;
+        this.seconds = seconds;
     }
 
     /**
@@ -61,6 +66,26 @@ class Time {
      */
     getSeconds() {
         return parseInt(this.seconds);
+    }
+
+    /**
+     * @return {Time}
+     */
+    clone() {
+        let clone = new Time();
+
+        clone.seconds = this.seconds;
+        clone.minutes = this.minutes;
+        clone.hours = this.hours;
+
+        return clone;
+    }
+
+    /**
+     * @return {string}
+     */
+    toString() {
+        return `${this.getHours() < 10 ? '0' + this.getHours() : this.getHours()}:${this.getMinutes() < 10 ? '0' + this.getMinutes() : this.getMinutes()}:${this.getSeconds() < 10 ? '0' + this.getSeconds() : this.getSeconds()}`;
     }
 }
 

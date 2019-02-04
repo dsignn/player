@@ -56,6 +56,7 @@
                    flex-end, space-between,
                    space-around, stretch */
                 align-content: flex-start;
+                overflow-x: auto;
             }
 
             timeline-item-wc {
@@ -142,7 +143,7 @@
                     </div>
                     <div id="listItems" class="timeline">
                         <template is="dom-repeat" id="timelineItems" items="[[resource.timelineItems]]" as="timelineItem">
-                            <timeline-item-wc timeline-item="{{timelineItem}}" on-remove="removeItem"></timeline-item-wc>
+                            <timeline-item-wc timeline-item="{{timelineItem}}" on-remove="removeItem" on-remove-reference="removeItem"></timeline-item-wc>
                         </template>
                     </div>
                 </form>
@@ -223,7 +224,7 @@
             async _searchTimeslotChanged(evt) {
 
                 let search = {};
-                if (this.resource.timelineItems.length === 0) {
+                if (this.resource.timelineItems.length === 0 || !this.resource.timelineItems[0].timeslotReferences[0]) {
                     search.name = evt.detail.value;
                 } else {
                     let timeslot = await serviceManager.get('StoragePluginManager')
@@ -283,7 +284,6 @@
 
                 this.resource.addItem(this.time, this.$.autocompleteTimeslot._selectedOption);
 
-
                 let list = this.resource.timelineItems;
                 this.resource.timelineItems = [];
                 this.$.timelineItems.render();
@@ -291,14 +291,30 @@
                 this.$.timelineItems.render();
 
                 this.$.autocompleteTimeslot.reset();
+                this.$.autocompleteTimeslot._selectedOption = null;
+                this._updateTimelineTimeWc(this.time);
+
                 this.time = new Time();
+            }
+
+            /**
+             * @param {Time} time
+             */
+            _updateTimelineTimeWc(time) {
+                let item = this.shadowRoot.querySelector(`timeline-item-wc[identifier="${time.toString()}"]`);
+                if (item) {
+                    item.updateData();
+                }
             }
 
             /**
              * @param evt
              */
             removeItem(evt) {
-                this.resource.removeItem(evt.detail.time);
+
+                this.resource.removeItem(evt.detail.timelineItem.time, evt.detail.timeslotReference);
+
+                this._updateTimelineTimeWc(evt.detail.timelineItem.time);
                 this.$.timelineItems.render();
             }
 

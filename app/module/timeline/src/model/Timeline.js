@@ -26,15 +26,34 @@ class Timeline {
      * @param {Timeslot} timeslot
      * @return Timeline
      */
-    addItem(time, timeslot) {
-        
-        if (this.hasTime(time)) {
+    addItem(time, timeslot = null) {
 
-        } else {
-            this.timelineItems.splice(this._getIndexPrev(time), 0, new TimelineItem(
-                [TimeslotReference.getTimeslotReferenceFromTimeslot(timeslot)],
-                time)
-            );
+        let item = this.getItem(time);
+        let timelineItem = null;
+        switch (true) {
+
+            case item === null && timeslot === null:
+                console.log('ADD TIMELINEITEM', 'vuoto', 'vuoto');
+                this.timelineItems.splice(this._getIndexPrev(time), 0, new TimelineItem([], time));
+                break;
+
+            case item === null && timeslot !== null:
+                console.log('ADD TIMELINEITEM', 'vuoto', 'pieno');
+                timelineItem = new TimelineItem(
+                    [TimeslotReference.getTimeslotReferenceFromTimeslot(timeslot)],
+                    time
+                );
+                this.timelineItems.splice(this._getIndexPrev(time), 0, timelineItem);
+                break;
+
+            case item !== null && timeslot !== null:
+                console.log('ADD TIMELINEITEM', 'pieno', 'pieno');
+                timelineItem = this.getItem(time);
+                timelineItem.addTimeslotReference(TimeslotReference.getTimeslotReferenceFromTimeslot(timeslot));
+                break;
+            default:
+                console.log('ADD TIMELINEITEM', 'salta');
+                break;
         }
 
         return this;
@@ -51,13 +70,15 @@ class Timeline {
 
     /**
      * @param {Time}  time
-     * @return {Time|null}
+     * @return {TimelineItem|null}
      * @private
      */
-    _getItem(time) {
-        return this.timelineItems.find((element) => {
+    getItem(time) {
+        let item = this.timelineItems.find((element) => {
             return time.compare(element.time) === 0;
         });
+
+        return item ? item : null
     }
 
     /**
@@ -94,20 +115,68 @@ class Timeline {
      * @param {Timeslot} timeslot
      * @return {Timeline}
      */
-    removeItem(time, timeslot) {
+    removeItem(time, timeslot = null) {
 
         let index = this._getIndex(time);
 
-        if (index < 0) {
-            return;
+        switch (true) {
+
+            case index > -1 && timeslot !== null:
+                console.log('REMOVE TIMELINEITEM', 'pieno', 'pieno');
+                let item = this.getItem(time);
+                item.removeTimeslotReference(TimeslotReference.getTimeslotReferenceFromTimeslot(timeslot));
+                break;
+            case index > -1 && timeslot === null:
+                console.log('REMOVE TIMELINEITEM', 'pieno', 'vuoto');
+                this.timelineItems.splice(index, 1);
+                break;
+            default:
+                console.log('DELETE TIMELINEITEM', 'salta');
+                break;
         }
 
-        console.log('remove',index)
-        if (!timeslot) {
-            this.timelineItems.splice(index, 1);
-        }
 
         return this;
+    }
+
+    /**
+     * @param seconds
+     */
+    fillItems(seconds) {
+
+        if (!seconds || seconds < 1 || seconds > 60) {
+            throw 'Wrong input'
+        }
+
+        let time = new Time(0, 0, seconds);
+
+        if (this.time.compare(time) > 0) {
+            throw 'Time of timeline are to low'
+        }
+
+        while (this.time.compare(time) < 1) {
+
+            this.addItem(time.clone());
+
+            // Control seconds
+            switch (true) {
+                case time.seconds + seconds > 59:
+                    time.minutes += 1;
+                    time.seconds = (time.seconds + seconds) % 60;
+                    break;
+                default:
+                    time.seconds += seconds;
+                    break;
+            }
+
+            switch (true) {
+                case time.minutes > 59:
+                    time.minutes = 0;
+                    time.hours += 1;
+                    break;
+            }
+        }
+
     }
 }
 
