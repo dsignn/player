@@ -8,6 +8,7 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/iconset/iconset.html">
 
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
 
 <dom-module id="timeline-wc">
     <template>
@@ -89,7 +90,7 @@
     </template>
 
     <script>
-        class ElementTimeline extends Polymer.Element {
+        class ElementTimeline extends StorageAdapterBehaviour {
 
             static get is() {
                 return 'timeline-wc';
@@ -118,16 +119,17 @@
                         notify: true,
                         value: new Timeline(),
                         observer: '_timelineChanged'
+                    },
+
+                    storageName: {
+                        value: TimelineConfig.NAME_SERVICE
                     }
                 };
             }
 
             ready() {
                 super.ready();
-
-                serviceManager.get('StoragePluginManager')
-                    .get(TimelineConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this));
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this))
             };
 
             /**
@@ -135,7 +137,6 @@
              */
             _updateFromStorage(evt) {
                 if (evt.data.id === this.timeline.id) {
-                    console.log('SONO IO', evt, this);
                     this.timeline = null;
                     this.timeline = evt.data;
                 }

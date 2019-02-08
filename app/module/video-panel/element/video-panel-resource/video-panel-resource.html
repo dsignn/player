@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -9,85 +8,114 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/iconset/iconset.html">
 
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
 
 <dom-module id="video-panel-resource-wc">
-  <template>
-    <style include="global-layout"></style>
-    <style include="global-style"></style>
-    <style>
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
 
-      .card-content {
-        padding: 0;
-      }
+            .card-content {
+                padding: 0;
+            }
 
-      .data {
-        padding: 8px;
-      }
+            .data {
+                padding: 8px;
+            }
 
-      .activePaperButton {
-        color: var(--app-primary-color);
-      }
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
 
-      paper-listbox {
-        min-width: 0;
-      }
+            paper-listbox {
+                min-width: 0;
+            }
 
-      .dataWrapper {
-        margin: 6px;
-      }
+            .dataWrapper {
+                margin: 6px;
+            }
 
-      #rightSection {
-        background-image: url("img/sideline.jpg") !important;
-      }
+            #rightSection {
+                background-image: url("img/sideline.jpg") !important;
+            }
 
-    </style>
-    <paper-card id="design">
-      <div class="card-content flex flex-horizontal">
-        <div class="data flex-basis-85 flex flex-vertical">
-          <div class="dataWrapper">
-            <div>{{resource.name}}</div>
-          </div>
-        </div>
-        <div class="flex-basis-15 flex flex-vertical">
-          <paper-menu-button ignore-select disabled="{{hideCrud}}">
-            <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
-            <paper-listbox slot="dropdown-content" multi>
-              <paper-item on-click="_update">Modifica</paper-item>
-              <paper-item  on-click="_remove">Elimina</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
-        </div>
-      </div>
-      <div class="card-actions"></div>
-      <div id="rightSection" class="rate-image"></div>
-    </paper-card>
-  </template>
+        </style>
+        <paper-card id="design">
+            <div class="card-content flex flex-horizontal">
+                <div class="data flex-basis-85 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <div>{{resource.name}}</div>
+                    </div>
+                </div>
+                <div class="flex-basis-15 flex flex-vertical">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-click="_update">Modifica</paper-item>
+                            <paper-item on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div class="card-actions"></div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+    <script>
+        class ElementVideoPanelResource extends StorageAdapterBehaviour {
 
-  <script>
-    class ElementVideoPanelResource extends Polymer.Element {
+            static get is() {
+                return 'video-panel-resource-wc';
+            }
 
-      static get is() { return 'video-panel-resource-wc'; }
+            static get properties() {
+                return {
 
-      static get properties() {
-          return {
+                    resource: {
+                        type: Object,
+                        value: new PanelResource()
+                    },
 
-              resource: {
-                  type: Object,
-                  value: new PanelResource()
-              }
-          };
-      }
+                    storageName: {
+                        value: VideoPanelConfig.RESOURCE_SERVICE
+                    }
+                };
+            }
 
-      _remove(evt) {
-          this.dispatchEvent(new CustomEvent('remove', {detail: this.resource}));
-      }
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this))
+            };
 
-      _update(evt) {
-          this.dispatchEvent(new CustomEvent('update-view', {detail: this.resource}));
-      }
-    }
+            /**
+             * @param evt
+             */
+            _updateFromStorage(evt) {
+                if (evt.data.id === this.resource.id) {
+                    this.resource = null;
+                    this.resource = evt.data;
+                }
+            }
 
-    window.customElements.define(ElementVideoPanelResource.is, ElementVideoPanelResource);
+            /**
+             * @param evt
+             * @private
+             */
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('remove', {detail: this.resource}));
+            }
 
-  </script>
+            /**
+             *
+             * @param evt
+             * @private
+             */
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('update-view', {detail: this.resource}));
+            }
+        }
+
+        window.customElements.define(ElementVideoPanelResource.is, ElementVideoPanelResource);
+    </script>
 </dom-module>
