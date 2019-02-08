@@ -6,6 +6,7 @@
   "homepage": "https://github.com/dsign",
   "config": "config.js",
   "autoload": [
+    "src/AbstractTimeslotService.js",
     "src/TimeslotService.js",
     "src/model/Timeslot.js",
     "src/model/TimeslotDataReference.js",

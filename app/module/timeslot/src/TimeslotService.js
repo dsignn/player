@@ -1,48 +1,18 @@
 /**
  *
  */
-class TimeslotService {
+class TimeslotService extends AbstractTimeslotService {
 
-    static get PLAY()  { return 'play-timeslot'; }
-
-    static get STOP()  { return 'stop-timeslot'; }
-
-    static get PAUSE()  { return 'pause-timeslot'; }
-
-    static get RESUME() { return 'resume-timeslot'; }
 
     /**
      * @param {Storage} timeslotStorage
-     * @param {sender} sender
+     * @param {AbstractSender} sender
      * @param {Timer} timer
      * @param {TimeslotDataInjectorServicePluginManager} dataInjectorManager
      */
     constructor(timeslotStorage, sender, timer, dataInjectorManager) {
 
-        /**
-         *
-         */
-        this.sender = sender ? sender : null;
-
-        /**
-         * @type {Timer}
-         */
-        this.timer = timer;
-
-        /**
-         * @type {Storage}
-         */
-        this.storage = timeslotStorage ? timeslotStorage : null;
-
-        /**
-         * @type {TimeslotDataInjectorServicePluginManager}
-         */
-        this.dataInjectorManager = dataInjectorManager ? dataInjectorManager : new TimeslotDataInjectorServicePluginManager();
-
-        /**
-         * Event manager
-         */
-        this.eventManager = new (require('dsign-library').event.EvtManager)();
+        super(timeslotStorage, sender, timer, dataInjectorManager);
 
         /**
          * List running timeslots
@@ -58,18 +28,16 @@ class TimeslotService {
         this.eventManager.on(TimeslotService.STOP, this.changeIdleTimeslot.bind(this));
         this.eventManager.on(TimeslotService.RESUME, this.changeResumeTimeslot.bind(this));
 
-        if (!this.timer) {
-            throw 'Timer not set';
-
-        }
-
         this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
         // this.timer.addEventListener('secondsUpdated', (evt)  => {
-            this.schedule();
+            this._schedule();
         });
     }
 
-    schedule() {
+    /**
+     * @private
+     */
+    _schedule() {
 
         /*
         let data = {
@@ -121,7 +89,7 @@ class TimeslotService {
     }
 
     /**
-     * @param timeslot
+     * @param {Timeslot} timeslot
      */
     setRunningTimeslot(timeslot) {
        this.runningTimeslots[`${timeslot.virtualMonitorReference.monitorId}-${timeslot.context}`] = timeslot;
@@ -129,7 +97,7 @@ class TimeslotService {
 
     /**
      *
-     * @param timeslot
+     * @param {Timeslot} timeslot
      */
     removeRunningTimeslot(timeslot) {
 
@@ -145,7 +113,7 @@ class TimeslotService {
     }
 
     /**
-     * @param timeslot
+     * @param {Timeslot} timeslot
      */
     play(timeslot) {
 
@@ -183,7 +151,7 @@ class TimeslotService {
     }
 
     /**
-     * @param timeslot
+     * @param {Timeslot} timeslot
      */
     stop(timeslot) {
 
@@ -198,7 +166,7 @@ class TimeslotService {
     }
 
     /**
-     * @param timeslot
+     * @param {Timeslot} timeslot
      */
     pause(timeslot) {
 
@@ -212,7 +180,7 @@ class TimeslotService {
     }
 
     /**
-     * @param timeslot
+     * @param {Timeslot} timeslot
      */
     resume(timeslot) {
 
@@ -243,7 +211,6 @@ class TimeslotService {
 
 
     /**
-     *
      * @param evt
      */
     processTimeslot(evt) {
@@ -271,7 +238,6 @@ class TimeslotService {
                 this.timeslotService.stop(this.timeslot);
                 break
         }
-
     }
 
     /**
@@ -283,7 +249,7 @@ class TimeslotService {
         this.setRunningTimeslot(evt.data);
         evt.data.status = Timeslot.RUNNING;
         evt.data.currentTime = 0;
-        this.storage.update(evt.data)
+        this.timeslotStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -296,18 +262,21 @@ class TimeslotService {
 
         evt.data.status = Timeslot.RUNNING;
         this.setRunningTimeslot(evt.data);
-        this.storage.update(evt.data)
+        this.timeslotStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
 
+    /**
+     * @param evt
+     */
     changePauseTimeslot(evt) {
         console.log('PAUSE TIMESLOT',  evt.data.id);
 
         this.removeRunningTimeslot(evt.data);
         evt.data.status = Timeslot.PAUSE;
 
-        this.storage.update(evt.data)
+        this.timeslotStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -321,7 +290,7 @@ class TimeslotService {
 
         evt.data.status = Timeslot.IDLE;
         evt.data.currentTime = 0;
-        this.storage.update(evt.data)
+        this.timeslotStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -337,8 +306,7 @@ class TimeslotService {
             }
 
             this.runningTimeslots[key].currentTime = parseFloat(Number(this.runningTimeslots[key].currentTime + 0.1).toFixed(2));
-          //  this.runningTimeslots[key].currentTime++;
-            this.storage.update(this.runningTimeslots[key])
+            this.timeslotStorage.update(this.runningTimeslots[key])
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
         }

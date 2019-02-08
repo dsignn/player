@@ -203,7 +203,14 @@ serviceManager.set(
         p2p.setReceiverParser(new dsign.parse.BufferToObject());
 
         return p2p;
-});
+}).set(
+    'SoccerClient',
+    function(sm){
+        let config = sm.get('Config');
+
+        return new dsign.net.HttpClient(config.soccerApi.path, config.soccerApi.headers)
+    }
+);
 
 let test = serviceManager.get('P2p');
 test.on(dsign.net.P2p.SERVER_MESSAGE, (m) => {console.log('EVENTO MESSAGGIO', m)});

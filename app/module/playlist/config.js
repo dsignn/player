@@ -151,10 +151,11 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
             (evt) => {
                 if (evt.data.name === PlaylistConfig.NAME_SERVICE) {
                     let playlistService =  new PlaylistService(
-                        this.getServiceManager().get('StoragePluginManager').get(PlaylistConfig.NAME_SERVICE),
+                        this.getServiceManager().get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE),
                         this.getServiceManager().get('SenderPluginManager').get('playlistSender'),
                         this.getServiceManager().get('Timer'),
-                        this.getServiceManager().get('TimeslotDataInjectorService')
+                        this.getServiceManager().get('TimeslotDataInjectorService'),
+                        this.getServiceManager().get('StoragePluginManager').get(PlaylistConfig.NAME_SERVICE)
                     );
                     this.getServiceManager().set('PlaylistService', playlistService);
                 }

@@ -1,24 +1,23 @@
 /**
  *
  */
-class PlaylistService extends TimeslotService {
+class PlaylistService extends AbstractTimeslotService {
 
     /**
-     *
-     * @param {Storage} playlistStorage
-     * @param sender
+     * @param {Storage} timeslotStorage
+     * @param {AbstractSender} sender
      * @param {Timer} timer
      * @param {TimeslotDataInjectorServicePluginManager} dataInjectorManager
+     * @param {Storage} playlistStorage
      */
-    constructor(playlistStorage, sender, timer, dataInjectorManager) {
+    constructor(timeslotStorage, sender, timer, dataInjectorManager, playlistStorage) {
 
-        super(playlistStorage, sender, timer, dataInjectorManager);
+        super(timeslotStorage, sender, timer, dataInjectorManager);
 
         /**
-         * TODO refactor
-         * Clear parent data
+         * @type {Storage}
          */
-        delete this.runningTimeslots;
+        this.playlistStorage = playlistStorage;
 
         /**
          * List running playlist
@@ -26,10 +25,6 @@ class PlaylistService extends TimeslotService {
          */
         this.runningPlaylist = {};
 
-        this.eventManager.remove(TimeslotService.PLAY);
-        this.eventManager.remove(TimeslotService.STOP);
-        this.eventManager.remove(TimeslotService.PAUSE);
-        this.eventManager.remove(TimeslotService.RESUME);
         /**
          * Listeners
          */
@@ -37,9 +32,14 @@ class PlaylistService extends TimeslotService {
         this.eventManager.on(PlaylistService.STOP, this.changeIdlePlaylist.bind(this));
         this.eventManager.on(PlaylistService.PAUSE, this.changePausePlaylist.bind(this));
         this.eventManager.on(PlaylistService.RESUME, this.changeResumePlaylist.bind(this));
+
+        this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
+            // this.timer.addEventListener('secondsUpdated', (evt)  => {
+            this._schedule();
+        });
     }
 
-    schedule() {
+    _schedule() {
 
         /**removeRunningTimeslot
         let data = {
@@ -280,7 +280,7 @@ class PlaylistService extends TimeslotService {
     changeRunningPlaylist(evt) {
         evt.data.reset();
         console.log('START PLAYLIST', evt);
-        this.storage.update(evt.data)
+        this.playlistStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -292,7 +292,7 @@ class PlaylistService extends TimeslotService {
     changeIdlePlaylist(evt) {
         evt.data.reset();
         console.log('STOP PLAYLIST', evt);
-        this.storage.update(evt.data)
+        this.playlistStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -303,7 +303,7 @@ class PlaylistService extends TimeslotService {
      */
     changePausePlaylist(evt) {
         console.log('PAUSE PLAYLIST', evt);
-        this.storage.update(evt.data)
+        this.playlistStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -314,7 +314,7 @@ class PlaylistService extends TimeslotService {
      */
     changeResumePlaylist(evt) {
         console.log('RESUME PLAYLIST', evt);
-        this.storage.update(evt.data)
+        this.playlistStorage.update(evt.data)
             .then((data) => {})
             .catch((err) => { console.log(err) });
     }
@@ -334,7 +334,7 @@ class PlaylistService extends TimeslotService {
 
             this.runningPlaylist[key].timeslots[this.runningPlaylist[key].currentIndex].currentTime = parseFloat(Number(this.runningPlaylist[key].timeslots[this.runningPlaylist[key].currentIndex].currentTime + 0.1).toFixed(2));
             //  this.runningTimeslots[key].currentTime = parseFloat(Number(this.runningTimeslots[key].currentTime + 0.1).toFixed(2));
-            this.storage.update(this.runningPlaylist[key])
+            this.playlistStorage.update(this.runningPlaylist[key])
                 .then((data) => {
                 })
                 .catch((err) => { console.log(err) });

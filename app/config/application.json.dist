@@ -90,6 +90,7 @@
             },
             "configFile": "config.js",
             "autoloads": [
+                "src/AbstractTimeslotService.js",
                 "src/TimeslotService.js",
                 "src/model/Timeslot.js",
                 "src/model/TimeslotDataReference.js",

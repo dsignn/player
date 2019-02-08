@@ -1,46 +1,25 @@
 /**
  *
  */
-class TimelineService {
+class TimelineService extends AbstractTimeslotService {
 
     /**
-     * @param {Storage} storage
+     * @param {Storage} timeslotStorage
      * @param {AbstractSender} sender
      * @param {Timer} timer
      * @param {TimeslotDataInjectorServicePluginManager} dataInjectorManager
-     * @param {Storage} timeslotStorage
+     * @param {Storage} timelineStorage
      */
-    constructor(storage, sender, timer, dataInjectorManager, timeslotStorage) {
+    constructor(timeslotStorage, sender, timer, dataInjectorManager, timelineStorage) {
 
+        /**
+         *
+         */
+        super(timeslotStorage, sender, timer, dataInjectorManager);
         /**
          * @type {Storage}
          */
-        this.timelineStorage = storage;
-
-        /**
-         * @type {Storage}
-         */
-        this.timeslotStorage = timeslotStorage;
-
-        /**
-         * @type {AbstractSender}
-         */
-        this.sender = sender;
-
-        /**
-         * @type {Timer}
-         */
-        this.timer = timer;
-
-        /**
-         * @type {TimeslotDataInjectorServicePluginManager}
-         */
-        this.dataInjectorManager = dataInjectorManager;
-
-        /**
-         * Event manager
-         */
-        this.eventManager = new (require('dsign-library').event.EvtManager)();
+        this.timelineStorage = timelineStorage;
 
         /**
          * List to run timelines
@@ -55,14 +34,14 @@ class TimelineService {
         }
 
         this.timer.addEventListener('secondsUpdated', (evt) => {
-            this.schedule();
+            this._schedule();
         });
     }
 
     /**
      * @param evt
      */
-    schedule(evt) {
+    _schedule(evt) {
 
         this._promoteToRunTimeline();
         this._scheduleRunningTimeline();
@@ -215,7 +194,7 @@ class TimelineService {
      * @private
      */
     _playTimeslot(timeline, timeslot) {
-        this._send(TimeslotService.PLAY, timeline, timeslot);
+        this._send(TimelineService.PLAY, timeline, timeslot);
     }
 
 
@@ -227,7 +206,7 @@ class TimelineService {
         // TODO add event timeline
         timeline.status = Timeslot.IDLE;
         timeline.timer.reset();
-        this._send(TimeslotService.STOP, timeline);
+        this._send(TimelineService.STOP, timeline);
         this.timelineStorage.update(timeline)
             .then((data) => { console.log('STOP timeline')})
             .catch((err) => { console.error(err)});
@@ -241,7 +220,7 @@ class TimelineService {
     _pauseTimeline(timeline) {
 
         timeline.status = Timeslot.PAUSE;
-        this._send(TimeslotService.PAUSE, timeline);
+        this._send(TimelineService.PAUSE, timeline);
         this.timelineStorage.update(timeline)
             .then((data) => { console.log('PAUSE timeline')})
             .catch((err) => { console.error(err)});
