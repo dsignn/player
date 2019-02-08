@@ -172,7 +172,7 @@
              */
             _computeCount() {
                 if (!this.timelineItem.time) {
-                    return '';
+                    return '00';
                 }
                 return this.timelineItem.timeslotReferences.length;
             }
@@ -183,7 +183,7 @@
              */
             _computeHours() {
                 if (!this.timelineItem.time) {
-                    return '';
+                    return '00';
                 }
 
                 return this.timelineItem.time.getHours() < 10 ? `0${this.timelineItem.time.getHours()}` : this.timelineItem.time.getHours();
@@ -195,7 +195,7 @@
              */
             _computeMinutes() {
                 if (!this.timelineItem.time) {
-                    return '';
+                    return '00';
                 }
 
                 return this.timelineItem.time.getMinutes() < 10 ? `0${this.timelineItem.time.getMinutes()}` : this.timelineItem.time.getMinutes();

@@ -223,6 +223,7 @@
              */
             async _searchTimeslotChanged(evt) {
 
+                /*
                 let search = {};
                 if (this.resource.timelineItems.length === 0 || !this.resource.timelineItems[0].timeslotReferences[0]) {
                     search.name = evt.detail.value;
@@ -235,7 +236,10 @@
                         timeslot.virtualMonitorReference.monitorId,
                         evt.detail.value
                     ]
-                }
+                }*/
+
+                let search = {};
+                search.name = evt.detail.value;
 
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
@@ -244,7 +248,7 @@
                         evt.detail.target.suggestions(data);
                     })
                     .catch((err) => {
-                            console.log(err)
+                            console.error(err)
                         }
                     );
             }
@@ -272,7 +276,7 @@
 
                     })
                     .catch((err) => {
-                            console.log(err)
+                            console.error(err)
                         }
                     );
             }

@@ -71,7 +71,7 @@
                 this._setStorage(serviceManager.get('StoragePluginManager').get(this.storageName));
 
                 this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this));
-                this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this.getResources.bind(this));
+           //     this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this.getResources.bind(this));
             }
 
             /**
@@ -116,7 +116,18 @@
 
                 this.storage.remove(evt.detail)
                     .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify('Remove sideline')
+                        serviceManager.get('PaperToastNotification').notify('Remove TODO')
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            updateResource(evt) {
+
+                this.storage.update(evt.detail)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify('Update TODO')
                     });
             }
 

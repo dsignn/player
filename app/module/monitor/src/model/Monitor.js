@@ -71,8 +71,9 @@ class Monitor {
         if (options && typeof options === 'object' && options.nested) {
             for (let cont = 0; this.monitors.length > cont; cont++) {
                 if (typeof this.monitors[cont].getMonitors === "function") {
-                    options.withoutRoot = true;
-                    let nestedMonitor = this.monitors[cont].getMonitors(options);
+                    let nestedOptions = JSON.parse(JSON.stringify(options));
+                    nestedOptions.withoutRoot = true;
+                    let nestedMonitor = this.monitors[cont].getMonitors(nestedOptions);
                     if (nestedMonitor.length > 0) {
                         monitors = monitors.concat(nestedMonitor);
                     }

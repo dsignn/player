@@ -27,24 +27,54 @@ class Time {
     }
 
     /**
+     * If this is highest then timer 1, 0 if is equal and -1 if is lowest;
+     *
      * @param {Time} time
      * @return {number}
      */
     compare(time) {
-       switch (true) {
+        let compare = -1;
+        switch (true) {
 
-           case this.getHours() === time.getHours() && this.getMinutes() === time.getMinutes() && this.getSeconds() === time.getSeconds():
-               return 0;
-               break;
-           case this.getHours() > time.getHours() ||
-                this.getHours() === time.getHours() && this.getMinutes() > time.getMinutes() ||
-                this.getHours() === time.getHours() && this.getMinutes() === time.getMinutes() && this.getSeconds() > time.getSeconds():
+            case this.getHours() === time.getHours() && this.getMinutes() === time.getMinutes() && this.getSeconds() === time.getSeconds():
+                compare = 0;
+                break;
+            case this.getHours() > time.getHours() ||
+            this.getHours() === time.getHours() && this.getMinutes() > time.getMinutes() ||
+            this.getHours() === time.getHours() && this.getMinutes() === time.getMinutes() && this.getSeconds() > time.getSeconds():
+                compare = 1;
+                break;
+        }
 
-               return -1;
-           default:
-               return 1;
+        return compare;
+    }
 
-       }
+    /**
+     * @param {number} seconds
+     */
+    sumSeconds(seconds) {
+
+
+        let ihours = Math.floor(seconds / 3600);
+        let iMinutes = Math.floor(seconds % 3600 / 60);
+        let iSeconds = Math.floor(seconds % 3600 % 60);
+
+        if (iSeconds + this.getSeconds() > 59) {
+            iMinutes += (iSeconds + this.getSeconds()) / 60;
+            this.seconds = Math.floor(iSeconds + this.getSeconds()) % 60;
+        } else {
+            this.seconds = iSeconds + this.getSeconds();
+        }
+
+        if (iMinutes + this.getMinutes() > 59) {
+            ihours += (iMinutes + this.getMinutes()) / 60;
+            this.minutes = Math.floor(iMinutes + this.getMinutes()) % 60;
+        } else {
+            this.minutes = iMinutes + this.getMinutes();
+        }
+
+        this.hours = Math.floor(ihours + this.getHours());
+        return this;
     }
 
     /**
@@ -57,8 +87,22 @@ class Time {
     /**
      * @return {number}
      */
+    getStringHours() {
+        return this.getHours() < 10 ? `0${this.getHours()}` : this.getHours();
+    }
+
+    /**
+     * @return {number}
+     */
     getMinutes() {
         return parseInt(this.minutes);
+    }
+
+    /**
+     * @return {string}
+     */
+    getStringMinutes() {
+        return this.getMinutes() < 10 ? `0${this.getMinutes()}` : this.getMinutes();
     }
 
     /**
@@ -66,6 +110,42 @@ class Time {
      */
     getSeconds() {
         return parseInt(this.seconds);
+    }
+
+    /**
+     * @return {string}
+     */
+    getStringSeconds() {
+        return this.getSeconds() < 10 ? `0${this.getSeconds()}` : this.getSeconds();
+    }
+
+    /**
+     * @param {Time} time
+     */
+    getDiffSecond(time) {
+        let seconds = 0;
+
+        let compare = this.compare(time);
+
+        switch (true) {
+            case compare > 0:
+                seconds = (this.getHours() - time.getHours()) * 3600 + (this.getMinutes() - time.getMinutes()) * 60 + (this.getSeconds() - time.getSeconds())
+                break;
+            case compare < 0:
+                seconds = (time.getHours() - this.getHours()) * 3600 + (time.getMinutes() - this.getMinutes()) * 60 + (time.getSeconds() - this.getSeconds())
+                break;
+        }
+
+        return seconds;
+    }
+
+    /**
+     * Reset time to 0, 0, 0
+     */
+    reset() {
+        this.seconds = 0;
+        this.minutes = 0;
+        this.hours = 0;
     }
 
     /**

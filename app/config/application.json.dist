@@ -232,7 +232,8 @@
             "autoloads": [
                "src/model/Time.js",
                "src/model/Timeline.js",
-               "src/model/TimelineItem.js"
+               "src/model/TimelineItem.js",
+               "src/TimelineService.js"
             ]
         }
     ]

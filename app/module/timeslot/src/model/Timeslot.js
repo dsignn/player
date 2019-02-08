@@ -10,8 +10,12 @@ class Timeslot {
     static get IDLE() { return 'idle'; }
     static get PAUSE() { return 'pause'; }
 
-    static get CONTEXT_STANDARD() { return 'standard'; }
+    /**
+     * The context property mean that a content must be running how background (default the lowest layer),
+     * standard (the middle layer) or overlay (the highest layer)
+     */
     static get CONTEXT_DEFAULT() { return 'default'; }
+    static get CONTEXT_STANDARD() { return 'standard'; }
     static get CONTEXT_OVERLAY() { return 'overlay'; }
 
     static get ROTATION_NO() { return 'rotation-no'; }

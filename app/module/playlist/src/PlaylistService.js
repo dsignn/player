@@ -135,7 +135,7 @@ class PlaylistService extends TimeslotService {
                     PlaylistService.PLAY,
                     {
                         timeslot : timeslot,
-                        context : {playlistId: playlist.id},
+                        context : {serviceId: playlist.id},
                         data : timeslotData
                     }
                 );
@@ -161,7 +161,7 @@ class PlaylistService extends TimeslotService {
             PlaylistService.STOP,
             {
                 timeslot : timeslot,
-                context : {playlistId: playlist.id}
+                context : {serviceId: playlist.id}
             }
         );
         this.eventManager.fire(PlaylistService.STOP, playlist);
@@ -187,7 +187,7 @@ class PlaylistService extends TimeslotService {
                     PlaylistService.RESUME,
                     {
                         timeslot : timeslot,
-                        context : {playlistId: playlist.id},
+                        context : {serviceId: playlist.id},
                         data : timeslotData
                     }
                 );
@@ -214,7 +214,7 @@ class PlaylistService extends TimeslotService {
             PlaylistService.PAUSE,
             {
                 timeslot : timeslot,
-                context : {playlistId: playlist.id}
+                context : {serviceId: playlist.id}
             }
         );
         this.eventManager.fire(PlaylistService.PAUSE, playlist);
@@ -252,7 +252,7 @@ class PlaylistService extends TimeslotService {
                             PlaylistService.PLAY,
                             {
                                 timeslot : nextTimeslot,
-                                context : {playlistId: this.playlist.id},
+                                context : {serviceId: this.playlist.id},
                                 data : timeslotData
                             }
                         );

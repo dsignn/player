@@ -368,6 +368,15 @@ class App {
         /**
          *  Screen Atop Disable
          */
+        globalShortcut.register('Control+Alt+I', () => {
+            console.log('ENABLE MONITOR');
+            this.dashboard.openDevTools({detached: true});
+            let monitors = application.getMonitorWrapper().getMonitors();
+            for (let cont = 0; monitors.length > cont; cont++) {
+                monitors[cont].browserWindows.openDevTools({detached: true});
+            }
+        });
+
         globalShortcut.register('Alt+A+E', () => {
             console.log('ENABLE MONITOR');
             let monitors = application.getMonitorWrapper().getMonitors();
@@ -390,6 +399,38 @@ class App {
         });
 
         return this;
+    }
+
+    /**
+     * @param {string} type
+     * @param {Object} message
+     */
+    broadcastMessage(type, message) {
+        let monitors = this.monitorsWrapper.getMonitors();
+        for (let cont = 0; monitors.length > cont; cont++) {
+            monitors[cont].browserWindows.send(type, message);
+        }
+    }
+
+    /**
+     * @param {string} type
+     * @param {Object} message
+     * @param {Timeslot} timeslot
+     */
+    sendMessage(type, message, timeslot) {
+        console.log(type, message, timeslot);
+        if (!timeslot.virtualMonitorReference || timeslot.virtualMonitorReference.virtualMonitorId !== this.monitorsWrapper.id) {
+            console.warn('Try to send a timeslot on virtual monitor not active');
+            return;
+        }
+
+        if (this.monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
+            this.monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
+                .browserWindows
+                .send(type, message);
+        } else {
+            console.error(`Monitor id ${message.timeslot.virtualMonitorReference.monitorId} not found`);
+        }
     }
 
     /**
@@ -535,47 +576,34 @@ ipcMain.on('play-timeslot', (event, message) => {
     }
 });
 
+/**
+ * Stop timeslot
+ */
 ipcMain.on('stop-timeslot', (event, message) => {
-
-    let monitorsWrapper = application.getMonitorWrapper();
+    /**
+     * Stop timeslot
+     */
     switch (true) {
-        case message.timeslot.virtualMonitorReference.virtualMonitorId === monitorsWrapper.id:
-            /**
-             * start timeslot in current monitor setting
-             */
-            if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
-                    .browserWindows
-                    .send('stop-timeslot', message);
-            } else {
-                // TODO write lo log
-                console.error('Error not found');
-            }
+        case message.timeslot === undefined:
+            application.broadcastMessage('stop-timeslot', message);
             break;
-        default:
-        // TODO broadcast on other application on comunication each other
+        case message.timeslot !== undefined:
+            application.sendMessage('stop-timeslot', message, message.timeslot);
+            break;
     }
 });
 
 ipcMain.on('pause-timeslot', (event, message) => {
-
-    let monitorsWrapper = application.getMonitorWrapper();
+    /**
+     * Pause timeslot
+     */
     switch (true) {
-        case message.timeslot.virtualMonitorReference.virtualMonitorId === monitorsWrapper.id:
-            /**
-             * start timeslot in current monitor setting
-             */
-            if (monitorsWrapper.hasMonitor(message.timeslot.virtualMonitorReference.monitorId)) {
-                monitorsWrapper.getFirstChildFromId(message.timeslot.virtualMonitorReference.monitorId)
-                    .browserWindows
-                    .send('pause-timeslot', message);
-            } else {
-                // TODO write lo log
-                console.error('Error not found');
-            }
+        case message.timeslot === undefined:
+            application.broadcastMessage('pause-timeslot', message);
             break;
-        default:
-        // TODO broadcast on other application on comunication each other
+        case message.timeslot !== undefined:
+            application.sendMessage('pause-timeslot', message, message.timeslot);
+            break;
     }
 });
 

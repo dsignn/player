@@ -7,14 +7,11 @@
   "dependencies": {
     "app-layout": "PolymerElements/app-layout#2.0.5",
     "app-route": "PolymerElements/app-route#^2.0.0",
-
     "paper-icon-button": "PolymerElements/paper-icon-button#2.2.0",
     "paper-button": "PolymerElements/paper-button#2.1.0",
     "paper-input": "PolymerElements/paper-input#2.2.0",
     "iron-validator-behavior": "PolymerElements/iron-validator-behavior#2.1.0",
-
     "polymer": "polymer/polymer#2.6.0",
-
     "paper-card": "PolymerElements/paper-card#^2.0.0",
     "paper-radio-button": "PolymerElements/paper-radio-button#^2.0.0",
     "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
@@ -23,24 +20,23 @@
     "paper-listbox": "git@github.com:PolymerElements/paper-listbox.git#^2.0.0",
     "paper-item": "git@github.com:PolymerElements/paper-item.git#^2.1.0",
     "paper-toast": "git@github.com:PolymerElements/paper-toast.git#^2.1.0",
-    "paper-chip" : "git@github.com:fabbricadigitale/paper-chip.git#^1.1.0",
-    "paper-slider" : "git@github.com:PolymerElements/paper-slider.git#^2.0.7",
-    "paper-progress" : "git@github.com:PolymerElements/paper-progress.git#^2.1.1",
-    "paper-checkbox" : "git@github.com:PolymerElements/paper-checkbox.git#^2.0.4",
-    "paper-dialog" : "git@github.com:PolymerElements/paper-dialog.git#^2.1.1",
-    "paper-toggle-button" : "git@github.com:PolymerElements/paper-toggle-button.git#^2.1.1",
-
+    "paper-chip": "git@github.com:fabbricadigitale/paper-chip.git#^1.1.0",
+    "paper-slider": "git@github.com:PolymerElements/paper-slider.git#^2.0.7",
+    "paper-progress": "git@github.com:PolymerElements/paper-progress.git#^2.1.1",
+    "paper-checkbox": "git@github.com:PolymerElements/paper-checkbox.git#^2.0.4",
+    "paper-dialog": "git@github.com:PolymerElements/paper-dialog.git#^2.1.1",
+    "paper-toggle-button": "git@github.com:PolymerElements/paper-toggle-button.git#^2.1.1",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#~2.0.0",
     "iron-form": "PolymerElements/iron-form#^2.0.0",
     "iron-iconset-svg": "PolymerElements/iron-iconset-svg#^2.0.0",
     "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "iron-selector": "PolymerElements/iron-selector#^2.0.0",
-
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "web-animations-js": "^2.3.1",
     "paper-grid": "git@github.com:vpusher/the-grid.git#1.4.0",
-    "paper-autocomplete": "git@github.com:ellipticaljs/paper-autocomplete.git#3.1.0"
+    "paper-autocomplete": "git@github.com:ellipticaljs/paper-autocomplete.git#3.1.0",
+    "paper-spinner": "^2.0.1"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

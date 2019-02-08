@@ -22,6 +22,13 @@ class TimelineItem {
     }
 
     /**
+     * @return {boolean}
+     */
+    hasTimeslotReference() {
+        return !!this.timeslotReferences.length;
+    }
+
+    /**
      * @param timeslotRefence
      * @return {TimelineItem}
      */

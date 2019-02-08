@@ -227,13 +227,16 @@
              * @private
              */
             getTimeslotElement(timeslot, context = {}) {
-                let query = `player-timeslot[timeslot-id="${timeslot.id}"]`;
-                if (context.playlistId) {
-                    query = query.concat(`[playlist-id="${context.playlistId}"]`);
-                } else {
-                    query = query.concat(`:not([playlist-id=""])`);
-                }
 
+                let query = '';
+                switch (true) {
+                    case context.serviceId !== undefined:
+                        query = `player-timeslot[wrapper-timeslot-id="${context.serviceId }"]`;
+                        break;
+                    case timeslot !== undefined:
+                        query = `player-timeslot[timeslot-id="${timeslot.id}"]:not([wrapper-timeslot-id=""])`;
+                        break;
+                }
                 return this.shadowRoot.querySelector(query);
             }
 
@@ -276,8 +279,8 @@
              * @private
              */
             _stopTimeslot(evt, msg) {
-                // The timeslot is not associate to thi monitor
-                if (this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
+                // Check if the message is not broadcast and not this monitor
+                if ( msg.timeslot !== undefined && this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
                     return;
                 }
 
@@ -297,12 +300,13 @@
              */
             _pauseTimeslot(evt, msg) {
                 // The timeslot is not associate to thi monitor
-                if (this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
+                if ( msg.timeslot !== undefined && this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
                     return;
                 }
-                console.log('MONITOR PAUSE TIMESLOT', msg.timeslot);
+
                 let element = this.getTimeslotElement(msg.timeslot,  msg.context);
                 if (element) {
+                    console.log('MONITOR STOP TIMESLOT', msg.timeslot);
                     element.pause();
                 }
             }
@@ -316,7 +320,7 @@
              */
             _resumeTimeslot(evt, msg) {
                 // The timeslot is not associate to thi monitor
-                if (this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
+                if ( msg.timeslot !== undefined && this.identifier !== msg.timeslot.virtualMonitorReference.monitorId) {
                     return;
                 }
 

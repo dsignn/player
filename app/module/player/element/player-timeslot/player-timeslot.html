@@ -56,6 +56,14 @@
                         reflectToAttribute: true,
                     },
 
+                    /**
+                     * Is the of the Object that may contain the timeslot EX. playlist
+                     */
+                    wrapperTimeslotId: {
+                        type: String,
+                        reflectToAttribute: true
+                    },
+
                     height: {
                         type: Number,
                         notify : true
@@ -69,12 +77,6 @@
                     startAt: {
                         type: Number,
                         value : 0
-                    },
-
-                    playlistId: {
-                        type: String,
-                        reflectToAttribute: true
-
                     },
 
                     filters: {
@@ -106,7 +108,7 @@
             config(timeslot, context = {}) {
                 this.timeslot = timeslot;
                 this.timeslotId = timeslot.id;
-                this.playlistId = context.playlistId;
+                this.wrapperTimeslotId = context.serviceId;
             }
 
             /**

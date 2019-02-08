@@ -58,15 +58,15 @@ class TimeslotService {
         this.eventManager.on(TimeslotService.STOP, this.changeIdleTimeslot.bind(this));
         this.eventManager.on(TimeslotService.RESUME, this.changeResumeTimeslot.bind(this));
 
-        if (this.timer) {
-
-            this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
-           // this.timer.addEventListener('secondsUpdated', (evt)  => {
-                this.schedule();
-            });
-        } else {
+        if (!this.timer) {
             throw 'Timer not set';
+
         }
+
+        this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
+        // this.timer.addEventListener('secondsUpdated', (evt)  => {
+            this.schedule();
+        });
     }
 
     schedule() {

@@ -31,6 +31,7 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
         if (service.length === 0) {
             this._loadTimelineHydrator();
             this._loadStorage();
+            this._loadTimelineService();
         } else {
             for (let cont = 0; service.length > cont; cont++) {
                 switch (true) {
@@ -39,6 +40,7 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
                         break;
                     case service[cont] === 'Storage':
                         this._loadStorage();
+                        this._loadTimelineService();
                         break;
                 }
             }
@@ -56,6 +58,9 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
                 time: new dsign.hydrator.strategy.HydratorStrategy(
                     new dsign.hydrator.PropertyHydrator(new Time())
                 ),
+                timer: new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new Time())
+                ),
                 timelineItems: new dsign.hydrator.strategy.HydratorStrategy(
                     TimelineConfig.getTimelineItemHydrator()
                 )
@@ -65,11 +70,19 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('time')
+            .enableExtractProperty('timer')
+            .enableExtractProperty('context')
+            .enableExtractProperty('status')
+            .enableExtractProperty('rotation')
             .enableExtractProperty('timelineItems');
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('time')
+            .enableHydrateProperty('timer')
+            .enableHydrateProperty('context')
+            .enableHydrateProperty('status')
+            .enableHydrateProperty('rotation')
             .enableHydrateProperty('timelineItems');
 
         return hydrator;
@@ -152,6 +165,31 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
             }
         );
     }
+
+    /**
+     * @private
+     */
+    _loadTimelineService() {
+
+        this.getServiceManager().get('StoragePluginManager').eventManager.on(
+            dsign.serviceManager.ServiceManager.LOAD_SERVICE,
+            function(evt) {
+                if (evt.data.name ===  TimelineConfig.NAME_SERVICE) {
+                    console.log('timelineService');
+                    let timelineService = new TimelineService(
+                        this.getServiceManager().get('StoragePluginManager').get(TimelineConfig.NAME_SERVICE),
+                        this.getServiceManager().get('SenderPluginManager').get('timeslotSender'),
+                        this.getServiceManager().get('Timer'),
+                        this.getServiceManager().get('TimeslotDataInjectorService'),
+                        this.getServiceManager().get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE)
+                    );
+
+                    this.getServiceManager().set('TimelineService', timelineService);
+                }
+            }.bind(this)
+        );
+    }
+
 }
 
 module.exports = TimelineConfig;

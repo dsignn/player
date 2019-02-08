@@ -3,6 +3,11 @@
  */
 class Timeline {
 
+    /**
+     * Constant
+     */
+    static get TO_RUN() { return 'to-run'; }
+
     constructor() {
 
         /**
@@ -16,9 +21,30 @@ class Timeline {
         this.time = new Time();
 
         /**
+         * @type {Time}
+         */
+        this.timer = new Time();
+
+        /**
          * @type {Array}
          */
         this.timelineItems = [];
+
+        /**
+         * @type {String}
+         */
+        this.status = Timeslot.IDLE;
+
+        /**
+         * @type {String}
+         */
+        this.context = Timeslot.CONTEXT_STANDARD;
+
+        /**
+         * @type {string}
+         */
+        this.rotation = Timeslot.ROTATION_NO;
+
     }
 
     /**
@@ -64,7 +90,8 @@ class Timeline {
      * @return {boolean}
      * @private
      */
-    hasTime(time) {
+
+    hasItem(time) {
         return this._getIndex(time) > -1;
     }
 
@@ -92,6 +119,21 @@ class Timeline {
         return this.timelineItems.findIndex((element) => {
             return time.compare(element.time) === 0;
         });
+    }
+
+    /**
+     * @param time
+     */
+    getPreviousItem(time) {
+        let item = null;
+        for (let cont = this.timelineItems.length - 1; cont >= 0; cont--) {
+            if(time.compare(this.timelineItems[cont].time) > -1) {
+                item = this.timelineItems[cont];
+                break;
+            }
+        }
+
+        return item;
     }
 
     /**
@@ -150,11 +192,11 @@ class Timeline {
 
         let time = new Time(0, 0, seconds);
 
-        if (this.time.compare(time) > 0) {
+        if (this.time.compare(time) < 0) {
             throw 'Time of timeline are to low'
         }
 
-        while (this.time.compare(time) < 1) {
+        while (this.time.compare(time) > 1) {
 
             this.addItem(time.clone());
 

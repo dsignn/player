@@ -25,7 +25,17 @@
         <slot name="header"></slot>
         <div hidden$="{{!totalItems}}">
             <template is="dom-repeat" items="[[resources]]" as="timeline">
-                <timeline-wc timeline="{{timeline}}" on-update-view="displayUpdateView" on-remove="removeResource"></timeline-wc>
+                <timeline-wc
+                        timeline="{{timeline}}"
+                        on-update-view="displayUpdateView"
+                        on-remove="removeResource"
+                        on-change-rotation="updateResource"
+                        on-change-context="updateResource"
+                        on-play="play"
+                        on-resume="resume"
+                        on-stop="stop"
+                        on-pause="pause">
+                </timeline-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
@@ -70,6 +80,34 @@
             displayUpdateView(evt) {
                 this.resourceSelected = evt.detail;
                 this.selected = 2;
+            }
+
+            /**
+             * @param evt
+             */
+            play(evt) {
+                serviceManager.get('TimelineService').play(evt.detail);
+            }
+
+            /**
+             * @param evt
+             */
+            resume(evt) {
+                serviceManager.get('TimelineService').resume(evt.detail);
+            }
+
+            /**
+             * @param evt
+             */
+            stop(evt) {
+                serviceManager.get('TimelineService').stop(evt.detail);
+            }
+
+            /**
+             * @param evt
+             */
+            pause(evt) {
+                serviceManager.get('TimelineService').pause(evt.detail);
             }
         }
 
