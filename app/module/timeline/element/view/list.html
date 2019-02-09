@@ -7,7 +7,7 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
-<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-pagination-resource-behaviour.html">
 
 <link rel="import" href="../timeline/timeline.html">
 
@@ -45,7 +45,7 @@
     </template>
 
     <script>
-        class ElementTimelineViewList extends StorageBehaviour {
+        class ElementTimelineViewList extends StorageAdapterPaginationResourceBehaviour {
 
             static get is() {
                 return 'timeline-view-list';

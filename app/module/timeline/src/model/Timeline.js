@@ -144,7 +144,7 @@ class Timeline {
     _getIndexPrev(time) {
         let index = this.timelineItems.length;
         for (let cont = 0; this.timelineItems.length > cont; cont++) {
-            if (time.compare(this.timelineItems[cont].time) > 0) {
+            if (time.compare(this.timelineItems[cont].time) < 0) {
                 index = cont;
                 break;
             }
