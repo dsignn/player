@@ -223,21 +223,6 @@
              */
             async _searchTimeslotChanged(evt) {
 
-                /*
-                let search = {};
-                if (this.resource.timelineItems.length === 0 || !this.resource.timelineItems[0].timeslotReferences[0]) {
-                    search.name = evt.detail.value;
-                } else {
-                    let timeslot = await serviceManager.get('StoragePluginManager')
-                        .get(TimeslotConfig.NAME_SERVICE)
-                        .get(this.resource.timelineItems[0].timeslotReferences[0].referenceId);
-
-                    search['monitorId+name'] = [
-                        timeslot.virtualMonitorReference.monitorId,
-                        evt.detail.value
-                    ]
-                }*/
-
                 let search = {};
                 search.name = evt.detail.value;
 

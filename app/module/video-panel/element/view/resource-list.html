@@ -8,7 +8,7 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
 
-<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-pagination-resource-behaviour.html">
 
 <link rel="import" href="../video-panel-resource/video-panel-resource.html">
 
@@ -26,7 +26,7 @@
         <slot name="header"></slot>
         <div hidden$="{{!hasResources}}">
             <template is="dom-repeat" items="[[resources]]" as="panelResource">
-                <video-panel-resource-wc resource="{{panelResource}}" on-update-view="displayUpdateView" on-remove="removeResource"></video-panel-resource-wc>
+                <video-panel-resource-wc resource="{{panelResource}}" on-update-view="displayUpdateView" on-remove="_removeResource"></video-panel-resource-wc>
             </template>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
@@ -36,7 +36,7 @@
     </template>
 
     <script>
-        class ElementVideoPanelViewResourceList extends StorageBehaviour {
+        class ElementVideoPanelViewResourceList extends StorageAdapterPaginationResourceBehaviour {
 
             static get is() {
                 return 'video-panel-view-resource-list';
@@ -63,6 +63,12 @@
 
                     },
                 };
+            }
+
+
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
             }
 
             /**

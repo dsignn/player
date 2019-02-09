@@ -28,7 +28,7 @@
                 <timeline-wc
                         timeline="{{timeline}}"
                         on-update-view="displayUpdateView"
-                        on-remove="removeResource"
+                        on-remove="_removeResource"
                         on-change-rotation="updateResource"
                         on-change-context="updateResource"
                         on-play="play"
@@ -72,6 +72,11 @@
 
                     },
                 };
+            }
+
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
             }
 
             /**

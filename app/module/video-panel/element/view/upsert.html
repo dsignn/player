@@ -9,7 +9,7 @@
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
-<link rel="import" href="../../../../element/layout/view/storage-behaviour.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
 
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
@@ -197,7 +197,7 @@
     </template>
 
     <script>
-        class ElementVideoPanelViewUpsert extends StorageBehaviour {
+        class ElementVideoPanelViewUpsert extends StorageAdapterResourceBehaviour {
 
             static get is() {
                 return 'video-panel-view-upsert';
@@ -389,7 +389,7 @@
             submitResource(evt) {
                 evt.preventDefault();
 
-                let method = this.getStorageMethod();
+                let method = this.getStoragePersistMethod();
                 this.storage[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' video panel');

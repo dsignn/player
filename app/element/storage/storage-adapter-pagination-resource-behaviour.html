@@ -76,6 +76,27 @@
             getStoragePersistMethod() {
                 return this.resource.id ? 'update' : 'save';
             }
+
+            /**
+             * @param evt
+             */
+            _removeResource(evt) {
+
+                let index = null;
+                this.resources.find((element, ind) => {
+                    if (element.id === evt.detail.id) {
+                        index = ind;
+                        return element;
+                    }
+                });
+
+                this.splice('resources', index, 1);
+
+                this.storage.remove(evt.detail)
+                    .then((data) => {
+
+                    });
+            }
         }
     </script>
 </dom-module>
