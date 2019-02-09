@@ -221,8 +221,6 @@
 
             ready() {
                 super.ready();
-
-             //   this.storage.eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this));
                 this.$.formPanelResource.addEventListener('iron-form-presubmit', this.submitPanelResource.bind(this));
             }
 
