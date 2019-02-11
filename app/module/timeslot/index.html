@@ -19,7 +19,7 @@
         </style>
         <iron-pages id="ironPages" selected="{{selected}}">
             <div id="list">
-                <timeslot-view-list selected="{{selected}}" timeslot-selected="{{timeslot}}">
+                <timeslot-view-list selected="{{selected}}" resource-selected="{{timeslot}}">
                     <div slot="header" class="flex flex-horizontal flex-center flex-horizontal-space-between header">
                         <div>Lista timeslots</div>
                         <paper-icon-button class="circle" on-tap="displayAddView" icon="app:create" title="Crea risorsa"></paper-icon-button>
@@ -35,7 +35,7 @@
                 </timeslot-view-upsert>
             </div>
             <div id="update">
-                <timeslot-view-upsert timeslot="{{timeslot}}">
+                <timeslot-view-upsert resource="{{timeslot}}">
                     <div slot="header" class="flex flex-horizontal flex-vertical-center header">
                         <paper-icon-button icon="app:back" on-tap="displayListView" title="Torna alla lista delle configurazioni"></paper-icon-button>
                         <div>Modifica timeslot</div>

@@ -41,6 +41,17 @@
             addStorageListener(type, listener) {
                 this.storage.eventManager.on(type, listener);
             }
+
+            /**
+             * @param evt
+             */
+            _updateResource(evt) {
+
+                this.storage.update(evt.detail)
+                    .then((data) => {
+
+                    });
+            }
         }
     </script>
 </dom-module>

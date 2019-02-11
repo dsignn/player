@@ -351,7 +351,6 @@ class App {
          * dashboard Atop Enable
          */
         globalShortcut.register('Control+A+E', () => {
-            console.log('ENABLE DASHBOARD');
             application.setDashboardAlwaysOnTop(true);
             application.getDashboard().send('enable-always-on-top', {context : 'dashboard'});
         });
@@ -360,7 +359,6 @@ class App {
          *  dashboard Atop Disable
          */
         globalShortcut.register('Control+A+D', () => {
-            console.log('DISABLE DASHBOARD');
             application.setDashboardAlwaysOnTop(false);
             application.getDashboard().send('disable-always-on-top', {context : 'dashboard'});
         });
@@ -369,7 +367,6 @@ class App {
          *  Screen Atop Disable
          */
         globalShortcut.register('Control+Alt+I', () => {
-            console.log('ENABLE MONITOR');
             this.dashboard.openDevTools({detached: true});
             let monitors = application.getMonitorWrapper().getMonitors();
             for (let cont = 0; monitors.length > cont; cont++) {
@@ -378,7 +375,6 @@ class App {
         });
 
         globalShortcut.register('Alt+A+E', () => {
-            console.log('ENABLE MONITOR');
             let monitors = application.getMonitorWrapper().getMonitors();
             for (let cont = 0; monitors.length > cont; cont++) {
                 application.setMonitorAlwaysOnTop(true, monitors[cont].id);
@@ -390,7 +386,6 @@ class App {
          *  Screen Atop Disable
          */
         globalShortcut.register('Alt+A+D', () => {
-            console.log('DISABLE MONITOR');
             let monitors = application.getMonitorWrapper().getMonitors();
             for (let cont = 0; monitors.length > cont; cont++) {
                 application.setMonitorAlwaysOnTop(false, monitors[cont].id);
@@ -418,7 +413,6 @@ class App {
      * @param {Timeslot} timeslot
      */
     sendMessage(type, message, timeslot) {
-        console.log(type, message, timeslot);
         if (!timeslot.virtualMonitorReference || timeslot.virtualMonitorReference.virtualMonitorId !== this.monitorsWrapper.id) {
             console.warn('Try to send a timeslot on virtual monitor not active');
             return;

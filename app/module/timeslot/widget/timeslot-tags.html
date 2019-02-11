@@ -1,6 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../element/timeslot/timeslot.html">
+<link rel="import" href="../../../element/storage/storage-adapter-behaviour.html">
 
 <dom-module id="timeslot-tags">
     <template>
@@ -43,13 +44,15 @@
                     hide-crud
                     on-wrap-update="displayUpdateView"
                     on-wrap-update-timeslot="update"
-                    on-wrap-remove="remove">
+                    on-remove="remove"
+                    on-change-rotation="update"
+                    on-change-context="update">
             </timeslot-wc>
         </template>
 
     </template>
     <script>
-        class ElementTimeslotTags extends Polymer.Element {
+        class ElementTimeslotTags extends StorageAdapterBehaviour {
 
             static get is() {
                 return 'timeslot-tags';
@@ -68,19 +71,26 @@
                         readOnly: true,
                         notify: true,
                         value: []
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimeslotConfig.NAME_SERVICE
+
                     }
                 };
             }
 
             ready() {
                 super.ready();
-
-                serviceManager.get('StoragePluginManager')
-                    .get(TimeslotConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this.loadData.bind(this)
-                );
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.loadData.bind(this));
+                this.loadData();
             }
 
+            /**
+             *
+             */
             loadData() {
 
                 let search = {};
@@ -90,15 +100,16 @@
                     return;
                 }
 
-                serviceManager.get('StoragePluginManager')
-                    .get(TimeslotConfig.NAME_SERVICE)
-                    .getPaged(1, 10, search)
+                this.storage.getPaged(1, 10, search)
                     .then((data) => {
                         this._setTimeslots(data);
                     });
 
             }
 
+            /**
+             *
+             */
             _computeHeaderTags() {
                 let tag = [];
                 tag = (this.data && Array.isArray(this.data.tags)) ? this.data.tags : [];

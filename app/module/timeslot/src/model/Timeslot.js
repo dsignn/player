@@ -148,6 +148,19 @@ class Timeslot {
             this.resources.splice(index, 1);
         }
     }
+
+    /**
+     * @return {string}
+     */
+    getCurrentTimeString() {
+        let currentTime = this.currentTime+'';
+        switch (true) {
+            case this.currentTime % 1 === 0 ? this.currentTime : this.currentTime + '.0':
+                currentTime = this.currentTime + '.0';
+                break;
+        }
+        return currentTime;
+    }
 }
 
 module.exports = Timeslot;

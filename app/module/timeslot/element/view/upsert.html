@@ -18,6 +18,7 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../data-injector-input/data-injector-input.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
 
 <dom-module id="timeslot-view-upsert">
     <template>
@@ -53,14 +54,14 @@
             <form method="post" action="">
                 <div class="flex flex-horizontal">
                     <div class="flex-basis-70">
-                        <paper-input id="name" name="name" label="Name" value="{{timeslot.name}}" required></paper-input>
-                        <paper-input id="duration" name="duration" label="Duration" type="number" min="1" value="{{timeslot.duration}}" required></paper-input>
+                        <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                        <paper-input id="duration" name="duration" label="Duration" type="number" min="1" value="{{resource.duration}}" required></paper-input>
                         <paper-autocomplete
                                 id="monitor"
                                 label="Monitor"
                                 text-property="name"
                                 value-property="name"
-                                text="{{timeslot.virtualMonitorReference.name}}"
+                                text="{{resource.virtualMonitorReference.name}}"
                                 remote-source
                                 on-autocomplete-selected="_selectMonitor"
                                 on-autocomplete-change="_searcMonitorChanged">
@@ -129,7 +130,7 @@
                         </paper-autocomplete>
                         <div id="listResource"></div>
                         <data-injector-input id="dataReferences"></data-injector-input>
-                        <paper-chip-input values="{{timeslot.tags}}"></paper-chip-input>
+                        <paper-chip-input values="{{resource.tags}}"></paper-chip-input>
                         <paper-autocomplete
                                 id="bind"
                                 label="Bind timeslots"
@@ -169,16 +170,16 @@
                     </div>
                     <div class="flex-basis-30 left-container">
                         <paper-material>
-                            <paper-input id="blur-filter" name='filters["blur"]' label="Blur filter" value="{{timeslot.filters.blur}}"></paper-input>
-                            <paper-input id="brightness-filter" name='filters["brightness"]' label="Brightness filter" value="{{timeslot.filters.brightness}}"></paper-input>
-                            <paper-input id="contrast-filter" name='filters["contrast"]' label="Contrast filter" value="{{timeslot.filters.contrast}}"></paper-input>
-                            <paper-input id="grayscale-filter" name='filters["grayscale"]' label="Grayscale filter" value="{{timeslot.filters.grayscale}}"></paper-input>
-                            <paper-input id="hue-rotate-filter" name='filters["hueRotate"]' label="Grayscale filter" value="{{timeslot.filters.hueRotate}}"></paper-input>
-                            <paper-input id="invert-filter" name='filters["invert"]' label="Invert filter" value="{{timeslot.filters.invert}}"></paper-input>
-                            <paper-input id="opacity-filter" name='filters["opacity"]' label="Opacity filter" value="{{timeslot.filters.opacity}}"></paper-input>
-                            <paper-input id="saturate-filter" name='filters["saturate"]' label="Saturate filter" value="{{timeslot.filters.saturate}}"></paper-input>
-                            <paper-input id="sepia-filter" name='filters["sepia"]' label="Sepia filter" value="{{timeslot.filters.sepia}}"></paper-input>
-                            <paper-input id="drop-shadow-filter" name='filters["dropShadow"]' label="Drop Shadow filter" value="{{timeslot.filters.dropShadow}}"></paper-input>
+                            <paper-input id="blur-filter" name='filters["blur"]' label="Blur filter" value="{{resource.filters.blur}}"></paper-input>
+                            <paper-input id="brightness-filter" name='filters["brightness"]' label="Brightness filter" value="{{resource.filters.brightness}}"></paper-input>
+                            <paper-input id="contrast-filter" name='filters["contrast"]' label="Contrast filter" value="{{resource.filters.contrast}}"></paper-input>
+                            <paper-input id="grayscale-filter" name='filters["grayscale"]' label="Grayscale filter" value="{{resource.filters.grayscale}}"></paper-input>
+                            <paper-input id="hue-rotate-filter" name='filters["hueRotate"]' label="Grayscale filter" value="{{resource.filters.hueRotate}}"></paper-input>
+                            <paper-input id="invert-filter" name='filters["invert"]' label="Invert filter" value="{{resource.filters.invert}}"></paper-input>
+                            <paper-input id="opacity-filter" name='filters["opacity"]' label="Opacity filter" value="{{resource.filters.opacity}}"></paper-input>
+                            <paper-input id="saturate-filter" name='filters["saturate"]' label="Saturate filter" value="{{resource.filters.saturate}}"></paper-input>
+                            <paper-input id="sepia-filter" name='filters["sepia"]' label="Sepia filter" value="{{resource.filters.sepia}}"></paper-input>
+                            <paper-input id="drop-shadow-filter" name='filters["dropShadow"]' label="Drop Shadow filter" value="{{resource.filters.dropShadow}}"></paper-input>
                         </paper-material>
                     </div>
                 </div>
@@ -192,7 +193,7 @@
     </template>
 
     <script>
-        class ElementTimeslotViewUpsert extends Polymer.Element {
+        class ElementTimeslotViewUpsert extends StorageAdapterResourceBehaviour {
 
             static get is() {
                 return 'timeslot-view-upsert';
@@ -209,7 +210,7 @@
             static get properties() {
                 return {
 
-                    timeslot: {
+                    resource: {
                         type: Object,
                         notify: true,
                         value: new Timeslot(),
@@ -219,6 +220,13 @@
                     resources: {
                         type: Array,
                         value: []
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimeslotConfig.NAME_SERVICE
+
                     },
 
                     labelAction: {
@@ -262,19 +270,19 @@
              * @param evt
              */
             submitTimeslot(evt) {
-                let method = !this.timeslot.id ? 'save' : 'update';
-                this.timeslot.dataReferences = [];
+                let method = !this.resource.id ? 'save' : 'update';
+                this.resource.dataReferences = [];
 
                 if (this.$.dataReferences.data && this.$.dataReferences.service) {
                     let timeslotData = new TimeslotDataReference();
                     timeslotData.name = this.$.dataReferences.service.serviceName;
                     timeslotData.data = this.$.dataReferences.service.extractTimeslot(this.$.dataReferences.data);
-                    this.timeslot.dataReferences.push(timeslotData);
+                    this.resource.dataReferences.push(timeslotData);
                 }
 
 
                 serviceManager.get('StoragePluginManager')
-                    .get(TimeslotConfig.NAME_SERVICE)[method](this.timeslot)
+                    .get(TimeslotConfig.NAME_SERVICE)[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' timeslot');
                     })
@@ -284,7 +292,7 @@
                     );
 
                 if (method === 'save') {
-                    this.timeslot = new Timeslot();
+                    this.resource = new Timeslot();
                     this.clearView();
                 }
             }
@@ -323,8 +331,8 @@
                     this.$.listBind.appendChild(chip);
                 }
 
-                if (Array.isArray(this.timeslot.dataReferences) && this.timeslot.dataReferences.length > 0) {
-                    let dataReferences = this.timeslot.dataReferences[0];
+                if (Array.isArray(this.resource.dataReferences) && this.resource.dataReferences.length > 0) {
+                    let dataReferences = this.resource.dataReferences[0];
 
                     let service = this.$.dataReferences.$.serviceInput.source.find(
                         (element) => {
@@ -397,7 +405,7 @@
                 ref.virtualMonitorId = evt.detail.option.config.id;
                 ref.monitorId = evt.detail.option.monitor.id;
                 ref.name = evt.detail.option.monitor.name;
-                this.timeslot.virtualMonitorReference = ref;
+                this.resource.virtualMonitorReference = ref;
             }
 
             /**
@@ -437,7 +445,7 @@
                 chip.addEventListener('remove', this._removeResource.bind(this));
 
                 this.$.listResource.appendChild(this._createChip(evt.detail.option, 'name', 'resource'));
-                this.timeslot.resources.push(
+                this.resource.resources.push(
                     evt.detail.option
                 );
 
@@ -503,7 +511,7 @@
                 chip.addEventListener('remove', this._removeBind.bind(this));
 
                 this.$.listBind.appendChild(chip);
-                this.timeslot.binds.push(
+                this.resource.binds.push(
                     evt.detail.option
                 );
 
@@ -520,7 +528,7 @@
              * @private
              */
             _removeBind(evt) {
-                this.timeslot.removeBind(evt.target.bind);
+                this.resource.removeBind(evt.target.bind);
             }
 
             /**
@@ -528,7 +536,7 @@
              * @private
              */
             _removeResource(evt) {
-                this.timeslot.removeResource(evt.target.resource);
+                this.resource.removeResource(evt.target.resource);
             }
 
             /**
