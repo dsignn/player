@@ -7,8 +7,10 @@
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
 <link rel="import" href="../iconset/iconset.html">
+
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
 
 <dom-module id="resource-view-upsert">
     <template>
@@ -32,7 +34,7 @@
     </template>
 
     <script>
-        class ElementResourceViewUpsert extends Polymer.Element {
+        class ElementResourceViewUpsert extends StorageAdapterResourceBehaviour {
 
             static get is() {
                 return 'resource-view-upsert';
@@ -56,6 +58,13 @@
                         observer: '_resourceChanged'
                     },
 
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: ResourceConfig.NAME_SERVICE
+
+                    },
+
                     labelAction: {
                         type: String,
                         value: 'Save'
@@ -65,21 +74,18 @@
 
             ready() {
                 super.ready();
-
-                serviceManager.get('StoragePluginManager')
-                    .get(ResourceConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
-                );
-
                 this.$.formResource.addEventListener('iron-form-presubmit', this.submitResource.bind(this));
             }
 
+            /**
+             * @param evt
+             */
             submitResourceButton(evt) {
                 this.$.formResource.submit();
             }
 
             /**
-             *
+             * @param evt
              */
             submitResource(evt) {
                 evt.preventDefault();
@@ -98,12 +104,12 @@
                 }
 
                 let method = this.resource.id ? 'update' : 'save';
-                serviceManager.get('StoragePluginManager')
-                    .get(ResourceConfig.NAME_SERVICE)[method](this.resource)
+                this.storage[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' resource');
                         if (method === 'save') {
                             this.resource = new GenericFile();
+                            this._clearData();
                         }
                     })
                     .catch((err) => {

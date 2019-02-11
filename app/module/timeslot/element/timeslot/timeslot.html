@@ -100,6 +100,9 @@
                 opacity: 0.5;
             }
 
+            div[hidden] {
+                visibility: hidden;
+            }
         </style>
         <paper-card id="design" class="setting">
             <div class="card-setting">
@@ -130,7 +133,7 @@
                         <div>{{currentTime}} / {{timeslot.duration}} sec</div>
                     </div>
                 </div>
-                <div class="data flex-basis-15 flex flex-vertical">
+                <div class="data flex-basis-15 flex flex-vertical" hidden$="[[removeCrud]]">
                     <paper-menu-button ignore-select disabled="{{hideCrud}}">
                         <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                         <paper-listbox slot="dropdown-content" multi>
@@ -215,6 +218,12 @@
 
                     status : {
                         notify: true
+                    },
+
+                    removeCrud: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
                     }
                 };
             }

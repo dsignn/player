@@ -15,6 +15,8 @@
 <link rel="import" href="../../../../element/iconset/iconset.html">
 <link rel="import" href="../../element/iconset/iconset.html">
 
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
+
 <dom-module id="resource-wc">
     <template>
         <style include="global-layout"></style>
@@ -74,6 +76,10 @@
                 margin-top: 6px;
             }
 
+            #contentRightSection {
+                height: 100%;
+            }
+
         </style>
         <paper-card id="design" class="setting">
             <div class="card-setting">
@@ -98,7 +104,9 @@
                 </paper-menu-button>
             </div>
             <div class="card-actions"></div>
-            <div id="rightSection" class="rate-image"></div>
+            <div id="rightSection" class="rate-image">
+                <div id="contentRightSection"></div>
+            </div>
         </paper-card>
         <paper-dialog id="previewDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" on-iron-overlay-closed="_closePreview">
             <div class="title">Preview</div>
@@ -107,7 +115,7 @@
     </template>
 
     <script>
-        class ElementResource extends Polymer.Element {
+        class ElementResource extends StorageAdapterBehaviour {
 
             static get is() {
                 return 'resource-wc';
@@ -119,8 +127,28 @@
                     resource: {
                         type: Object,
                         observer: '_resourceChanged'
-                    }
+                    },
+
+                    storageName: {
+                        value: ResourceConfig.NAME_SERVICE
+                    },
                 };
+            }
+
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this))
+            };
+
+            /**
+             * @param evt
+             */
+            _updateFromStorage(evt) {
+                if (evt.data.id === this.resource.id)  {
+                    console.log('Cambia sta cazzo di risorsa');
+                    this.resource = {};
+                    this.resource = evt.data;
+                }
             }
 
             /**
@@ -132,38 +160,46 @@
                 if (!newValue) {
                     return;
                 }
-
-                switch (true) {
-                    case newValue.type === 'text/html':
-                        this.$.rightSection.classList.add("webBackground");
-                        break;
-                    case newValue.type === 'image/png':
-                    case newValue.type === 'image/jpeg':
-                        this.$.rightSection.classList.add("imgBackground");
-                        break;
-                    case newValue.type === 'video/mp4':
-                        this.$.rightSection.classList.add("videoBackground");
-                        break;
-                    case newValue.type === 'audio/mp3':
-                        this.$.rightSection.classList.add("audioBackground");
-                        break;
-                }
-
-                let size = this._byteConverter(newValue.size);
-                this.size = Math.ceil(size[0]);
-                this.sizeLabel = size[1];
+                console.log('update resource');
+                this._updateLeftImageHtml();
+                this._updateSize(newValue.size);
             }
 
             /**
-             * @param {Number} byte
+             * @param {Number} size
              * @private
              */
-            _byteConverter(byte) {
-                var unit, units = ["TB", "GB", "MB", "KB", "Byte"];
-                for (unit = units.pop(); units.length && byte >= 1024; unit = units.pop()) {
-                    byte /= 1024;
+            _updateSize(size) {
+                let unit, units = ["TB", "GB", "MB", "KB", "Byte"];
+                for (unit = units.pop(); units.length && size >= 1024; unit = units.pop()) {
+                    size /= 1024;
                 }
-                return [byte, unit];
+
+                this.size = Math.ceil(size);
+                this.sizeLabel = unit;
+            }
+
+            /**
+             * @private
+             */
+            _updateLeftImageHtml() {
+
+                this.$.contentRightSection.className = '';
+                switch (true) {
+                    case this.resource.type === 'text/html':
+                        this.$.contentRightSection.classList.add("webBackground");
+                        break;
+                    case this.resource.type === 'image/png':
+                    case this.resource.type === 'image/jpeg':
+                        this.$.contentRightSection.classList.add("imgBackground");
+                        break;
+                    case this.resource.type === 'video/mp4':
+                        this.$.contentRightSection.classList.add("videoBackground");
+                        break;
+                    case this.resource.type === 'audio/mp3':
+                        this.$.contentRightSection.classList.add("audioBackground");
+                        break;
+                }
             }
 
             /**
@@ -187,7 +223,6 @@
              * @private
              */
             _tapPreview(evt) {
-                console.log('SUCA');
                 let element  = null;
                 switch (true) {
                     case this.resource instanceof Image === true:

@@ -147,6 +147,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     static _initFileResource(resource) {
+        console.log(resource);
         fs.mkdirSync(`${serviceManager.get('Application').getResourcePath()}/${resource.id}`);
         fs.copyFileSync(
             resource.getTmpSourcePath().getSource(),

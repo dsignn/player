@@ -217,10 +217,14 @@
                         observer: '_timeslotChanged'
                     },
 
+                    /**
+                     * TODO to remove?????
                     resources: {
                         type: Array,
                         value: []
                     },
+
+                     **/
 
                     storageName: {
                         type: String,
@@ -243,14 +247,11 @@
 
             ready() {
                 super.ready();
-
                 this.$.formTimeslot.addEventListener('iron-form-presubmit', this.submitTimeslot.bind(this));
 
-                serviceManager.get('StoragePluginManager')
-                    .get(TimeslotConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
-                );
-
+                /**
+                 * TODO remove with autocomplete
+                 */
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
                     .getAll()
@@ -281,10 +282,12 @@
                 }
 
 
-                serviceManager.get('StoragePluginManager')
-                    .get(TimeslotConfig.NAME_SERVICE)[method](this.resource)
+                this.storage[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' timeslot');
+                        if (method === 'save') {
+                            this._clearData.bind();
+                        }
                     })
                     .catch((err) => {
                             console.log(err)
