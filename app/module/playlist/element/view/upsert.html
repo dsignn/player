@@ -15,6 +15,7 @@
 
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
 
 
 <dom-module id="playlist-view-upsert">
@@ -31,7 +32,7 @@
         <iron-form id="formPlaylist">
             <form method="post" action="">
                 <div class="flex flex-vertical">
-                    <paper-input id="name" name="name" label="Name" value="{{playlist.name}}" required></paper-input>
+                    <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
                     <paper-autocomplete
                             id="timeslots"
                             label="Timelosts"
@@ -113,7 +114,7 @@
     </template>
 
     <script>
-        class ElementPlaylistViewUpsert extends Polymer.Element {
+        class ElementPlaylistViewUpsert extends StorageAdapterResourceBehaviour {
 
             static get is() {
                 return 'playlist-view-upsert';
@@ -122,16 +123,22 @@
             static get properties() {
                 return {
 
-                    playlist: {
+                    resource: {
                         type: Object,
                         notify: true,
-                        value: new Playlist,
+                        value: new Playlist(),
                         observer: '_playlistChanged'
                     },
 
                     labelAction: {
                         type: String,
                         value: 'Save'
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: PlaylistConfig.NAME_SERVICE
                     },
                 };
             }
@@ -141,10 +148,6 @@
 
                 this.$.formPlaylist.addEventListener('iron-form-presubmit', this.submitPlaylist.bind(this));
 
-                serviceManager.get('StoragePluginManager')
-                    .get(PlaylistConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
-                );
             }
 
             _clearData() {
@@ -156,7 +159,7 @@
             }
 
             _playlistChanged(newValue, oldValue) {
-                console.log('Palylist change');
+
                 if (!newValue || !newValue.id) {
                     return;
                 }
@@ -187,14 +190,14 @@
             submitPlaylist(evt) {
                 evt.preventDefault();
 
-                let method = this.playlist.id ? 'update' : 'save';
+                let method = this.resource.id ? 'update' : 'save';
 
                 let playlistStorage = serviceManager.get('StoragePluginManager').get(PlaylistConfig.NAME_SERVICE);
-                playlistStorage[method](this.playlist)
+                playlistStorage[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' playlist');
                         if (method === 'save') {
-                            this.playlist = new Playlist();
+                            this.resource = new Playlist();
                         }
                     })
                     .catch((err) => {
@@ -210,11 +213,11 @@
             _searchTimeslotChanged(evt) {
 
                 let search = {};
-                if (this.playlist.timeslots.length === 0) {
+                if (this.resource.timeslots.length === 0) {
                     search.name = evt.detail.value;
                 } else {
                     search['monitorId+name'] = [
-                        this.playlist.timeslots[0].virtualMonitorReference.monitorId,
+                        this.resource.timeslots[0].virtualMonitorReference.monitorId,
                         evt.detail.value
                     ]
                 }
@@ -237,7 +240,7 @@
              */
             _selectTimeslot(evt) {
 
-                this.playlist.appendTimeslot(evt.detail.option);
+                this.resource.appendTimeslot(evt.detail.option);
                 this.appendTimeslotChip(evt.detail.option);
 
                 setTimeout(
@@ -253,7 +256,7 @@
              * @private
              */
             _removeTimeslot(evt) {
-                this.playlist.removeTimeslotIndex(evt.target.index);
+                this.resource.removeTimeslotIndex(evt.target.index);
 
                 setTimeout(
                     () => {
@@ -291,7 +294,7 @@
             }
 
             _selectBind(evt) {
-                this.playlist.appendBind(evt.detail.option);
+                this.resource.appendBind(evt.detail.option);
                 this.appendBindChip(evt.detail.option);
                 setTimeout(
                     () => {
@@ -306,7 +309,7 @@
              * @private
              */
             _removeBind(evt) {
-                this.playlist.removeBind(evt.target.playlist);
+                this.resource.removeBind(evt.target.playlist);
                 setTimeout(
                     () => {
                         this._recalculateChipIndex('listBind');
@@ -344,7 +347,7 @@
             appendTimeslotChip(timeslot) {
 
                 let chip = this._createChip(timeslot, 'name', 'timeslot');
-                chip.index = (this.playlist.timeslots.length - 1);
+                chip.index = (this.resource.timeslots.length - 1);
                 chip.addEventListener('remove', this._removeTimeslot.bind(this));
                 this.$.listTimeslot.appendChild(chip);
             };

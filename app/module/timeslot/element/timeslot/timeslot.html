@@ -109,8 +109,6 @@
                 <paper-icon-button
                         id="contextIcon"
                         item="{{timeslot}}"
-                        title="Send timeslot in overlay mode"
-                        icon="timeslot:overlay"
                         class="activePaperButton"
                         on-tap="_tapOverlay"
                         disabled="{{hideCrud}}">
@@ -118,8 +116,6 @@
                 <paper-icon-button
                         id="rotationIcon"
                         item="{{timeslot}}"
-                        title="{{labelRotationIcon}}"
-                        icon="timeslot:{{timeslot.rotation}}"
                         class="activePaperButton"
                         on-tap="_tapRotation"
                         disabled="{{hideCrud}}">
@@ -201,12 +197,6 @@
                         observer: '_timeslotChanged'
                     },
 
-                    hideCrud : {
-                        type: Boolean,
-                        notify: true,
-                        value: false
-                    },
-
                     storageName: {
                         value: TimeslotConfig.NAME_SERVICE
                     },
@@ -218,6 +208,12 @@
 
                     status : {
                         notify: true
+                    },
+
+                    hideCrud : {
+                        type: Boolean,
+                        notify: true,
+                        value: false
                     },
 
                     removeCrud: {
@@ -237,18 +233,18 @@
              * @param evt
              */
             _updateFromStorage(evt) {
-                this._clearStatusClass(this.timeslot.status);
                 switch (true) {
-                    case evt.data.id === this.timeslot.id && this.timeslot.status === Timeslot.RUNNING:
+                    case evt.data.id === this.timeslot.id && evt.data.status === Timeslot.RUNNING:
                         this.timeslot = evt.data;
+                        this._clearStatusClass(this.timeslot.status);
                         this.currentTime = this.timeslot.getCurrentTimeString();
-
                         this.status = this.timeslot.status;
                         this._updateActionHtml();
                         break;
-                    case evt.data.id === this.timeslot.id && this.timeslot.status !== Timeslot.RUNNING:
+                    case evt.data.id === this.timeslot.id && evt.data.status !== Timeslot.RUNNING:
                         this.timeslot = null;
                         this.timeslot = evt.data;
+                        this._clearStatusClass(this.timeslot.status);
                         break;
                 }
             }

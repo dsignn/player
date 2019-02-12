@@ -10,6 +10,8 @@
 <link rel="import" href="../../../../element/iconset/iconset.html">
 <link rel="import" href="../../element/iconset/iconset.html">
 
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
+
 <dom-module id="playlist-wc">
     <template>
         <style include="global-layout"></style>
@@ -71,37 +73,39 @@
                 opacity: 0.5;
             }
 
+            .activePaperButton {
+                color: forestgreen;
+            }
+
+            paper-icon-button[disabled] {
+                color: var(--disabled-text-color);
+                opacity: 0.5;
+            }
+
         </style>
         <paper-card id="design" class="setting">
             <div class="card-setting">
                 <paper-icon-button
-                        id="loopIcon"
-                        title="Send playlist in loop mode"
-                        item="{{timeslot}}"
-                        icon="playlist:loop"
-                        class$="{{_computeLoopIcon()}}"
-                        on-tap="_tapLoop">
+                        id="contextIcon"
+                        item="{{playlist}}"
+                        class="activePaperButton"
+                        on-tap="_tapContext"
+                        disabled="{{hideCrud}}">
                 </paper-icon-button>
                 <paper-icon-button
-                        id="overlayIcon"
-                        title="Send playlist in overlay mode"
-                        item="{{timeslot}}"
-                        icon="playlist:overlay"
-                        class$="{{_computeContexIcon()}}"
-                        on-tap="_tapOverlay">
+                        id="rotationIcon"
+                        item="{{playlist}}"
+                        class="activePaperButton"
+                        on-tap="_tapRotation"
+                        disabled="{{hideCrud}}">
                 </paper-icon-button>
             </div>
             <div class="card-content flex flex-horizontal">
                 <div class="data flex-basis-85 flex flex-vertical">
                     <div class="dataWrapper">
                         <div>{{playlist.name}}</div>
-                        <div class$="{{playlist.status}}">
-                            <div>{{playlist.status}}</div>
-                            <template is="dom-if" if="{{_isInStatus(playlist, 'running', 'pause')}}">
-                                <div>{{currentTimeslotName}} {{currentTimeslotTime}} sec</div>
-                            </template>
-                        </div>
-                        <div>{{duration}} sec</div>
+                        <div id="status">{{status}}</div>
+                        <div>{{currentTimeslotTime}} / {{duration}} sec | {{currentTimeslotName}}</div>
                     </div>
                 </div>
                 <div class="flags flex-basis-15">
@@ -124,7 +128,27 @@
     </template>
 
     <script>
-        class ElementPlaylist extends Polymer.Element {
+        class ElementPlaylist extends StorageAdapterBehaviour {
+
+            /**
+             * @return {Object}
+             */
+            static get LIST_ROTATION_LABEL_ICON() {
+                let obj = {};
+                obj[Playlist.ROTATION_NO] = 'Send playlist in standard mode';
+                obj[Playlist.ROTATION_LOOP] = 'Send playlist in loop mode';
+                return obj;
+            }
+
+            /**
+             * @return {Object}
+             */
+            static get LIST_CONTEXT_LABEL_ICON() {
+                let obj = {};
+                obj[Playlist.CONTEXT_OVERLAY] = 'Send playlist in overlay mode';
+                obj[Playlist.CONTEXT_STANDARD] = 'Send playlist in standard mode';
+                return obj;
+            }
 
             static get is() {
                 return 'playlist-wc';
@@ -136,6 +160,10 @@
                     playlist: {
                         type: Object,
                         observer: '_changePlaylist'
+                    },
+
+                    storageName: {
+                        value: PlaylistConfig.NAME_SERVICE
                     },
 
                     duration: {
@@ -158,44 +186,60 @@
                     hideCrud : {
                         type: Boolean,
                         value: false
+                    },
+
+                    removeCrud: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
                     }
                 };
             }
 
-            _changePlaylist(newValue, oldValue) {
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this))
+            };
+
+            /**
+             * @param evt
+             */
+            _updateFromStorage(evt) {
+
+                switch (true) {
+                    case this.playlist.id === evt.data.id && evt.data.status === Playlist.RUNNING:
+                        this.status = this.playlist.status;
+                        this._updateActionHtml();
+                        this._clearStatusClass(this.playlist.status);
+
+                        let currentTimeslot = this.playlist.current();
+                        if (currentTimeslot) {
+                            this.currentTimeslotTime = currentTimeslot.currentTime;
+                        }
+
+                        break;
+                    case evt.data.id === this.playlist.id && evt.data.status !== Playlist.RUNNING:
+                        this.playlist = null;
+                        this.playlist = evt.data;
+                        this._clearStatusClass(this.playlist.status);
+                        break;
+                }
+            }
+
+            /**
+             * @param
+             */
+            _changePlaylist(newValue) {
                 if (!newValue) {
                     return;
                 }
 
-                switch (true) {
-                    case newValue.status === Playlist.RUNNING:
-                        this.hideCrud = true;
-                        this.$.loopIcon.disabled = true;
-                        this.$.overlayIcon.disabled = true;
-
-                        this.$.play.disabled = true;
-                        this.$.stop.disabled = false;
-                        this.$.pause.disabled = false;
-                        break;
-                    case newValue.status === Timeslot.PAUSE:
-
-                        this.hideCrud = false;
-                        this.$.loopIcon.disabled = false;
-                        this.$.overlayIcon.disabled = false;
-
-                        this.$.play.disabled = false;
-                        this.$.stop.disabled = false;
-                        this.$.pause.disabled = true;
-                        break;
-                    default:
-                        this.hideCrud = false;
-                        this.$.loopIcon.disabled = false;
-                        this.$.overlayIcon.disabled = false;
-
-                        this.$.play.disabled = false;
-                        this.$.stop.disabled = true;
-                        this.$.pause.disabled = true;
-                }
+                this.status = this.playlist.status;
+                this._updateActionHtml();
+                this._updateRotationHtml();
+                this._updateContextHtml();
+                this._clearStatusClass(this.playlist.status);
+                this.duration = newValue.getDuration();
 
                 if (newValue.timeslots[newValue.currentIndex] !== undefined &&
                     this.currentTimeslotName !== newValue.timeslots[newValue.currentIndex].name) {
@@ -206,52 +250,72 @@
                     this.currentTimeslotTime !== newValue.timeslots[newValue.currentIndex].currentTime) {
                     this.currentTimeslotTime = newValue.timeslots[newValue.currentIndex].currentTime;
                 }
-
-                this.duration = newValue.getDuration();
             }
 
-            _computeLoopIcon() {
-                return this.playlist.loop === true ? 'activePaperButton timeslot' : 'timeslot';
-            }
+            /**
+             * @private
+             */
+            _updateActionHtml() {
+                switch (true) {
+                    case this.playlist.status === Playlist.RUNNING:
+                        this.hideCrud = true;
+                        this.$.rotationIcon.disabled = true;
+                        this.$.contextIcon.disabled = true;
 
-            _computeContexIcon() {
-                return this.playlist.context === Timeslot.CONTEXT_OVERLAY ? 'activePaperButton timeslot' : 'timeslot';
-            }
-
-            _tapLoop(evt) {
-                this.playlist.loop = !this.playlist.loop;
-                if (this.playlist.loop) {
-                    this.$.loopIcon.classList.add("activePaperButton");
-                } else {
-                    this.$.loopIcon.classList.remove("activePaperButton");
-                }
-                this.dispatchEvent(new CustomEvent('wrap-update-playlist', {detail: this.playlist}));
-            }
-
-            _tapOverlay(evt) {
-                this.playlist.context = this.playlist.context === 'standard' || !this.playlist.context ? 'overlay' : 'standard';
-                if (this.playlist.context === 'overlay') {
-                    this.$.overlayIcon.classList.add("activePaperButton");
-                } else {
-                    this.$.overlayIcon.classList.remove("activePaperButton");
-                }
-                this.dispatchEvent(new CustomEvent('wrap-update-playlist', {detail: this.playlist}));
-            }
-
-            _isInStatus(playlist) {
-                if (arguments.length < 2) {
-                    return;
-                }
-
-                let inStatus = false;
-                for (let cont = 1; arguments.length > cont; cont++) {
-                    if (arguments[cont] === playlist.status) {
-                        inStatus = true;
+                        this.$.play.disabled = true;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = false;
                         break;
-                    }
+                    case this.playlist.status === Playlist.PAUSE:
+                        this.hideCrud = false;
+                        this.$.rotationIcon.disabled = false;
+                        this.$.contextIcon.disabled = false;
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = true;
+                        this.$.pause.disabled = false;
+                        break;
+                    default:
+                        this.hideCrud = false;
+                        this.$.rotationIcon.disabled = false;
+                        this.$.contextIcon.disabled = false;
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = true;
+                        this.$.pause.disabled = true;
                 }
+            }
 
-                return inStatus;
+            /**
+             * @param evt
+             * @private
+             */
+            _tapRotation(evt) {
+                this.playlist.rotation =  this.playlist.rotation === Playlist.ROTATION_LOOP ? Playlist.ROTATION_NO : Playlist.ROTATION_LOOP;
+                this.dispatchEvent(new CustomEvent('change-rotation', {detail: this.playlist}));
+            }
+
+            /**
+             * @private
+             */
+            _updateRotationHtml() {
+                this.$.rotationIcon.setAttribute('title', ElementTimeslot.LIST_ROTATION_LABEL_ICON[this.playlist.rotation]);
+                this.$.rotationIcon.icon = `timeslot:${this.playlist.rotation}`;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _tapContext(evt) {
+                this.playlist.context = this.playlist.context === Playlist.CONTEXT_STANDARD || !this.playlist.context ? Playlist.CONTEXT_OVERLAY : Playlist.CONTEXT_STANDARD;
+                this.dispatchEvent(new CustomEvent('change-context', {detail: this.playlist}));
+            }
+
+            /**
+             * @private
+             */
+            _updateContextHtml() {
+                this.$.contextIcon.setAttribute('title', ElementTimeslot.LIST_ROTATION_LABEL_ICON[this.playlist.context]);
+                this.$.contextIcon.icon = `timeslot:${this.playlist.context}`;
             }
 
             /**
@@ -263,6 +327,18 @@
                 return this.playlist.timeslots[this.playlist.currentIndex][property]
             }
 
+            /**
+             * @param {string} classString
+             */
+            _clearStatusClass(classString) {
+                this.$.status.className = '';
+                this.$.status.classList.add(classString);
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
             _play(evt) {
                 if (this.playlist.status === Playlist.IDLE) {
                     this.dispatchEvent(new CustomEvent('play', {detail: this.playlist}));
@@ -271,20 +347,36 @@
                 }
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _stop(evt) {
                 this.dispatchEvent(new CustomEvent('stop', {detail: this.playlist}));
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _pause(evt) {
                 this.dispatchEvent(new CustomEvent('pause', {detail: this.playlist}));
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _remove(evt) {
-                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.playlist}));
+                this.dispatchEvent(new CustomEvent('remove', {detail: this.playlist}));
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _update(evt) {
-                this.dispatchEvent(new CustomEvent('wrap-update', {detail: this.playlist}));
+                this.dispatchEvent(new CustomEvent('update-view', {detail: this.playlist}));
             }
         }
 

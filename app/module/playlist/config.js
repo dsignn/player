@@ -50,7 +50,6 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
                 }
             }
         }
-
     }
 
     /**
@@ -60,17 +59,25 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadHydrator() {
 
+        let timeslotReferenceHydrator = TimeslotConfig.getTimeslotReferenceHydrator();
+        timeslotReferenceHydrator.setObjectPrototype(new TimeslotPlaylistReference());
+
+        timeslotReferenceHydrator.enableExtractProperty('duration')
+            .enableExtractProperty('currentTime')
+            .enableHydrateProperty('duration')
+            .enableHydrateProperty('currentTime');
+
         let hydrator = new dsign.hydrator.PropertyHydrator(
             new Playlist(),
             {
-                'timeslots' : new dsign.hydrator.strategy.HydratorStrategy(this.getServiceManager().get('HydratorPluginManager').get('timeslotHydrator'))
+                'timeslots' : new dsign.hydrator.strategy.HydratorStrategy(timeslotReferenceHydrator)
             }
         );
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('context')
-            .enableExtractProperty('loop')
+            .enableExtractProperty('rotation')
             .enableExtractProperty('currentIndex')
             .enableExtractProperty('status')
             .enableExtractProperty('binds')
@@ -81,7 +88,7 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('status')
             .enableHydrateProperty('context')
             .enableHydrateProperty('currentIndex')
-            .enableHydrateProperty('loop')
+            .enableHydrateProperty('rotation')
             .enableHydrateProperty('binds')
             .enableHydrateProperty('timeslots');
 

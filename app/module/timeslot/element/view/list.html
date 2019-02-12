@@ -24,7 +24,7 @@
             }
         </style>
         <slot name="header"></slot>
-        <div hidden$="{{!hasResources}}">
+        <div hidden$="{{!totalItems}}">
             <template is="dom-repeat" items="[[resources]]" as="timeslot">
                 <timeslot-wc
                         timeslot="{{timeslot}}"

@@ -175,7 +175,6 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
             dsign.serviceManager.ServiceManager.LOAD_SERVICE,
             function(evt) {
                 if (evt.data.name ===  TimelineConfig.NAME_SERVICE) {
-                    console.log('timelineService');
                     let timelineService = new TimelineService(
                         this.getServiceManager().get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE),
                         this.getServiceManager().get('SenderPluginManager').get('timeslotSender'),

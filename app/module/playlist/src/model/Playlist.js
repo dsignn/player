@@ -8,6 +8,9 @@ class Playlist {
     static get IDLE() { return 'idle'; }
     static get PAUSE() { return 'pause'; }
 
+    static get ROTATION_NO() { return 'rotation-no'; }
+    static get ROTATION_LOOP() { return 'rotation-loop'; }
+
     static get CONTEXT_STANDARD() { return 'standard'; }
     static get CONTEXT_DEFAULT() { return 'default'; }
     static get CONTEXT_OVERLAY() { return 'overlay'; }
@@ -36,7 +39,7 @@ class Playlist {
         /**
          * @type {boolean}
          */
-        this.loop = false;
+        this.rotation = Playlist.ROTATION_NO;
 
         /**
          * @type {number}
@@ -74,22 +77,21 @@ class Playlist {
     }
 
     /**
-     * @param timeslot
+     * @param {Timeslot} timeslot
      * @return {Playlist}
      */
     appendTimeslot(timeslot) {
-        //  TODO check if timeslot is correct
         this.timeslots.push(timeslot);
         return this;
     }
 
     /**
      *
-     * @param timeslot
+     * @param {Timeslot} timeslot
      * @return {boolean}
      */
     removeTimeslot(timeslot) {
-        //  TODO check if timeslot is correct
+        //  TODO remove all timeslot with this id
         let index = this.timeslots.findIndex(element => element.id === timeslot.id);
         if (index > -1) {
             this.timeslots.splice(index, 1);
@@ -111,22 +113,28 @@ class Playlist {
     }
 
     /**
-     * @param timeslot
+     * @param {Playlist} playlist
      * @return {Playlist}
      */
     appendBind(playlist) {
-        //  TODO check if timeslot is correct
+        if(playlist.id === this.id) {
+            return;
+        }
+
         this.binds.push(playlist);
         return this;
     }
 
     /**
      *
-     * @param timeslot
+     * @param {Playlist} playlist
      * @return {boolean}
      */
     removeBind(playlist) {
-        //  TODO check if timeslot is correct
+        if(playlist.id === this.id) {
+            return;
+        }
+
         let index = this.binds.findIndex(element => element.id === playlist.id);
         if (index > -1) {
             this.binds.splice(index, 1);
@@ -134,10 +142,7 @@ class Playlist {
         return index > -1;
     }
 
-
-
     /**
-     *
      * @return {null|Timeslot}
      */
     current() {

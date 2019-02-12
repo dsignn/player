@@ -262,7 +262,7 @@ class PlaylistService extends AbstractTimeslotService {
                         );
                 });
                 break;
-            case !runningPlaylist.hasNext() && this.playlist.loop:
+            case !runningPlaylist.hasNext() && this.playlist.rotation === Playlist.ROTATION_LOOP:
                 console.log('PLAYLIST LOOP', this.playlist.name, this.playlist);
                 this.playlistService.play(this.playlist);
                 break;
