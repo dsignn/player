@@ -105,7 +105,8 @@
                     <div class="dataWrapper">
                         <div>{{playlist.name}}</div>
                         <div id="status">{{status}}</div>
-                        <div>{{currentTimeslotTime}} / {{duration}} sec | {{currentTimeslotName}}</div>
+                        <div class="flex flex-horizontal-end">{{currentPlaylistTime}} / {{duration}} sec</div>
+                        <div class="flex flex-horizontal-end">{{currentTimeslotTime}} sec {{currentTimeslotName}}</div>
                     </div>
                 </div>
                 <div class="flags flex-basis-15">
@@ -171,6 +172,12 @@
                         notify: true
                     },
 
+                    currentPlaylistTime: {
+                        type: Number,
+                        notify: true,
+
+                    },
+
                     currentTimeslotName: {
                         type: Number,
                         notify: true,
@@ -211,10 +218,12 @@
                         this.status = this.playlist.status;
                         this._updateActionHtml();
                         this._clearStatusClass(this.playlist.status);
+                        this.currentPlaylistTime = this.playlist.getCurrentTimeString();
 
                         let currentTimeslot = this.playlist.current();
                         if (currentTimeslot) {
-                            this.currentTimeslotTime = currentTimeslot.currentTime;
+                            this.currentTimeslotTime = currentTimeslot.getCurrentTimeString();
+                            this.currentTimeslotName = currentTimeslot.name;
                         }
 
                         break;
@@ -235,6 +244,7 @@
                 }
 
                 this.status = this.playlist.status;
+                this.currentPlaylistTime = this.playlist.getCurrentTimeString();
                 this._updateActionHtml();
                 this._updateRotationHtml();
                 this._updateContextHtml();
@@ -248,7 +258,7 @@
 
                 if (newValue.timeslots[newValue.currentIndex] !== undefined &&
                     this.currentTimeslotTime !== newValue.timeslots[newValue.currentIndex].currentTime) {
-                    this.currentTimeslotTime = newValue.timeslots[newValue.currentIndex].currentTime;
+                    this.currentTimeslotTime = newValue.timeslots[newValue.currentIndex].getCurrentTimeString();
                 }
             }
 

@@ -14,17 +14,45 @@ class TimeslotPlaylistReference extends TimeslotReference {
         super(id, name);
 
         /**
-         * @type {null|integer}
+         * @type {Number}
          */
         this.duration = duration;
 
         /**
-         * @type {integer}
+         * @type {Number}
          */
         this.currentTime = currentTime;
     }
+
     /**
-     * @param timeslot
+     * @return {number}
+     */
+    getDuration() {
+        return parseInt(this.duration);
+    }
+
+    /**
+     * @return {number}
+     */
+    getCurrentTime() {
+        return parseFloat(this.currentTime);
+    }
+
+    /**
+     * @return {string}
+     */
+    getCurrentTimeString() {
+        let currentTime = this.currentTime+'';
+        switch (true) {
+            case parseFloat(this.currentTime) % 1 === 0:
+                currentTime = parseFloat(this.currentTime) + '.0';
+                break;
+        }
+        return currentTime;
+    }
+
+    /**
+     * @param {Timeslot} timeslot
      * @return {TimeslotReference}
      */
     static getInstanceFromTimeslot(timeslot) {

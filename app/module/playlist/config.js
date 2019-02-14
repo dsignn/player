@@ -53,7 +53,6 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
     }
 
     /**
-     *
      * @return {AggregatePropertyHydrator}
      * @private
      */
@@ -61,9 +60,15 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
 
         let timeslotReferenceHydrator = TimeslotConfig.getTimeslotReferenceHydrator();
         timeslotReferenceHydrator.setObjectPrototype(new TimeslotPlaylistReference());
+        timeslotReferenceHydrator.addStrategy(
+            'virtualMonitorReference',
+            new dsign.hydrator.strategy.HydratorStrategy(new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference()))
+        );
 
-        timeslotReferenceHydrator.enableExtractProperty('duration')
+        timeslotReferenceHydrator.enableExtractProperty('virtualMonitorReference')
+            .enableExtractProperty('duration')
             .enableExtractProperty('currentTime')
+            .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('duration')
             .enableHydrateProperty('currentTime');
 
@@ -115,7 +120,6 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
                         }
                     );
 
-
                     /**
                      *
                      */
@@ -129,7 +133,6 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
                                 ),
                                 this.getServiceManager().get('HydratorPluginManager').get('playlistHydrator')
                             );
-
 
                             this.getServiceManager().get('StoragePluginManager').set(
                                 PlaylistConfig.NAME_SERVICE,

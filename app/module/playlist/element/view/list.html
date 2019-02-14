@@ -82,7 +82,9 @@
             play(evt) {
                 serviceManager.get('PlaylistService').play(
                     evt.detail
-                );
+                ).catch((err) => {
+                    console.error('play playlist', err);
+                });
             }
 
             /**
@@ -91,7 +93,9 @@
             stop(evt) {
                 serviceManager.get('PlaylistService').stop(
                     evt.detail
-                );
+                ).catch((err) => {
+                    console.error('stop playlist', err);
+                });
             }
 
             /**
@@ -100,7 +104,9 @@
             pause(evt) {
                 serviceManager.get('PlaylistService').pause(
                     evt.detail
-                );
+                ).catch((err) => {
+                    console.error('pause playlist', err);
+                });
             }
 
             /**
@@ -109,9 +115,14 @@
             resume(evt) {
                 serviceManager.get('PlaylistService').resume(
                     evt.detail
-                );
+                ).catch((err) => {
+                    console.error('resume playlist', err);
+                });
             }
 
+            /**
+             * @param evt
+             */
             displayUpdateView(evt) {
                 this.resourceSelected = evt.detail;
                 this.selected = 2;

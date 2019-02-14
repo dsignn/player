@@ -45,7 +45,7 @@ class TimelineService extends AbstractTimeslotService {
 
         this._promoteToRunTimeline();
         this._scheduleRunningTimeline();
-        this._updateTimeRunningTimeline();
+        this._updateRunningTimeline();
     }
 
     /**
@@ -96,11 +96,8 @@ class TimelineService extends AbstractTimeslotService {
     /**
      * @private
      */
-    _updateTimeRunningTimeline() {
+    _updateRunningTimeline() {
 
-        /**
-         *
-         */
         for (let property in this.runningTimelines) {
             if (this.runningTimelines[property].status === Timeslot.RUNNING) {
                 this.runningTimelines[property].timer.sumSeconds(1);

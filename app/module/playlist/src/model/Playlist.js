@@ -222,7 +222,7 @@ class Playlist {
     }
 
     /**
-     *
+     * TODO SPOSTARE FUORI
      * @param timeslot
      * @return {boolean}
      * @private
@@ -251,6 +251,26 @@ class Playlist {
             option = this.options[name];
         }
         return option;
+    }
+
+    /**
+     * @return {string|number}
+     */
+    getCurrentTimeString() {
+        let currentTime = 0;
+        for (let cont = this.currentIndex -1; cont > -1; cont--) {
+            currentTime += this.timeslots[cont].getDuration();
+        }
+
+        currentTime += this.current().getCurrentTime();
+
+        currentTime += '';
+        switch (true) {
+            case currentTime % 1 === 0:
+                currentTime = currentTime + '.0';
+                break;
+        }
+        return currentTime;
     }
 }
 
