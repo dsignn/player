@@ -10,7 +10,7 @@ class TimeslotPlaylistReference extends TimeslotReference {
      * @param {Number} duration
      * @param {Number} currentTime
      */
-    constructor(id = null, name = null, duration = 0, currentTime = 0) {
+    constructor(id = null, name = null, duration = 0, currentTime = 0, virtualMonitorReference = {}) {
         super(id, name);
 
         /**
@@ -22,6 +22,12 @@ class TimeslotPlaylistReference extends TimeslotReference {
          * @type {Number}
          */
         this.currentTime = currentTime;
+
+        /**
+         *
+         * @type {Object}
+         */
+        this.virtualMonitorReference = virtualMonitorReference;
     }
 
     /**
@@ -60,7 +66,8 @@ class TimeslotPlaylistReference extends TimeslotReference {
             timeslot.id,
             timeslot.name,
             timeslot.duration,
-            timeslot.currentTime
+            timeslot.currentTime,
+            timeslot.virtualMonitorReference = timeslot.virtualMonitorReference
         );
 
     }

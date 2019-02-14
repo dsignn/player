@@ -113,7 +113,7 @@ class PlaylistService extends AbstractTimeslotService {
 
         //this._executeBids(playlist, 'resume');
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-        this._play(playlist, timeslot, dataTimeslot);
+        this._playPlaylist(playlist, timeslot, dataTimeslot);
         this.eventManager.fire(PlaylistService.PLAY, playlist);
     }
 
@@ -144,7 +144,7 @@ class PlaylistService extends AbstractTimeslotService {
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
 
         timeslot.currentTime = timeslotPlaylistReference.currentTime;
-        this._resume(playlist, timeslot, dataTimeslot);
+        this._resumePlaylist(playlist, timeslot, dataTimeslot);
 
         this.eventManager.fire(PlaylistService.RESUME, playlist);
     }
@@ -156,7 +156,7 @@ class PlaylistService extends AbstractTimeslotService {
     async pause(playlist) {
 
         //this._executeBids(playlist, 'pause');
-        this._pause(playlist);
+        this._pausePlaylist(playlist);
         this.eventManager.fire(PlaylistService.PAUSE, playlist);
     }
 
@@ -192,7 +192,7 @@ class PlaylistService extends AbstractTimeslotService {
                  */
                 case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === Timeslot.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
                     console.log('STOP playlist', this.runningPlaylist[property].name);
-                    this._stop( this.runningPlaylist[property]);
+                    this._stopPlaylist( this.runningPlaylist[property]);
                     break;
             }
         }
@@ -224,7 +224,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @param {Object} dataTimeslot
      * @private
      */
-    _play(playlist, timeslot, dataTimeslot = null) {
+    _playPlaylist(playlist, timeslot, dataTimeslot = null) {
 
         let runningPlaylist = this.getRunningPlaylist(playlist.getMonitorId(), playlist.context);
         if (runningPlaylist) {
@@ -245,7 +245,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @param {Object} dataTimeslot
      * @private
      */
-    _resume(playlist, timeslot, dataTimeslot = null) {
+    _resumePlaylist(playlist, timeslot, dataTimeslot = null) {
 
         let runningPlaylist = this.getRunningPlaylist(playlist.getMonitorId(), playlist.context);
         if (runningPlaylist) {
@@ -262,7 +262,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @param {Playlist} playlist
      * @private
      */
-    _pause(playlist) {
+    _pausePlaylist(playlist) {
         playlist.status = Timeslot.PAUSE;
         this._removeRunningPlaylist(playlist);
         this._send(PlaylistService.PAUSE, playlist, playlist.current());

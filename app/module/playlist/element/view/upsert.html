@@ -212,16 +212,11 @@
              */
             _searchTimeslotChanged(evt) {
 
-                let search = {};
-                if (this.resource.timeslots.length === 0) {
-                    search.name = evt.detail.value;
-                } else {
-                    search['monitorId+name'] = [
-                        this.resource.timeslots[0].virtualMonitorReference.monitorId,
-                        evt.detail.value
-                    ]
-                }
 
+                // TODO aggiunta filtro per nomitor id
+
+                let search = {};
+                search.name = evt.detail.value;
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
                     .getAll(search)
@@ -240,8 +235,9 @@
              */
             _selectTimeslot(evt) {
 
-                this.resource.appendTimeslot(evt.detail.option);
-                this.appendTimeslotChip(evt.detail.option);
+                let refTimeslotPlaylist = TimeslotPlaylistReference.getInstanceFromTimeslot(evt.detail.option);
+                this.resource.appendTimeslot(refTimeslotPlaylist);
+                this.appendTimeslotChip(refTimeslotPlaylist);
 
                 setTimeout(
                     () => {
