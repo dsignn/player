@@ -17,6 +17,7 @@
 <link rel="import" href="../../../../element/icon/always-on-top.html">
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
 
 
 <dom-module id="monitor-view-upsert">
@@ -71,7 +72,6 @@
             }
 
         </style>
-
         <slot name="header"></slot>
         <div class="flex flex-horizontal">
             <div class="flex-basis-70" style="padding-right:16px;">
@@ -257,7 +257,7 @@
     </template>
 
     <script>
-        class ElementMonitorViewUpsert extends Polymer.Element {
+        class ElementMonitorViewUpsert extends StorageAdapterResourceBehaviour {
 
             static get is() {
                 return 'monitor-view-upsert';
@@ -303,13 +303,6 @@
                         value: 5
                     },
 
-                    monitor: {
-                        type: Object,
-                        notify: true,
-                        value: new VirtualMonitor(),
-                        observer: '_monitorChanged'
-                    },
-
                     hasMonitor: {
                         type: Boolean,
                         notify: true,
@@ -324,7 +317,22 @@
                     labelAction: {
                         type: String,
                         value: 'Save'
-                    }
+                    },
+
+                    resource: {
+                        type: Object,
+                        notify: true,
+                        value: new VirtualMonitor(),
+                        observer: '_monitorChanged'
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: MonitorConfig.NAME_SERVICE
+
+                    },
+
                 };
             }
 
@@ -333,10 +341,7 @@
                 this.$.formSubMonitor.addEventListener('iron-form-presubmit', this.submitSubMonitor.bind(this));
                 this.$.formMonitor.addEventListener('iron-form-presubmit', this.submitMonitor.bind(this));
 
-                serviceManager.get('StoragePluginManager')
-                    .get(MonitorConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this)
-                );
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearData.bind(this));
             }
 
             /**
@@ -352,38 +357,23 @@
             submitMonitor(evt) {
                 evt.preventDefault();
 
-                this.monitor.name = this.identifier;
-                this.monitor.monitors = this.monitors;
+                this.resource.name = this.identifier;
+                this.resource.monitors = this.monitors;
 
-                let method = this.monitor.id ? 'update' : 'save';
+                let method = this.getStoragePersistMethod();
 
-                let monitorStorage = serviceManager.get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE);
+                this.storage[method](this.resource)
+                    .then((data) => {
 
-                monitorStorage.getAll({enable: 1})
-                    .then(
-                        (data) => {
-                            let enableMonitor = data.length > 0 ? data[0] : null;
-                            monitorStorage[method](this.monitor)
-                                .then((data) => {
-
-                                    serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' monitor');
-                                    if (method === 'save') {
-                                        this.monitor = new VirtualMonitor();
-                                        this.hasMonitor = false;
-                                    } else {
-
-                                        if (data.enable > 0 && data.id === enableMonitor.id) {
-                                            PluginMonitorIndex.electronIpc.send('update-enable-monitor-configuration', data)
-                                        }
-                                    }
-                                })
-                                .catch((err) => {
-                                        console.log(err)
-                                    }
-                                );
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' monitor');
+                        if (method === 'save') {
+                            this.resource = new VirtualMonitor();
+                            this.hasMonitor = false;
                         }
-                    ).catch(
-                        (err) => { console.log(); }
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
                     );
             }
 
@@ -426,9 +416,9 @@
              * @param evt
              */
             _remove(evt) {
-                this.monitor.removeMonitor(evt.target.item)
+                this.resource.removeMonitor(evt.target.item);
                 this.set('monitors', []);
-                this.set('monitors', this.monitor.getMonitors());
+                this.set('monitors', this.resource.getMonitors());
                 this._refreshMonitors();
             }
 
@@ -448,7 +438,7 @@
              */
             _dataValueChanged(evt) {
 
-                let monitors = this.monitor.getMonitors({nested:true});
+                let monitors = this.resource.getMonitors({nested:true});
                 let filter = monitors.filter(
                     element => {
                         return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
@@ -527,10 +517,8 @@
              * @param evt
              */
             changeAlwaysOnTop(evt) {
-                console.log('update', evt.target.monitor);
-               serviceManager.get('StoragePluginManager')
-                   .get(MonitorConfig.NAME_SERVICE).
-                   update(this.monitor).then(
+
+               this.storage.update(this.resource).then(
                    (data) => {
                        console.log('update monitor alway on top');
                    }

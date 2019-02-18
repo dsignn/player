@@ -470,7 +470,7 @@ app.on('window-all-closed', () => {
 /**
  * New default configuration monitor
  */
-ipcMain.on('change-monitors-configuration', (event, message) => {
+ipcMain.on('change-virtual-monitor', (event, message) => {
 
     fs.writeFile(
         App.PATH_MONITOR_FILE_CONFIG,
@@ -490,7 +490,7 @@ ipcMain.on('change-monitors-configuration', (event, message) => {
 /**
  * Modifica della configurazione abilitata
  */
-ipcMain.on('update-enable-monitor-configuration', (event, message) => {
+ipcMain.on('update-virtual-monitor', (event, message) => {
 
     if (message.monitors && Array.isArray(message.monitors) && message.monitors.length > 0) {
 
@@ -531,7 +531,7 @@ ipcMain.on('update-enable-monitor-configuration', (event, message) => {
                             );
 
                             currentMonitor.remove = false;
-                            currentMonitor.browserWindows.send('player-monitor-update', virtualMonitor.monitors[cont]);
+                            currentMonitor.browserWindows.send('update-virtual-monitor', virtualMonitor.monitors[cont]);
                             break;
                     }
                 }

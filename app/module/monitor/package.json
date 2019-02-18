@@ -8,6 +8,7 @@
   "autoload": [
     "src/model/Monitor.js",
     "src/model/VirtualMonitor.js",
-    "src/model/VirtualMonitorReference.js"
+    "src/model/VirtualMonitorReference.js",
+    "src/MonitorService.js"
   ]
 }

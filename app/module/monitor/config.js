@@ -30,6 +30,8 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
         this._loadHydrator();
         this._loadMonitorHydrator();
         this._loadStorage();
+        this._loadMonitorSender();
+        this._loadMonitorService();
     }
 
     /**
@@ -62,8 +64,10 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
         let hydrator = new dsign.hydrator.PropertyHydrator(
             new VirtualMonitor(),
             {
-                'monitors' : new dsign.hydrator.strategy.HydratorStrategy(
-                    monitorHydrator
+                'monitors' : new dsign.hydrator.strategy.HydratorStrategy(monitorHydrator),
+                'enable' : new dsign.hydrator.strategy.HybridStrategy(
+                    dsign.hydrator.strategy.HybridStrategy.BOOLEAN_TYPE,
+                    dsign.hydrator.strategy.HybridStrategy.NUMBER_TYPE
                 )
             }
         );
@@ -175,6 +179,32 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
                 }
             }
         );
+    }
+
+    /**
+     * @private
+     */
+    _loadMonitorSender() {
+        this.getServiceManager().get('SenderPluginManager').set('monitorSender', require('electron').ipcRenderer);
+    }
+
+    /**
+     * @private
+     */
+    _loadMonitorService() {
+        this.getServiceManager().get('StoragePluginManager').eventManager.on(
+            dsign.serviceManager.ServiceManager.LOAD_SERVICE,
+            (evt) => {
+                if (MonitorConfig.NAME_SERVICE === evt.data.name) {
+                    this.getServiceManager().set(
+                        'MonitorService',
+                        new MonitorService(
+                            this.getServiceManager().get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
+                            this.getServiceManager().get('SenderPluginManager').get('monitorSender')
+                        )
+                    );
+                }
+            })
     }
 }
 

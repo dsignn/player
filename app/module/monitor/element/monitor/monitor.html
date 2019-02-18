@@ -9,6 +9,8 @@
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
 
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
+
 <dom-module id="monitor-wc">
     <template>
         <style include="global-layout"></style>
@@ -80,7 +82,7 @@
         <paper-card id="design" class="setting">
             <div class="card-setting">
                 <div class="enableButtonContainer">
-                    <paper-toggle-button id="paperToggleEnable" on-change="_changeEnableMonitor"></paper-toggle-button>
+                    <paper-toggle-button id="paperToggleEnable" on-change="_changeEnableMonitor" checked="{{monitor.enable}}"></paper-toggle-button>
                 </div>
             </div>
             <div class="card-content flex flex-horizontal">
@@ -106,7 +108,7 @@
     </template>
 
     <script>
-        class ElementMonitor extends Polymer.Element {
+        class ElementMonitor extends StorageAdapterBehaviour {
 
             static get is() {
                 return 'monitor-wc';
@@ -117,26 +119,59 @@
 
                     monitor: {
                         type: Object,
-                        notify : true
+                        notify : true,
+                        observer: '_monitorChanged'
                     },
 
                     hideCrud : {
                         type: Boolean,
                         value: false
                     },
+
+                    storageName: {
+                        value: MonitorConfig.NAME_SERVICE
+                    },
+
                 };
             }
 
-            static get observers() {
-                return [
-                    'monitorEnableChange(monitor.enable)'
-                ]
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this))
+            };
+
+            /**
+             * @param evt
+             */
+            _updateFromStorage(evt) {
+
+                if (evt.data.id === this.monitor.id) {
+                    this.monitor = evt.data;
+                }
+            }
+
+            /**
+             * @param newValue
+             */
+            _monitorChanged(newValue) {
+
+                if (!newValue) {
+                    return newValue;
+                }
+            }
+
+            /**
+             * @returns {Number}
+             * @private
+             */
+            _computeMonitorNumber() {
+                return this.monitor.getMonitors({nested:true}).length;
             }
 
             /**
              * @param {Number} enable
              */
-            monitorEnableChange(enable) {
+            _enableChange(enable) {
                 this.$.paperToggleEnable.checked = !!enable;
                 this.$.paperToggleEnable.invalid = !!enable;
                 this.$.paperToggleEnable.disabled = !!enable;
@@ -147,7 +182,7 @@
              * @private
              */
             _remove(evt) {
-                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.monitor}));
+                this.dispatchEvent(new CustomEvent('remove', {detail: this.monitor}));
             }
 
             /**
@@ -156,7 +191,7 @@
              */
             _changeEnableMonitor(evt) {
                 this.monitor.enable = evt.target.checked;
-                this.dispatchEvent(new CustomEvent('wrap-change-enable-monitor', {detail: this.monitor}));
+                this.dispatchEvent(new CustomEvent('change-enable', {detail: this.monitor}));
             }
 
             /**
@@ -164,15 +199,7 @@
              * @private
              */
             _update(evt) {
-                this.dispatchEvent(new CustomEvent('wrap-update', {detail: this.monitor}));
-            }
-
-            /**
-             * @returns {Number}
-             * @private
-             */
-            _computeMonitorNumber() {
-                return this.monitor.getMonitors({nested:true}).length;
+                this.dispatchEvent(new CustomEvent('update-view', {detail: this.monitor}));
             }
         }
 

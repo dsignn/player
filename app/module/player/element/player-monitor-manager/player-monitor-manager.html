@@ -20,7 +20,7 @@
             constructor() {
                 super();
                 ElementPlayerMonitorManager.ipc.on('player-monitor-config', this.configMonitor.bind(this));
-                ElementPlayerMonitorManager.ipc.on('player-monitor-update', this.updateMonitors.bind(this));
+                ElementPlayerMonitorManager.ipc.on('update-virtual-monitor', this.updateMonitors.bind(this));
             }
 
             /**
