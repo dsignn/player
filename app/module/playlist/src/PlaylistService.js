@@ -26,7 +26,7 @@ class PlaylistService extends AbstractTimeslotService {
         this.runningPlaylist = {};
 
         this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
-            // this.timer.addEventListener('secondsUpdated', (evt)  => {
+        // this.timer.addEventListener('secondsUpdated', (evt)  => {
             this._schedule();
         });
     }
@@ -237,6 +237,9 @@ class PlaylistService extends AbstractTimeslotService {
         timeslot.currentTime = 0;
         timeslot.context = playlist.context;
         this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
+        this.playlistStorage.update(playlist)
+            .then((data) => { console.log('PLAY playlist EVT')})
+            .catch((err) => { console.error(err)});
     }
 
     /**
@@ -256,6 +259,9 @@ class PlaylistService extends AbstractTimeslotService {
         playlist.status = Playlist.RUNNING;
         timeslot.context = playlist.context;
         this._send(PlaylistService.RESUME, playlist, timeslot, dataTimeslot);
+        this.playlistStorage.update(playlist)
+            .then((data) => { console.log('RESUME playlist EVT')})
+            .catch((err) => { console.error(err)});
     }
 
     /**

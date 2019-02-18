@@ -193,22 +193,29 @@
             }
 
             /**
-             * @param layer string
+             * @param {Timeslot} timeslot
              */
-            clearLayer(layer) {
-
-                if (!this.$[layer]) {
+            clearLayerButNotLast(timeslot) {
+                if (!this.$[timeslot.context]) {
                     return;
                 }
 
+                let childrenNodes = this.$[timeslot.context].childNodes;
                 // Clear layer
-                while (this.$[layer].firstChild) {
-                    this.$[layer].removeChild(this.$[layer].firstChild);
+                for (let cont = childrenNodes.length - 2; cont >= 0; cont--) {
+                    setTimeout(
+                        function() {
+                            console.log('remove TM');
+                            this.remove();
+                        }.bind(childrenNodes[cont]),
+                        300
+                    );
                 }
             }
 
             /**
-             * @param timeslot ElementPlayerTimeslot
+             * @param layer
+             * @param wsTimeslot
              */
             appendTimeslot(layer, wsTimeslot) {
                 this.$[layer].appendChild(wsTimeslot);
@@ -257,7 +264,7 @@
             /**
              * @param {Timeslot} timeslot
              * @param {Object|null} data
-             * @param {Timeslot} context
+             * @param context
              */
             startTimeslot(timeslot, data, context) {
                 let playerTimeslot = document.createElement('player-timeslot');
@@ -268,8 +275,9 @@
                 playerTimeslot.config(timeslot, context);
                 playerTimeslot.data = data;
 
-                this.clearLayer(timeslot.context);
                 this.appendTimeslot(timeslot.context, playerTimeslot);
+                this.clearLayerButNotLast(timeslot);
+                console.log('append TM');
             }
             /**
              * TODO add public interface
@@ -286,7 +294,7 @@
 
                 let element = this.getTimeslotElement(msg.timeslot, msg.context);
                 if (element) {
-                    console.log('MONITOR STOP TIMESLOT', msg.timeslot);
+                    console.log('MONITOR STOP TIMESLOT', element);
                     element.remove();
                 }
             }
@@ -341,8 +349,9 @@
                         timeslotWc.config(timeslot);
                         timeslotWc.startAt = timeslot.currentTime;
                         timeslotWc.filters = timeslot.filters;
-                        this.clearLayer(timeslot.context);
+
                         this.appendTimeslot(timeslot.context, timeslotWc);
+                        this.clearLayerButNotLast(timeslot);
                         break;
                 }
             }

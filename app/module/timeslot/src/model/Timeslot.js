@@ -155,11 +155,32 @@ class Timeslot {
     getCurrentTimeString() {
         let currentTime = this.currentTime+'';
         switch (true) {
-            case this.currentTime % 1 === 0:
-                currentTime = this.currentTime + '.0';
+            case this.getCurrentTime() % 1 === 0:
+                currentTime = this.getCurrentTime() + '.0';
                 break;
         }
         return currentTime;
+    }
+
+    /**
+     * @return {number}
+     */
+    getDuration() {
+        return parseInt(this.duration);
+    }
+
+    /**
+     * @return {number}
+     */
+    getCurrentTime() {
+        return parseFloat(this.currentTime);
+    }
+
+    /**
+     *
+     */
+    reset() {
+        this.currentTime = 0;
     }
 }
 

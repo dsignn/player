@@ -20,16 +20,7 @@ class TimeslotService extends AbstractTimeslotService {
          */
         this.runningTimeslots = {};
 
-        /**
-         * Listeners
-         */
-        this.eventManager.on(TimeslotService.PLAY, this.changeRunningTimeslot.bind(this));
-        this.eventManager.on(TimeslotService.PAUSE, this.changePauseTimeslot.bind(this));
-        this.eventManager.on(TimeslotService.STOP, this.changeIdleTimeslot.bind(this));
-        this.eventManager.on(TimeslotService.RESUME, this.changeResumeTimeslot.bind(this));
-
         this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
-        // this.timer.addEventListener('secondsUpdated', (evt)  => {
             this._schedule();
         });
     }
@@ -39,19 +30,8 @@ class TimeslotService extends AbstractTimeslotService {
      */
     _schedule() {
 
-        /*
-        let data = {
-            timelineSecondsTenths : this.timer.getTotalTimeValues().secondTenths
-        };
-
-        this.eventManager.fire(`timeline-${data.timelineSecondsTenths}`, data, true);
-        */
-        let data = {
-            timelineSecondsTenths : this.timer.getTotalTimeValues().secondTenths
-        };
-
-        this.eventManager.fire(`timeline-${data.timelineSecondsTenths}`, data, true);
-        this._updateRunnintTimslots();
+        this._scheduleRunningPlaylist();
+        this._updateRunningTimslot();
     }
 
     /**
@@ -113,200 +93,160 @@ class TimeslotService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeslot} timeslot
+     * @private
      */
-    play(timeslot) {
+    _scheduleRunningPlaylist() {
+        for (let property in this.runningTimeslots) {
 
-
-        this._synchExtractTimeslotData(timeslot).then(
-            (timeslotData) => {
-                console.log('TIMESLOT DATA', timeslotData);
-
-                let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
-                if (runningTimeslot) {
-                    this.pause(runningTimeslot);
-                }
-
-                timeslot.options.typeService = 'timeslot';
-                this._executeBids(timeslot, 'play');
-                this.sender.send(
-                    TimeslotService.PLAY,
-                    {
-                        timeslot : timeslot,
-                        data: timeslotData
-                    }
-                );
-                this.eventManager.fire(TimeslotService.PLAY, timeslot);
-                console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
-                if (timeslot.rotation === Timeslot.ROTATION_INFINITY) {
-                    return;
-                }
-
-                this.eventManager.on(
-                    `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) * 10)}`,
-                    this.processTimeslot.bind({timeslotService : this, timeslot: timeslot})
-                )
+            switch (true) {
+                case this.runningTimeslots[property].rotation === Timeslot.ROTATION_LOOP && this.runningTimeslots[property].getDuration() <= this.runningTimeslots[property].getCurrentTime():
+                    this.runningTimeslots[property].reset()
+                    this.play(this.runningTimeslots[property]);
+                    break;
+                case this.runningTimeslots[property].getDuration() <= this.runningTimeslots[property].getCurrentTime():
+                    this.stop(this.runningTimeslots[property]);
+                    break;
             }
-        );
+        }
     }
+
+
 
     /**
      * @param {Timeslot} timeslot
      */
-    stop(timeslot) {
+    async play(timeslot) {
 
-        timeslot.options.typeService = 'timeslot';
 
+        let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
+
+        this._playTimeslot(timeslot, dataTimeslot);
+        this._executeBids(timeslot, 'play');
+        this.eventManager.fire(TimeslotService.PLAY, timeslot);
+    }
+
+    /**
+     * @param {Timeslot} timeslot
+     * @return {Promise}
+     */
+    async stop(timeslot) {
+
+
+        this._stopTimeslot(timeslot);
         this._executeBids(timeslot, 'stop');
-        this.sender.send(
-            TimeslotService.STOP,
-            {timeslot : timeslot}
-        );
         this.eventManager.fire(TimeslotService.STOP, timeslot);
     }
 
     /**
      * @param {Timeslot} timeslot
+     * @return {Promise}
      */
-    pause(timeslot) {
+    async pause(timeslot) {
 
         timeslot.options.typeService = 'timeslot';
+       // this._executeBids(timeslot, 'pause');
+
+        this._pauseTimeslot(timeslot);
         this._executeBids(timeslot, 'pause');
-        this.sender.send(
-            TimeslotService.PAUSE,
-            {timeslot : timeslot}
-        );
         this.eventManager.fire(TimeslotService.PAUSE, timeslot);
     }
 
     /**
      * @param {Timeslot} timeslot
      */
-    resume(timeslot) {
+    async resume(timeslot) {
 
-        this._synchExtractTimeslotData(timeslot).then(
-            (timeslotData) => {
+        let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
 
-
-                let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
-                if (runningTimeslot) {
-                    this.pause(runningTimeslot);
-                }
-
-                timeslot.options.typeService = 'timeslot';
-                this._executeBids(timeslot, 'resume');
-                this.sender.send(
-                    TimeslotService.RESUME,
-                    {timeslot : timeslot, data: timeslotData}
-                );
-                this.eventManager.fire(TimeslotService.RESUME, timeslot);
-                console.log('RES', `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`);
-                this.eventManager.on(
-                    `timeline-${this.timer.getTotalTimeValues().secondTenths + (parseInt(timeslot.duration) - timeslot.currentTime)  * 10}`,
-                    this.processTimeslot.bind({timeslotService : this, timeslot: timeslot})
-                );
-            }
-        );
+        this._resumeTimeslot(timeslot, dataTimeslot);
+        this._executeBids(timeslot, 'resume');
+        this.eventManager.fire(TimeslotService.RESUME, timeslot);
     }
 
-
     /**
-     * @param evt
+     * @param {Timeslot} timeslot
+     * @param {Object} dataTimeslot
+     * @private
      */
-    processTimeslot(evt) {
-        if (!this.timeslotService.isRunning(this.timeslot)) {
-            console.log('TIMESLOT NOT RUNNING', this.timeslot);
-            return;
+    _playTimeslot(timeslot, dataTimeslot) {
+
+        let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
+        if (runningTimeslot) {
+            this.pause(runningTimeslot);
         }
 
-        let runningTimeslot =  this.timeslotService
-            .getRunningTimeslot(this.timeslot.virtualMonitorReference.monitorId, this.timeslot.context);
+        this.setRunningTimeslot(timeslot);
+        timeslot.status  = Timeslot.RUNNING;
+        timeslot.currentTime = 0;
 
-        console.log('PROCESS TIMESLOT',runningTimeslot, runningTimeslot.currentTime, runningTimeslot.duration);
-        this.timeslotService.eventManager._consoleDebug();
+        this._send(TimeslotService.PLAY, timeslot, dataTimeslot);
+        this.timeslotStorage.update(timeslot)
+            .then((data) => { console.log('PLAY playlist EVT')})
+            .catch((err) => { console.error(err)});
 
-        switch (true) {
-            case runningTimeslot && runningTimeslot.currentTime < (parseInt(runningTimeslot.duration)-1):
-                console.log('NON ANCORA',runningTimeslot, runningTimeslot.currentTime, (parseInt(runningTimeslot.duration)-1));
-                break;
-            case this.timeslot.rotation === Timeslot.ROTATION_LOOP:
-                this.timeslotService.play(this.timeslot);
-                break;
-            case this.timeslot.rotation === Timeslot.ROTATION_INFINITY:
-                break;
-            case runningTimeslot !== undefined:
-                this.timeslotService.stop(this.timeslot);
-                break
+    }
+
+    /**
+     * @param timeslot
+     * @param dataTimeslot
+     * @private
+     */
+    _resumeTimeslot(timeslot, dataTimeslot) {
+        let runningTimeslot = this.getRunningTimeslot(timeslot.virtualMonitorReference.monitorId, timeslot.context);
+        if (runningTimeslot) {
+            this.pause(runningTimeslot);
         }
+
+        this.setRunningTimeslot(timeslot);
+        timeslot.status = Timeslot.RUNNING;
+
+        this._send(TimeslotService.RESUME, timeslot, dataTimeslot);
+        this.timeslotStorage.update(timeslot)
+            .then((data) => { console.log('PLAY timeslot EVT')})
+            .catch((err) => { console.error(err)});
     }
 
     /**
-     * @param evt
+     * @param timeslot
+     * @private
      */
-    changeRunningTimeslot(evt) {
-        console.log('START TIMESLOT',  evt.data);
+    _pauseTimeslot(timeslot) {
 
-        this.setRunningTimeslot(evt.data);
-        evt.data.status = Timeslot.RUNNING;
-        evt.data.currentTime = 0;
-        this.timeslotStorage.update(evt.data)
-            .then((data) => {})
-            .catch((err) => { console.log(err) });
+        this.removeRunningTimeslot(timeslot);
+
+        timeslot.status = Timeslot.PAUSE;
+        this._send(TimeslotService.PAUSE, timeslot);
+
+        this.timeslotStorage.update(timeslot)
+            .then((data) => { console.log('PLAY timeslot EVT')})
+            .catch((err) => { console.error(err)});
     }
 
-    /**
-     * @param evt
-     */
-    changeResumeTimeslot(evt) {
-        console.log('RESUME TIMESLOT',  evt.data.id);
+    _stopTimeslot(timeslot) {
 
-        evt.data.status = Timeslot.RUNNING;
-        this.setRunningTimeslot(evt.data);
-        this.timeslotStorage.update(evt.data)
-            .then((data) => {})
-            .catch((err) => { console.log(err) });
-    }
+        this.removeRunningTimeslot(timeslot);
+        timeslot.status = Timeslot.IDLE;
+        timeslot.reset();
 
-    /**
-     * @param evt
-     */
-    changePauseTimeslot(evt) {
-        console.log('PAUSE TIMESLOT',  evt.data.id);
+        this._send(TimeslotService.STOP, timeslot);
 
-        this.removeRunningTimeslot(evt.data);
-        evt.data.status = Timeslot.PAUSE;
-
-        this.timeslotStorage.update(evt.data)
-            .then((data) => {})
-            .catch((err) => { console.log(err) });
-    }
-
-    /**
-     * @param evt
-     */
-    changeIdleTimeslot(evt) {
-        console.log('STOP TIMESLOT',  evt.data.id);
-        this.removeRunningTimeslot(evt.data);
-
-        evt.data.status = Timeslot.IDLE;
-        evt.data.currentTime = 0;
-        this.timeslotStorage.update(evt.data)
-            .then((data) => {})
-            .catch((err) => { console.log(err) });
+        this.timeslotStorage.update(timeslot)
+            .then((data) => { console.log('STOP timeslot EVT')})
+            .catch((err) => { console.error(err)});
     }
 
     /**
      * @private
      */
-    _updateRunnintTimslots() {
+    _updateRunningTimslot() {
 
-        for (let key in this.runningTimeslots) {
-            if (this.runningTimeslots[key].currentTime >= this.runningTimeslots[key].duration ||  this.runningTimeslots[key].rotation === Timeslot.ROTATION_INFINITY) {
-                continue;
+        for (let property in this.runningTimeslots) {
+
+            if (this.runningTimeslots[property].rotation !== Timeslot.ROTATION_INFINITY) {
+                this.runningTimeslots[property].currentTime = parseFloat(this.runningTimeslots[property].getCurrentTime() + 0.1).toFixed(1);
             }
 
-            this.runningTimeslots[key].currentTime = parseFloat(Number(this.runningTimeslots[key].currentTime + 0.1).toFixed(2));
-            this.timeslotStorage.update(this.runningTimeslots[key])
+            this.timeslotStorage.update(this.runningTimeslots[property])
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
         }
@@ -319,49 +259,30 @@ class TimeslotService extends AbstractTimeslotService {
      */
     _executeBids(timeslot, method) {
 
-        if (timeslot.binds.length === 0) {
-            return;
-        }
-
         for (let cont = 0; timeslot.binds.length > cont; cont++) {
-            this[method](timeslot.binds[cont]);
+            this[method](timeslot.binds[cont])
+                .catch((err) => {console.error('Error bind timeslot service', err)});
         }
-    }
-
-    /**
-     * @param {Array} dataReferences
-     * @return {Promise}
-     * @private
-     */
-    _extractTimeslotDataFromDataReferences(dataReferences) {
-        let promises = [];
-
-        for (let cont = 0; dataReferences.length > cont;  cont++) {
-            if (this.dataInjectorManager.has(dataReferences[0].name)) {
-                promises.push(this.dataInjectorManager
-                    .get(dataReferences[0].name).getTimeslotData(dataReferences[cont].data
-                    ));
-            }
-        }
-
-        return Promise.all(promises);
     }
 
     /**
      *
-     * @param timeslot
-     * @return {Object|null}
+     * @param {string} type
+     * @param {Timeslot} timeslot
+     * @param {Object} data
      * @private
      */
-    async _synchExtractTimeslotData(timeslot) {
-        let data = null;
-        if (timeslot.dataReferences.length === 0) {
-            return data;
+    _send(type, timeslot, data = null) {
+
+        let message = {
+            timeslot : timeslot
+        };
+
+        if(data) {
+            message.data = data;
         }
 
-        data = await this._extractTimeslotDataFromDataReferences(timeslot.dataReferences);
-
-        return data;
+        this.sender.send(type, message);
     }
 }
 
