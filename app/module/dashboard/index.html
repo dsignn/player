@@ -299,11 +299,9 @@
             }
 
             submitWidget(evt) {
-                console.log('SELEZIONATO',  evt.detail.option);
-
                 let widget = new Widget();
                 widget.wc = this.$.widget._selectedOption.wc;
-                let data = {}
+                let data = {};
                 data[this.$.widget._selectedOption.dataProperty] = this.data.trim().split(" ");
                 widget.data = data;
 

@@ -32,6 +32,7 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
         this._loadStorage();
         this._loadMonitorSender();
         this._loadMonitorService();
+        this._loadMonitorReceiver();
     }
 
     /**
@@ -185,7 +186,14 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadMonitorSender() {
-        this.getServiceManager().get('SenderPluginManager').set('monitorSender', require('electron').ipcRenderer);
+        this.getServiceManager().get('SenderPluginManager').set('MonitorSender', require('electron').ipcRenderer);
+    }
+
+    /**
+     * @private
+     */
+    _loadMonitorReceiver() {
+        this.getServiceManager().get('ReceiverServiceManager').set('MonitorReceiver', require('electron').ipcRenderer);
     }
 
     /**
@@ -200,7 +208,7 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
                         'MonitorService',
                         new MonitorService(
                             this.getServiceManager().get('StoragePluginManager').get(MonitorConfig.NAME_SERVICE),
-                            this.getServiceManager().get('SenderPluginManager').get('monitorSender')
+                            this.getServiceManager().get('SenderPluginManager').get('MonitorSender')
                         )
                     );
                 }

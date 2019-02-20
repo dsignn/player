@@ -197,7 +197,7 @@ class App {
             x: 2400,
             y: 200,
             autoHideMenuBar: true,
-            icon: path.join(__dirname, '../build/icon256x256.png'),
+            icon: path.join(__dirname, 'css/logo/icon256x256.png'),
             title : `Dsign Dashboard`
         });
 
@@ -240,7 +240,7 @@ class App {
             frame: false,
             enableLargerThanScreen: true,
             hasShadow: false,
-            icon: path.join(__dirname, '../build/icon256x256.png'),
+            icon: path.join(__dirname, 'css/log/icon256x256.png'),
             title :  `Dsign Screen [${monitor.name.toUpperCase()}]`
 
         });

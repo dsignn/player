@@ -32,15 +32,19 @@
                   height: {
                       type: Number,
                   },
+
                   width: {
                       type: Number,
                   },
+
                   top: {
                       type: Number,
                   },
+
                   left: {
                       type: Number,
                   },
+
                   zoom: {
                       type: Number,
                       value: 5
@@ -57,11 +61,13 @@
 
           connectedCallback() {
               super.connectedCallback();
-              //console.log('MONITOR', this.height, this.width, this.top, this.left);
-              this.__computeData();
+              this._computeData();
           }
 
-          __computeData() {
+          /**
+           * @private
+           */
+          _computeData() {
 
               this.style.backgroundColor = this.bgColor;
               this.style.height = this.height / this.zoom + 'px';

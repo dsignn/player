@@ -59,8 +59,6 @@
 
             static get is() { return 'player-monitor'; }
 
-            static get ipc() { return  require('electron').ipcRenderer; }
-
             static get properties() {
                 return {
                     nodeName : {
@@ -115,18 +113,27 @@
                     },
 
 
-                    timeslotDefault : {
-
-                    }
+                    timeslotDefault : {}
                 }
             }
 
             constructor() {
                 super();
-                ElementPlayerMonitorManager.ipc.on('play-timeslot', this._startTimeslot.bind(this));
-                ElementPlayerMonitorManager.ipc.on('stop-timeslot', this._stopTimeslot.bind(this));
-                ElementPlayerMonitorManager.ipc.on('pause-timeslot', this._pauseTimeslot.bind(this));
-                ElementPlayerMonitorManager.ipc.on('resume-timeslot', this._resumeTimeslot.bind(this));
+                serviceManager.get('ReceiverServiceManager')
+                    .get('TimeslotReceiver')
+                    .on('play-timeslot', this._startTimeslot.bind(this));
+
+                serviceManager.get('ReceiverServiceManager')
+                    .get('TimeslotReceiver')
+                    .on('stop-timeslot', this._stopTimeslot.bind(this));
+
+                serviceManager.get('ReceiverServiceManager')
+                    .get('TimeslotReceiver')
+                    .on('pause-timeslot', this._pauseTimeslot.bind(this));
+
+                serviceManager.get('ReceiverServiceManager')
+                    .get('TimeslotReceiver')
+                    .on('resume-timeslot', this._resumeTimeslot.bind(this));
             }
 
 

@@ -9,18 +9,19 @@
                 return 'player-monitor-manager';
             }
 
-            static get ipc() {
-                return require('electron').ipcRenderer;
-            }
-
-            static get properties() {
-                return {}
-            }
-
+            /**
+             *
+             */
             constructor() {
                 super();
-                ElementPlayerMonitorManager.ipc.on('player-monitor-config', this.configMonitor.bind(this));
-                ElementPlayerMonitorManager.ipc.on('update-virtual-monitor', this.updateMonitors.bind(this));
+
+                serviceManager.get('ReceiverServiceManager')
+                    .get('MonitorReceiver')
+                    .on('player-monitor-config', this.configMonitor.bind(this));
+
+                serviceManager.get('ReceiverServiceManager')
+                    .get('MonitorReceiver')
+                    .on('update-virtual-monitor', this.updateMonitors.bind(this));
             }
 
             /**

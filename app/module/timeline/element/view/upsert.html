@@ -161,10 +161,6 @@
             static get properties() {
                 return {
 
-                    videoPanel : {
-                        value: new VideoPanel()
-                    },
-
                     time: {
                         type: Object,
                         value: new Time()
@@ -173,12 +169,6 @@
                     labelAction: {
                         type: String,
                         value: 'Save'
-                    },
-
-                    hasVideoPanel: {
-                        type: Boolean,
-                        notify: true,
-                        value: false
                     },
 
                     storageName: {

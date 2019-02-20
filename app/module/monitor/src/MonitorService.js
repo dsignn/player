@@ -98,6 +98,13 @@ class MonitorService {
             this.sender.send(MonitorService.UPDATE_MONITOR, this.currentVirtualMonitor);
         }
     }
+
+    /**
+     * @return {Electron.Display[]}
+     */
+    getPhysicalMonitor() {
+        return require('electron').screen.getAllDisplays();
+    }
 }
 
 

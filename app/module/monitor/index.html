@@ -150,15 +150,18 @@
 
             ready() {
                 super.ready();
-                this.monitors = require('electron').screen.getAllDisplays();
+                this.monitors = serviceManager.get('MonitorService').getPhysicalMonitor();
             }
 
             connectedCallback() {
                 super.connectedCallback();
-                this.__computeSizeMonitorContainer();
+                this._computeSizeMonitorContainer();
             }
 
-            __computeSizeMonitorContainer() {
+            /**
+             * @private
+             */
+            _computeSizeMonitorContainer() {
 
                 if (Array.isArray(this.monitors)) {
                     let height = 0;

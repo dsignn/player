@@ -33,6 +33,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             this._loadTimeslotHydrator();
             this._loadStorage();
             this._loadTimeslotSender();
+            this._loadTimeslotReceiver();
             this._loadTimeslotService();
             this._loadDataServiceInjectorService();
         } else {
@@ -45,8 +46,13 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
                         this._loadStorage();
                         break;
                     case service[cont] === 'TimeslotService':
-                        this._loadTimeslotSender();
                         this._loadTimeslotService();
+                        break;
+                    case service[cont] === 'TimeslotReceiver':
+                        this._loadTimeslotReceiver();
+                        break;
+                    case service[cont] === 'TimeslotSender':
+                        this._loadTimeslotSender();
                         break;
                     case service[cont] === 'TimeslotDataInjectorService':
                         this._loadDataServiceInjectorService();
@@ -144,8 +150,16 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
      * @private
      */
     _loadTimeslotSender() {
-        this.getServiceManager().get('SenderPluginManager').set('timeslotSender', require('electron').ipcRenderer);
+        this.getServiceManager().get('SenderPluginManager').set('TimeslotSender', require('electron').ipcRenderer);
     }
+
+    /**
+     * @private
+     */
+    _loadTimeslotReceiver() {
+        this.getServiceManager().get('ReceiverServiceManager').set('TimeslotReceiver', require('electron').ipcRenderer);
+    }
+
 
     /**
      * @private
@@ -159,7 +173,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
 
                     let timeslotService = new TimeslotService(
                         this.getServiceManager().get('StoragePluginManager').get(TimeslotConfig.NAME_SERVICE),
-                        this.getServiceManager().get('SenderPluginManager').get('timeslotSender'),
+                        this.getServiceManager().get('SenderPluginManager').get('TimeslotSender'),
                         this.getServiceManager().get('Timer'),
                         this.getServiceManager().get('TimeslotDataInjectorService')
                     );

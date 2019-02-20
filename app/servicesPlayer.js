@@ -51,10 +51,10 @@ serviceManager.set(
 
         application.setServiceToLoad(
             'timeslot',
-            ['Hydrator', 'Storage', 'TimeslotDataInjectorService']
+            ['Hydrator', 'TimeslotReceiver']
         ).setServiceToLoad(
             'playlist',
-            ['Hydrator', 'Storage']
+            ['Hydrator']
         );
 
         application.init();
