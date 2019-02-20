@@ -56,6 +56,11 @@ class Timeslot {
         this.currentTime = 0;
 
         /**
+         * @type {Boolean}
+         */
+        this.disableAudio = false;
+
+        /**
          * @type {Array}
          */
         this.binds = [];

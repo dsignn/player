@@ -36,10 +36,12 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
             for (let cont = 0; service.length > cont; cont++) {
                 switch (true) {
                     case service[cont] === 'Hydrator':
-                        this._loadHydrator();
+                        this._loadTimelineHydrator();
                         break;
                     case service[cont] === 'Storage':
                         this._loadStorage();
+                        break;
+                    case service[cont] === 'TimelineService':
                         this._loadTimelineService();
                         break;
                 }
@@ -118,7 +120,7 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadTimelineHydrator() {
         this.getServiceManager().get('HydratorPluginManager').set(
-            'timelineHydrator',
+            'TimelineHydrator',
             TimelineConfig.getTimelineHydrator()
         );
     }
@@ -152,7 +154,7 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
                                     this.getServiceManager().get('DexieManager'),
                                     TimelineConfig.NAME_COLLECTION
                                 ),
-                                serviceManager.get('HydratorPluginManager').get('timelineHydrator')
+                                serviceManager.get('HydratorPluginManager').get('TimelineHydrator')
                             );
 
                             this.getServiceManager().get('StoragePluginManager').set(

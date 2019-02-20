@@ -24,15 +24,40 @@ class MonitorConfig extends require('dsign-library').core.ModuleConfig {
      */
     static get NAME_COLLECTION() { return 'monitor'; };
 
+    /**
+     * @param service
+     */
+    init(service = []) {
 
-    init() {
-
-        this._loadHydrator();
-        this._loadMonitorHydrator();
-        this._loadStorage();
-        this._loadMonitorSender();
-        this._loadMonitorService();
-        this._loadMonitorReceiver();
+        if (service.length === 0) {
+            this._loadHydrator();
+            this._loadMonitorHydrator();
+            this._loadStorage();
+            this._loadMonitorSender();
+            this._loadMonitorService();
+            this._loadMonitorReceiver();
+        } else {
+            for (let cont = 0; service.length > cont; cont++) {
+                switch (true) {
+                    case service[cont] === 'Hydrator':
+                        this._loadHydrator();
+                        this._loadMonitorHydrator();
+                        break;
+                    case service[cont] === 'Storage':
+                        this._loadStorage();
+                        break;
+                    case service[cont] === 'MonitorSender':
+                        this._loadMonitorSender();
+                        break;
+                    case service[cont] === 'MonitorService':
+                        this._loadMonitorService();
+                        break;
+                    case service[cont] === 'MonitorReceiver':
+                        this._loadMonitorReceiver();
+                        break;
+                }
+            }
+        }
     }
 
     /**

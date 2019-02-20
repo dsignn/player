@@ -50,10 +50,16 @@ serviceManager.set(
         application.setResourcePath(`${__dirname}/storage/resource`);
 
         application.setServiceToLoad(
+            'monitor',
+            ['Hydrator', 'MonitorReceiver']
+        ).setServiceToLoad(
             'timeslot',
             ['Hydrator', 'TimeslotReceiver']
         ).setServiceToLoad(
             'playlist',
+            ['Hydrator']
+        ).setServiceToLoad(
+            'timeline',
             ['Hydrator']
         );
 

@@ -28,11 +28,6 @@ class TimelineService extends AbstractTimeslotService {
          */
         this.runningTimelines = {};
 
-        if (!this.timer) {
-            throw 'Timer not set';
-
-        }
-
         this.timer.addEventListener('secondsUpdated', (evt) => {
             this._schedule();
         });
