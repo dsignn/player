@@ -122,25 +122,24 @@
                 for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
 
                     let divResource = this._createResourceDiv();
-                    switch (this.timeslot.resources[cont].type) {
-                        case 'image/jpeg':
-                        case 'image/png':
+                    switch (true) {
+                        case this.timeslot.resources[cont] instanceof Image === true:
 
                             let divImage = this._creteImage(this.timeslot.resources[cont]);
                             divResource.appendChild(divImage);
                             this.$.resources.appendChild(divResource);
                             break;
-                        case 'video/mp4':
+                        case this.timeslot.resources[cont] instanceof Video === true:
                             let tagVideo = this._createVideo(this.timeslot.resources[cont]);
                             divResource.appendChild(tagVideo);
                             this.$.resources.appendChild(divResource);
                             break;
-                        case 'audio/mp3':
+                        case this.timeslot.resources[cont] instanceof Audio === true:
                             let tagAudio = this._createAudio(this.timeslot.resources[cont]);
                             divResource.appendChild(tagAudio);
                             this.$.resources.appendChild(divResource);
                             break;
-                        case 'text/html':
+                        case this.timeslot.resources[cont] instanceof GenericFile === true:
                             this._createWebComponent(this.timeslot.resources[cont])
                                 .then(
                                     function(data) {
@@ -272,6 +271,7 @@
                 element.src = resource.location.isAbsolute() ? resource.getPath() : `${this.basePath}/${resource.getPath()}`;
                 element.autoplay = true;
                 element.loop = this.timeslot.rotation === Timeslot.ROTATION_LOOP ? true : false;
+                element.muted = !this.timeslot.enableAudio;
                 if (this.startAt > 0) {
                     element.currentTime = this.startAt;
                 }

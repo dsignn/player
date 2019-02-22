@@ -5,6 +5,7 @@
 <link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
@@ -56,8 +57,9 @@
                     <div class="flex-basis-70">
                         <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
                         <paper-input id="duration" name="duration" label="Duration" type="number" min="1" value="{{resource.duration}}" required></paper-input>
+                        <paper-checkbox checked="{{resource.enableAudio}}" style="padding-top: 20px;">Enable audio <i>(working only on video resource)</i></paper-checkbox>
                         <paper-autocomplete
-                                id="monitor"
+                                id="monitor"padding
                                 label="Monitor"
                                 text-property="name"
                                 value-property="name"

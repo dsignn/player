@@ -10,6 +10,11 @@ class Video extends GenericFile {
         this.duration = null;
 
         /**
+         * @type {Number|null}
+         */
+        this.fps = null;
+
+        /**
          * @type {Object}
          */
         this.dimension = {};

@@ -198,7 +198,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
             ['image/jpeg', 'image/png']
         ).addHydratorMap(
             ResourceConfig.getVideoHydrator(),
-            ['video/mp4']
+            ['video/mp4', 'video/webm']
         ).addHydratorMap(
             ResourceConfig.getZipHydrator(),
             ['application/zip', 'text/html']
@@ -234,6 +234,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
+            .enableHydrateProperty('fps')
             .enableHydrateProperty('type')
             .enableHydrateProperty('location')
             .enableHydrateProperty('tags')
@@ -244,6 +245,7 @@ class ResourceConfig extends require('dsign-library').core.ModuleConfig {
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('size')
+            .enableExtractProperty('fps')
             .enableExtractProperty('type')
             .enableExtractProperty('location')
             .enableExtractProperty('tags')

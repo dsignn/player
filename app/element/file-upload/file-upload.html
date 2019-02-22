@@ -176,6 +176,7 @@
                       delete file.dimension.type;
                       break;
                   case 'video/mp4':
+                  case 'video/webm':
                       let command = new ElementFileUpload.ffmpeg(file.path);
                       command.ffprobe(0, (err, metadata) => {
                               if(err) {
@@ -185,6 +186,7 @@
                               file.dimension = {};
                               file.dimension.height = metadata.streams[0].height;
                               file.dimension.width = metadata.streams[0].width;
+                              file.fps = metadata.streams[0].r_frame_rate;
                           }
                       );
                       break;

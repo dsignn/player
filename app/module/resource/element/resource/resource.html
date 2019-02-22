@@ -93,7 +93,15 @@
             <div class="card-content flex flex-horizontal">
                 <div class="data flex-basis-85 flex flex-vertical">
                     <div>{{resource.name}}</div>
-                    <div>{{size}} {{sizeLabel}}</div>
+                    <div class="flex flex-horizontal-end flex-horizontal-space-between">
+                        <template is="dom-if" if="{{resource.fps}}">
+                            <span> {{resource.fps}} fps</span>
+                        </template>
+                        <span>{{size}} {{sizeLabel}}</span>
+                    </div>
+                    <template is="dom-if" if="{{resource.dimension.height}}">
+                        <div class="flex flex-horizontal-end">{{resource.dimension.width}} px {{resource.dimension.height}} px</div>
+                    </template>
                 </div>
                 <paper-menu-button ignore-select>
                     <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
@@ -184,6 +192,7 @@
              */
             _updateLeftImageHtml() {
 
+                // TODO for instance of
                 this.$.contentRightSection.className = '';
                 switch (true) {
                     case this.resource.type === 'text/html':
@@ -194,6 +203,7 @@
                         this.$.contentRightSection.classList.add("imgBackground");
                         break;
                     case this.resource.type === 'video/mp4':
+                    case this.resource.type === 'video/webm':
                         this.$.contentRightSection.classList.add("videoBackground");
                         break;
                     case this.resource.type === 'audio/mp3':

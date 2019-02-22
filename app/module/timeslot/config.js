@@ -81,12 +81,17 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
         let hydrator = new dsign.hydrator.PropertyHydrator(
             new Timeslot(),
             {
-                'resources' : new dsign.hydrator.strategy.HydratorStrategy(
+                resources : new dsign.hydrator.strategy.HydratorStrategy(
                     ResourceConfig.getResourceHydrator()),
-                'virtualMonitorReference' : new dsign.hydrator.strategy.HydratorStrategy(
+                virtualMonitorReference : new dsign.hydrator.strategy.HydratorStrategy(
                     new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())),
-                'dataReferences' : new dsign.hydrator.strategy.HydratorStrategy(
+                dataReferences : new dsign.hydrator.strategy.HydratorStrategy(
                     new dsign.hydrator.PropertyHydrator(new TimeslotDataReference())),
+                enableAudio : new dsign.hydrator.strategy.HybridStrategy(
+                    dsign.hydrator.strategy.HybridStrategy.BOOLEAN_TYPE,
+                    dsign.hydrator.strategy.HybridStrategy.NUMBER_TYPE
+                ),
+                duration : new dsign.hydrator.strategy.NumberStrategy()
             }
         );
 
@@ -96,6 +101,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('binds')
             .enableHydrateProperty('currentTime')
             .enableHydrateProperty('duration')
+            .enableHydrateProperty('enableAudio')
             .enableHydrateProperty('context')
             .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('resources')
@@ -110,6 +116,7 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('binds')
             .enableExtractProperty('currentTime')
             .enableExtractProperty('duration')
+            .enableExtractProperty('enableAudio')
             .enableExtractProperty('context')
             .enableExtractProperty('virtualMonitorReference')
             .enableExtractProperty('resources')
