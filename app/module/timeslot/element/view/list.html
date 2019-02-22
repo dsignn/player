@@ -22,22 +22,61 @@
             :host ::slotted(.header) {
                 margin-bottom: 16px;
             }
+
+            @media (max-width: 600px) {
+                timeslot-wc {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (min-width: 601px) and (max-width: 900px) {
+                timeslot-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                timeslot-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                timeslot-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                timeslot-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 1920px) {
+                timeslot-wc {
+                    flex-basis: 16.6%;
+                }
+            }
+
         </style>
         <slot name="header"></slot>
         <div hidden$="{{!totalItems}}">
-            <template is="dom-repeat" items="[[resources]]" as="timeslot">
-                <timeslot-wc
-                        timeslot="{{timeslot}}"
-                        on-play="play"
-                        on-resume="resume"
-                        on-stop="stop"
-                        on-pause="pause"
-                        on-update-view="displayUpdateView"
-                        on-remove="_removeResource"
-                        on-change-rotation="_updateResource"
-                        on-change-context="_updateResource">
-                </timeslot-wc>
-            </template>
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="timeslot">
+                    <timeslot-wc
+                            timeslot="{{timeslot}}"
+                            on-play="play"
+                            on-resume="resume"
+                            on-stop="stop"
+                            on-pause="pause"
+                            on-update-view="displayUpdateView"
+                            on-remove="_removeResource"
+                            on-change-rotation="_updateResource"
+                            on-change-context="_updateResource">
+                    </timeslot-wc>
+                </template>
+            </div>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
         <div hidden$="{{totalItems}}">

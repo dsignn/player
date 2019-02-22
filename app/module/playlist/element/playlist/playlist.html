@@ -39,6 +39,10 @@
                 min-width: 0;
             }
 
+            .text-wrap  {
+                overflow: hidden;
+                white-space: nowrap;
+            }
 
             #rightSection {
                 background-image: url("img/playlist.jpg") !important;
@@ -105,8 +109,8 @@
                     <div class="dataWrapper">
                         <div>{{playlist.name}}</div>
                         <div id="status">{{status}}</div>
-                        <div class="flex flex-horizontal-end">{{currentPlaylistTime}} / {{duration}} sec</div>
-                        <div class="flex flex-horizontal-end">{{currentTimeslotTime}} sec {{currentTimeslotName}}</div>
+                        <div class="flex flex-horizontal-end text-wrap">{{currentPlaylistTime}} / {{duration}} sec</div>
+                        <div class="flex flex-horizontal-end text-wrap">{{currentTimeslotTime}} sec {{currentTimeslotName}}</div>
                     </div>
                 </div>
                 <div class="flags flex-basis-15">

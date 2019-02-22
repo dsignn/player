@@ -21,13 +21,50 @@
             :host ::slotted(.header) {
                 margin-bottom: 16px;
             }
-        </style>
 
+            @media (max-width: 600px) {
+                resource-wc {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (min-width: 601px) and (max-width: 900px) {
+                resource-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                resource-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                resource-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                resource-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 1920px) {
+                resource-wc {
+                    flex-basis: 16.6%;
+                }
+            }
+        </style>
         <slot name="header"></slot>
         <div hidden$="{{!hasResources}}">
-            <template is="dom-repeat" items="[[resources]]" as="resource">
-                <resource-wc resource="{{resource}}" on-update-view="displayUpdateView" on-remove="_removeResource"></resource-wc>
-            </template>
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="resource">
+                    <resource-wc resource="{{resource}}" on-update-view="displayUpdateView" on-remove="_removeResource"></resource-wc>
+                </template>
+            </div>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
         <div hidden$="{{totalItems}}">

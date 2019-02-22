@@ -16,24 +16,60 @@
         <style include="global-layout"></style>
         <style include="global-style"></style>
         <style>
+            @media (max-width: 600px) {
+                playlist-wc {
+                    flex-basis: 100%;
+                }
+            }
 
+            @media (min-width: 601px) and (max-width: 900px) {
+                playlist-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                playlist-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                playlist-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                playlist-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 1920px) {
+                playlist-wc {
+                    flex-basis: 16.6%;
+                }
+            }
         </style>
         <slot name="header"></slot>
         <div hidden$="{{!totalItems}}" style="padding-top: 20px;">
-            <template is="dom-repeat" items="[[resources]]" as="playlist">
-                <playlist-wc
-                        playlist="{{playlist}}"
-                        on-remove="_removeResource"
-                        on-update-view="displayUpdateView"
-                        on-wrap-update-playlist="update"
-                        on-play="play"
-                        on-stop="stop"
-                        on-pause="pause"
-                        on-resume="resume"
-                        on-change-rotation="_updateResource"
-                        on-change-context="_updateResource">
-                </playlist-wc>
-            </template>
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="playlist">
+                    <playlist-wc
+                            playlist="{{playlist}}"
+                            on-remove="_removeResource"
+                            on-update-view="displayUpdateView"
+                            on-wrap-update-playlist="update"
+                            on-play="play"
+                            on-stop="stop"
+                            on-pause="pause"
+                            on-resume="resume"
+                            on-change-rotation="_updateResource"
+                            on-change-context="_updateResource">
+                    </playlist-wc>
+                </template>
+            </div>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
         <div hidden$="{{totalItems}}">

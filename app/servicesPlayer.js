@@ -14,7 +14,7 @@ dsign.core.Application.injectServices(serviceManager);
 
 serviceManager.eventManager.on(
     dsign.serviceManager.ServiceManager.LOAD_SERVICE,
-    function(evt) {
+    (evt) => {
         if (evt.data.name === 'Application') {
 
             serviceManager.set(
@@ -33,13 +33,13 @@ serviceManager.eventManager.on(
  */
 serviceManager.set(
     'Config',
-    function (sm) {
+    (sm) => {
         const fs = require('fs');
         return  JSON.parse(fs.readFileSync(__dirname + '/config/application.json'));
     }
 ).set(
     'Application',
-    (function(sm){
+    ((sm) => {
         const fs = require('fs');
         let application =  new dsign.core.Application(
             JSON.parse(fs.readFileSync(__dirname + '/config/application.json')),

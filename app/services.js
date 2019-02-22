@@ -101,9 +101,10 @@ serviceManager.set(
 
             archive: () => {
                 // TODO riscrivere
+                let date = new Date();
                 let archive = new dsign.archive.Archive(
                     'zip',
-                    `${pathToExtract}/bk.zip`,
+                    `${pathToExtract}/bk-${date.getHours()}:${date.getMinutes()}-${date.getDate()}:${date.getMonth()+1}:${date.getFullYear()}.zip`,
                     { zlib: { level: 9 } }
                 );
 

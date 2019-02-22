@@ -1,4 +1,3 @@
-
 <link rel="import" href="../../../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
@@ -14,99 +13,143 @@
 
 
 <dom-module id="monitor-view-list">
-  <template>
-    <style include="global-layout"></style>
-    <style include="global-style"></style>
-    <slot name="header"></slot>
-    <div hidden$="{{!totalItems}}" style="padding-top: 20px;">
-      <template is="dom-repeat" items="[[resources]]" as="monitor">
-        <monitor-wc
-                monitor="{{monitor}}"
-                on-remove="_removeResource"
-                on-update-view="displayUpdateView"
-                on-change-enable="changeEnableMonior">
-        </monitor-wc>
-      </template>
-      <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
-    </div>
-    <div hidden$="{{totalItems}}">Non sono presenti monitor virtuali</div>
-  </template>
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
 
-  <script>
-      class ElementMonitorViewList extends StorageAdapterPaginationResourceBehaviour {
+            @media (max-width: 600px) {
+                monitor-wc {
+                    flex-basis: 100%;
+                }
+            }
 
-          static get is() { return 'monitor-view-list'; }
+            @media (min-width: 601px) and (max-width: 900px) {
+                monitor-wc {
+                    flex-basis: 50%;
+                }
+            }
 
-          static get properties() {
-              return {
+            @media (min-width: 901px) and (max-width: 1200px) {
+                monitor-wc {
+                    flex-basis: 33.3%;
+                }
+            }
 
-                  resourceSelected: {
-                      type: Object,
-                      notify: true,
-                      value: {}
-                  },
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                monitor-wc {
+                    flex-basis: 25%;
+                }
+            }
 
-                  selected: {
-                      type: Number,
-                      notify: true
-                  },
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                monitor-wc {
+                    flex-basis: 20%;
+                }
+            }
 
-                  storageName: {
-                      type: String,
-                      readOnly: true,
-                      value: MonitorConfig.NAME_SERVICE
+            @media (min-width: 1920px) {
+                monitor-wc {
+                    flex-basis: 16.6%;
+                }
+            }
 
-                  }
-              };
-          }
+        </style>
+        <slot name="header"></slot>
+        <div hidden$="{{!totalItems}}" style="padding-top: 20px;">
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="monitor">
+                    <monitor-wc
+                            monitor="{{monitor}}"
+                            on-remove="_removeResource"
+                            on-update-view="displayUpdateView"
+                            on-change-enable="changeEnableMonior">
+                    </monitor-wc>
+                </template>
+            </div>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{totalItems}}">Non sono presenti monitor virtuali</div>
+    </template>
 
-          ready() {
-              super.ready();
-              this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
-          }
+    <script>
+        class ElementMonitorViewList extends StorageAdapterPaginationResourceBehaviour {
 
-          /**
-           * @param evt
-           */
-          changeEnableMonior(evt) {
+            static get is() {
+                return 'monitor-view-list';
+            }
 
-              for (let cont = 0; this.resources.length > cont; cont++) {
-                  this.resources[cont].enable = 0
-              }
+            static get properties() {
+                return {
 
-              this.storage.getAll({enable: 1})
-                  .then((enableMonitors) => {
-                      for (let cont = 0; enableMonitors.length > cont; cont++) {
+                    resourceSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
 
-                          enableMonitors[cont].enable = false;
-                          this.storage.update(enableMonitors[cont])
-                              .then((data) => {})
-                              .catch((err) => {
-                                      console.log(err)
-                                  }
-                              );
-                      }
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
 
-                      evt.detail.enable = true;
-                      this.storage.update(evt.detail)
-                          .then((data) => {
-                              serviceManager.get('PaperToastNotification').notify(' Enable ' + evt.detail.name);
-                          })
-                          .catch((err) => {
-                                  console.log(err)
-                              }
-                          );
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: MonitorConfig.NAME_SERVICE
 
-                  });
-          }
+                    }
+                };
+            }
 
-          displayUpdateView(evt) {
-              this.resourceSelected = evt.detail;
-              this.selected = 2;
-          }
-      }
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
+            }
 
-      window.customElements.define(ElementMonitorViewList.is, ElementMonitorViewList);
+            /**
+             * @param evt
+             */
+            changeEnableMonior(evt) {
 
-  </script>
+                for (let cont = 0; this.resources.length > cont; cont++) {
+                    this.resources[cont].enable = 0
+                }
+
+                this.storage.getAll({enable: 1})
+                    .then((enableMonitors) => {
+                        for (let cont = 0; enableMonitors.length > cont; cont++) {
+
+                            enableMonitors[cont].enable = false;
+                            this.storage.update(enableMonitors[cont])
+                                .then((data) => {
+                                })
+                                .catch((err) => {
+                                        console.log(err)
+                                    }
+                                );
+                        }
+
+                        evt.detail.enable = true;
+                        this.storage.update(evt.detail)
+                            .then((data) => {
+                                serviceManager.get('PaperToastNotification').notify(' Enable ' + evt.detail.name);
+                            })
+                            .catch((err) => {
+                                    console.log(err)
+                                }
+                            );
+
+                    });
+            }
+
+            displayUpdateView(evt) {
+                this.resourceSelected = evt.detail;
+                this.selected = 2;
+            }
+        }
+
+        window.customElements.define(ElementMonitorViewList.is, ElementMonitorViewList);
+
+    </script>
 </dom-module>

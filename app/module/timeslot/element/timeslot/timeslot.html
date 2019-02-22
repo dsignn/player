@@ -26,10 +26,13 @@
                 color: black;
             }
 
-
             .card-content,
             .card-actions{
                 padding: 0;
+            }
+
+            paper-card {
+                margin-right: 4px;
             }
 
             .data {
@@ -122,14 +125,14 @@
                 </paper-icon-button>
             </div>
             <div class="card-content flex flex-horizontal">
-                <div class="data flex-basis-85 flex flex-vertical">
+                <div class="data flex-1 flex flex-vertical">
                     <div class="dataWrapper">
                         <div class="nameTimeslot">{{timeslot.name}}</div>
                         <div id="status">{{status}}</div>
                         <div class="flex flex-horizontal-end">{{currentTime}} / {{timeslot.duration}} sec</div>
                     </div>
                 </div>
-                <div class="data flex-basis-15 flex flex-vertical" hidden$="[[removeCrud]]">
+                <div class="data flex flex-vertical" hidden$="[[removeCrud]]">
                     <paper-menu-button ignore-select disabled="{{hideCrud}}">
                         <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                         <paper-listbox slot="dropdown-content" multi>
