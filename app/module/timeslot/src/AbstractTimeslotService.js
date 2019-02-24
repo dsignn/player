@@ -132,6 +132,17 @@ class AbstractTimeslotService {
 
         return data;
     }
+
+    /**
+     * @param Array references
+     */
+    getTimeslotsFromArrayReference(references) {
+        let timeslots = [];
+        for (let cont = 0; references.length > cont; cont++) {
+            timeslots.push(this.timeslotStorage.get(references[cont].referenceId));
+        }
+        return Promise.all(timeslots);
+    }
 }
 
 module.exports = AbstractTimeslotService;

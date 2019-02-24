@@ -125,6 +125,9 @@
                                 <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                     <div>
                                         <div class="service-name">[[item.name]]</div>
+                                        <template is="dom-if" if="{{item.dimension.width}}">
+                                            <div class="service-description">Width [[item.dimension.width]]px Height [[item.dimension.height]]px</div>
+                                        </template>
                                     </div>
                                     <paper-ripple></paper-ripple>
                                 </paper-item>
@@ -163,6 +166,7 @@
                                 <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                     <div>
                                         <div class="service-name">[[item.name]]</div>
+                                        <div class="service-description">[[item.virtualMonitorReference.name]]</div>
                                     </div>
                                     <paper-ripple></paper-ripple>
                                 </paper-item>
@@ -476,14 +480,12 @@
              * @private
              */
             _searchBindChanged(evt) {
-                serviceManager.get('StoragePluginManager')
-                    .get(TimeslotConfig.NAME_SERVICE)
-                    .getAll()
+                this.storage.getAll()
                     .then((data) => {
 
                         let filter = data.filter(
                             element => {
-                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1 && element.id !== this.resource.id;
                             }
                         );
 
@@ -508,7 +510,7 @@
 
                 this.$.listBind.appendChild(chip);
                 this.resource.binds.push(
-                    evt.detail.option
+                    TimeslotReference.getTimeslotReferenceFromTimeslot(evt.detail.option)
                 );
 
                 setTimeout(

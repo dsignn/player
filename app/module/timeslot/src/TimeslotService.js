@@ -3,7 +3,6 @@
  */
 class TimeslotService extends AbstractTimeslotService {
 
-
     /**
      * @param {Storage} timeslotStorage
      * @param {AbstractSender} sender
@@ -110,56 +109,58 @@ class TimeslotService extends AbstractTimeslotService {
         }
     }
 
-
-
     /**
      * @param {Timeslot} timeslot
+     * @param {Object} options
+     * @return {Promise}
      */
-    async play(timeslot) {
+    async play(timeslot, options = {}) {
 
 
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
 
+        let bindTimeslots = options.isBindExecution !== false ? await this.getTimeslotsFromArrayReference(timeslot.binds) : [];
         this._playTimeslot(timeslot, dataTimeslot);
-        this._executeBids(timeslot, 'play');
+        this._executeBids(bindTimeslots, 'play');
         this.eventManager.fire(TimeslotService.PLAY, timeslot);
     }
 
     /**
      * @param {Timeslot} timeslot
+     * @param {Object} options
      * @return {Promise}
      */
-    async stop(timeslot) {
+    async stop(timeslot, options = {}) {
 
-
+        let bindTimeslots = options.isBindExecution !== false ? await this.getTimeslotsFromArrayReference(timeslot.binds) : [];
         this._stopTimeslot(timeslot);
-        this._executeBids(timeslot, 'stop');
+        this._executeBids(bindTimeslots, 'stop');
         this.eventManager.fire(TimeslotService.STOP, timeslot);
     }
 
     /**
      * @param {Timeslot} timeslot
+     * @param {Object} options
      * @return {Promise}
      */
-    async pause(timeslot) {
+    async pause(timeslot, options = {}) {
 
-        timeslot.options.typeService = 'timeslot';
-       // this._executeBids(timeslot, 'pause');
-
+        let bindTimeslots = options.isBindExecution !== false ? await this.getTimeslotsFromArrayReference(timeslot.binds) : [];
         this._pauseTimeslot(timeslot);
-        this._executeBids(timeslot, 'pause');
+        this._executeBids(bindTimeslots, 'pause');
         this.eventManager.fire(TimeslotService.PAUSE, timeslot);
     }
 
     /**
      * @param {Timeslot} timeslot
+     * @return {Promise}
      */
-    async resume(timeslot) {
+    async resume(timeslot, options = {}) {
 
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-
+        let bindTimeslots = options.isBindExecution !== false ? await this.getTimeslotsFromArrayReference(timeslot.binds) : [];
         this._resumeTimeslot(timeslot, dataTimeslot);
-        this._executeBids(timeslot, 'resume');
+        this._executeBids(bindTimeslots, 'resume');
         this.eventManager.fire(TimeslotService.RESUME, timeslot);
     }
 
@@ -253,14 +254,14 @@ class TimeslotService extends AbstractTimeslotService {
     }
 
     /**
-     * @param timeslot
+     * @param timeslots
      * @param method
      * @private
      */
-    _executeBids(timeslot, method) {
+    _executeBids(timeslots, method) {
 
-        for (let cont = 0; timeslot.binds.length > cont; cont++) {
-            this[method](timeslot.binds[cont])
+        for (let cont = 0; timeslots.length > cont; cont++) {
+            this[method](timeslots[cont], {isBindExecution : false})
                 .catch((err) => {console.error('Error bind timeslot service', err)});
         }
     }

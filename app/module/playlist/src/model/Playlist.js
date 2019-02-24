@@ -42,6 +42,11 @@ class Playlist {
         this.rotation = Playlist.ROTATION_NO;
 
         /**
+         * @type {Boolean}
+         */
+        this.disableAudio = false;
+
+        /**
          * @type {number}
          */
         this.currentIndex = 0;

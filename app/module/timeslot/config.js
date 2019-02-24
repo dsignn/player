@@ -91,7 +91,9 @@ class TimeslotConfig extends require('dsign-library').core.ModuleConfig {
                     dsign.hydrator.strategy.HybridStrategy.BOOLEAN_TYPE,
                     dsign.hydrator.strategy.HybridStrategy.NUMBER_TYPE
                 ),
-                duration : new dsign.hydrator.strategy.NumberStrategy()
+                duration : new dsign.hydrator.strategy.NumberStrategy(),
+                binds : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new TimeslotReference())),
             }
         );
 
