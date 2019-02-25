@@ -118,7 +118,6 @@ class TimeslotService extends AbstractTimeslotService {
 
 
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-
         let bindTimeslots = options.isBindExecution !== false ? await this.getTimeslotsFromArrayReference(timeslot.binds) : [];
         this._playTimeslot(timeslot, dataTimeslot);
         this._executeBids(bindTimeslots, 'play');

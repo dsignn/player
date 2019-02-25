@@ -134,7 +134,7 @@ class AbstractTimeslotService {
     }
 
     /**
-     * @param Array references
+     * @param {Array} references
      */
     getTimeslotsFromArrayReference(references) {
         let timeslots = [];

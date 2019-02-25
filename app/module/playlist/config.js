@@ -75,16 +75,24 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
         let hydrator = new dsign.hydrator.PropertyHydrator(
             new Playlist(),
             {
-                'timeslots' : new dsign.hydrator.strategy.HydratorStrategy(timeslotReferenceHydrator)
+                timeslots : new dsign.hydrator.strategy.HydratorStrategy(timeslotReferenceHydrator),
+                virtualMonitorReference : new dsign.hydrator.strategy.HydratorStrategy(
+                    new dsign.hydrator.PropertyHydrator(new VirtualMonitorReference())),
+                enableAudio : new dsign.hydrator.strategy.HybridStrategy(
+                    dsign.hydrator.strategy.HybridStrategy.BOOLEAN_TYPE,
+                    dsign.hydrator.strategy.HybridStrategy.NUMBER_TYPE
+                )
             }
         );
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
+            .enableExtractProperty('status')
             .enableExtractProperty('context')
             .enableExtractProperty('rotation')
+            .enableExtractProperty('enableAudio')
+            .enableExtractProperty('virtualMonitorReference')
             .enableExtractProperty('currentIndex')
-            .enableExtractProperty('status')
             .enableExtractProperty('binds')
             .enableExtractProperty('timeslots');
 
@@ -92,8 +100,10 @@ class PlaylistConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('name')
             .enableHydrateProperty('status')
             .enableHydrateProperty('context')
-            .enableHydrateProperty('currentIndex')
             .enableHydrateProperty('rotation')
+            .enableHydrateProperty('enableAudio')
+            .enableHydrateProperty('virtualMonitorReference')
+            .enableHydrateProperty('currentIndex')
             .enableHydrateProperty('binds')
             .enableHydrateProperty('timeslots');
 

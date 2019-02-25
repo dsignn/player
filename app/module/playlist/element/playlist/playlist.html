@@ -219,17 +219,16 @@
 
                 switch (true) {
                     case this.playlist.id === evt.data.id && evt.data.status === Playlist.RUNNING:
-                        this.status = this.playlist.status;
+                        this.status =  evt.data.status;
                         this._updateActionHtml();
-                        this._clearStatusClass(this.playlist.status);
-                        this.currentPlaylistTime = this.playlist.getCurrentTimeString();
+                        this._clearStatusClass( evt.data.status);
+                        this.currentPlaylistTime =  evt.data.getCurrentTimeString();
 
-                        let currentTimeslot = this.playlist.current();
+                        let currentTimeslot =  evt.data.current();
                         if (currentTimeslot) {
                             this.currentTimeslotTime = currentTimeslot.getCurrentTimeString();
                             this.currentTimeslotName = currentTimeslot.name;
                         }
-
                         break;
                     case evt.data.id === this.playlist.id && evt.data.status !== Playlist.RUNNING:
                         this.playlist = null;

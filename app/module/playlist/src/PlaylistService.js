@@ -111,9 +111,10 @@ class PlaylistService extends AbstractTimeslotService {
             return;
         }
 
-        //this._executeBids(playlist, 'resume');
+        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
         this._playPlaylist(playlist, timeslot, dataTimeslot);
+        this._executeBids(bindPlaylists, 'play');
         this.eventManager.fire(PlaylistService.PLAY, playlist);
     }
 
@@ -123,8 +124,9 @@ class PlaylistService extends AbstractTimeslotService {
      */
     async stop(playlist) {
 
-        //this._executeBids(playlist, 'stop');
+        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         this._stopPlaylist(playlist);
+        this._executeBids(bindPlaylists, 'stop');
         this.eventManager.fire(PlaylistService.STOP, playlist);
     }
 
@@ -142,10 +144,10 @@ class PlaylistService extends AbstractTimeslotService {
         }
 
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-
+        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         timeslot.currentTime = timeslotPlaylistReference.currentTime;
         this._resumePlaylist(playlist, timeslot, dataTimeslot);
-
+        this._executeBids(bindPlaylists, 'resume');
         this.eventManager.fire(PlaylistService.RESUME, playlist);
     }
 
@@ -156,7 +158,9 @@ class PlaylistService extends AbstractTimeslotService {
     async pause(playlist) {
 
         //this._executeBids(playlist, 'pause');
+        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         this._pausePlaylist(playlist);
+        this._executeBids(bindPlaylists, 'pause');
         this.eventManager.fire(PlaylistService.PAUSE, playlist);
     }
 
@@ -236,6 +240,7 @@ class PlaylistService extends AbstractTimeslotService {
 
         timeslot.currentTime = 0;
         timeslot.context = playlist.context;
+        timeslot.enableAudio = playlist.enableAudio;
         this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('PLAY playlist EVT')})
@@ -258,6 +263,7 @@ class PlaylistService extends AbstractTimeslotService {
         this.setRunningPlaylist(playlist);
         playlist.status = Playlist.RUNNING;
         timeslot.context = playlist.context;
+        timeslot.enableAudio = playlist.enableAudio;
         this._send(PlaylistService.RESUME, playlist, timeslot, dataTimeslot);
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('RESUME playlist EVT')})
@@ -299,28 +305,27 @@ class PlaylistService extends AbstractTimeslotService {
 
         for (let property in this.runningPlaylist) {
 
-            let timeslotPlaylistRef = this.runningPlaylist[property].current();
+            let playlist = this.runningPlaylist[property];
+            let timeslotPlaylistRef = playlist.current();
 
             timeslotPlaylistRef.currentTime = parseFloat(timeslotPlaylistRef.getCurrentTime() + 0.1).toFixed(1);
-            this.playlistStorage.update(this.runningPlaylist[property])
+            console.log(timeslotPlaylistRef.currentTime, timeslotPlaylistRef.name, playlist.name);
+            this.playlistStorage.update(playlist)
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
         }
     }
 
     /**
-     * @param {Playlist} playlist
+     * @param {Array} playlists
      * @param {String} method
      * @private
      */
-    _executeBids(playlist, method) {
-        if (playlist.binds === undefined || playlist.binds.length === 0) {
-            return;
-        }
-
-        for (let cont = 0; playlist.binds.length > cont; cont++) {
-
-            // TODO
+    _executeBids(playlists, method) {
+        for (let cont = 0; playlists.length > cont; cont++) {
+            playlists[cont].isBind = true;
+            this[method](playlists[cont])
+                .catch((err) => {console.error('Error bind timeslot service', err)});
         }
     }
 
@@ -347,6 +352,17 @@ class PlaylistService extends AbstractTimeslotService {
         }
 
         this.sender.send(type, message);
+    }
+
+    /**
+     * @param {Array} references
+     */
+    getPlaylistFromArrayReference(references) {
+        let playlists = [];
+        for (let cont = 0; references.length > cont; cont++) {
+            playlists.push(this.playlistStorage.get(references[cont].referenceId));
+        }
+        return Promise.all(playlists);
     }
 }
 

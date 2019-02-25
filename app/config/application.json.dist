@@ -134,6 +134,7 @@
             "autoloads": [
                 "src/PlaylistService.js",
                 "src/model/Playlist.js",
+                "src/model/PlaylistReference.js",
                 "src/model/TimeslotPlaylistReference.js"
             ],
             "name": "playlist"

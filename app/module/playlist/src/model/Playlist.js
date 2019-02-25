@@ -42,9 +42,15 @@ class Playlist {
         this.rotation = Playlist.ROTATION_NO;
 
         /**
+         *
+         * @type {null|Object}
+         */
+        this.virtualMonitorReference = {};
+
+        /**
          * @type {Boolean}
          */
-        this.disableAudio = false;
+        this.enableAudio = false;
 
         /**
          * @type {number}
@@ -86,8 +92,20 @@ class Playlist {
      * @return {Playlist}
      */
     appendTimeslot(timeslot) {
+        if (this.timeslots.length === 0) {
+            this.virtualMonitorReference = timeslot.virtualMonitorReference;
+        }
         this.timeslots.push(timeslot);
         return this;
+    }
+
+    /**
+     * @return boolean
+     */
+    hasVirtualMonitorReference() {
+        return this.virtualMonitorReference !== null &&
+            typeof this.virtualMonitorReference === 'object' &&
+            Object.entries(this.virtualMonitorReference).length !== 0;
     }
 
     /**
@@ -101,6 +119,11 @@ class Playlist {
         if (index > -1) {
             this.timeslots.splice(index, 1);
         }
+
+        if (this.timeslots.length === 0) {
+            this.virtualMonitorReference = {};
+        }
+
         return index > -1;
     }
 
@@ -114,6 +137,11 @@ class Playlist {
             search = index;
             this.timeslots.splice(index, 1);
         }
+
+        if (this.timeslots.length === 0) {
+            this.virtualMonitorReference = {};
+        }
+
         return search;
     }
 

@@ -8,6 +8,7 @@
 <link rel="import" href="../../../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
 <link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
@@ -33,6 +34,7 @@
             <form method="post" action="">
                 <div class="flex flex-vertical">
                     <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                    <paper-checkbox checked="{{resource.enableAudio}}" style="padding-top: 20px;">Enable audio <i>(working only on video resource)</i></paper-checkbox>
                     <paper-autocomplete
                             id="timeslots"
                             label="Timelosts"
@@ -63,6 +65,7 @@
                             <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                 <div>
                                     <div class="service-name">[[item.name]]</div>
+                                    <div class="service-description">[[item.virtualMonitorReference.name]]</div>
                                 </div>
                                 <paper-ripple></paper-ripple>
                             </paper-item>
@@ -213,11 +216,16 @@
              */
             _searchTimeslotChanged(evt) {
 
-
-                // TODO aggiunta filtro per nomitor id
-
                 let search = {};
-                search.name = evt.detail.value;
+                if (this.resource.hasVirtualMonitorReference()) {
+                    search['monitorId+name'] = [
+                        this.resource.virtualMonitorReference.monitorId,
+                        evt.detail.value
+                    ]
+                } else {
+                    search.name = evt.detail.value;
+                }
+
                 serviceManager.get('StoragePluginManager')
                     .get(TimeslotConfig.NAME_SERVICE)
                     .getAll(search)
@@ -276,7 +284,7 @@
 
                         let filter = data.filter(
                             element => {
-                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1 && element.id !== this.resource.id;
                             }
                         );
 
@@ -291,8 +299,9 @@
             }
 
             _selectBind(evt) {
-                this.resource.appendBind(evt.detail.option);
-                this.appendBindChip(evt.detail.option);
+                let bind = PlaylistReference.getReferenceFromEntity(evt.detail.option);
+                this.resource.appendBind(bind);
+                this.appendBindChip(bind);
                 setTimeout(
                     () => {
                         this.$.bind.clear();
