@@ -8,6 +8,8 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
 <link rel="import" href="../media-device/media-device.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-pagination-resource-behaviour.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
 
 <dom-module id="media-device-view-list">
     <template>
@@ -18,22 +20,64 @@
             :host ::slotted(.header) {
                 margin-bottom: 16px;
             }
+
+            @media (max-width: 600px) {
+                media-device-wc {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (min-width: 601px) and (max-width: 900px) {
+                media-device-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                media-device-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                media-device-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                media-device-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 1920px) {
+                media-device-wc {
+                    flex-basis: 16.6%;
+                }
+            }
         </style>
 
         <slot name="header"></slot>
-        <div hidden$="{{!hasResources}}">
-            <template is="dom-repeat" items="[[resources]]" as="resource">
-                <media-device-wc media-device="{{resource}}" on-wrap-remove="remove"></media-device-wc>
-            </template>
+        <div hidden$="{{!totalItems}}">
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="resource">
+                    <media-device-wc
+                            media-device="{{resource}}"
+                            on-update-view="displayUpdateView"
+                            on-remove="_removeResource">
+                    </media-device-wc>
+                </template>
+            </div>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
-        <div hidden$="{{hasResources}}">
+        <div hidden$="{{totalItems}}">
             Non sono presenti media device
         </div>
     </template>
 
     <script>
-        class ElementMediaDeviceViewList extends Polymer.Element {
+        class ElementMediaDeviceViewList extends StorageAdapterPaginationResourceBehaviour {
 
             static get is() {
                 return 'media-device-view-list';
@@ -41,11 +85,6 @@
 
             static get properties() {
                 return {
-
-                    resources: {
-                        type: Array,
-                        value: []
-                    },
 
                     resourceSelected: {
                         type: Object,
@@ -58,93 +97,24 @@
                         notify: true
                     },
 
-                    page: {
-                        type: Number,
-                        value: 1
-                    },
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: MediaDeviceConfig.NAME_SERVICE
 
-                    itemPerPage: {
-                        type: Number,
-                        value: 20
                     },
-
-                    totalItem: {
-                        type: Number,
-                    }
                 };
-            }
-
-            static get observers() {
-                return [
-                    '_querySidelines(page, itemPerPage)'
-                ]
             }
 
             ready() {
                 super.ready();
-                serviceManager.get('StoragePluginManager')
-                    .get(MediaDeviceConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
-                );
-
-                serviceManager.get('StoragePluginManager')
-                    .get(MediaDeviceConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
-                );
-            }
-
-            /**
-             *
-             */
-            _getResources() {
-
-                serviceManager.get('StoragePluginManager')
-                    .get(MediaDeviceConfig.NAME_SERVICE)
-                    .getPaged(this.page, this.itemPerPage)
-                    .then((data) => {
-                        this.set('resources', data);
-                        this.hasResources = data.length > 0;
-                        this.totalItems = data.totalItems;
-                    });
-            }
-
-            _querySidelines(page, itemPerPage) {
-                if (page === undefined || itemPerPage === undefined) {
-                    return;
-                }
-                this._getResources();
-            }
-
-            /**
-             * @param evt
-             */
-            remove(evt) {
-
-                let index = null;
-                this.resources.find((element, ind) => {
-                    if (element.id === evt.detail.id) {
-                        index = ind;
-                        return element;
-                    }
-                });
-
-                this.splice('resources', index, 1);
-                this.hasTimer = this.resources.length > 0;
-
-                serviceManager.get('StoragePluginManager')
-                    .get(MediaDeviceConfig.NAME_SERVICE)
-                    .remove(evt.detail)
-                    .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify('Remove media device')
-                    });
-
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
             }
 
             /**
              * @param evt
              */
             displayUpdateView(evt) {
-                // TODO NOT USE
                 this.resourceSelected = evt.target.mediaDevice;
                 this.selected = 2;
             }

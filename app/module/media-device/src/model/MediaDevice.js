@@ -1,3 +1,6 @@
+/*
+ *
+ */
 class MediaDevice {
 
     static get TYPE_VIDEO() { return 'video'; };
@@ -20,6 +23,12 @@ class MediaDevice {
          * @type {string}
          */
         this.name = '';
+
+        /**
+         * @type {string}
+         */
+        this.deviceName = '';
     }
 }
+
 module.exports = MediaDevice;

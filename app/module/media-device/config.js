@@ -58,11 +58,13 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('groupId')
+            .enableExtractProperty('deviceName')
             .enableExtractProperty('type');
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('groupId')
+            .enableHydrateProperty('deviceName')
             .enableHydrateProperty('type');
 
         this.getServiceManager().get('HydratorPluginManager').set(
@@ -74,19 +76,20 @@ class MediaDeviceConfig extends require('dsign-library').core.ModuleConfig {
             new MediaDevice(),
             {},
             {
-                deviceId : 'id',
                 kind : 'type',
-                label : 'name'
+                label : 'deviceName'
             }
         );
 
         hydrator.enableExtractProperty('deviceId')
             .enableExtractProperty('label')
+            .enableExtractProperty('name')
             .enableExtractProperty('groupId')
             .enableExtractProperty('kind');
 
         hydrator.enableHydrateProperty('deviceId')
             .enableHydrateProperty('label')
+            .enableHydrateProperty('name')
             .enableHydrateProperty('groupId')
             .enableHydrateProperty('kind');
 

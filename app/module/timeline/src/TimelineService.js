@@ -207,7 +207,6 @@ class TimelineService extends AbstractTimeslotService {
         this._send(TimelineService.PLAY, timeline, timeslot);
     }
 
-
     /**
      * @param {Timeline} timeline
      * @private

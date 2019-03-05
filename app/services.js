@@ -104,7 +104,7 @@ serviceManager.set(
                 let date = new Date();
                 let archive = new dsign.archive.Archive(
                     'zip',
-                    `${pathToExtract}/bk-${date.getHours()}:${date.getMinutes()}-${date.getDate()}:${date.getMonth()+1}:${date.getFullYear()}.zip`,
+                    `${pathToExtract}/backup-${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()}_${date.getHours()}:${date.getMinutes()}.zip`,
                     { zlib: { level: 9 } }
                 );
 

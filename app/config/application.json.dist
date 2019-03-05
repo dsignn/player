@@ -209,6 +209,21 @@
                 "src/injector/LastGoalDataInjector.js",
                 "src/injector/LastReplacementDataInjector.js"
             ]
-        }
+        },
+                {
+                    "icon": "app:devices",
+                    "nameWc": "media-device-index",
+                    "label": "Device",
+                    "plugin": true,
+                    "customeStyle": {
+                        "color": " green"
+                    },
+                    "name": "media-device",
+                    "configFile": "config.js",
+                    "autoloads": [
+                        "src/model/MediaDevice.js",
+                        "src/injector/MediaDeviceDataInjector"
+                    ]
+                }
     ]
 }
