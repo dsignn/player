@@ -21,37 +21,37 @@
                 margin-bottom: 16px;
             }
 
-            @media (max-width: 600px) {
+            @media (max-width: 800px) {
                 timeline-wc {
                     flex-basis: 100%;
                 }
             }
 
-            @media (min-width: 601px) and (max-width: 900px) {
+            @media (min-width: 801px) and (max-width: 1100px) {
                 timeline-wc {
                     flex-basis: 50%;
                 }
             }
 
-            @media (min-width: 901px) and (max-width: 1200px) {
+            @media (min-width: 1101px) and (max-width: 1400px) {
                 timeline-wc {
                     flex-basis: 33.3%;
                 }
             }
 
-            @media (min-width: 1201px) and (max-width: 1500px) {
+            @media (min-width: 1401px) and (max-width: 1700px) {
                 timeline-wc {
                     flex-basis: 25%;
                 }
             }
 
-            @media (min-width: 1501px) and (max-width: 1919px) {
+            @media (min-width: 1701px) and (max-width: 2219px) {
                 timeline-wc {
                     flex-basis: 20%;
                 }
             }
 
-            @media (min-width: 1920px) {
+            @media (min-width: 2220px) {
                 timeline-wc {
                     flex-basis: 16.6%;
                 }
@@ -128,7 +128,11 @@
              * @param evt
              */
             play(evt) {
-                serviceManager.get('TimelineService').play(evt.detail);
+                serviceManager.get('TimelineService')
+                    .play(evt.detail)
+                    .catch((err) => {
+                        console.error('Timeline service', err);
+                    });
             }
 
             /**
@@ -142,14 +146,22 @@
              * @param evt
              */
             stop(evt) {
-                serviceManager.get('TimelineService').stop(evt.detail);
+                serviceManager.get('TimelineService')
+                    .stop(evt.detail)
+                    .catch((err) => {
+                    console.error('Timeline service', err);
+                });
             }
 
             /**
              * @param evt
              */
             pause(evt) {
-                serviceManager.get('TimelineService').pause(evt.detail);
+                serviceManager.get('TimelineService')
+                    .pause(evt.detail)
+                    .catch((err) => {
+                    console.error('Timeline service', err);
+                });
             }
         }
 

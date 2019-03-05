@@ -65,6 +65,9 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
                 ),
                 timelineItems: new dsign.hydrator.strategy.HydratorStrategy(
                     TimelineConfig.getTimelineItemHydrator()
+                ),
+                binds: new dsign.hydrator.strategy.HydratorStrategy(
+                    TimelineConfig.getTimelineReferenceHydrator()
                 )
             }
         );
@@ -75,8 +78,10 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('timer')
             .enableExtractProperty('context')
             .enableExtractProperty('status')
+            .enableExtractProperty('enableAudio')
             .enableExtractProperty('rotation')
-            .enableExtractProperty('timelineItems');
+            .enableExtractProperty('timelineItems')
+            .enableExtractProperty('binds');
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
@@ -84,8 +89,30 @@ class TimelineConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('timer')
             .enableHydrateProperty('context')
             .enableHydrateProperty('status')
+            .enableHydrateProperty('enableAudio')
             .enableHydrateProperty('rotation')
-            .enableHydrateProperty('timelineItems');
+            .enableHydrateProperty('timelineItems')
+            .enableHydrateProperty('binds');
+
+        return hydrator;
+    }
+
+
+    /**
+     * @return {PropertyHydrator}
+     */
+    static getTimelineReferenceHydrator() {
+
+        let hydrator = new dsign.hydrator.PropertyHydrator(
+            new TimelineReference()
+        );
+
+        hydrator.enableExtractProperty('referenceId')
+            .enableExtractProperty('name')
+            .enableExtractProperty('nameService');
+
+        hydrator.enableHydrateProperty('referenceId')
+            .enableHydrateProperty('name');
 
         return hydrator;
     }

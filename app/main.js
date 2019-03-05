@@ -190,6 +190,8 @@ class App {
         this.dashboard = new BrowserWindow({
             webPreferences : {
                 nodeIntegration: true,
+                allowRunningInsecureContent: false,
+                experimentalFeatures: true,
             },
             width: 1170,
             height: 800,

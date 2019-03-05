@@ -45,6 +45,16 @@ class Timeline {
          */
         this.rotation = Timeslot.ROTATION_NO;
 
+        /**
+         * @type {Boolean}
+         */
+        this.enableAudio = false;
+
+        /**
+         * @type {Array}
+         */
+        this.binds = [];
+
     }
 
     /**
@@ -122,6 +132,8 @@ class Timeline {
     }
 
     /**
+     *
+     * TODO change name
      * @param time
      */
     getPreviousItem(time) {
@@ -164,12 +176,10 @@ class Timeline {
         switch (true) {
 
             case index > -1 && timeslot !== null:
-                console.log('REMOVE TIMELINEITEM', 'pieno', 'pieno');
                 let item = this.getItem(time);
                 item.removeTimeslotReference(TimeslotReference.getTimeslotReferenceFromTimeslot(timeslot));
                 break;
             case index > -1 && timeslot === null:
-                console.log('REMOVE TIMELINEITEM', 'pieno', 'vuoto');
                 this.timelineItems.splice(index, 1);
                 break;
             default:
@@ -219,6 +229,37 @@ class Timeline {
             }
         }
 
+    }
+
+
+    /**
+     * @param {TimelineReference} timelineReference
+     * @return {Timeline}
+     */
+    appendBind(timelineReference) {
+        // TODO move to validation
+        if(timelineReference.id === this.id) {
+            return;
+        }
+
+        this.binds.push(timelineReference);
+        return this;
+    }
+
+    /**
+     * @param {TimelineReference} timelineReference
+     * @return {boolean}
+     */
+    removeBind(timelineReference) {
+        if(timelineReference.id === this.id) {
+            return;
+        }
+
+        let index = this.binds.findIndex(element => element.id === timelineReference.id);
+        if (index > -1) {
+            this.binds.splice(index, 1);
+        }
+        return index > -1;
     }
 }
 

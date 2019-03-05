@@ -7,6 +7,9 @@
 <link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-icons.html">
 
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
 <link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
@@ -73,6 +76,7 @@
             <iron-form id="formTimeline" class="flex-1">
                 <form method="post" action="">
                     <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                    <paper-checkbox checked="{{resource.enableAudio}}" style="padding-top: 20px;">Enable audio <i>(working only on video resource)</i></paper-checkbox>
                     <div class="flex-horizontal flex" style="width: 100%;">
                         <div class="flex-basis-33">
                             <paper-input label="Start hours" value="{{resource.time.hours}}" type="number" required></paper-input>
@@ -130,6 +134,7 @@
                                         <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                             <div>
                                                 <div class="service-name">[[item.name]]</div>
+                                                <div class="service-description">[[item.virtualMonitorReference.name]]</div>
                                             </div>
                                             <paper-ripple></paper-ripple>
                                         </paper-item>
@@ -141,7 +146,45 @@
                         </paper-card>
                         <paper-button on-tap="submitTimlineButton" class="save">{{labelAction}}</paper-button>
                     </div>
-                    <div id="listItems" class="timeline">
+                    <div class="flex-horizontal flex">
+                        <paper-autocomplete
+                                id="bind"
+                                label="Bind a timeline"
+                                text-property="name"
+                                value-property="name"
+                                remote-source
+                                on-autocomplete-selected="_selectBind"
+                                on-autocomplete-change="_searchBindChanged">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
+
+                                    paper-item.account-item {
+                                        padding: 8px 16px;
+                                    }
+
+                                    .service-name {
+                                        color: #333;
+                                    }
+
+                                    .service-description {
+                                        margin-top: 4px;
+                                        color: #999;
+                                    }
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div>
+                                        <div class="service-name">[[item.name]]</div>
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                        <div id="listBind" class="flex flex-vertical-center"></div>
+                    </div>
+                    <div id="listItems" class="timeline flex-1">
                         <template is="dom-repeat" id="timelineItems" items="[[resource.timelineItems]]" as="timelineItem">
                             <timeline-item-wc timeline-item="{{timelineItem}}" on-remove="removeItem" on-remove-reference="removeItem"></timeline-item-wc>
                         </template>
@@ -181,9 +224,25 @@
                     resource: {
                         type: Object,
                         notify: true,
-                        value: new Timeline()
+                        value: new Timeline(),
+                        observer: '_timelineChanged'
                     }
                 }
+            }
+
+            _timelineChanged(newValue, oldValue) {
+
+                if (!newValue || !newValue.id) {
+                    return;
+                }
+
+
+                this.$.listBind.innerHTML = '';
+                for (let cont = 0; newValue.binds.length > cont; cont++) {
+                    this.appendBindChip(newValue.binds[cont]);
+                }
+
+                this.labelAction = newValue && newValue.id ? 'Update' : 'Save';
             }
 
             ready() {
@@ -268,12 +327,11 @@
                 this.$.timelineItems.render();
                 this.resource.timelineItems = list;
                 this.$.timelineItems.render();
+                this.time = this.time.clone();
 
                 this.$.autocompleteTimeslot.reset();
                 this.$.autocompleteTimeslot._selectedOption = null;
                 this._updateTimelineTimeWc(this.time);
-
-                this.time = new Time();
             }
 
             /**
@@ -284,6 +342,102 @@
                 if (item) {
                     item.updateData();
                 }
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _searchBindChanged(evt) {
+                // TODO refactor search
+                this.storage.getAll()
+                    .then((data) => {
+
+                        let filter = data.filter(
+                            element => {
+                                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1 && element.id !== this.resource.id;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+
+            _selectBind(evt) {
+                let bind = TimelineReference.getReferenceFromEntity(evt.detail.option);
+                this.resource.appendBind(bind);
+                this.appendBindChip(bind);
+                setTimeout(
+                    () => {
+                        this.$.bind.clear();
+                    },
+                    200
+                );
+            }
+
+            /**
+             * @param bind
+             */
+            appendBindChip(bind) {
+
+                let chip = this._createChip(bind, 'name', 'timelineResource');
+                chip.addEventListener('remove', this._removeBind.bind(this));
+                this.$.listBind.appendChild(chip);
+            };
+
+            /**
+             * @param evt
+             * @private
+             */
+            _removeBind(evt) {
+                this.resource.removeBind(evt.target.timelineResource);
+                setTimeout(
+                    () => {
+                        this._recalculateChipIndex('listBind');
+                    },
+                    200
+                );
+            }
+
+            /**
+             * @param type
+             */
+            _recalculateChipIndex(type) {
+
+                let child = this.$[type].querySelectorAll('paper-chip');
+                for (let cont = 0; child.length > cont; cont++) {
+                    child[cont].index = cont;
+                }
+            }
+
+            /**
+             * @param resource
+             * @param labelProperty
+             * @param nameInject
+             * @return paper-chip
+             * @private
+             */
+            _createChip(resource, labelProperty, nameInject) {
+
+                let chip = document.createElement("paper-chip");
+                chip.setAttribute('removable', true);
+                chip.setAttribute('single-line', true);
+
+                let div = document.createElement("div");
+                div.setAttribute('slot', 'label');
+                div.innerHTML = resource[labelProperty];
+
+                chip.appendChild(div);
+                chip[nameInject] = resource;
+
+                return chip;
             }
 
             /**

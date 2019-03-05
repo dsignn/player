@@ -61,6 +61,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 height: 64px;
             }
 
+            .running {
+                color: var(--playlist-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--playlist-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--playlist-pause);
+                font-style: italic;
+            }
+
             app-drawer {
                 top: 0;
                 right: 0;
@@ -142,7 +157,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                        type: String,
                        reflectToAttribute: true,
                        observer: '_pageChanged',
-                       value: 'playlist-index'
+                       value: 'timeline-index'
                    },
 
                    nameApplication: {

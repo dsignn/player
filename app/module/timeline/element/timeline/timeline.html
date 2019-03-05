@@ -57,6 +57,21 @@
                 opacity: 0.5;
             }
 
+            .running {
+                color: var(--timeline-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--timeline-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--timeline-pause);
+                font-style: italic;
+            }
+
         </style>
         <paper-card id="design" class="setting">
             <div class="card-setting">
@@ -67,7 +82,8 @@
                 <div class="data flex-basis-85 flex flex-vertical">
                     <div class="dataWrapper">
                         <div>{{timeline.name}}</div>
-                        <div>{{timer}} / {{total}}</div>
+                        <div id="status">{{status}}</div>
+                        <div class="flex flex-horizontal-end">{{timer}}|{{total}}</div>
                     </div>
                 </div>
                 <div class="flex-basis-15 flex flex-vertical">
@@ -139,6 +155,8 @@
                 if (evt.data.id === this.timeline.id) {
                     this.timeline = null;
                     this.timeline = evt.data;
+                    this.status = evt.data.status;
+                    this._clearStatusClass(evt.data.status);
                 }
             }
 
@@ -149,7 +167,8 @@
                 if (!timeline) {
                     return;
                 }
-
+                this.status = timeline.status;
+                this._clearStatusClass(timeline.status);
                 this._updateContextHtml();
                 this._updateRotationHtml();
                 this._updateTimer();
@@ -242,6 +261,14 @@
                         this.$.stop.disabled = true;
                         this.$.pause.disabled = true;
                 }
+            }
+
+            /**
+             * @param {string} classString
+             */
+            _clearStatusClass(classString) {
+                this.$.status.className = '';
+                this.$.status.classList.add(classString);
             }
 
             /**

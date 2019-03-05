@@ -157,7 +157,6 @@ class PlaylistService extends AbstractTimeslotService {
      */
     async pause(playlist) {
 
-        //this._executeBids(playlist, 'pause');
         let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         this._pausePlaylist(playlist);
         this._executeBids(bindPlaylists, 'pause');
@@ -356,6 +355,7 @@ class PlaylistService extends AbstractTimeslotService {
 
     /**
      * @param {Array} references
+     * @return {Promise}
      */
     getPlaylistFromArrayReference(references) {
         let playlists = [];

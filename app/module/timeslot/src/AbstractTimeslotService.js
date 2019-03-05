@@ -3,12 +3,32 @@
  */
 class AbstractTimeslotService {
 
+    /**
+     * Name of the "message" send from sender when play timeslot
+     *
+     * @return {string}
+     */
     static get PLAY()  { return 'play-timeslot'; }
 
+    /**
+     * Name of the "message" send from sender when stop timeslot
+     *
+     * @return {string}
+     */
     static get STOP()  { return 'stop-timeslot'; }
 
+    /**
+     * Name of the "message" send from sender when pause timeslot
+     *
+     * @return {string}
+     */
     static get PAUSE()  { return 'pause-timeslot'; }
 
+    /**
+     * Name of the "message" send from sender when resume timeslot
+     *
+     * @return {string}
+     */
     static get RESUME() { return 'resume-timeslot'; }
 
     /**

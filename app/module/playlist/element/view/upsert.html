@@ -277,9 +277,7 @@
              */
             _searchBindChanged(evt) {
                 // TODO refactor search
-                serviceManager.get('StoragePluginManager')
-                    .get(PlaylistConfig.NAME_SERVICE)
-                    .getAll()
+                this.storage.getAll()
                     .then((data) => {
 
                         let filter = data.filter(
@@ -298,6 +296,10 @@
                     );
             }
 
+            /**
+             * @param evt
+             * @private
+             */
             _selectBind(evt) {
                 let bind = PlaylistReference.getReferenceFromEntity(evt.detail.option);
                 this.resource.appendBind(bind);

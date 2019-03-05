@@ -39,8 +39,9 @@ class TimelineService extends AbstractTimeslotService {
     _schedule(evt) {
 
         this._promoteToRunTimeline();
-        this._scheduleRunningTimeline();
+        this._startTimelinePromote();
         this._updateRunningTimeline();
+        this._scheduleRunningTimeline();
     }
 
     /**
@@ -97,7 +98,9 @@ class TimelineService extends AbstractTimeslotService {
             if (this.runningTimelines[property].status === Timeslot.RUNNING) {
                 this.runningTimelines[property].timer.sumSeconds(1);
                 this.timelineStorage.update(this.runningTimelines[property])
-                    .then((data) => { console.log('update timeline')})
+                    .then((data) => {
+                        //console.log('update timeline')
+                    })
                     .catch((err) => { console.error(err)});
             }
         }
@@ -125,44 +128,59 @@ class TimelineService extends AbstractTimeslotService {
 
             // TODO reimpost loop
             switch (true) {
+                // Loop controll
                 case this.runningTimelines[property].status === Timeslot.RUNNING &&
                         this.runningTimelines[property].timer.compare(this.runningTimelines[property].time) > -1 &&
                         this.runningTimelines[property].rotation === Timeslot.ROTATION_LOOP:
                     this.runningTimelines[property].timer.reset();
-                    this._checkItemsInTimeline(this.runningTimelines[property]);
+                    this._checkTimeslotToStart(this.runningTimelines[property]);
                     break;
+                // Stop controll
                 case this.runningTimelines[property].status === Timeslot.RUNNING &&
                         this.runningTimelines[property].timer.compare(this.runningTimelines[property].time) > -1 :
                     // TODO event
                     this._stopTimeline( this.runningTimelines[property]);
                     break;
-
                 case this.runningTimelines[property].status === Timeslot.RUNNING:
-                    this._checkItemsInTimeline(this.runningTimelines[property]);
+                    this._checkTimeslotToStart(this.runningTimelines[property]);
                     break;
             }
         }
     }
 
     /**
-     * @param {Timeline} timeline
+     * @private
      */
-    _checkItemsInTimeline(timeline) {
+    _startTimelinePromote() {
+        for (let property in this.runningTimelines) {
+            if (this.runningTimelines[property].status === Timeslot.RUNNING &&
+                this.runningTimelines[property].timer.compare(new Time()) === 0) {
 
-        if (timeline.hasItem(timeline.timer)) {
-            let item = timeline.getItem(timeline.timer);
-            if (item.hasTimeslotReference()) {
-                this._runTimelineItem(timeline, item);
+                this._checkTimeslotToStart(this.runningTimelines[property]);
             }
         }
     }
 
     /**
      * @param {Timeline} timeline
+     */
+    _checkTimeslotToStart(timeline) {
+
+        if (timeline.hasItem(timeline.timer)) {
+            let item = timeline.getItem(timeline.timer);
+            if (item.hasTimeslotReference()) {
+                this._runTimelineItem(TimelineService.PLAY, timeline, item);
+            }
+        }
+    }
+
+    /**
+     * @param {string} type (play or resume)
+     * @param {Timeline} timeline
      * @param {TimelineItem} item
      * @param {number} delay
      */
-    _runTimelineItem(timeline, item, delay = 0) {
+    _runTimelineItem(type, timeline, item, delay = 0) {
         let promises = [];
 
         for (let cont = 0; item.timeslotReferences.length > cont; cont++) {
@@ -170,12 +188,12 @@ class TimelineService extends AbstractTimeslotService {
         }
 
         Promise.all(promises).then((timeslots) => {
-            //console.log('SE FEM', timeslots, this);
+
             for (let cont = 0; timeslots.length > cont; cont++) {
                 // TODO inject data
                 timeslots[cont].currentTime = delay;
                 timeslots[cont].context = timeline.context;
-                this._playTimeslot(timeline, timeslots[cont]);
+                this._send(type, timeline,   timeslots[cont]);
             }
         })
     }
@@ -200,8 +218,9 @@ class TimelineService extends AbstractTimeslotService {
         timeline.timer.reset();
         this._send(TimelineService.STOP, timeline);
         this.timelineStorage.update(timeline)
-            .then((data) => { console.log('STOP timeline')})
-            .catch((err) => { console.error(err)});
+            .then((data) => {
+                // console.log('STOP timeline')
+            }).catch((err) => { console.error(err)});
         this._removeRunningTimeline(timeline);
     }
 
@@ -214,8 +233,9 @@ class TimelineService extends AbstractTimeslotService {
         timeline.status = Timeslot.PAUSE;
         this._send(TimelineService.PAUSE, timeline);
         this.timelineStorage.update(timeline)
-            .then((data) => { console.log('PAUSE timeline')})
-            .catch((err) => { console.error(err)});
+            .then((data) => {
+                //console.log('PAUSE timeline')
+            }).catch((err) => { console.error(err)});
         this._removeRunningTimeline(timeline);
     }
 
@@ -228,12 +248,13 @@ class TimelineService extends AbstractTimeslotService {
         timeline.status = Timeslot.RUNNING;
         let item = timeline.getPreviousItem(timeline.timer);
         // TODO control time timeslot in timeline
-        this._runTimelineItem(timeline, item, item.time.getDiffSecond(timeline.timer));
+        this._runTimelineItem(TimelineService.RESUME, timeline, item, item.time.getDiffSecond(timeline.timer));
         this._addRunningTimeline(timeline);
 
         this.timelineStorage.update(timeline)
-            .then((data) => { console.log('RESUME timeline')})
-            .catch((err) => { console.error(err)});
+            .then((data) => {
+                //console.log('RESUME timeline')
+            }).catch((err) => { console.error(err)});
     }
 
     /**
@@ -260,15 +281,17 @@ class TimelineService extends AbstractTimeslotService {
      * @param {Timeline} timeline
      * @return {TimelineService}
      */
-    play(timeline) {
+    async play(timeline) {
         if (this._hasRunningTimeline(timeline)) {
             return;
         }
 
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
         timeline.status = Timeline.TO_RUN;
         if (this._hasRunningTimeline(timeline) === false) {
             this._addRunningTimeline(timeline);
         }
+        this._executeBids(bindTimelines, 'play');
         return this;
     }
 
@@ -276,8 +299,11 @@ class TimelineService extends AbstractTimeslotService {
      * @param {Timeline} timeline
      * @return {TimelineService}
      */
-    stop(timeline) {
+    async stop(timeline) {
+
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
         this._stopTimeline(timeline);
+        this._executeBids(bindTimelines, 'stop');
         return this;
     }
 
@@ -285,12 +311,13 @@ class TimelineService extends AbstractTimeslotService {
      * @param {Timeline} timeline
      * @return {TimelineService}
      */
-    pause(timeline) {
+    async pause(timeline) {
         if (!this._hasRunningTimeline(timeline)) {
             return;
         }
-
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
         this._pauseTimeline(timeline);
+        this._executeBids(bindTimelines, 'pause');
         return this;
     }
 
@@ -298,13 +325,41 @@ class TimelineService extends AbstractTimeslotService {
      * @param {Timeline} timeline
      * @return {TimelineService}
      */
-    resume(timeline) {
+    async resume(timeline) {
         if (this._hasRunningTimeline(timeline)) {
             return;
         }
 
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
         this._resumeTimeline(timeline);
+        this._executeBids(bindTimelines, 'resume');
         return this;
+    }
+
+
+    /**
+     * @param {Array} references
+     * @return {Promise}
+     */
+    getTimelineFromArrayReference(references) {
+        let timelines = [];
+        for (let cont = 0; references.length > cont; cont++) {
+            timelines.push(this.timelineStorage.get(references[cont].referenceId));
+        }
+        return Promise.all(timelines);
+    }
+
+    /**
+     * @param {Array} timelines
+     * @param {String} method
+     * @private
+     */
+    _executeBids(timelines, method) {
+        for (let cont = 0; timelines.length > cont; cont++) {
+            timelines[cont].isBind = true;
+            this[method](timelines[cont])
+                .catch((err) => {console.error('Error bind timeline service', err)});
+        }
     }
 }
 

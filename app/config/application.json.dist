@@ -180,6 +180,7 @@
                 "src/model/Time.js",
                 "src/model/Timeline.js",
                 "src/model/TimelineItem.js",
+                "src/model/TimelineReference.js",
                 "src/TimelineService.js"
             ]
         },

@@ -121,19 +121,19 @@
                 super();
                 serviceManager.get('ReceiverServiceManager')
                     .get('TimeslotReceiver')
-                    .on('play-timeslot', this._startTimeslot.bind(this));
+                    .on(AbstractTimeslotService.PLAY, this._startTimeslot.bind(this));
 
                 serviceManager.get('ReceiverServiceManager')
                     .get('TimeslotReceiver')
-                    .on('stop-timeslot', this._stopTimeslot.bind(this));
+                    .on(AbstractTimeslotService.STOP, this._stopTimeslot.bind(this));
 
                 serviceManager.get('ReceiverServiceManager')
                     .get('TimeslotReceiver')
-                    .on('pause-timeslot', this._pauseTimeslot.bind(this));
+                    .on(AbstractTimeslotService.PAUSE, this._pauseTimeslot.bind(this));
 
                 serviceManager.get('ReceiverServiceManager')
                     .get('TimeslotReceiver')
-                    .on('resume-timeslot', this._resumeTimeslot.bind(this));
+                    .on(AbstractTimeslotService.RESUME, this._resumeTimeslot.bind(this));
             }
 
 
@@ -212,7 +212,6 @@
                 for (let cont = childrenNodes.length - 2; cont >= 0; cont--) {
                     setTimeout(
                         function() {
-                            console.log('remove TM');
                             this.remove();
                         }.bind(childrenNodes[cont]),
                         300
