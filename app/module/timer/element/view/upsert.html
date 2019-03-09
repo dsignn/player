@@ -10,6 +10,7 @@
 <link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
 
 <link rel="import" href="../../../../css/global-layout.html">
 <link rel="import" href="../../../../css/global-styles.html">
@@ -45,7 +46,7 @@
                 padding-left: 6px;
             }
 
-            paper-dropdown-menu {
+            paper-dropdown-menu {>
                 width: 100%;
             }
 
@@ -87,7 +88,7 @@
                     <paper-dropdown-menu id="type" label="Type">
                         <paper-listbox slot="dropdown-content" class="dropdown-content"  selected="0">
                             <paper-item value="timer">Timer</paper-item>
-                            <paper-item value="contdown">Countdown</paper-item>
+                            <paper-item value="countdown">Countdown</paper-item>
                         </paper-listbox>
                     </paper-dropdown-menu>
                     <paper-checkbox checked="{{resource.autoStart}}">Autostart</paper-checkbox>
@@ -100,7 +101,7 @@
     </template>
 
     <script>
-        class ElementTimerViewUpsert extends Polymer.Element {
+        class ElementTimerViewUpsert extends StorageAdapterResourceBehaviour {
 
             static get is() {
                 return 'timer-view-upsert';
@@ -119,18 +120,19 @@
                     labelAction: {
                         type: String,
                         value: 'Save'
-                    }
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimerConfig.NAME_SERVICE
+
+                    },
                 }
             }
 
             ready() {
                 super.ready();
-
-                serviceManager.get('StoragePluginManager')
-                    .get(TimerConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._clearResource.bind(this)
-                );
-
                 this.$.formResource.addEventListener('iron-form-presubmit', this.submitResource.bind(this));
             }
 
@@ -143,10 +145,12 @@
                 let method = this.resource.id ? 'update' : 'save';
                 this.resource.type = this.$.type.selectedItem.getAttribute('value');
 
-                serviceManager.get('StoragePluginManager')
-                    .get(TimerConfig.NAME_SERVICE)[method](this.resource)
+                this.storage[method](this.resource)
                     .then((data) => {
                         serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' timer');
+                        if (method === 'save') {
+                            this._clearResource();
+                        }
                     })
                     .catch((err) => {
                             console.log(err)
@@ -173,26 +177,6 @@
              */
             _resourceChanged(newValue, oldValue) {
 
-            }
-
-
-            /**
-             * @param method
-             * @returns {boolean}
-             * @private
-             */
-            _isMethod(method) {
-                let isMethod = false;
-                switch (true) {
-                    case method === 'update' && this.resource.id !== undefined:
-                        isMethod = true;
-                        break;
-                    case method === 'save' && this.resource.id === undefined:
-                        isMethod = true;
-                        break;
-                }
-
-                return isMethod;
             }
         }
 

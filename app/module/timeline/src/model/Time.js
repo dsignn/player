@@ -78,6 +78,33 @@ class Time {
     }
 
     /**
+     * @param {number} seconds
+     */
+    subtractSecond(seconds) {
+
+        let ihours = Math.floor(seconds / 3600);
+        let iMinutes = Math.floor(seconds % 3600 / 60);
+        let iSeconds = Math.floor(seconds % 3600 % 60);
+
+        if (this.getSeconds() - iSeconds < 0) {
+            iMinutes -= -1;
+            this.seconds = Math.floor(60 + (this.getSeconds() - iSeconds));
+        } else {
+            this.seconds = this.getSeconds() - iSeconds;
+        }
+
+        if (this.getMinutes() - iMinutes < 0) {
+            ihours -= 1;
+            this.minutes = Math.floor(this.getMinutes() - iMinutes) % 60;
+        } else {
+            this.minutes = this.getMinutes() - iMinutes;
+        }
+
+        this.hours = Math.floor(this.getHours() - ihours);
+        return this;
+    }
+
+    /**
      * @return {number}
      */
     getHours() {

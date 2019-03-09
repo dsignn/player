@@ -58,8 +58,8 @@
             ready() {
                 super.ready();
 
-                require('electron').ipcRenderer.on('timer-progress', this._progress.bind(this));
-                require('electron').ipcRenderer.on('timer-stop', this._stop.bind(this));
+                require('electron').ipcRenderer.on(TimerService.DATA, this._updateTimer.bind(this));
+                require('electron').ipcRenderer.on(TimerService.START, this._updateTimer.bind(this));
                 setTimeout(
                     () => { this.$.timer.classList.remove('hidden')},
                     1100
@@ -74,43 +74,25 @@
                 if (!newValue) {
                     return;
                 }
-
-                this._init(newValue);
-            }
-
-            /**
-             * @param timer
-             * @private
-             */
-            _init(timer) {
-                this.hours = timer.startAt.hours < 10 ? '0' + timer.startAt.hours : timer.startAt.hours;
-                this.minutes = timer.startAt.minutes < 10 ? '0' +  timer.startAt.minutes :  timer.startAt.minutes;
-                this.seconds = timer.startAt.seconds < 10 ? '0' + timer.startAt.seconds : timer.startAt.seconds;
             }
 
             /**
              * @param evt
-             * @param msg
+             * @param ms
              * @private
              */
-            _progress(evt, msg) {
+            _updateTimer(evt, ms) {
                 if (msg.id !== this.timer.id) {
                     return;
                 }
 
-                this.hours = msg.progress.hours < 10 ? '0' + msg.progress.hours : msg.progress.hours;
-                this.minutes = msg.progress.minutes < 10 ? '0' + msg.progress.minutes : msg.progress.minutes;
-                this.seconds = msg.progress.seconds < 10 ? '0' + msg.progress.seconds : msg.progress.seconds;
-
+                console.log('EVENTO', evt);
             }
 
-            /**
-             * @param evt
-             * @param msg
-             * @private
-             */
-            _stop(evt, msg) {
-                // TODO
+            generateMockData() {
+                this.hours = '10';
+                this.minutes = '10';
+                this.seconds = '10';
             }
         }
 

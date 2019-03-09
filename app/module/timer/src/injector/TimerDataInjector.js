@@ -39,8 +39,8 @@ class TimerDataInjector extends AbstractInjector {
     getTimeslotData(data) {
         return new Promise((resolve, reject) => {
 
-            if (this.timerService && this.timerService.hasActiveTimer(data.id)) {
-                resolve(this.timerService.getActiveTimer(data.id));
+            if (this.timerService && this.timerService.hasRunningTimer(data.id)) {
+                resolve(this.timerService.getRunningTimer(data.id));
             }
 
             this.storage.get(data.id).then(function(data) {

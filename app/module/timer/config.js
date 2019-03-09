@@ -53,12 +53,11 @@ class TimerConfig extends require('dsign-library').core.ModuleConfig {
     }
 
     /**
-     * @private
+     * @return {PropertyHydrator}
      */
-    _loadHydrator() {
-
+    static getTimeHydrator() {
         let hydrator = new dsign.hydrator.PropertyHydrator(
-            new Object(),
+            new Time(),
             {
                 hours: new dsign.hydrator.strategy.NumberStrategy(),
                 minutes: new dsign.hydrator.strategy.NumberStrategy(),
@@ -66,20 +65,27 @@ class TimerConfig extends require('dsign-library').core.ModuleConfig {
             }
         );
 
-        this.getServiceManager().get('HydratorPluginManager').set(
-            'dataTimeHydrator',
-            hydrator
-        );
+        hydrator.enableExtractProperty('hours')
+            .enableExtractProperty('minutes')
+            .enableExtractProperty('seconds');
 
-        hydrator = new dsign.hydrator.PropertyHydrator(
+        hydrator.enableHydrateProperty('hours')
+            .enableHydrateProperty('minutes')
+            .enableHydrateProperty('seconds');
+
+        return hydrator;
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     */
+    static getTimerHydrator() {
+        let hydrator = new dsign.hydrator.PropertyHydrator(
             new Timer(),
             {
-                startAt: new dsign.hydrator.strategy.HydratorStrategy(
-                    this.getServiceManager().get('HydratorPluginManager').get('dataTimeHydrator')
-                ),
-                endAt: new dsign.hydrator.strategy.HydratorStrategy(
-                    this.getServiceManager().get('HydratorPluginManager').get('dataTimeHydrator')
-                ),
+                startAt: new dsign.hydrator.strategy.HydratorStrategy(TimerConfig.getTimeHydrator()),
+                endAt: new dsign.hydrator.strategy.HydratorStrategy(TimerConfig.getTimeHydrator()),
+                timer: new dsign.hydrator.strategy.HydratorStrategy(TimerConfig.getTimeHydrator()),
                 autoStart: new dsign.hydrator.strategy.NumberStrategy()
             }
         );
@@ -89,6 +95,7 @@ class TimerConfig extends require('dsign-library').core.ModuleConfig {
             .enableExtractProperty('startAt')
             .enableExtractProperty('endAt')
             .enableExtractProperty('type')
+            .enableExtractProperty('timer')
             .enableExtractProperty('status')
             .enableExtractProperty('autoStart');
 
@@ -97,12 +104,21 @@ class TimerConfig extends require('dsign-library').core.ModuleConfig {
             .enableHydrateProperty('startAt')
             .enableHydrateProperty('endAt')
             .enableHydrateProperty('type')
+            .enableHydrateProperty('timer')
             .enableHydrateProperty('status')
             .enableHydrateProperty('autoStart');
 
+        return hydrator;
+    }
+
+    /**
+     * @private
+     */
+    _loadHydrator() {
+
         this.getServiceManager().get('HydratorPluginManager').set(
-            'timerHydrator',
-            hydrator
+            'TimerHydrator',
+            TimerConfig.getTimerHydrator()
         );
     }
 
@@ -136,7 +152,7 @@ class TimerConfig extends require('dsign-library').core.ModuleConfig {
                                     this.getServiceManager().get('DexieManager'),
                                     TimerConfig.NAME_COLLECTION
                                 ),
-                                this.getServiceManager().get('HydratorPluginManager').get('timerHydrator')
+                                this.getServiceManager().get('HydratorPluginManager').get('TimerHydrator')
                             );
 
                             this.getServiceManager().get('StoragePluginManager').set(
@@ -162,17 +178,26 @@ class TimerConfig extends require('dsign-library').core.ModuleConfig {
      */
     _loadTimerSender() {
         this.getServiceManager().get('SenderPluginManager')
-            .set('timerSender', require('electron').ipcRenderer);
+            .set('TimerSender', require('electron').ipcRenderer);
     }
 
     /**
      * @private
      */
     _loadTimerService() {
-        this.getServiceManager().set('TimerService', new TimerService(
-                this.getServiceManager().get('SenderPluginManager').get('timerSender'),
-                this.getServiceManager().get('HydratorPluginManager').get('timerHydrator')
-            )
+
+        this.getServiceManager().get('StoragePluginManager').eventManager.on(
+            dsign.serviceManager.ServiceManager.LOAD_SERVICE,
+            function(evt) {
+                if (evt.data.name ===  TimerConfig.NAME_SERVICE) {
+                    this.getServiceManager().set('TimerService', new TimerService(
+                        this.getServiceManager().get('StoragePluginManager').get(TimerConfig.NAME_SERVICE),
+                        this.getServiceManager().get('SenderPluginManager').get('TimerSender'),
+                        this.getServiceManager().get('Timer'),
+                        )
+                    );
+                }
+            }.bind(this)
         );
     }
 }

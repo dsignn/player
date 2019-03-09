@@ -2,6 +2,10 @@
  *
  */
 class TimerService {
+    /**
+     * Constant
+     */
+    static get DATA()  { return 'data-timer'; }
 
     static get PLAY()  { return 'play-timer'; }
 
@@ -12,10 +16,16 @@ class TimerService {
     static get RESUME() { return 'resume-timer'; }
 
     /**
-     * @param {ipcRenderer} sender
-     * @param hydrator
+     * @param {Storage} timerStorage
+     * @param {AbstractSender} sender
+     * @param {Timer} timer
      */
-    constructor(sender, hydrator) {
+    constructor(timerStorage, sender, timer) {
+
+        /**
+         * @type {Storage}
+         */
+        this.timerStorage = timerStorage ? timerStorage : null;
 
         /**
          * @type {ipcRenderer}
@@ -23,117 +33,233 @@ class TimerService {
         this.sender = sender;
 
         /**
-         * @type {AbstractHydrator}
+         * @type {Timer}
          */
-        this.hydrator = hydrator;
+        this.timer = timer;
 
         /*
          * @type {Object}
          */
-        this.activeTimer = {};
+        this.runningTimer = {};
 
         /**
          * Event manager
          */
         this.eventManager = new (require('dsign-library').event.EvtManager)();
-    }
 
-    /**
-     * @param id
-     * @return {Boolean}
-     */
-    hasActiveTimer(id) {
-        return !!this.activeTimer[id];
-    }
-
-    /**
-     * @param id
-     * @return {Timer}
-     */
-    getActiveTimer(id) {
-        return this.activeTimer[id];
-    }
-
-    /**
-     * @param {Timer} timer
-     */
-    start(timer) {
-        if (this.activeTimer[timer.id] || timer.getStatus() !== Timer.STATUS_IDLE) {
-            return;
-        }
-
-        this.activeTimer[timer.id] = timer;
-        this.activeTimer[timer.id].eventManager.on('secondTenthsUpdated', this._progress.bind(this));
-
-        this.activeTimer[timer.id].eventManager.on('stopped', this._stopped.bind(this));
-        this.activeTimer[timer.id].eventManager.on('start', this._start.bind(this));
-        this.activeTimer[timer.id].eventManager.on('pause', this._pause.bind(this));
-        this.activeTimer[timer.id].start();
-    };
-
-    /**
-     * @param {Timer} timer
-     */
-    stop(timer) {
-        if (!this.activeTimer[timer.id]) {
-            return;
-        }
-
-      //  this.activeTimer[timer.id].removeEventListener('secondTenthsUpdated', this._progress.bind(this));
-        this.activeTimer[timer.id].stop();
-        this.sender.send(
-            'proxy',
-            {nameMessage : 'timer-stop', data : evt.data}
-        );
-        delete this.activeTimer[timer.id];
-    }
-
-    /**
-     * @param {Timer} timer
-     */
-    pause(timer) {
-        if (!this.activeTimer[timer.id]) {
-            return;
-        }
-
-        this.activeTimer[timer.id].pause();
-    }
-
-    /**
-     * @param {Timer} timer
-     */
-    resume(timer) {
-        if (!this.activeTimer[timer.id]) {
-            return;
-        }
-
-        this.activeTimer[timer.id].start();
+        /**
+         * Add schedule listener
+         */
+        this.timer.addEventListener('secondsUpdated', (evt)  => {
+            this._schedule();
+        });
     }
 
     /**
      * @param evt
      */
-    _progress(evt) {
-        this.eventManager.fire('progress', evt.data);
+    _schedule(evt) {
 
-        evt.data.progress = evt.data.timer.getTimeValues();
-        this.sender.send(
-            'proxy',
-            {nameMessage : 'timer-progress', data : evt.data}
-        );
+        this._promoteToRunTimer();
+        this._scheduleRunningTimer();
+        this._updateRunningTimer();
     }
 
-    _stopped(evt) {
-        this.eventManager.fire('stop', evt.data);
-        delete this.activeTimer[evt.data.id];
+
+    /**
+     * @param {Timer} timer
+     * @return {Boolean}
+     */
+    hasRunningTimer(timer) {
+        return !!this.runningTimer[timer.id];
     }
 
-    _start(evt) {
-        this.eventManager.fire('start', evt.data);
+    /**
+     * @param {Timer} timer
+     * @return {Timer}
+     */
+    getRunningTimer(timer) {
+        return this.runningTimer[timer.id];
     }
 
-    _pause(evt) {
-        this.eventManager.fire('pause', evt.data);
+    /**
+     * @param {Timer} timer
+     * @return {TimerService}
+     */
+    setRunningTimer(timer) {
+        this.runningTimer[timer.id] = timer;
+        return this;
+    }
+
+    /**
+     * @param {Timer} timer
+     * @return {TimerService}
+     * @private
+     */
+    _removeRunningTimer(timer) {
+        if (this.runningTimer[timer.id]) {
+            delete this.runningTimer[timer.id];
+        }
+        return this;
+    }
+
+    /**
+     * @private
+     */
+    _promoteToRunTimer() {
+        /**
+         *
+         */
+        for (let property in this.runningTimer) {
+            if (this.runningTimer[property].status === Timer.STATUS_TO_RUN) {
+                this.runningTimer[property].status = Timer.STATUS_RUNNING;
+            }
+        }
+    }
+
+    /**
+     * @private
+     */
+    _updateRunningTimer() {
+        for (let property in this.runningTimer) {
+
+            // TODO
+            switch (this.runningTimer[property].type) {
+                case Timer.TYPE_TIMER:
+                    this.runningTimer[property].timer.sumSeconds(1);
+                    break;
+                case Timer.TYPE_COUNTDOWN:
+                    this.runningTimer[property].timer.subtractSecond(1);
+                    break;
+                default:
+                    console.error('Wrong type timer ' . this.runningTimer[property].type);
+            }
+
+            this._send(TimerService.DATA, this.runningTimer[property]);
+
+            this.timerStorage.update( this.runningTimer[property])
+                .then((data) => {})
+                .catch((err) => { console.log(err) });
+        }
+    }
+
+    /**
+     * @private
+     */
+    _scheduleRunningTimer() {
+        for (let property in this.runningTimer) {
+
+            if (this.runningTimer[property].status === Timer.STATUS_TO_RUN) {
+                continue;
+            }
+
+            switch (true) {
+                case this.runningTimer[property].type === Timer.TYPE_TIMER &&
+                    this.runningTimer[property].timer.compare(this.runningTimer[property].endAt) > -1:
+                    this.stop(this.runningTimer[property]);
+                    break;
+                case this.runningTimer[property].type === Timer.TYPE_COUNTDOWN &&
+                this.runningTimer[property].endAt.compare(this.runningTimer[property].timer) > -1:
+                    this.stop(this.runningTimer[property]);
+                    break;
+            }
+        }
+    }
+
+    /**
+     * @param {Timer} timer
+     * @return {Promise}
+     */
+    async play(timer) {
+        this._playTimer(timer);
+    }
+
+    /**
+     * @param {Timer} timer
+     */
+    _playTimer(timer) {
+        timer.status = Timer.STATUS_TO_RUN;
+        this.setRunningTimer(timer);
+        this._send(TimerService.PLAY, this.getRunningTimer(timer));
+    }
+
+    /**
+     * @param {Timer} timer
+     * @return {Promise}
+     */
+    async pause(timer) {
+        this._pauseTimer(timer);
+    }
+
+    /**
+     * @param {Timer} timer
+     * @private
+     */
+    _pauseTimer(timer) {
+        this._send(TimerService.PAUSE, this.getRunningTimer(timer));
+        this._removeRunningTimer(timer);
+        timer.status = Timer.STATUS_PAUSE;
+        this.timerStorage.update(timer)
+            .then((data) => {
+                // console.log('STOP timeline')
+            }).catch((err) => { console.error(err)});
+    }
+
+    /**
+     * @param {Timer} timer
+     * @return {Promise}
+     */
+    async resume(timer) {
+        this._resumeTimer(timer);
+    }
+
+    /**
+     * @param {Timer} timer
+     * @private
+     */
+    _resumeTimer(timer) {
+        timer.status = Timer.STATUS_RUNNING;
+        this.setRunningTimer(timer);
+        this._send(TimerService.RESUME, this.getRunningTimer(timer));
+    }
+
+    /**
+     * @param {Timer} timer
+     * @return {Promise}
+     */
+    async stop(timer) {
+        this._stopTimer(timer);
+    }
+
+    /**
+     * @param {Timer} timer
+     */
+    _stopTimer(timer) {
+        this._send(TimerService.STOP, this.getRunningTimer(timer));
+        this._removeRunningTimer(timer);
+        timer.status = Timer.STATUS_IDLE;
+        timer.resetTimer();
+        this.timerStorage.update(timer)
+            .then((data) => {
+                // console.log('STOP timeline')
+            }).catch((err) => { console.error(err)});
+    }
+
+    /**
+     *
+     * @param {string} type
+     * @param {Timer} timer
+     * @private
+     */
+    _send(type, timer) {
+
+        // TODO create a class proxy
+        let message = {
+            data : timer,
+            nameMessage :type
+        };
+
+        this.sender.send('proxy', message);
     }
 }
 

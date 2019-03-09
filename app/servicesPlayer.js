@@ -61,6 +61,12 @@ serviceManager.set(
         ).setServiceToLoad(
             'timeline',
             ['Hydrator']
+        ).setServiceToLoad(
+            'timer',
+            ['Hydrator']
+        ).setServiceToLoad(
+            'media-device',
+            ['Hydrator']
         );
 
         application.init();

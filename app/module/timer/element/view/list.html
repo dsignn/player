@@ -8,6 +8,7 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/pagination/pagination.html">
 <link rel="import" href="../../element/timer/timer.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-pagination-resource-behaviour.html">
 
 <dom-module id="timer-view-list">
     <template>
@@ -18,22 +19,67 @@
             :host ::slotted(.header) {
                 margin-bottom: 16px;
             }
-        </style>
 
+            @media (max-width: 600px) {
+                timer-wc {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (min-width: 601px) and (max-width: 900px) {
+                timer-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                timer-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                timer-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                timer-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 1920px) {
+                timer-wc {
+                    flex-basis: 16.6%;
+                }
+            }
+        </style>
         <slot name="header"></slot>
-        <div hidden$="{{!hasResources}}">
-            <template is="dom-repeat" items="[[resources]]" as="resource">
-                <timer-wc timer="{{resource}}" on-update-view="displayUpdateView" on-remove="remove"></timer-wc>
-            </template>
+        <div hidden$="{{!totalItems}}">
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="resource">
+                    <timer-wc
+                            timer="{{resource}}"
+                            on-play="play"
+                            on-stop="stop"
+                            on-pause="pause"
+                            on-resume="resume"
+                            on-update-view="displayUpdateView"
+                            on-remove="_removeResource">
+                    </timer-wc>
+                </template>
+            </div>
             <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
         </div>
-        <div hidden$="{{hasResources}}">
+        <div hidden$="{{totalItems}}">
             Non sono presenti timer
         </div>
     </template>
 
     <script>
-        class ElementTimerViewList extends Polymer.Element {
+        class ElementTimerViewList extends StorageAdapterPaginationResourceBehaviour {
 
             static get is() {
                 return 'timer-view-list';
@@ -41,11 +87,6 @@
 
             static get properties() {
                 return {
-
-                    resources: {
-                        type: Array,
-                        value: []
-                    },
 
                     resourceSelected: {
                         type: Object,
@@ -58,86 +99,70 @@
                         notify: true
                     },
 
-                    page: {
-                        type: Number,
-                        value: 1
-                    },
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimerConfig.NAME_SERVICE
 
-                    itemPerPage: {
-                        type: Number,
-                        value: 20
-                    },
-
-                    totalItem: {
-                        type: Number,
                     }
                 };
             }
 
-            static get observers() {
-                return [
-                    '_querySidelines(page, itemPerPage)'
-                ]
-            }
-
             ready() {
                 super.ready();
-                serviceManager.get('StoragePluginManager')
-                    .get(TimerConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_SAVE, this._getResources.bind(this)
-                );
-
-                serviceManager.get('StoragePluginManager')
-                    .get(TimerConfig.NAME_SERVICE)
-                    .eventManager.on(dsign.storage.Storage.STORAGE_POST_UPDATE, this._getResources.bind(this)
-                );
-            }
-
-            /**
-             *
-             */
-            _getResources() {
-
-                serviceManager.get('StoragePluginManager')
-                    .get(TimerConfig.NAME_SERVICE)
-                    .getPaged(this.page, this.itemPerPage)
-                    .then((data) => {
-                        this.set('resources', data);
-                        this.hasResources = data.length > 0;
-                        this.totalItems = data.totalItems;
-                    });
-            }
-
-            _querySidelines(page, itemPerPage) {
-                if (page === undefined || itemPerPage === undefined) {
-                    return;
-                }
-                this._getResources();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
             }
 
             /**
              * @param evt
              */
-            remove(evt) {
-
-                let index = null;
-                this.resources.find((element, ind) => {
-                    if (element.id === evt.detail.id) {
-                        index = ind;
-                        return element;
+            play(evt) {
+                serviceManager.get('TimerService').play(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
                     }
-                });
+                );
+            }
 
-                this.splice('resources', index, 1);
-                this.hasTimer = this.resources.length > 0;
+            /**
+             * @param evt
+             */
+            stop(evt) {
+                serviceManager.get('TimerService').stop(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
+            }
 
-                serviceManager.get('StoragePluginManager')
-                    .get(TimerConfig.NAME_SERVICE)
-                    .remove(evt.detail)
-                    .then((data) => {
-                        serviceManager.get('PaperToastNotification').notify('Remove timer')
-                    });
+            /**
+             * @param evt
+             */
+            pause(evt) {
+                serviceManager.get('TimerService').pause(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
+            }
 
+            /**
+             * @param evt
+             */
+            resume(evt) {
+                serviceManager.get('TimerService').resume(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
             }
 
             /**
@@ -148,8 +173,6 @@
                 this.selected = 2;
             }
         }
-
         window.customElements.define(ElementTimerViewList.is, ElementTimerViewList);
-
     </script>
 </dom-module>

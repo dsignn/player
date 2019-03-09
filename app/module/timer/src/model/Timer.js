@@ -13,17 +13,24 @@ class Timer {
 
     static get STATUS_PAUSE()  { return 'pause'; }
 
+    static get STATUS_TO_RUN() { return 'to-run'; }
+
     constructor() {
 
         /**
          * @type {Object}
          */
-        this.startAt = {};
+        this.startAt = new Time();
 
         /**
          * @type {Object}
          */
-        this.endAt = {};
+        this.endAt = new Time();
+
+        /**
+         * @type {Time}
+         */
+        this.timer = new Time();
 
         /**
          * @type string|Object
@@ -41,69 +48,17 @@ class Timer {
         this.type = Timer.TYPE_TIMER;
 
         /**
-         * Event manager
+         * @type {string}
          */
-        this.eventManager = new (require('dsign-library').event.EvtManager)();
-
-        /**
-         * @type {easytimer}
-         */
-        this.timer = new (require('easytimer.js'))();
-        this.timer.addEventListener('secondTenthsUpdated', this.proxy.bind(this));
-        this.timer.addEventListener('secondsUpdated', this.proxy.bind(this));
-        this.timer.addEventListener('minutesUpdated', this.proxy.bind(this));
-        this.timer.addEventListener('hoursUpdated', this.proxy.bind(this));
-        this.timer.addEventListener('daysUpdated', this.proxy.bind(this));
-        this.timer.addEventListener('stopped', this.proxy.bind(this));
-        this.timer.addEventListener('reset', this.proxy.bind(this));
-        this.timer.addEventListener('started', this.proxy.bind(this));
-        this.timer.addEventListener('paused', this.proxy.bind(this));
-    }
-
-    _startConfig() {
-        let params = {};
-
-        params.countdown = this.type === Timer.TYPE_TIMER ? false : true;
-        params.startValues = this.startAt;
-        params.target = this.endAt;
-        return params;
-    }
-
-    start() {
-        this.timer.start(this._startConfig());
-    }
-
-    stop() {
-        this.timer.stop();
-    }
-
-    pause() {
-        this.timer.pause();
+        this.status = Timer.STATUS_IDLE
     }
 
     /**
-     * @return {string}
+     * @return {Timer}
      */
-    getStatus() {
-        let status = Timer.STATUS_IDLE;
-        switch (true) {
-            case this.timer.isRunning() === true:
-                status = Timer.STATUS_RUNNING;
-                break;
-
-            case this.timer.isPaused() === true:
-                status = Timer.STATUS_PAUSE;
-                break;
-        }
-        return status;
-    }
-
-    /**
-     *
-     * @param evt
-     */
-    proxy(evt) {
-        this.eventManager.fire(evt.type, this);
+    resetTimer() {
+        this.timer = this.startAt.clone();
+        return this;
     }
 }
 

@@ -8,6 +8,7 @@
 <link rel="import" href="../../../../css/global-styles.html">
 <link rel="import" href="../../../../element/iconset/iconset.html">
 
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
 
 <dom-module id="timer-wc">
     <template>
@@ -37,6 +38,24 @@
                 padding-left: 6px;
             }
 
+            /**
+             * TODO REFACTOR
+             */
+            .running {
+                color: var(--timeslot-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--timeslot-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--timeslot-pause);
+                font-style: italic;
+            }
+
             .activePaperButton {
                 color: var(--app-primary-color);
             }
@@ -52,14 +71,14 @@
         </style>
         <paper-card id="design">
             <div class="card-content flex flex-horizontal">
-                <div class="data flex-basis-85 flex flex-vertical">
+                <div class="data flex-1 flex flex-vertical">
                     <div class="dataWrapper">
                         <div>{{timer.name}}</div>
-                        <div>{{status}} - {{timer.type}}</div>
-                        <div>{{hours}}:{{minutes}}:{{seconds}}</div>
+                        <div id="status">{{status}}</div>
+                        <div>{{currentTime}}|{{totalTime}}</div>
                     </div>
                 </div>
-                <div class="flex-basis-15 flex flex-vertical">
+                <div class="flex flex-vertical">
                     <paper-menu-button ignore-select disabled="{{hideCrud}}">
                         <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                         <paper-listbox slot="dropdown-content" multi>
@@ -70,16 +89,16 @@
                 </div>
             </div>
             <div class="card-actions">
-                <paper-icon-button icon="timeslot:play" on-click="_play" class="circle-small" title="Play" disabled="{{disableStart}}"></paper-icon-button>
-                <paper-icon-button icon="timeslot:stop" class="circle-small" on-click="_stop" title="Stop" disabled="{{disableStop}}"></paper-icon-button>
-                <paper-icon-button icon="timeslot:pause" class="circle-small" on-click="_pause" title="Pause" disabled="{{disablePause}}"></paper-icon-button>
+                <paper-icon-button id="play" icon="timeslot:play" class="circle-small" on-click="_play" title="Play"></paper-icon-button>
+                <paper-icon-button id="pause" icon="timeslot:stop" class="circle-small" on-click="_stop" title="Stop"></paper-icon-button>
+                <paper-icon-button id="stop" icon="timeslot:pause" class="circle-small" on-click="_pause" title="Pause"></paper-icon-button>
             </div>
             <div id="rightSection" class="rate-image"></div>
         </paper-card>
     </template>
 
     <script>
-        class ElementTimer extends Polymer.Element {
+        class ElementTimer extends StorageAdapterBehaviour {
 
             static get is() {
                 return 'timer-wc';
@@ -95,55 +114,16 @@
                         observer: '_changeTimer'
                     },
 
-                    disableStart: {
-                        type: Boolean,
-                        notify: true,
-                        value: false
+                    storageName: {
+                        value: TimerConfig.NAME_SERVICE
                     },
 
-                    disableStop: {
-                        type: Boolean,
-                        notify: true,
-                        value: true
-                    },
-
-                    disablePause: {
-                        type: Boolean,
-                        notify: true,
-                        value: true
-                    },
-
-                    status: {
-                        type: String,
-                        notify: true,
-                        observer: '_changeStatus'
-                    },
-
-                    hours: {
-                        type: String,
-                        notify: true,
-                        value: '00'
-                    },
-
-                    minutes: {
-                        type: String,
-                        notify: true,
-                        value: '00'
-                    },
-
-                    seconds: {
-                        type: String,
-                        notify: true,
-                        value: '00'
-                    }
                 };
             }
 
             ready() {
                 super.ready();
-                this.status = this.timer.getStatus();
-                serviceManager.get('TimerService').eventManager.on('progress', this._progress.bind(this));
-                serviceManager.get('TimerService').eventManager.on('stop', this._stopService.bind(this));
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this));
             }
 
             /**
@@ -157,66 +137,64 @@
                     return;
                 }
 
-                if (serviceManager.get('TimerService').hasActiveTimer(this.timer.id)) {
-
-                    let timer = serviceManager.get('TimerService').getActiveTimer(this.timer.id);
-                    if (this.timer.getStatus() !== timer.getStatus()) {
-                        this.timer = timer;
-                    }
-                }
-
-                this.status = this.timer.getStatus();
-                this._init(this.timer);
+                this.status = this.timer.status;
+                this.currentTime = this.timer.status === Timer.STATUS_IDLE ? this.timer.startAt.toString() : this.timer.timer.toString();
+                this.totalTime = this.timer.endAt.toString();
+                this._clearStatusClass(this.timer.status);
+                this._updateActionHtml();
             }
 
             /**
-             * @param {String} newValue
-             * @param {String} oldValue
              * @private
              */
-            _changeStatus(newValue, oldValue) {
-                if (!newValue) {
+            _updateFromStorage(evt) {
+                if (this.timer.id !== evt.data.id) {
                     return;
                 }
 
-                switch (newValue) {
-                    case Timer.STATUS_IDLE:
-                        this._setViewActionButton(false, true, true);
-                        this.hideCrud = false;
-                        break;
-                    case Timer.STATUS_RUNNING:
+                this.status = this.timer.status;
+                this.currentTime = this.timer.status === Timer.STATUS_IDLE ? this.timer.startAt.toString() : this.timer.timer.toString();
+                this.totalTime = this.timer.endAt.toString();
+                this._clearStatusClass(this.timer.status);
+                this._updateActionHtml();
+            }
+
+            /**
+             * @private
+             */
+            _updateActionHtml() {
+                switch (true) {
+                    case this.timer.status === Timer.STATUS_RUNNING:
                         this.hideCrud = true;
-                        this._setViewActionButton(true, false, false);
+
+                        this.$.play.disabled = true;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = false;
                         break;
-                    case Timer.STATUS_PAUSE:
+                    case this.timer.status === Timer.STATUS_PAUSE:
+
+                        this.hideCrud = true;
+
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = false;
+                        this.$.pause.disabled = true;
+                        break;
+                    default:
                         this.hideCrud = false;
-                        this._setViewActionButton(false, false, true);
-                        break;
+
+                        this.$.play.disabled = false;
+                        this.$.stop.disabled = true;
+                        this.$.pause.disabled = true;
                 }
             }
 
-            /**
-             * @param {Timer} timer
-             * @private
-             */
-            _init(timer) {
-
-                this.hours = timer.startAt.hours < 10 ? '0' + timer.startAt.hours : timer.startAt.hours;
-                this.minutes = timer.startAt.minutes < 10 ? '0' +  timer.startAt.minutes :  timer.startAt.minutes;
-                this.seconds = timer.startAt.seconds < 10 ? '0' + timer.startAt.seconds : timer.startAt.seconds;
-            }
-
 
             /**
-             * @param {Boolean} start
-             * @param {Boolean} stop
-             * @param {Boolean} pause
-             * @private
+             * @param {string} classString
              */
-            _setViewActionButton(start, stop, pause) {
-                this.disableStart = start;
-                this.disableStop  = stop;
-                this.disablePause = pause;
+            _clearStatusClass(classString) {
+                this.$.status.className = '';
+                this.$.status.classList.add(classString);
             }
 
             /**
@@ -240,8 +218,11 @@
              * @private
              */
             _play(evt) {
-                serviceManager.get('TimerService').start(this.timer);
-                this.status = this.timer.getStatus();
+                if (this.timer.status === Timer.STATUS_IDLE) {
+                    this.dispatchEvent(new CustomEvent('play', {detail: this.timer}));
+                } else {
+                    this.dispatchEvent(new CustomEvent('resume', {detail: this.timer}));
+                }
             }
 
             /**
@@ -249,8 +230,7 @@
              * @private
              */
             _pause(evt) {
-                serviceManager.get('TimerService').pause(this.timer);
-                this.status = this.timer.getStatus();
+                this.dispatchEvent(new CustomEvent('pause', {detail: this.timer}));
             }
 
             /**
@@ -258,38 +238,7 @@
              * @private
              */
             _stop(evt) {
-                serviceManager.get('TimerService').stop(this.timer);
-                this.status = this.timer.getStatus();
-            }
-
-            /**
-             * @param evt
-             * @private
-             */
-            _progress(evt) {
-             //   console.log('TIMER WS PROGRESS', evt);
-                if (evt.data.id !== this.timer.id) {
-                    return;
-                }
-                let data = evt.data.timer.getTimeValues();
-                this.hours = data.hours < 10 ? '0' + data.hours : data.hours;
-                this.minutes = data.minutes < 10 ? '0' + data.minutes : data.minutes;
-                this.seconds = data.seconds < 10 ? '0' + data.seconds : data.seconds;
-
-            }
-
-            /**
-             * @param evt
-             * @private
-             */
-            _stopService(evt) {
-                //   console.log('TIMER WS PROGRESS', evt);
-                if (evt.data.id !== this.timer.id) {
-                    return;
-                }
-                this._init(this.timer);
-                this.status = this.timer.getStatus();
-
+                this.dispatchEvent(new CustomEvent('stop', {detail: this.timer}));
             }
         }
 

@@ -184,6 +184,22 @@
                 "src/TimelineService.js"
             ]
         },
+          {
+                    "icon": "app:timer",
+                    "nameWc": "timer-index",
+                    "label": "Timer",
+                    "plugin": true,
+                    "customeStyle": {
+                        "color": " green"
+                    },
+                    "name": "timer",
+                    "configFile": "config.js",
+                    "autoloads": [
+                        "src/model/Timer.js",
+                        "src/TimerService",
+                        "src/injector/TimerDataInjector"
+                    ]
+                },
         {
             "icon": "app:soccer",
             "nameWc": "soccer-index",
