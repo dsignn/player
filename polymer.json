@@ -1,0 +1,44 @@
+{
+  "npm": true,
+  "entrypoint": "app/entrypoint/dashboard/index.html",
+  "lint": {
+    "rules": [
+      "polymer-3"
+    ]
+  },
+  "sources": [
+    "lib/**/*.js",
+    "app/elements/**.js",
+    "app/style/**",
+    "app/entrypoint/**",
+    "app/module/**",
+    "app/config/**",
+    "!app/config/config.json.dist",
+    "app/main.js",
+    "node_modules/@polymer/**/*.js",
+    "node_modules/@p3e/**/*.*"
+  ],
+  "extraDependencies": [
+    "package.json",
+    "app/manifest.json",
+    "node_modules/web-animations-js/web-animations-next-lite.min.js",
+    "node_modules/@webcomponents/webcomponentsjs/webcomponents-bundle.js"
+  ],
+  "builds": [
+    {
+      "name": "es6bundle",
+      "js": {
+        "compile": "es2018",
+        "minify": false,
+        "transformModulesToAmd": true
+      },
+      "css": {
+        "minify": false
+      },
+      "html": {
+        "minify": false
+      }
+    }
+  ],
+  "moduleResolution": "node"
+}

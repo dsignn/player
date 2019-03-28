@@ -1,8 +1,0 @@
-{
-  "name": "dashboard",
-  "version": "0.1.0",
-  "author": "antonino visalli <antonino.visalli@gmail.com>",
-  "description": "Thor",
-  "homepage": "https://github.com/dsign",
-  "configFile": "config.js"
-}

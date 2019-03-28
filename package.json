@@ -1,54 +1,110 @@
 {
-  "name": "dsign-player",
-  "description": "Dsign core player",
-  "repository": "git@github.com:dsignn/player.git",
+  "version": "0.1.0",
+  "author": "antonino.visalli@gmail.com",
+  "name": "p3e",
+  "description": "Polymer 3 in an electron application",
+  "repository": "git@github.com:visa4/p3e.git",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "bower": "^1.8.8",
-    "chai": "*",
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.4.0",
+    "@babel/preset-env": "^7.4.2",
+    "@babel/register": "^7.4.0",
+    "@babel/runtime": "^7.4.2",
+    "@types/source-map": "^0.5.7",
+    "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
-    "electron": "4.0.0",
-    "electron-builder": "^20.11.1",
-    "mocha": "*",
-    "nyc": "^11.7.1",
-    "polymer-cli": "^1.6.0"
+    "dexie": "^2.0.4",
+    "electron": "4.0.5",
+    "electron-builder": "~20.39.0",
+    "polymer-cli": "^1.9.7",
+    "typescript": "^3.3.4000",
+    "wct-browser-legacy": "^1.0.0"
   },
   "scripts": {
-    "postinstall": "install-app-deps",
-    "start": "export ELECTRON_DISABLE_SECURITY_WARNINGS=true && electron --inspect=5858 ./app --enable-logging",
-    "dev": "NODE_ENV='development' npm run start",
-    "dist": "build -l --x64 --ia32",
-    "test": "nyc mocha app/**/Test*.js"
-  },
-  "build": {
-    "appId": "com.app.dsign",
-    "asar": false,
-    "linux": {
-      "target": "deb",
-      "icon": "build"
-    }
+    "postinstall": "cp app/config/config.json.dist app/config/config-development.json && cp app/config/config.json.dist app/config/config-production.json && cp app/config/module.json.dist app/config/module.json",
+    "start": "export APP_ENVIRONMENT=development && export ELECTRON_DISABLE_SECURITY_WARNINGS=true && electron ./app/main.js --inspect=5858",
+    "start-win": "set APP_ENVIRONMENT=development && electron .\\app\\main.js --inspect=5858",
+    "polymer-build": "polymer build",
+    "postpolymer-build": "mv build/es6bundle/package.json build/es6bundle/app && cp app/style/icon/logo.png build/es6bundle/app/icon.png",
+    "start-pre-build": "electron ./build/es6bundle/app/main.js --inspect=5858",
+    "test": "polymer test",
+    "dist": "cd build/es6bundle/app && electron-builder -c.extraMetadata.main=main.js -w --x64",
+    "tsc-commonjs": "tsc  -p lib/commonjs",
+    "tsc-es6": "tsc  -p lib/es6"
   },
   "dependencies": {
-    "adm-zip": "^0.4.9",
-    "app-module-path": "^2.2.0",
-    "archiver": "^3.0.0",
-    "dexie": "^2.0.4",
-    "dsign-library": "git+ssh://git@github.com/dsignn/library.git",
-    "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v2.2.3",
-    "file-metadata": "^1.0.0",
-    "fluent-ffmpeg": "^2.1.2",
-    "fs-extra": "^7.0.1",
-    "image-size": "^0.6.2",
-    "node-fetch": "^2.3.0"
+    "@p3e/library": "git+https://github.com/visa4/p3e-library.git",
+    "@polymer/app-layout": "^3.0.2",
+    "@polymer/app-localize-behavior": "^3.0.1",
+    "@polymer/app-media": "^3.0.1",
+    "@polymer/iron-icons": "^3.0.1",
+    "@polymer/iron-pages": "^3.0.1",
+    "@polymer/paper-badge": "^3.0.1",
+    "@polymer/paper-button": "^3.0.1",
+    "@polymer/paper-card": "^3.0.1",
+    "@polymer/paper-checkbox": "^3.0.1",
+    "@polymer/paper-dialog": "^3.0.1",
+    "@polymer/paper-dropdown-menu": "^3.0.1",
+    "@polymer/paper-fab": "^3.0.1",
+    "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/paper-input": "^3.0.1",
+    "@polymer/paper-item": "^3.0.1",
+    "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/paper-menu-button": "^3.0.1",
+    "@polymer/paper-progress": "^3.0.1",
+    "@polymer/paper-radio-button": "^3.0.1",
+    "@polymer/paper-radio-group": "^3.0.1",
+    "@polymer/paper-ripple": "^3.0.1",
+    "@polymer/paper-slider": "^3.0.1",
+    "@polymer/paper-spinner": "^3.0.2",
+    "@polymer/paper-swatch-picker": "^3.0.1",
+    "@polymer/paper-tabs": "^3.0.1",
+    "@polymer/paper-toast": "^3.0.1",
+    "@polymer/paper-toggle-button": "^3.0.1",
+    "@polymer/paper-tooltip": "^3.0.1",
+    "@polymer/polymer": "^3.2.0",
+    "@webcomponents/webcomponentsjs": "^2.0.0",
+    "image-capture": "^0.4.0",
+    "paper-collapse-item": "^4.0.5",
+    "source-map-support": "^0.5.11",
+    "web-animations-js": "^2.3.1",
+    "webrtc-adapter": "^7.2.1"
   },
-  "nyc": {
-    "reporter": [
-      "html",
-      "text-summary"
+  "build": {
+    "appId": "p3e.app",
+    "npmRebuild": false,
+    "files": [
+      "index.html",
+      "main.js",
+      "icon.png",
+      "config/**/*",
+      "style/**/*",
+      "module/**/*",
+      "entrypoint/**/*",
+      "elements/**/*",
+      "manifest.json",
+      {
+        "from": "../node_modules",
+        "to": "../node_modules"
+      },
+      {
+        "from": "../lib",
+        "to": "../lib"
+      }
     ],
-    "report-dir": "./test/nyc",
-    "exclude": [
-      "app/**/Test*.js"
-    ]
-  }
+    "directories": {
+      "output": "../../../releases"
+    },
+    "win": {
+      "legalTrademarks": "P3E",
+      "asar": false
+    }
+  },
+  "keywords": [
+    "polymer 3",
+    "electron",
+    "starter kit polymer 3"
+  ]
 }

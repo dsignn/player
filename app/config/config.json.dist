@@ -1,0 +1,16 @@
+{
+  "localize": {
+    "defaultLanguage" : "it",
+    "languages" : [
+      "it",
+      "en"
+    ]
+  },
+  "storage" : {
+     "adapter" : {
+        "dexie" : {
+            "nameDb" : "test"
+        }
+     }
+  }
+}
