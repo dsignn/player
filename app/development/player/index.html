@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="manifest" href="../../manifest.json">
+    <script src="../../../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../../node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
+    <script>
+        require('@babel/register')({
+            presets: [
+                [
+                    '@babel/preset-env',
+                    {
+                        "targets": {
+                            "node": "10"
+                        }
+                    }],
+            ],
+            plugins: [
+                "@babel/plugin-syntax-dynamic-import"
+            ],
+            ignore: []
+        });
+        require('./import.js')
+    </script>
+</head>
+<body>
+    <paper-player-manager></paper-player-manager>
+</body>
+</html>

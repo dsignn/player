@@ -1,4 +1,4 @@
 export const lang = {
-  "it": { "nameApp": "Sono P3E" },
-  "en": { "nameApp": "I am P3E" }
+  "it": { "nameApp": "Sono Dsign" },
+  "en": { "nameApp": "I am Dsign" }
 };

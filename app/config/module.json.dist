@@ -1,26 +1,37 @@
 [
+
   {
-    "title" : "Home",
-    "name": "home",
-    "icon" : "icons:apps",
-    "webComponentEntryPointName" : "welcome-index",
+    "title" : "Dashboard",
+    "name": "dashboard",
+    "icon" : "dashboard:menu",
+    "webComponentEntryPointName" : "dashboard-index",
     "webComponentEntryPointNameFile" : "index.js",
     "configEntryPoint": "config.js",
     "autoloads" : [
-      "src/HomeService.js"
+
+    ],
+    "autoloadsWs": [
+      "element/icons/icons.js"
     ]
   },
   {
-    "title" : "Help",
-    "name": "help",
-    "icon" : "icons:help",
-    "webComponentEntryPointName" : "demo-element",
-    "webComponentEntryPointNameFile" : "demo-element.js",
+    "title" : "Monitor",
+    "name": "monitor",
+    "icon" : "monitor:menu",
+    "webComponentEntryPointName" : "monitor-index",
+    "webComponentEntryPointNameFile" : "index.js",
     "configEntryPoint": "config.js",
     "autoloads" : [
-        "src/HelpService.js"
+      "src/MonitorService.js",
+      "src/storage/entity/MonitorEntity.js",
+      "src/storage/entity/MonitorContainerEntity.js",
+      "src/storage/adapter/dexie/DexieMonitorAdapter.js"
+    ],
+    "autoloadsWs": [
+      "element/icons/icons.js",
+      "element/paper-player/paper-player.js",
+      "element/paper-player-manager/paper-player-manager.js",
+      "element/paper-monitor-viewer/paper-monitor-viewer.js"
     ]
   }
 ]
-
-

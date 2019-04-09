@@ -8,7 +8,7 @@
   },
   "sources": [
     "lib/**/*.js",
-    "app/elements/**.js",
+    "app/elements/**",
     "app/style/**",
     "app/entrypoint/**",
     "app/module/**",

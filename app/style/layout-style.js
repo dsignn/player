@@ -9,12 +9,6 @@ export const flexStyle = html`
             min-width: var(--menu-min-width);
         }
         
-        .layout-content {
-            min-height: 100%;
-            height: max-content;
-            border-left: var(--divider-color) solid 1px;
-        }
-    
         /*******************************************
                     FLEX LAYOUT
          *******************************************/
@@ -38,9 +32,65 @@ export const flexStyle = html`
         .layout-center-aligned {
             @apply  --layout-center;
         }
+        
+        .layout-end-aligned {
+            @apply  --layout-end;
+        }
 
         .layout-center-justified {
             @apply --layout-center-justified;
+        }
+        
+        .layout-end-justified {
+            @apply --layout-end-justified;
+        }
+        
+        .layout-flex {
+            @apply --layout-flex;
+        }
+        
+        .layout-flex-2 {
+            @apply --layout-flex-2;
+        }
+
+        .layout-flex-3 {
+            @apply --layout-flex-3;
+        }
+
+        .layout-flex-4 {
+            @apply --layout-flex-4;
+        }
+
+        .layout-flex-5 {
+            @apply --layout-flex-5;
+        }
+
+        .layout-flex-6 {
+            @apply --layout-flex-6;
+        }
+
+        .layout-flex-7 {
+            @apply --layout-flex-7;
+        }
+        
+        .layout-flex-8 {
+            @apply --layout-flex-8;
+        }
+        
+        .layout-flex-9 {
+            @apply --layout-flex-9;
+        }
+        
+        .layout-flex-10 {
+            @apply --layout-flex-10;
+        }
+        
+        .layout-flex-11 {
+            @apply --layout-flex-11;
+        }
+        
+        .layout-flex-12 {
+            @apply --layout-flex-12;
         }
 
         .layout-container {
@@ -49,5 +99,15 @@ export const flexStyle = html`
         
         .layout-content {
             padding: var(--content-padding);
+        }
+       
+        .debug1 {
+            background: red;
+            opacity: 0.5;
+        }
+         
+        .debug2 {
+            background: green;
+            opacity: 0.5;
         }
     </style>`;

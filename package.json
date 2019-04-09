@@ -6,20 +6,20 @@
   "repository": "git@github.com:visa4/p3e.git",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@babel/core": "^7.4.0",
+    "@babel/core": "^7.4.3",
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-    "@babel/plugin-transform-runtime": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
+    "@babel/plugin-transform-runtime": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
     "@babel/register": "^7.4.0",
-    "@babel/runtime": "^7.4.2",
+    "@babel/runtime": "^7.4.3",
     "@types/source-map": "^0.5.7",
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
     "dexie": "^2.0.4",
     "electron": "4.0.5",
     "electron-builder": "~20.39.0",
-    "polymer-cli": "^1.9.7",
-    "typescript": "^3.3.4000",
+    "polymer-cli": "^1.9.8",
+    "typescript": "^3.4.1",
     "wct-browser-legacy": "^1.0.0"
   },
   "scripts": {
@@ -36,9 +36,11 @@
   },
   "dependencies": {
     "@p3e/library": "git+https://github.com/visa4/p3e-library.git",
+    "@p3e/paper-autocomplete": "git+https://github.com/EmanueleDessi/paper-autocomplete.git",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",
     "@polymer/app-media": "^3.0.1",
+    "@polymer/iron-form": "^3.0.1",
     "@polymer/iron-icons": "^3.0.1",
     "@polymer/iron-pages": "^3.0.1",
     "@polymer/paper-badge": "^3.0.1",
@@ -70,7 +72,7 @@
     "paper-collapse-item": "^4.0.5",
     "source-map-support": "^0.5.11",
     "web-animations-js": "^2.3.1",
-    "webrtc-adapter": "^7.2.1"
+    "webrtc-adapter": "^7.2.2"
   },
   "build": {
     "appId": "p3e.app",
