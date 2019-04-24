@@ -183,7 +183,6 @@ class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeEl
     _changeEntity(newValue) {
         this.labelAction = 'save';
         if (!newValue) {
-
             return;
         }
 

@@ -11,7 +11,9 @@ export const lang = {
     "add" : "Aggiugi",
     "save" : "Salva",
     "update" : "Modifica",
-    "father-monitor" : "Monitor padre"
+    "father-monitor" : "Monitor padre",
+    "search-file" : "Cerca file",
+    "tag" : 'Tag'
   },
   "en": {
     "header": "List monitor",
@@ -25,6 +27,8 @@ export const lang = {
     "add" : "Add",
     "save" : "Save",
     "update" : "Update",
-    "father-monitor" : "Father monitor"
+    "father-monitor" : "Father monitor",
+    "search-file" : "Search file",
+    "tag" : 'Tag'
   }
 };

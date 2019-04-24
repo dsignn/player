@@ -12,8 +12,8 @@ app/node_modules/**
 /releases
 /releases/**
 
-
 .idea
 .idea/**
 
 storage
+storage/**

@@ -61,7 +61,7 @@ export class PaperPagination extends PolymerElement {
                 }
     
             </style>
-            <div hidden$="[[hide()]]">
+            <div hidden$="[[hide]]">
                 <div id="container" class="flex flex-end-justified"></div>
             </div>
                
@@ -80,7 +80,7 @@ export class PaperPagination extends PolymerElement {
                 notify: true,
             },
 
-            totalItem: {
+            totalItems: {
                 type: Number
             },
 
@@ -119,15 +119,15 @@ export class PaperPagination extends PolymerElement {
 
     static get observers() {
         return [
-            '_render(page, totalItem, itemPerPage)'
+            '_render(page, totalItems, itemPerPage)'
         ]
     }
 
     /**
      * @return {boolean}
      */
-    hide() {
-        return this.page < 2;
+    _hide() {
+        return this.totalItems <= this.itemPerPage;
     }
 
     /**
@@ -160,7 +160,8 @@ export class PaperPagination extends PolymerElement {
      * @private
      */
     _render(page, totalItem, itemPerPage) {
-        if (typeof page !== 'number' || typeof totalItem !== 'number' || typeof itemPerPage !== 'number') {
+        this.hide = this._hide();
+        if (typeof page !== 'number' || typeof totalItem !== 'number' || typeof itemPerPage !== 'number' || this.hide) {
             return;
         }
 

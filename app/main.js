@@ -158,7 +158,7 @@ class Application {
         browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
-            browserWindows.send('papar-player-config', monitor);
+            browserWindows.send('paper-player-config', monitor);
         });
 
         if (this.environment === 'development') {
@@ -350,7 +350,7 @@ class Application {
                         newMonitors[cont].height
                     );
 
-                    newMonitors[cont].browserWindows.send('paper-player-change', newMonitors[cont]);
+                    newMonitors[cont].browserWindows.send('paper-player-update', newMonitors[cont]);
                     this.monitorsContainerEntity.monitors[index] = newMonitors[cont];
                     break;
                 default:

@@ -33,5 +33,39 @@
       "element/paper-player-manager/paper-player-manager.js",
       "element/paper-monitor-viewer/paper-monitor-viewer.js"
     ]
+  },
+  {
+    "title" : "Resource",
+    "name": "resource",
+    "icon" : "resource:menu",
+    "configEntryPoint": "config.js",
+    "webComponentEntryPointName" : "resource-index",
+    "webComponentEntryPointNameFile" : "index.js",
+    "autoloads" : [
+      "src/storage/adapter/dexie/DexieResourceAdapter.js",
+      "src/ResourceService.js",
+      "src/storage/entity/FileEntity.js",
+      "src/storage/entity/AudioEntity.js",
+      "src/storage/entity/ImageEntity.js",
+      "src/storage/entity/VideoEntity.js"
+    ],
+    "autoloadsWs": [
+      "element/icons/icons.js"
+    ]
+  },
+  {
+    "title" : "Timeslot",
+    "name": "timeslot",
+    "icon" : "timeslot:menu",
+    "configEntryPoint": "config.js",
+    "webComponentEntryPointName" : "timeslot-index",
+    "webComponentEntryPointNameFile" : "index.js",
+    "autoloads" : [
+      "src/storage/entity/TimeslotEntity.js",
+      "src/storage/adapter/dexie/DexieTimeslotAdapter.js"
+    ],
+    "autoloadsWs": [
+      "element/icons/icons.js"
+    ]
   }
 ]

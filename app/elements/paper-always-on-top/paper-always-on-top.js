@@ -4,7 +4,7 @@ import '@polymer/paper-toggle-button/paper-toggle-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {lang} from './language/language';
 
-class PaperAlwaysOnTop extends DsignLocalizeElement {
+export class PaperAlwaysOnTop extends DsignLocalizeElement {
 
     static get template() {
         return html`

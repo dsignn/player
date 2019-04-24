@@ -22,11 +22,11 @@ class PaperPlayerManager extends DsignServiceInjectorElement {
 
         container.get('ReceiverContainerAggregate')
             .get('MonitorReceiver')
-            .on('papar-player-config', this.configPaperPlayer.bind(this));
+            .on('paper-player-config', this.configPaperPlayer.bind(this));
 
         container.get('ReceiverContainerAggregate')
             .get('MonitorReceiver')
-            .on('papar-player-update', this.updatePaperPlayer.bind(this));
+            .on('paper-player-update', this.updatePaperPlayer.bind(this));
     }
 
     /**
@@ -42,8 +42,10 @@ class PaperPlayerManager extends DsignServiceInjectorElement {
     updatePaperPlayer(evt, msg) {
 
         this._hydrateMonitor(msg);
-        console.log('sucaaaaaa');
-
+        // TODO implements better solution
+        let paperPlayer = document.querySelector('paper-player');
+        paperPlayer.remove();
+        this._appendPaperPlayer(document.body, this.monitor);
     }
 
     /**

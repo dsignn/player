@@ -63,7 +63,7 @@ class PaperMonitor extends mixinBehaviors([EntityBehavior], DsignLocalizeElement
             </style>
             <paper-card>
                 <div id="left-section"></div>
-                 <div id="fastAction">
+                <div id="fastAction">
                     <div class="action">
                         <paper-toggle-button id="paperToggleEnable" on-change="_toggleEnableMonitor" checked="{{entity.enable}}"></paper-toggle-button>
                         <paper-tooltip for="paperToggleEnable" position="bottom">{{localize('enable-monitor')}}</paper-tooltip>
@@ -97,13 +97,13 @@ class PaperMonitor extends mixinBehaviors([EntityBehavior], DsignLocalizeElement
             services : {
                 value : {
                     "StorageContainerAggregate": {
-                        "MonitorStorage":"MonitorStorage"
+                        "monitorStorage":"MonitorStorage"
                     }
                 }
             },
 
-            MonitorStorage : {
-                observer: 'observerStorageMonitorToUpdateEntity'
+            monitorStorage : {
+                observer: 'observerStorageToUpdateEntity'
             }
         }
     }

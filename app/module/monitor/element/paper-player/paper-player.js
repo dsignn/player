@@ -61,13 +61,6 @@ class PaperPlayer extends DsignServiceInjectorElement {
 
     static get properties () {
         return {
-            services : {
-                value : {
-                    "StorageContainerAggregate": {
-                        "MonitorStorage":"MonitorStorage"
-                    }
-                }
-            },
 
             nodeName : {
                 type: String,

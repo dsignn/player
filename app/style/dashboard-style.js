@@ -144,8 +144,7 @@ const template = html`
             }
             
             --paper-icon-button-menu: {
-                height: 44px;
-                width: 44px;
+      
                 color: var(--default-primary-color);
             }
             

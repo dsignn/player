@@ -3,7 +3,7 @@ import {Module} from '@p3e/library/src/core/module/Module';
 import {Listener} from '@p3e/library/src/event/index'
 import {Container, ContainerAggregate} from  '@p3e/library/src/container/index';
 import {Localize} from '@p3e/library/src/localize/Localize';
-import {PropertyHydrator, Abstr} from '@p3e/library/src/hydrator/index';
+import {PropertyHydrator} from '@p3e/library/src/hydrator/index';
 import {DexieManager} from '@p3e/library/src/storage/adapter/dexie/index';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
@@ -13,7 +13,17 @@ const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/..
 
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
-const resourcePath = path.normalize(`${__dirname}${back}storage${path.sep}`);
+const resourcePath = path.normalize(`${__dirname}${back}..${path.sep}storage${path.sep}resource`);
+
+if (!fs.existsSync(resourcePath)) {
+   fs.mkdir(
+       resourcePath,
+       { recursive: true },
+       (err) => {
+            if (err) throw console.error(err);
+       }
+    );
+}
 
 /**
  * Container service of application

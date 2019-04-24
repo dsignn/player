@@ -125,9 +125,6 @@ class DsignLayout extends DsignLocalizeElement {
         super();
         this.resources = lang;
         // TODO debounce
-        window.onresize = (event) => {
-            this.computeHeightMenu();
-        };
     }
 
     connectedCallback() {

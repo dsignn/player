@@ -1,9 +1,9 @@
-import {PolymerElement, html} from '@polymer/polymer';
-import '@polymer/polymer/lib/elements/dom-module';
-import '@polymer/polymer/lib/elements/dom-bind';
-import '@polymer/polymer/lib/elements/dom-repeat';
+import '@polymer/paper-toast/paper-toast';
 
 import '../../style/dashboard-style';
+
+import '../../elements/layout/dsign-layout';
+import '../../entrypoint/dashboard/src/boot';
 
 /***
  * Import entry point module dev
@@ -15,5 +15,8 @@ import '../../module/monitor/index';
 import '../../module/monitor/element/icons/icons';
 import '../../module/monitor/element/paper-monitor-viewer/paper-monitor-viewer';
 
-import '../../elements/layout/dsign-layout';
-import '../../entrypoint/dashboard/src/boot';
+import '../../module/resource/index';
+import '../../module/resource/element/icons/icons';
+
+import '../../module/timeslot/index';
+import '../../module/timeslot/element/icons/icons';
