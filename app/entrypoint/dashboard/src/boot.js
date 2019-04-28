@@ -94,6 +94,26 @@ container.set('Localize', new Localize(
 container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 /***********************************************************************************************************************
+                                            NOTIFICATION SERVICE
+ **********************************************************************************************************************/
+container.set('Notify', {
+    notify:  (text) => {
+
+        let id = 'notification';
+        let paperToast = document.getElementById(id);
+        if (!paperToast) {
+            console.warn('Element by id ' + id + ' not found');
+            return;
+        }
+
+        // TODO inject Translator
+        paperToast.text = text;
+        paperToast.open();
+    }
+});
+
+
+/***********************************************************************************************************************
                                              APPLICATION SERVICE
  **********************************************************************************************************************/
 let hydrator = new PropertyHydrator(new Module());
