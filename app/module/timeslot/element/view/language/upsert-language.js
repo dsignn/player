@@ -7,7 +7,10 @@ export const lang = {
     "monitor" : "Monitor",
     "resource" : "Risorse",
     "info-working" : "lavora solo sulle risorse video",
-    "tag" : 'Tag'
+    "tag" : "Tag",
+    "save" : "Salva",
+    "update" : "Modifica",
+    "bind-timeslot" : "Aggancia un timeslot"
   },
   "en": {
     "header": "List monitor",
@@ -17,6 +20,9 @@ export const lang = {
     "monitor" : "Monitor",
     "resource" : "Resource",
     "info-working" : "working only on video resource",
-    "tag" : 'Tag'
+    "tag" : 'Tag',
+    "save" : "Save",
+    "update" : "Update",
+    "bind-timeslot" : "Bind timeslot"
   }
 };

@@ -4,7 +4,7 @@ import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
 import '../../../../elements/paper-chip/paper-chips';
 import '@polymer/paper-input/paper-input';
-import '@p3e/paper-autocomplete/paper-autocomplete';
+import '@fluid-next/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/iron-form/iron-form';
 import '@polymer/iron-icon/iron-icon';

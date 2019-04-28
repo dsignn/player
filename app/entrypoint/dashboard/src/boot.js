@@ -49,6 +49,17 @@ entityContainerAggregate.setPrototipeClass(require("@p3e/library").storage.entit
 entityContainerAggregate.setContainer(container);
 container.set('EntityContainerAggregate', entityContainerAggregate);
 
+entityContainerAggregate.set(
+    'EntityNestedReference',
+    new (require("@p3e/library").storage.entity.EntityNestedReference)()
+);
+
+
+entityContainerAggregate.set(
+    'EntityReference',
+    new (require("@p3e/library").storage.entity.EntityReference)()
+);
+
 const senderContainerAggregate = new ContainerAggregate();
 // TODO review :)
 senderContainerAggregate.setPrototipeClass((new Object).constructor);

@@ -3,13 +3,14 @@ import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
 import '../../../../elements/paper-chip/paper-chips';
-import '@p3e/paper-autocomplete/paper-autocomplete';
+import '@fluid-next/paper-autocomplete/paper-autocomplete';
 import '@polymer/paper-checkbox/paper-checkbox';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-ripple/paper-ripple';
 import {flexStyle} from '../../../../style/layout-style';
+import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/upsert-language';
 
 /**
@@ -61,7 +62,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                     }
                 </style>
                 <slot name="header"></slot>
-                <iron-form id="formResource">
+                <iron-form id="formTimeslot">
                     <form method="post">
                         <div id="container">
                             <div id="content-left">
@@ -75,12 +76,14 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     value-property="name"
                                     on-autocomplete-selected="_selectMonitor"
                                     on-autocomplete-change="_searchMonitor"
+                                    value="{{entity.monitorContainerReference}}"
                                     remote-source>
-                                     <template slot="autocomplete-custom-template">
+                                    <template slot="autocomplete-custom-template">
+                                        ${autocompleteStyle}
                                         <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                                            <div>
+                                            <div index="[[index]]">
                                                 <div class="service-name">[[item.name]]</div>
-                                                <div class="service-description">TODO</div>
+                                                <div class="service-description">[[item.height]] x [[item.width]]</div>
                                             </div>
                                             <paper-ripple></paper-ripple>
                                         </paper-item>
@@ -95,26 +98,9 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     on-autocomplete-change="_searchResource"
                                     remote-source>
                                     <template slot="autocomplete-custom-template">
+                                        ${autocompleteStyle}
                                         <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                                            <div>
-                                                <div class="service-name">[[item.name]]</div>
-                                                <div class="service-description">[[item.type]]</div>
-                                            </div>
-                                            <paper-ripple></paper-ripple>
-                                        </paper-item>
-                                    </template>
-                               </paper-autocomplete>
-                                <paper-autocomplete 
-                                    id="autocompleteBindTimeslot"
-                                    label="{{localize('timeslot')}}" 
-                                    text-property="name"
-                                    value-property="name"
-                                    on-autocomplete-selected="_selectBindTimeslot"
-                                    on-autocomplete-change="_searchBindTimeslot"
-                                    remote-source>
-                                    <template slot="autocomplete-custom-template">
-                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                                            <div>
+                                            <div index="[[index]]">
                                                 <div class="service-name">[[item.name]]</div>
                                                 <div class="service-description">[[item.type]]</div>
                                             </div>
@@ -122,11 +108,29 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                         </paper-item>
                                     </template>
                                 </paper-autocomplete>
-                                <div>
-                                    <paper-input id="tag" name="name" label="{{localize('tag')}}" on-keypress="addTag"></paper-input>
-                                    <paper-chips id="chips" items="{{entity.tags}}"></paper-chips>
-                                </div>                            
-
+                                <paper-chips id="bindResources" items="{{entity.resources}}"></paper-chips> 
+                                <paper-autocomplete 
+                                    id="autocompleteBindTimeslot"
+                                    label="{{localize('bind-timeslot')}}" 
+                                    text-property="name"
+                                    value-property="name"
+                                    on-autocomplete-selected="_selectBindTimeslot"
+                                    on-autocomplete-change="_searchBindTimeslot"
+                                    remote-source>
+                                    <template slot="autocomplete-custom-template">
+                                        ${autocompleteStyle}
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div index="[[index]]">
+                                                <div class="service-name">[[item.name]]</div>
+                                                <div class="service-description">[[item.type]]</div>
+                                            </div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                                </paper-autocomplete>
+                                <paper-chips id="bindChips" items="{{entity.binds}}"></paper-chips>                             
+                                <paper-input id="tag" name="name" label="{{localize('tag')}}" on-keypress="addTag"></paper-input>
+                                <paper-chips id="tagChips" items="{{entity.tags}}"></paper-chips>                          
                             </div>
                             <div id="content-right">
                                 <paper-card class="container">
@@ -141,6 +145,11 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     <paper-input id="sepia-filter" name='filters["sepia"]' label="Sepia filter" value="{{entity.filters.sepia}}"></paper-input>
                                     <paper-input id="drop-shadow-filter" name='filters["dropShadow"]' label="Drop Shadow filter" value="{{entity.filters.dropShadow}}"></paper-input>
                                 </paper-card>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex flex-horizontal-end" style="margin-top: 20px;">
+                                <paper-button on-tap="submitTimeslotButton">{{localize(labelAction)}}</paper-button>
                             </div>
                         </div>
                     </form>
@@ -171,9 +180,9 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                     "hydratorContainerAggregate" : "HydratorContainerAggregate",
                     "StorageContainerAggregate": {
                         "timeslotStorage":"TimeslotStorage",
-                        "monitorStorage":"MonitorStorage",
                         "resourceStorage":"ResourceStorage"
                     },
+                    "monitorService": "MonitorService"
                 }
             },
 
@@ -193,100 +202,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
 
     ready() {
         super.ready();
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _selectMonitor(evt) {
-        console.log('SELECT MONITOR', evt);
-    }
-
-    /**
-     * @param evt
-     */
-    addTag(evt) {
-        if (evt.charCode === 13 && evt.target.value) {
-            this.$.chips.add(evt.target.value);
-            this.$.tag.value = "";
-        }
-    }
-
-    /**
-     *
-     * @param evt
-     * @private
-     */
-    _searchMonitor(evt) {
-        // TODO da
-        if (!this.monitorStorage) {
-            return;
-        }
-
-        this.monitorStorage.getAll({enable : 1})
-            .then((monitor) => {
-
-                let monitors = monitor.length > 0 ? monitor[0].getMonitors({nested: true}) : [];
-
-                let filter = monitors.filter(
-                    element => {
-                        return element.name.search(new RegExp(evt.detail.value.text, 'i')) > -1;
-                    }
-                );
-
-                evt.detail.target.suggestions(
-                    filter
-                );
-            })
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _searchResource(evt) {
-        // TODO da
-        if (!this.resourceStorage) {
-            return;
-        }
-
-        this.resourceStorage.getAll({name : evt.detail.value.text})
-            .then((resources) => {
-
-                evt.detail.target.suggestions(
-                    resources
-                );
-            })
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _selectBindTimeslot(evt) {
-
-        console.log('SELECT Bind', evt);
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _searchBindTimeslot(evt) {
-
-        // TODO da
-        if (!this.resourceStorage) {
-            return;
-        }
-
-        this.timeslotStorage.getAll({name : evt.detail.value.text})
-            .then((resources) => {
-
-                evt.detail.target.suggestions(
-                    resources
-                );
-            })
+        this.$.formTimeslot.addEventListener('iron-form-presubmit', this.submitTimeslot.bind(this));
     }
 
     /**
@@ -302,6 +218,146 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
         if (newValue.id) {
             this.labelAction = 'update';
         }
+    }
+
+    /**
+     * @param evt
+     */
+    addTag(evt) {
+        if (evt.charCode === 13 && evt.target.value) {
+            this.$.tagChips.add(evt.target.value);
+            this.$.tag.value = "";
+        }
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _selectMonitor(evt) {
+
+        let reference = new (require("@p3e/library").storage.entity.EntityNestedReference)();
+        reference.setCollection('monitor');
+        reference.setId(this.monitorService.getEnableMonitor().getId());
+        reference.setParentId(evt.detail.value.id);
+        reference.name = evt.detail.value.name;
+        this.entity.monitorContainerReference = reference;
+    }
+
+    /**
+     *
+     * @param evt
+     * @private
+     */
+    _searchMonitor(evt) {
+
+        let enableMonitor = this.monitorService.getEnableMonitor();
+        let monitors = enableMonitor.id ? enableMonitor.getMonitors({nested: true}) : [];
+
+        let filter = monitors.filter(
+            element => {
+                return element.name.search(new RegExp(evt.detail.value.text, 'i')) > -1;
+            }
+        );
+
+        evt.detail.target.suggestions(
+            filter
+        );
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _searchResource(evt) {
+
+        this.resourceStorage.getAll({name : evt.detail.value.text})
+            .then((resources) => {
+
+                evt.detail.target.suggestions(
+                    resources
+                );
+            })
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _selectResource(evt) {
+
+        this.push('entity.resources', evt.detail.value);
+
+        setTimeout(
+            function () {
+                this.clear();
+            }.bind(evt.target),
+            300
+        );
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _selectBindTimeslot(evt) {
+
+        console.log('SELECT Bind', evt);
+
+        let reference = new (require("@p3e/library").storage.entity.EntityReference)();
+        reference.setCollection('monitor');
+        reference.setId(this.monitorService.getEnableMonitor().getId());
+        reference.name = evt.detail.value.name;
+
+        this.push('entity.binds', evt.detail.value);
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _searchBindTimeslot(evt) {
+
+        this.timeslotStorage.getAll({name : evt.detail.value.text})
+            .then((resources) => {
+
+                evt.detail.target.suggestions(
+                    resources.filter(
+                        (element) => {
+                            return element.id !== this.entity.id
+                        }
+                    )
+                );
+            })
+    }
+
+    /**
+     * @param evt
+     */
+    submitTimeslotButton(evt) {
+        this.$.formTimeslot.submit();
+    }
+
+    /**
+     * @param evt
+     */
+    submitTimeslot(evt) {
+        evt.preventDefault();
+
+        let method = this.getStorageUpsertMethod();
+
+        console.log('timeslot', this.entity);
+        this.timeslotStorage[method](this.entity)
+            .then((data) => {
+
+                if (method === 'save') {
+
+                    // TODO pass to entity manager
+                    this.entity = new TimeslotEntity();
+                    this.$.formTimeslot.reset();
+                }
+            });
+
     }
 }
 window.customElements.define('timeslot-view-upsert', TimeslotViewUpsert);

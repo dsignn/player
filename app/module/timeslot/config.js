@@ -98,6 +98,33 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
         let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)();
         hydrator.setTemplateObjectHydration(container.get(TimeslotConfig.TIMESLOT_ENTITY_SERVICE));
 
+        /**
+         * Resource strategy
+         */
+        let resourceStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        resourceStrategy.setHydrator(ResourceConfig.getResourceHydrator(container));
+
+        /**
+         * Monitor strategy
+         */
+        let monitorStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        monitorStrategy.setHydrator(TimeslotConfig.getContainerMonitorReferenceHydrator(container));
+
+
+        /**
+         * Timeslot bind strategy
+         */
+        let bindTimeslotStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        bindTimeslotStrategy.setHydrator(TimeslotConfig.getTimeslotReferenceHydrator(container));
+
+        hydrator.addValueStrategy('resources', resourceStrategy)
+            .addValueStrategy('monitorContainerReference', monitorStrategy)
+            .addValueStrategy('binds', bindTimeslotStrategy)
+            .addValueStrategy('enableAudio', new (require("@p3e/library").hydrator.strategy.value.HybridStrategy)(
+                require("@p3e/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
+                require("@p3e/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
+            ));
+
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('status')
@@ -106,7 +133,7 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
             .enableHydrateProperty('duration')
             .enableHydrateProperty('enableAudio')
             .enableHydrateProperty('context')
-            .enableHydrateProperty('virtualMonitorReference')
+            .enableHydrateProperty('monitorContainerReference')
             .enableHydrateProperty('resources')
             .enableHydrateProperty('dataReferences')
             .enableHydrateProperty('tags')
@@ -121,12 +148,56 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
             .enableExtractProperty('duration')
             .enableExtractProperty('enableAudio')
             .enableExtractProperty('context')
-            .enableExtractProperty('virtualMonitorReference')
+            .enableExtractProperty('monitorContainerReference')
             .enableExtractProperty('resources')
             .enableExtractProperty('dataReferences')
             .enableExtractProperty('tags')
             .enableExtractProperty('rotation')
             .enableExtractProperty('filters');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getContainerMonitorReferenceHydrator(container) {
+
+        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('parentId');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name')
+            .enableExtractProperty('parentId');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getTimeslotReferenceHydrator(container) {
+
+        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name');
 
         return hydrator;
     }

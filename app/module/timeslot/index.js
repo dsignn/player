@@ -40,7 +40,13 @@ class TimeslotIndex extends DsignLocalizeElement {
                     </timeslot-view-upsert>
                 </div>
                 <div id="update"> 
-                   update
+                     <timeslot-view-upsert entity="{{entitySelected}}">
+                        <div slot="header" class="layout-horizontal layout-center-aligned header">
+                            <div class="layout-flex">{{localize('update-timeslot')}}</div>
+                            <paper-icon-button id="iconBackInsert" icon="arrow-back" class="circle" on-click="displayListView"></paper-icon-button>
+                            <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                        </div>
+                    </timeslot-view-upsert>
                 </div>
             </iron-pages>
     `;
