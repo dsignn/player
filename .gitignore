@@ -15,5 +15,5 @@ app/node_modules/**
 .idea
 .idea/**
 
-storage
-storage/**
+/storage
+/storage/**
