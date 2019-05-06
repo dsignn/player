@@ -6,7 +6,7 @@ const template = html`
     <style is="custom-style">
     
     
-     :root {
+        :root {
             /**
             --dark-primary-color:       #E64A19;
             --default-primary-color:    #FF5722;
@@ -73,6 +73,18 @@ const template = html`
             
             --padding-top-view-list: 20px;
             --app-background: #ECEDEF;
+            
+            --timeslot-running : #39A33D;
+            --timeslot-pause   : #FAD646;
+            --timeslot-idle   : #F00755;
+
+            --playlist-running : #39A33D;
+            --playlist-pause   : #FAD646;
+            --playlist-idle   : #F00755;
+
+            --timeline-running : #39A33D;
+            --timeline-pause   : #FAD646;
+            --timeline-idle   : #F00755;
             
             /**********************************************************
                             GLOBAL LAYOUT ELEMENTS
@@ -165,7 +177,17 @@ const template = html`
             --application-paper-card-left-content: {
                 background-image: url("../../style/icon/placeholder.jpg");
             }
-         }
+            
+            --application-paper-icon-button-circle: {
+                background-color: var(--accent-color);
+                color: var(--title-color);
+                height: 24px;
+                width: 24px;
+                padding: 2px;
+                border-radius: 100%;
+                box-shadow: 0 1px 4px rgba(0,0,0,.23), 0 1px 4px rgba(0,0,0,.16);
+            }
+        }
 
         /*******************************************
                     LAYOUT STYLE

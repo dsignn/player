@@ -97,7 +97,7 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
     }
 
     /**
-     * 
+     *
      */
     init() {
 
@@ -238,7 +238,7 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
             resourceEntity.path = new (require("@p3e/library").path.Path)();
             resourceEntity.path.nameFile = resourceEntity.id;
             resourceEntity.path.extension = resourceEntity.resourceToImport.path.split('.').pop();
-            
+
             switch (resourceEntity.type) {
                 case 'video/mp4':
                 case 'video/webm':
@@ -391,6 +391,11 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
             container.get(ResourceConfig.FILE_ENTITY_SERVICE)
         );
 
+        let pathHydratorStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        pathHydratorStrategy.setHydrator(ResourceConfig.getPathHydrator(container));
+
+        hydrator.addValueStrategy('path', pathHydratorStrategy);
+
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
@@ -477,7 +482,28 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
 
         return hydrator;
     }
-}
 
+    /**
+     *
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getPathHydrator(container) {
+
+        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)(
+            new (require("@p3e/library").path.Path)()
+        );
+
+        hydrator.enableHydrateProperty('directory')
+            .enableHydrateProperty('nameFile')
+            .enableHydrateProperty('extension');
+
+        hydrator.enableExtractProperty('directory')
+            .enableExtractProperty('nameFile')
+            .enableExtractProperty('extension');
+
+        return hydrator;
+    }
+}
 
 module.exports = ResourceConfig;

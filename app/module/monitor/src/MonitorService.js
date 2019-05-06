@@ -27,8 +27,9 @@ class MonitorService {
      * @param {Storage} monitorStorage
      * @param {AbstractSender} sender
      * @param {boolean} alwaysOnTopDashboard
+     * @param {string} resourcePath
      */
-    constructor(monitorStorage, sender, alwaysOnTopDashboard) {
+    constructor(monitorStorage, sender, alwaysOnTopDashboard, resourcePath) {
 
         /**
          * @type {Storage}
@@ -49,6 +50,11 @@ class MonitorService {
          * @type {boolean}
          */
         this.alwaysOnTopDashboard = alwaysOnTopDashboard;
+
+        /**
+         *
+         */
+        this.resourcePath = resourcePath;
 
         /**
          * Update listener

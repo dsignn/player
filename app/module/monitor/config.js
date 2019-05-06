@@ -53,7 +53,7 @@ class MonitorConfig extends require("@p3e/library").container.ContainerAware {
 
 
     /**
-     * 
+     *
      */
     init() {
 

@@ -76,7 +76,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     value-property="name"
                                     on-autocomplete-selected="_selectMonitor"
                                     on-autocomplete-change="_searchMonitor"
-                                    value="{{entity.monitorContainerReference}}"
+                                    default-value="{{entity.monitorContainerReference}}"
                                     remote-source>
                                     <template slot="autocomplete-custom-template">
                                         ${autocompleteStyle}
@@ -238,8 +238,8 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
 
         let reference = new (require("@p3e/library").storage.entity.EntityNestedReference)();
         reference.setCollection('monitor');
-        reference.setId(this.monitorService.getEnableMonitor().getId());
-        reference.setParentId(evt.detail.value.id);
+        reference.setId(evt.detail.value.id);
+        reference.setParentId(this.monitorService.getEnableMonitor().getId());
         reference.name = evt.detail.value.name;
         this.entity.monitorContainerReference = reference;
     }

@@ -61,8 +61,13 @@
     "webComponentEntryPointName" : "timeslot-index",
     "webComponentEntryPointNameFile" : "index.js",
     "autoloads" : [
+      "src/injector/AbstractInjector.js",
+      "src/AbstractTimeslotService.js",
+      "src/TimeslotService.js",
       "src/storage/entity/TimeslotEntity.js",
-      "src/storage/adapter/dexie/DexieTimeslotAdapter.js"
+      "src/storage/adapter/dexie/DexieTimeslotAdapter.js",
+      "src/injector/Test1.js",
+      "src/injector/Test2.js"
     ],
     "autoloadsWs": [
       "element/icons/icons.js"

@@ -7,10 +7,11 @@ import {DexieManager} from "@p3e/library/src/storage/adapter/dexie/index";
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
-const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
+const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../../';
+
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
-const resourcePath = path.normalize(`${__dirname}${back}storage${path.sep}`);
+const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
 
 const config = JSON.parse(
     fs.readFileSync(`${basePath}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
@@ -40,6 +41,17 @@ const entityContainerAggregate = new ContainerAggregate();
 entityContainerAggregate.setPrototipeClass(require("@p3e/library").storage.entity.EntityIdentifier);
 entityContainerAggregate.setContainer(container);
 container.set('EntityContainerAggregate', entityContainerAggregate);
+
+entityContainerAggregate.set(
+    'EntityNestedReference',
+    new (require("@p3e/library").storage.entity.EntityNestedReference)()
+);
+
+
+entityContainerAggregate.set(
+    'EntityReference',
+    new (require("@p3e/library").storage.entity.EntityReference)()
+);
 
 const senderContainerAggregate = new ContainerAggregate();
 // TODO review :)

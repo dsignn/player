@@ -9,11 +9,11 @@ import {DexieManager} from '@p3e/library/src/storage/adapter/dexie/index';
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
-const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
+const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../../';
 
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
-const resourcePath = path.normalize(`${__dirname}${back}..${path.sep}storage${path.sep}resource`);
+const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
 
 if (!fs.existsSync(resourcePath)) {
    fs.mkdir(
@@ -73,7 +73,7 @@ receiverContainerAggregate.setContainer(container);
 container.set('ReceiverContainerAggregate', receiverContainerAggregate);
 
 const config =  JSON.parse(
-    fs.readFileSync(`${basePath}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
+    fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
 );
 /***********************************************************************************************************************
                                                CONFIG SERVICE
@@ -112,12 +112,26 @@ container.set('Notify', {
     }
 });
 
+/***********************************************************************************************************************
+ APPLICATION SERVICE
+ **********************************************************************************************************************/
+
+container.set('Timer',
+    function (sm) {
+        const Timer = require('easytimer.js').Timer;
+
+        let timer =  new Timer();
+        timer.start({precision: 'secondTenths'});
+        return timer;
+
+    });
+
 
 /***********************************************************************************************************************
                                              APPLICATION SERVICE
  **********************************************************************************************************************/
 let hydrator = new PropertyHydrator(new Module());
-let modules = JSON.parse(fs.readFileSync(`${basePath}config${path.sep}module.json`).toString());
+let modules = JSON.parse(fs.readFileSync(`${basePath}${path.sep}config${path.sep}module.json`).toString());
 let modulesHydrate = [];
 for (let cont = 0; modules.length > cont; cont++) {
     modulesHydrate.push(hydrator.hydrate(modules[cont]));

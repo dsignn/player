@@ -1,3 +1,5 @@
+import {ContainerAggregate} from "@p3e/library/src/container/index";
+
 /**
  *
  */
@@ -28,10 +30,37 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
     static get TIMESLOT_HYDRATOR_SERVICE() { return 'TimeslotEntityHydrator'; };
 
     /**
+     * @return {string}
+     * @constructor
+     */
+    static get TIMESLOT_SERVICE() { return 'TimeslotService'; };
+
+    /**
+     * @return {string}
+     * @constructor
+     */
+    static get TIMESLOT_INJECTOR_DATA_SERVICE() { return 'InjectorDataTimeslotAggregate'; };
+
+    /**
+     * @return {string}
+     * @constructor
+     */
+    static get TIMESLOT_SENDER_SERVICE() { return 'TimeslotSender'; };
+
+    /**
+     * @return {string}
+     * @constructor
+     */
+    static get TIMESLOT_RECEIVER_SERVICE() { return 'TimeslotReceiver'; };
+
+    /**
      *
      */
     init() {
 
+        this.initInjectorDataTimeslotCotainerAggregate();
+        this.initTimeslotSender();
+        this.initTimeslotReceiver();
         this.initEntity();
         this.initHydrator();
         this.initStorage();
@@ -47,7 +76,7 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
 
         let store = new (require("@p3e/library").storage.adapter.dexie.Store)(
             TimeslotConfig.COLLECTION,
-            ["++id", "name", "status", "duration", "virtualMonitorReference.monitorId", "[virtualMonitorReference.monitorId+name]", "*tags", "rotation"]
+            ["++id", "name", "status", "duration", "monitorContainerReference.monitorId", "[monitorContainerReference.parentId+name]", "*tags", "rotation"]
 
         );
 
@@ -66,10 +95,14 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
                 TimeslotConfig.STORAGE_SERVICE,
                 storage
             );
+
+            this.initTimeslotService();
         });
     }
 
-
+    /**
+     *
+     */
     initEntity() {
         this.getContainer()
             .get('EntityContainerAggregate')
@@ -87,6 +120,52 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
             .set(
                 TimeslotConfig.TIMESLOT_HYDRATOR_SERVICE,
                 TimeslotConfig.getTimeslotHydrator(this.getContainer().get('EntityContainerAggregate'))
+            );
+    }
+
+    /**
+     * @private
+     */
+    initTimeslotSender() {
+        this.getContainer()
+            .get('SenderContainerAggregate')
+            .set(TimeslotConfig.TIMESLOT_SENDER_SERVICE, require('electron').ipcRenderer);
+    }
+
+    /**
+     * @private
+     */
+    initTimeslotReceiver() {
+        this.getContainer()
+            .get('ReceiverContainerAggregate')
+            .set(TimeslotConfig.TIMESLOT_RECEIVER_SERVICE, require('electron').ipcRenderer);
+    }
+
+    /**
+     *
+     */
+    initInjectorDataTimeslotCotainerAggregate() {
+
+        const entityContainerAggregate = new ContainerAggregate();
+        entityContainerAggregate.setPrototipeClass(new AbstractInjector());
+        entityContainerAggregate.setContainer(this.getContainer());
+        container.set(TimeslotConfig.TIMESLOT_INJECTOR_DATA_SERVICE, entityContainerAggregate);
+
+    }
+
+    /**
+     *
+     */
+    initTimeslotService() {
+        this.getContainer()
+            .set(
+                TimeslotConfig.TIMESLOT_SERVICE,
+                new TimeslotService(
+                    this.getContainer().get('StorageContainerAggregate').get(TimeslotConfig.STORAGE_SERVICE),
+                    this.getContainer().get('SenderContainerAggregate').get(TimeslotConfig.TIMESLOT_SENDER_SERVICE),
+                    this.getContainer().get('Timer'),
+                    this.getContainer().get(TimeslotConfig.TIMESLOT_INJECTOR_DATA_SERVICE)
+                )
             );
     }
 
@@ -202,6 +281,5 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
         return hydrator;
     }
 }
-
 
 module.exports = TimeslotConfig;

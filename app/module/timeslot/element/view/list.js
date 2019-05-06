@@ -3,6 +3,7 @@ import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
 import "../../../../elements/pagination/paper-pagination";
+import "../paper-timeslot/paper-timeslot";
 import {lang} from './language/list-language';
 
 /**
@@ -21,37 +22,37 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
                 }
                 
                 @media (max-width: 500px) {
-                    paper-resource {
+                    paper-timeslot {
                         flex-basis: 100%;
                     }
                 }
     
                 @media (min-width: 501px) and (max-width: 900px) {
-                    paper-resource {
+                    paper-timeslot {
                         flex-basis: 50%;
                     }
                 }
     
                 @media (min-width: 901px) and (max-width: 1200px) {
-                    paper-resource {
+                    paper-timeslot {
                         flex-basis: 33.3%;
                     }
                 }
     
                 @media (min-width: 1201px) and (max-width: 1500px) {
-                    paper-resource {
+                    paper-timeslot {
                         flex-basis: 25%;
                     }
                 }
     
                 @media (min-width: 1501px) and (max-width: 1919px) {
-                    paper-resource {
+                    paper-timeslot {
                         flex-basis: 20%;
                     }
                 }
     
                 @media (min-width: 1920px) {
-                    paper-resource {
+                    paper-timeslot {
                         flex-basis: 16.6%;
                     }
                 }
@@ -59,7 +60,16 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
             <slot name="header"></slot>
                 <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="resource">
-                    <paper-resource entity="{{resource}}" on-delete="_deleteEntity" on-update="_showUpdateView"></paper-resource>
+                    <paper-timeslot entity="{{resource}}" 
+                        on-play="play"
+                        on-resume="resume"
+                        on-stop="stop"
+                        on-pause="pause"
+                        on-delete="_deleteEntity" 
+                        on-update="_showUpdateView"
+                        on-change-rotation="_updateEntity"
+                        on-change-context="_updateEntity">
+                    </paper-timeslot>
                 </template>
             </div>
             <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
@@ -85,7 +95,8 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
 
             services : {
                 value : {
-                    "storageContainerAggregate": 'StorageContainerAggregate'
+                    "storageContainerAggregate": 'StorageContainerAggregate',
+                    "timeslotService" : "TimeslotService"
                 }
             },
 
@@ -110,5 +121,34 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
         this.entitySelected = evt.detail;
         this.selected = 2;
     }
+
+    /**
+     * @param evt
+     */
+    play(evt) {
+        this.timeslotService.play(evt.detail);
+    }
+
+    /**
+     * @param evt
+     */
+    resume(evt) {
+        this.timeslotService.resume(evt.detail);
+    }
+
+    /**
+     * @param evt
+     */
+    stop(evt) {
+        this.timeslotService.stop(evt.detail);
+    }
+
+    /**
+     * @param evt
+     */
+    pause(evt) {
+        this.timeslotService.pause(evt.detail);
+    }
+
 }
 window.customElements.define('timeslot-view-list', TimeslotViewList);

@@ -20,12 +20,12 @@ class DexieTimeslotAdapter extends require("@p3e/library").storage.adapter.dexie
                     case 'name':
                         collection = this.manager.table(this.nameCollaction).where(property).startsWithIgnoreCase(filter[property]);
                         break;
-                    case 'monitorId':
-                        collection = this.manager.table(this.nameCollaction).where('virtualMonitorReference.monitorId').equals(filter[property]);
+                    case 'parentId':
+                        collection = this.manager.table(this.nameCollaction).where('monitorContainerReference.parentId').equals(filter[property]);
                         break;
-                    case 'monitorId+name':
+                    case 'parentId+name':
                         collection = this.manager.table(this.nameCollaction)
-                            .where('virtualMonitorReference.monitorId')
+                            .where('monitorContainerReference.parentId')
                             .equals(filter[property][0])
                             .and(function(timeslot) {
                                 return timeslot.name.search(new RegExp(filter[property][1], 'i')) > -1

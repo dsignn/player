@@ -11,7 +11,7 @@ export class DsignServiceInjectorElement extends PolymerElement {
         return {
             services: {
                 type: Object,
-                reflectToAttribute: true,
+                // reflectToAttribute: true,
                 observer: 'changeServices'
             }
         };
