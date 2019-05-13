@@ -3,7 +3,7 @@ import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
 import '@polymer/paper-input/paper-input';
-import '@fluid-next/paper-autocomplete/paper-autocomplete';
+import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-form/iron-form';
 import '@polymer/iron-icon/iron-icon';
 import '@polymer/paper-button/paper-button';

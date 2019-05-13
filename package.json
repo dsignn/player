@@ -36,8 +36,9 @@
   },
   "dependencies": {
     "@collaborne/paper-chip": "^3.0.7",
-    "@fluid-next/paper-autocomplete": "3.0.1",
-    "@fluidnext/paper-input-file": "git+https://github.com/fluidnext/paper-input-file.git",
+    "@fluidnext-polymer/paper-autocomplete": "3.0.1",
+    "@fluidnext-polymer/paper-pagination": "^3.0.0",
+    "@fluidnext-polymer/paper-input-file": "^3.0.0",
     "@p3e/library": "git+https://github.com/visa4/p3e-library.git",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",

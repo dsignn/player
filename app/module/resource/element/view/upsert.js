@@ -4,13 +4,14 @@ import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
 import '../../../../elements/paper-chip/paper-chips';
 import '@polymer/paper-input/paper-input';
-import '@fluid-next/paper-autocomplete/paper-autocomplete';
+import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/iron-form/iron-form';
 import '@polymer/iron-icon/iron-icon';
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-card/paper-card';
-import '@fluidnext/paper-input-file/paper-input-file';
+import '@fluidnext-polymer/paper-input-file/icons/paper-input-file-icons';
+import '@fluidnext-polymer/paper-input-file/paper-input-file';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language/upsert-language';

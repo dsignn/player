@@ -42,6 +42,10 @@ class Test2 extends AbstractInjector {
         return Test2.name;
     }
 
+    get serviceNamespace() {
+        return 'test2';
+    }
+
     get serviceDescription() {
         return 'Sono una descrizione';
     }

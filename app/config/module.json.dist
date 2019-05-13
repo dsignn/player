@@ -65,6 +65,7 @@
       "src/AbstractTimeslotService.js",
       "src/TimeslotService.js",
       "src/storage/entity/TimeslotEntity.js",
+      "src/storage/entity/embedded/Injector.js",
       "src/storage/adapter/dexie/DexieTimeslotAdapter.js",
       "src/injector/Test1.js",
       "src/injector/Test2.js"

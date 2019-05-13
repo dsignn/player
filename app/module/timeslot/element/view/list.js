@@ -2,8 +2,9 @@ import {html} from '@polymer/polymer/polymer-element.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
-import "../../../../elements/pagination/paper-pagination";
 import "../paper-timeslot/paper-timeslot";
+import "@fluidnext-polymer/paper-pagination/paper-pagination";
+import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import {lang} from './language/list-language';
 
 /**

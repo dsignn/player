@@ -17,6 +17,11 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
                     width: 100%;
                     position: relative;
                 }
+                
+                [hidden] {
+                    background-color: red;
+                    visibility: hidden;
+                }
     
                 .resource {
                     position: absolute;
@@ -116,24 +121,23 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
 
         for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
 
-            let divResource = this._createResourceDiv();
             switch (true) {
                 // TODO add regex on type
                 case this.timeslot.resources[cont] instanceof ImageEntity === true:
 
-                    let divImage = this._creteImage(this.timeslot.resources[cont]);
-                    divResource.appendChild(divImage);
-                    this.$.resources.appendChild(divResource);
+                    this.$.resources.appendChild(
+                        this._creteImage(this.timeslot.resources[cont])
+                    );
                     break;
                 case this.timeslot.resources[cont] instanceof VideoEntity === true:
-                    let tagVideo = this._createVideo(this.timeslot.resources[cont]);
-                    divResource.appendChild(tagVideo);
-                    this.$.resources.appendChild(divResource);
+                    this.$.resources.appendChild(
+                        this._createVideo(this.timeslot.resources[cont])
+                    );
                     break;
                 case this.timeslot.resources[cont] instanceof AudioEntity === true:
-                    let tagAudio = this._createAudio(this.timeslot.resources[cont]);
-                    divResource.appendChild(tagAudio);
-                    this.$.resources.appendChild(divResource);
+                    this.$.resources.appendChild(
+                        this._createAudio(this.timeslot.resources[cont])
+                    );
                     break;
                 case this.timeslot.resources[cont] instanceof FileEntity === true:
                     this._createWebComponent(this.timeslot.resources[cont])
@@ -285,7 +289,10 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
         element.classList.add("image");
         let url = this.resourceService.getResourcePath(resource);
         element.style.backgroundImage = `url('${url}')`;
-        return element;
+
+        let container = this._createResourceDiv();
+        container.appendChild(element);
+        return container;
     }
 
     /**
@@ -316,7 +323,9 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
             }, false);
         }
 
-        return element;
+        let container = this._createResourceDiv();
+        container.appendChild(element);
+        return container;
     }
 
     /**
@@ -328,6 +337,7 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
      */
     _createAudio(resource) {
         let element = document.createElement('audio');
+        element.setAttribute('hidden', '');
         element.src = this.resourceService.getResourcePath(resource);
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
         if (this.startAt > 0) {
@@ -349,22 +359,23 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
         let fs = require('fs');
         let promise = new Promise( function(resolve, reject) {
 
-            let entryPoint = resource.path.isAbsolute() ? resource.path.getPath() : `${this.basePath}/${resource.path.getPath()}`;
-            if (fs.existsSync(entryPoint)) {
-
-                if (!customElements.get(resource.wcName)) {
-
-                    Polymer.importHref(
-                        entryPoint,
-                        () => { resolve(this._initWebComponent(resource.wcName)); }
-                    );
-                } else {
+            let entryPoint = this.resourceService.getResourcePath(resource);
+            switch (true) {
+                case customElements.get(resource.wcName) !== undefined:
                     resolve(this._initWebComponent(resource.wcName));
-                }
-
-            } else {
-                console.warn(`Web component entry point not found: ${entryPoint}`);
-                reject(`Web component entry point not found: ${entryPoint}`);
+                    break;
+                case fs.existsSync(entryPoint) === true:
+                    import(entryPoint)
+                        .then((module) => {
+                            resolve(this._initWebComponent(resource.wcName));
+                        })
+                        .catch((err) => {
+                            reject(err);
+                        });
+                    break;
+                default:
+                    console.warn(`Web component entry point not found: ${entryPoint}`);
+                    reject(`Web component entry point not found: ${entryPoint}`);
 
             }
         }.bind(this));
@@ -394,7 +405,10 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
             }
         }
 
-        return element;
+        let container = this._createResourceDiv();
+        container.appendChild(element);
+
+        return container;
     }
 
 

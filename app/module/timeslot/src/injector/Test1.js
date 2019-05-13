@@ -46,6 +46,10 @@ class Test1 extends AbstractInjector {
         return 'Sono una descrizione';
     }
 
+    get serviceNamespace() {
+        return 'test1';
+    }
+
     getServiceData(value) {
         return new Promise((resolve, reject) => {
             let filter = this.mockData.filter(function (obj) {

@@ -3,12 +3,13 @@ import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
 import '../../../../elements/paper-chip/paper-chips';
-import '@fluid-next/paper-autocomplete/paper-autocomplete';
+import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/paper-checkbox/paper-checkbox';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-ripple/paper-ripple';
+import '../paper-input-injector-data-service/paper-input-injector-data-service';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/upsert-language';
@@ -129,6 +130,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     </template>
                                 </paper-autocomplete>
                                 <paper-chips id="bindChips" items="{{entity.binds}}"></paper-chips>                             
+                                <paper-input-injector-data-service value="{{entity.dataReferences}}"></paper-input-injector-data-service>
                                 <paper-input id="tag" name="name" label="{{localize('tag')}}" on-keypress="addTag"></paper-input>
                                 <paper-chips id="tagChips" items="{{entity.tags}}"></paper-chips>                          
                             </div>

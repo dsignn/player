@@ -214,9 +214,12 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
                         .then((module) => {
                             console.log("MyView1 loaded", module);
                         }).catch((reason) => {
-                            console.log("MyView1 failed to load", reason);
+                            console.error(`Web component ${this.entity.wcName}`, reason);
                         });
 
+                } else {
+                    element = document.createElement(this.entity.wcName);
+                    element.createMockData();
                 }
                 break;
         }

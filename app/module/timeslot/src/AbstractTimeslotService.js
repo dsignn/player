@@ -123,13 +123,17 @@ class AbstractTimeslotService {
      */
     _extractTimeslotDataFromDataReferences(dataReferences) {
         let promises = [];
+        let property;
+        let data;
 
         for (let cont = 0; dataReferences.length > cont;  cont++) {
-            if (this.dataInjectorManager.has(dataReferences[0].name)) {
-                promises.push(this.dataInjectorManager
-                    .get(dataReferences[0].name)
-                    .getTimeslotData(dataReferences[cont].data)
-                );
+            data = {};
+            if (this.dataInjectorManager.has(dataReferences[cont].name)) {
+
+                data[this.dataInjectorManager.get(dataReferences[cont].name).serviceNamespace] =
+                    this.dataInjectorManager.get(dataReferences[cont].name).getTimeslotData(dataReferences[cont].data);
+
+                promises.push(data);
             }
         }
 

@@ -147,9 +147,20 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
     initInjectorDataTimeslotCotainerAggregate() {
 
         const entityContainerAggregate = new ContainerAggregate();
-        entityContainerAggregate.setPrototipeClass(new AbstractInjector());
+        entityContainerAggregate.setPrototipeClass(AbstractInjector);
         entityContainerAggregate.setContainer(this.getContainer());
-        container.set(TimeslotConfig.TIMESLOT_INJECTOR_DATA_SERVICE, entityContainerAggregate);
+
+        entityContainerAggregate.set(
+            'Test1',
+            new Test1()
+        );
+
+        entityContainerAggregate.set(
+            'Test2',
+            new Test2()
+        );
+
+        this.getContainer().set(TimeslotConfig.TIMESLOT_INJECTOR_DATA_SERVICE, entityContainerAggregate);
 
     }
 
@@ -189,16 +200,22 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
         let monitorStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
         monitorStrategy.setHydrator(TimeslotConfig.getContainerMonitorReferenceHydrator(container));
 
-
         /**
          * Timeslot bind strategy
          */
         let bindTimeslotStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
         bindTimeslotStrategy.setHydrator(TimeslotConfig.getTimeslotReferenceHydrator(container));
 
+        /**
+         * Timeslot bind strategy
+         */
+        let injectorDataStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        injectorDataStrategy.setHydrator(TimeslotConfig.getInjectorHydrator(container));
+
         hydrator.addValueStrategy('resources', resourceStrategy)
             .addValueStrategy('monitorContainerReference', monitorStrategy)
             .addValueStrategy('binds', bindTimeslotStrategy)
+            .addValueStrategy('dataReferences', injectorDataStrategy)
             .addValueStrategy('enableAudio', new (require("@p3e/library").hydrator.strategy.value.HybridStrategy)(
                 require("@p3e/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
                 require("@p3e/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
@@ -277,6 +294,25 @@ class TimeslotConfig extends require("@p3e/library").container.ContainerAware {
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('collection')
             .enableExtractProperty('name');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {*}
+     */
+    static getInjectorHydrator(container) {
+
+        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(new Injector());
+
+        hydrator.enableHydrateProperty('name')
+            .enableHydrateProperty('data');
+
+
+        hydrator.enableExtractProperty('name')
+            .enableExtractProperty('data');
 
         return hydrator;
     }
