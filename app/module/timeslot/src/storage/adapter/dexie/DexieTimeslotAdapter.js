@@ -1,7 +1,7 @@
 /**
  *
  */
-class DexieTimeslotAdapter extends require("@p3e/library").storage.adapter.dexie.DexieAdapter {
+class DexieTimeslotAdapter extends require("@dsign/library").storage.adapter.dexie.DexieAdapter {
 
     /**
      * @inheritDoc

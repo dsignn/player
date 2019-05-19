@@ -2,8 +2,8 @@ import {html} from '@polymer/polymer/polymer-element.js';
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
-import '../../../../elements/paper-chip/paper-chips';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
+import '@fluidnext-polymer/paper-chip/paper-chips';
 import '@polymer/paper-checkbox/paper-checkbox';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-card/paper-card';
@@ -77,7 +77,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     value-property="name"
                                     on-autocomplete-selected="_selectMonitor"
                                     on-autocomplete-change="_searchMonitor"
-                                    default-value="{{entity.monitorContainerReference}}"
+                                    value="{{entity.monitorContainerReference}}"
                                     remote-source>
                                     <template slot="autocomplete-custom-template">
                                         ${autocompleteStyle}
@@ -238,7 +238,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _selectMonitor(evt) {
 
-        let reference = new (require("@p3e/library").storage.entity.EntityNestedReference)();
+        let reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
         reference.setCollection('monitor');
         reference.setId(evt.detail.value.id);
         reference.setParentId(this.monitorService.getEnableMonitor().getId());
@@ -306,12 +306,19 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
 
         console.log('SELECT Bind', evt);
 
-        let reference = new (require("@p3e/library").storage.entity.EntityReference)();
+        let reference = new (require("@dsign/library").storage.entity.EntityReference)();
         reference.setCollection('monitor');
         reference.setId(this.monitorService.getEnableMonitor().getId());
         reference.name = evt.detail.value.name;
 
-        this.push('entity.binds', evt.detail.value);
+        this.push('entity.binds', reference);
+
+        setTimeout(
+            function () {
+                this.clear();
+            }.bind(evt.target),
+            300
+        );
     }
 
     /**

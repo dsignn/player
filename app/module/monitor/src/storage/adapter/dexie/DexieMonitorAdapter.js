@@ -1,5 +1,5 @@
 
-class DexieMonitorAdapter extends require("@p3e/library").storage.adapter.dexie.DexieAdapter  {
+class DexieMonitorAdapter extends require("@dsign/library").storage.adapter.dexie.DexieAdapter  {
 
     /**
      * @inheritDoc

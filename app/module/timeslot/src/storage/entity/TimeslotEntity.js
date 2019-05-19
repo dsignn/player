@@ -1,7 +1,7 @@
 /**
  *
  */
-class TimeslotEntity extends require("@p3e/library").storage.entity.EntityIdentifier {
+class TimeslotEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     /**
      * Constant

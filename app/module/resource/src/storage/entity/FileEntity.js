@@ -1,5 +1,5 @@
 
-class FileEntity extends require("@p3e/library").storage.entity.EntityIdentifier {
+class FileEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     constructor() {
         super();
@@ -22,7 +22,7 @@ class FileEntity extends require("@p3e/library").storage.entity.EntityIdentifier
         /**
          * @type {Path}
          */
-        this.path = new (require("@p3e/library").path.Path)();
+        this.path = new (require("@dsign/library").path.Path)();
 
         /**
          * @type {Array}

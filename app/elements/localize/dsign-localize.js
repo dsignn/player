@@ -1,8 +1,8 @@
 import {DsignServiceInjectorElement} from '../service/dsign-service-injector';
 import {AppLocalizeBehavior} from '@polymer/app-localize-behavior/app-localize-behavior.js';
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {Localize} from '@p3e/library/src/localize/Localize';
-import {Listener} from '@p3e/library/src/event/Listener';
+import {Localize} from '@dsign/library/src/localize/Localize';
+import {Listener} from '@dsign/library/src/event/Listener';
 
 /**
  * @customElement

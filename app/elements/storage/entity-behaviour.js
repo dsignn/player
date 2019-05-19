@@ -55,7 +55,7 @@ export const EntityBehavior = {
             return;
         }
 
-        this.updateListener = new (require("@p3e/library").event.Listener)(function (evt) {
+        this.updateListener = new (require("@dsign/library").event.Listener)(function (evt) {
 
             if (evt.data.id === this.entity.id) {
                 this.entity = null;
@@ -64,6 +64,6 @@ export const EntityBehavior = {
 
         }.bind(this));
 
-        storage.getEventManager().on(require("@p3e/library").storage.Storage.POST_UPDATE, this.updateListener);
+        storage.getEventManager().on(require("@dsign/library").storage.Storage.POST_UPDATE, this.updateListener);
     }
 };

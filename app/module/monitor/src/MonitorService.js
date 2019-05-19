@@ -60,7 +60,7 @@ class MonitorService {
          * Update listener
          */
         this.monitorStorage.getEventManager().on(
-            require("@p3e/library").storage.Storage.BEFORE_UPDATE,
+            require("@dsign/library").storage.Storage.BEFORE_UPDATE,
             this._checkUpdateMonitor.bind(this)
         );
 

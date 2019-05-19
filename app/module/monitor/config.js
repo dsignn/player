@@ -1,7 +1,7 @@
 /**
  *
  */
-class MonitorConfig extends require("@p3e/library").container.ContainerAware {
+class MonitorConfig extends require("@dsign/library").container.ContainerAware {
 
     /**
      * @return {string}
@@ -74,7 +74,7 @@ class MonitorConfig extends require("@p3e/library").container.ContainerAware {
         /**
          * Add schema
          */
-        let store = new (require("@p3e/library").storage.adapter.dexie.Store)(
+        let store = new (require("@dsign/library").storage.adapter.dexie.Store)(
             MonitorConfig.COLLECTION,
             ["++id", "name", "enable"]
 
@@ -89,7 +89,7 @@ class MonitorConfig extends require("@p3e/library").container.ContainerAware {
         dexieManager.on("ready", () => {
 
             const adapter = new DexieMonitorAdapter(dexieManager, MonitorConfig.COLLECTION);
-            const storage = new (require("@p3e/library").storage.Storage)(adapter);
+            const storage = new (require("@dsign/library").storage.Storage)(adapter);
             storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(MonitorConfig.MONITOR_CONTAINER_HYDRATOR_SERVICE));
 
             this.getContainer().get('StorageContainerAggregate').set(
@@ -149,7 +149,7 @@ class MonitorConfig extends require("@p3e/library").container.ContainerAware {
      */
     initSender() {
 
-        let sender = new  (require("@p3e/library").sender.ProxyIpc)(
+        let sender = new  (require("@dsign/library").sender.ProxyIpc)(
             this.getContainer().get('Config').sender.ipcProxy.proxyName
         );
 
@@ -178,16 +178,16 @@ class MonitorConfig extends require("@p3e/library").container.ContainerAware {
      * @param {ContainerAggregate} container
      */
     static getMonitorContainerEntityHydrator(container) {
-        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)(
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(
             container.get(MonitorConfig.MONITOR_CONTAINER_ENTITY_SERVICE)
         );
 
-        let strategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        let strategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         strategy.setHydrator(MonitorConfig.getMonitorEntityHydrator(container));
         hydrator.addValueStrategy('monitors', strategy)
-            .addValueStrategy('enable', new (require("@p3e/library").hydrator.strategy.value.HybridStrategy)(
-                require("@p3e/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
-                require("@p3e/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
+            .addValueStrategy('enable', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
+                require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
+                require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
             ));
 
         hydrator.enableExtractProperty('id')
@@ -207,16 +207,16 @@ class MonitorConfig extends require("@p3e/library").container.ContainerAware {
      * @param {ContainerAggregate} container
      */
     static getMonitorEntityHydrator(container) {
-        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)(
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(
             container.get(MonitorConfig.MONITOR_ENTITY_SERVICE)
         );
 
-        let strategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        let strategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         strategy.setHydrator(hydrator);
         hydrator.addValueStrategy('monitors', strategy)
-            .addValueStrategy('alwaysOnTop', new (require("@p3e/library").hydrator.strategy.value.HybridStrategy)(
-                require("@p3e/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
-                require("@p3e/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
+            .addValueStrategy('alwaysOnTop', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
+                require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
+                require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
             ));
 
         hydrator.enableExtractProperty('id')

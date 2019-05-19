@@ -1,5 +1,5 @@
-import {Listener} from '@p3e/library/src/event/Listener';
-import {Application}  from '@p3e/library/src/core/Application';
+import {Listener} from '@dsign/library/src/event/Listener';
+import {Application}  from '@dsign/library/src/core/Application';
 
 import {html} from '@polymer/polymer/polymer-element.js';
 import {DsignLocalizeElement} from '../localize/dsign-localize';

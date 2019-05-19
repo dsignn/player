@@ -5,9 +5,9 @@ const url = require('url');
 const path = require('path');
 const MonitorContainerEntity = require('./module/monitor/src/storage/entity/MonitorContainerEntity');
 const MonitorEntity = require('./module/monitor/src/storage/entity/MonitorEntity');
-const PropertyHydrator = require('@p3e/library').hydrator.PropertyHydrator;
-const HydratorStrategy = require('@p3e/library').hydrator.strategy.value.HydratorStrategy;
-const NumberStrategy = require('@p3e/library').hydrator.strategy.value.NumberStrategy;
+const PropertyHydrator = require('@dsign/library').hydrator.PropertyHydrator;
+const HydratorStrategy = require('@dsign/library').hydrator.strategy.value.HydratorStrategy;
+const NumberStrategy = require('@dsign/library').hydrator.strategy.value.NumberStrategy;
 
 
 /**

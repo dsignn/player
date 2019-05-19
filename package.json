@@ -35,11 +35,12 @@
     "tsc-es6": "tsc  -p lib/es6"
   },
   "dependencies": {
-    "@collaborne/paper-chip": "^3.0.7",
-    "@fluidnext-polymer/paper-autocomplete": "3.0.1",
-    "@fluidnext-polymer/paper-pagination": "^3.0.0",
+    "@dsign/library": "github:dsignn/library",
+    "@fluidnext-polymer/paper-autocomplete": "^3.0.0",
+    "@fluidnext-polymer/paper-chip": "github:fluidnext/paper-chip",
+    "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
     "@fluidnext-polymer/paper-input-file": "^3.0.0",
-    "@p3e/library": "git+https://github.com/visa4/p3e-library.git",
+    "@fluidnext-polymer/paper-pagination": "^3.0.0",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",
     "@polymer/app-media": "^3.0.1",

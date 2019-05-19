@@ -253,7 +253,7 @@ class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeEl
             .hydrate(this.$.formMonitor.serializeForm());
 
         monitor.setId(
-            require("@p3e/library").storage.util.MongoIdGenerator.statcGenerateId()
+            require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId()
         );
 
         // TODO nested monitor

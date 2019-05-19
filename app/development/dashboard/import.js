@@ -9,6 +9,7 @@ import '../../entrypoint/dashboard/src/boot';
  * Import entry point module dev
  */
 import '../../module/dashboard/index';
+import '../../module/dashboard/element/paper-widget/paper-widget';
 import '../../module/dashboard/element/icons/icons';
 
 import '../../module/monitor/index';
@@ -21,3 +22,4 @@ import '../../module/resource/element/wc-resource/wc-resource-test';
 
 import '../../module/timeslot/index';
 import '../../module/timeslot/element/icons/icons';
+import '../../module/timeslot/element/widget/paper-timeslo-tags/paper-timeslot-tags';

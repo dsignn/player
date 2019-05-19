@@ -2,7 +2,7 @@ import {html} from '@polymer/polymer/polymer-element.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import '@collaborne/paper-chip/paper-chip';
+import '@fluidnext-polymer/paper-chip/paper-chip';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/iron-icon/iron-icon';

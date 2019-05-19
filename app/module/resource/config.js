@@ -1,7 +1,7 @@
 /**
  *
  */
-class ResourceConfig extends require("@p3e/library").container.ContainerAware {
+class ResourceConfig extends require("@dsign/library").container.ContainerAware {
 
     /**
      * @return {string}
@@ -146,7 +146,7 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
         const dexieManager = this.getContainer().get('DexieManager');
 
 
-        let store = new (require("@p3e/library").storage.adapter.dexie.Store)(
+        let store = new (require("@dsign/library").storage.adapter.dexie.Store)(
             ResourceConfig.COLLECTION,
             [ "++id", "type", "size", "name", "*tags"]
 
@@ -159,21 +159,21 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
         dexieManager.on("ready", () => {
 
             const adapter = new DexieResourceAdapter(dexieManager, ResourceConfig.COLLECTION);
-            const storage = new (require("@p3e/library").storage.Storage)(adapter);
+            const storage = new (require("@dsign/library").storage.Storage)(adapter);
             storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(ResourceConfig.RESOURCE_HYDRATOR_SERVICE));
 
             storage.getEventManager().on(
-                require("@p3e/library").storage.Storage.BEFORE_UPDATE,
+                require("@dsign/library").storage.Storage.BEFORE_UPDATE,
                 this.onBeforeUpdate.bind(this)
             );
 
             storage.getEventManager().on(
-                require("@p3e/library").storage.Storage.BEFORE_SAVE,
+                require("@dsign/library").storage.Storage.BEFORE_SAVE,
                 this.onBeforeSave.bind(this)
             );
 
             storage.getEventManager().on(
-                require("@p3e/library").storage.Storage.POST_REMOVE,
+                require("@dsign/library").storage.Storage.POST_REMOVE,
                 this.onPostRemove.bind(this)
             );
 
@@ -216,7 +216,7 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
     _clearDirectory(resourceEntity) {
 
         let dirToClear = `${this.getContainer().get('Application').getResourcePath()}${this.path.sep}${resourceEntity.id}`;
-        require("@p3e/library").fs.Fs.removeDirSync(dirToClear);
+        require("@dsign/library").fs.Fs.removeDirSync(dirToClear);
     }
 
     /**
@@ -235,7 +235,7 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
             let fileName = `${fileDirectory}${this.path.sep}${resourceEntity.id}.${resourceEntity.resourceToImport.path.split('.').pop()}`;
             this.fs.copyFileSync(resourceEntity.resourceToImport.path, fileName);
 
-            resourceEntity.path = new (require("@p3e/library").path.Path)();
+            resourceEntity.path = new (require("@dsign/library").path.Path)();
             resourceEntity.path.nameFile = resourceEntity.id;
             resourceEntity.path.extension = resourceEntity.resourceToImport.path.split('.').pop();
 
@@ -363,7 +363,7 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
      */
     static getResourceHydrator(container) {
 
-        let hydrator = new (require("@p3e/library").hydrator.AggregatePropertyHydrator)('type');
+        let hydrator = new (require("@dsign/library").hydrator.AggregatePropertyHydrator)('type');
 
         hydrator.addHydratorMap(
             ResourceConfig.getImageEntityHydrator(container),
@@ -387,11 +387,11 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
      */
     static getFileEntityHydrator(container) {
 
-        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)(
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(
             container.get(ResourceConfig.FILE_ENTITY_SERVICE)
         );
 
-        let pathHydratorStrategy = new (require("@p3e/library").hydrator.strategy.value.HydratorStrategy)();
+        let pathHydratorStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         pathHydratorStrategy.setHydrator(ResourceConfig.getPathHydrator(container));
 
         hydrator.addValueStrategy('path', pathHydratorStrategy);
@@ -490,8 +490,8 @@ class ResourceConfig extends require("@p3e/library").container.ContainerAware {
      */
     static getPathHydrator(container) {
 
-        let hydrator = new (require("@p3e/library").hydrator.PropertyHydrator)(
-            new (require("@p3e/library").path.Path)()
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(
+            new (require("@dsign/library").path.Path)()
         );
 
         hydrator.enableHydrateProperty('directory')

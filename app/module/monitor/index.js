@@ -1,7 +1,7 @@
 import {html} from '@polymer/polymer/polymer-element.js';
-import '@polymer/paper-icon-button/paper-icon-button';
 import {DsignLocalizeElement} from "../../elements/localize/dsign-localize";
 import '@polymer/iron-pages/iron-pages';
+import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
 import './element/view/list'
 import './element/view/upsert'

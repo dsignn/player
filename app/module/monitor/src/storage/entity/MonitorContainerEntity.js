@@ -1,7 +1,7 @@
 /**
  *
  */
-class MonitorContainerEntity extends require("@p3e/library").storage.entity.EntityIdentifier {
+class MonitorContainerEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     constructor() {
         super();

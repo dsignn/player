@@ -15,7 +15,10 @@
      "adapter" : {
         "dexie" : {
             "nameDb" : "dsign"
-        }
+        },
+       "localStorage" : {
+         "namespace" : "dsign"
+       }
      }
   }
 }

@@ -1,8 +1,8 @@
-import {Container, ContainerAggregate} from  '@p3e/library/src/container/index';
-import {Application} from "@p3e/library/src/core/Application";
-import {PropertyHydrator} from "@p3e/library/src/hydrator/index";
-import {Module} from "@p3e/library/src/core/module/Module";
-import {DexieManager} from "@p3e/library/src/storage/adapter/dexie/index";
+import {Container, ContainerAggregate} from  '@dsign/library/src/container/index';
+import {Application} from "@dsign/library/src/core/Application";
+import {PropertyHydrator} from "@dsign/library/src/hydrator/index";
+import {Module} from "@dsign/library/src/core/module/Module";
+import {DexieManager} from "@dsign/library/src/storage/adapter/dexie/index";
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
@@ -28,29 +28,29 @@ const container = new Container();
  * Inject general container aggregate service
  */
 const storageContainerAggregate = new ContainerAggregate();
-storageContainerAggregate.setPrototipeClass(require("@p3e/library").storage.Storage);
+storageContainerAggregate.setPrototipeClass(require("@dsign/library").storage.Storage);
 storageContainerAggregate.setContainer(container);
 container.set('StorageContainerAggregate', storageContainerAggregate);
 
 const hydratorContainerAggregate = new ContainerAggregate();
-hydratorContainerAggregate.setPrototipeClass(require("@p3e/library").hydrator.AbstractHydrator);
+hydratorContainerAggregate.setPrototipeClass(require("@dsign/library").hydrator.AbstractHydrator);
 hydratorContainerAggregate.setContainer(container);
 container.set('HydratorContainerAggregate', hydratorContainerAggregate);
 
 const entityContainerAggregate = new ContainerAggregate();
-entityContainerAggregate.setPrototipeClass(require("@p3e/library").storage.entity.EntityIdentifier);
+entityContainerAggregate.setPrototipeClass(require("@dsign/library").storage.entity.EntityIdentifier);
 entityContainerAggregate.setContainer(container);
 container.set('EntityContainerAggregate', entityContainerAggregate);
 
 entityContainerAggregate.set(
     'EntityNestedReference',
-    new (require("@p3e/library").storage.entity.EntityNestedReference)()
+    new (require("@dsign/library").storage.entity.EntityNestedReference)()
 );
 
 
 entityContainerAggregate.set(
     'EntityReference',
-    new (require("@p3e/library").storage.entity.EntityReference)()
+    new (require("@dsign/library").storage.entity.EntityReference)()
 );
 
 const senderContainerAggregate = new ContainerAggregate();

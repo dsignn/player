@@ -62,7 +62,7 @@ class AbstractTimeslotService {
         /**
          * Event manager
          */
-        this.eventManager = new (require('@p3e/library').event.EventManager)();
+        this.eventManager = new (require('@dsign/library').event.EventManager)();
 
         /**
          * Check if timer is inject
@@ -163,7 +163,7 @@ class AbstractTimeslotService {
     getTimeslotsFromArrayReference(references) {
         let timeslots = [];
         for (let cont = 0; references.length > cont; cont++) {
-            timeslots.push(this.timeslotStorage.get(references[cont].referenceId));
+            timeslots.push(this.timeslotStorage.get(references[cont].id));
         }
         return Promise.all(timeslots);
     }

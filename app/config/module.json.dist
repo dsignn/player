@@ -1,5 +1,4 @@
 [
-
   {
     "title" : "Dashboard",
     "name": "dashboard",
@@ -8,7 +7,7 @@
     "webComponentEntryPointNameFile" : "index.js",
     "configEntryPoint": "config.js",
     "autoloads" : [
-
+      "src/storage/entity/WidgetEntity.js"
     ],
     "autoloadsWs": [
       "element/icons/icons.js"
@@ -72,6 +71,17 @@
     ],
     "autoloadsWs": [
       "element/icons/icons.js"
+    ],
+    "widgets": [
+      {
+        "src": "widget/timeslot-tags.html",
+        "description": "Widget to view tagged timeslot",
+        "name": "Timeslot tags",
+        "wc": "timeslot-tags",
+        "dataProperty": "tags",
+        "dataLabel": "tags",
+        "dataRequired": true
+      }
     ]
   }
 ]

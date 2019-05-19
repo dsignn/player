@@ -67,8 +67,8 @@ export const EntityPaginationBehavior = {
 
         this.storage = storageContainerAggregate.get(storageService);
 
-        this.listenerUpdate = new (require("@p3e/library").event.Listener)(this.getPagedEntities.bind(this));
-        this.storage.getEventManager().on(require("@p3e/library").storage.Storage.POST_SAVE, this.listenerUpdate);
+        this.listenerUpdate = new (require("@dsign/library").event.Listener)(this.getPagedEntities.bind(this));
+        this.storage.getEventManager().on(require("@dsign/library").storage.Storage.POST_SAVE, this.listenerUpdate);
     },
 
     /**
