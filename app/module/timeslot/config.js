@@ -76,7 +76,7 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
 
         let store = new (require("@dsign/library").storage.adapter.dexie.Store)(
             TimeslotConfig.COLLECTION,
-            ["++id", "name", "status", "duration", "monitorContainerReference.monitorId", "[monitorContainerReference.parentId+name]", "*tags", "rotation"]
+            ["++id", "name", "status", "duration", "monitorContainerReference.id", "[monitorContainerReference.parentId+name]", "*tags", "rotation"]
 
         );
 

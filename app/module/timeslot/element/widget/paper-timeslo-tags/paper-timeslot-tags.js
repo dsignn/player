@@ -12,7 +12,7 @@ export class PaperTimeslotTags extends mixinBehaviors([EntityListBehavior], Dsig
 
     static get template() {
         return html`
-            <template is="dom-repeat" items="[[entities]]" as="timeslot">
+            <template is="dom-repeat" items="[[entities]]" as="timeslot" sort="fromStatus">
                 <paper-timeslot entity="{{timeslot}}" on-play="play" on-resume="resume" on-stop="stop" on-pause="pause"
                         hide-crud
                         remove-crud>
@@ -64,6 +64,23 @@ export class PaperTimeslotTags extends mixinBehaviors([EntityListBehavior], Dsig
         }
 
         this.getEntities();
+    }
+
+    /**
+     * @param ele1
+     * @param ele2
+     */
+    fromStatus(ele1, ele2) {
+        let compare = -1;
+        switch (true) {
+            case ele1.status === "idle" && ele1 !== ele2:
+                compare =  1;
+                break;
+            case ele1.status === "pause" && ele1 !== ele2 && ele2.status !== "idle":
+                compare =  1;
+                break;
+        }
+        return compare
     }
 
     /**

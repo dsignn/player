@@ -19,7 +19,6 @@ class DexieTimeslotAdapter extends require("@dsign/library").storage.adapter.dex
                             if (cont === 0) {
                                 collection = this.manager.table(this.nameCollaction).where(property).equals(filter[property][cont]);
                             } else {
-                                console.log(filter[property][cont]);
                                 collection = collection.or(property).equals(filter[property][cont]);
                             }
                         }
