@@ -15,7 +15,14 @@ class DexieTimeslotAdapter extends require("@dsign/library").storage.adapter.dex
 
                 switch (property) {
                     case 'tags':
-                        collection = this.manager.table(this.nameCollaction).where(property).equals(filter[property]);
+                        for (let cont = 0; filter[property].length > cont; cont++) {
+                            if (cont === 0) {
+                                collection = this.manager.table(this.nameCollaction).where(property).equals(filter[property][cont]);
+                            } else {
+                                console.log(filter[property][cont]);
+                                collection = collection.or(property).equals(filter[property][cont]);
+                            }
+                        }
                         break;
                     case 'name':
                         collection = this.manager.table(this.nameCollaction).where(property).startsWithIgnoreCase(filter[property]);

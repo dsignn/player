@@ -74,10 +74,10 @@
     ],
     "widgets": [
       {
-        "src": "widget/timeslot-tags.html",
+        "src": "widget/paper-timeslot-tags/paper-timeslot-tags.js",
         "description": "Widget to view tagged timeslot",
         "name": "Timeslot tags",
-        "wc": "timeslot-tags",
+        "wc": "paper-timeslot-tags",
         "dataProperty": "tags",
         "dataLabel": "tags",
         "dataRequired": true

@@ -171,7 +171,7 @@ class TimeslotService extends AbstractTimeslotService {
     _playTimeslot(timeslot, dataTimeslot) {
 
         let runningTimeslot = this.getRunningTimeslot(timeslot.monitorContainerReference.id, timeslot.context);
-        if (runningTimeslot) {
+        if (runningTimeslot && runningTimeslot.id !== timeslot.id) {
             this.pause(runningTimeslot);
         }
 

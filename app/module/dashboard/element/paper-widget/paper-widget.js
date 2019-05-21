@@ -34,8 +34,8 @@ export class PaperWidget extends DsignLocalizeElement {
                 }
     
                 .content {
+                    display: block;
                     padding: 8px 4px;
-                    width: 100%;
                     height: 82%;
                     cursor: move;
                     overflow-y: auto;
@@ -178,14 +178,10 @@ export class PaperWidget extends DsignLocalizeElement {
             return;
         }
 
-
-
-        let elem = document.createElement('paper-timeslot-tags');
+        let elem = document.createElement(this.wc);
         elem.data = this.data;
         elem.classList.add("move");
 
-      //  this.title = elem.getTitle();
-      //  this.subTitle = elem.getSubTitle();
         setTimeout(
             () => {
                 this.title = elem.getTitle();
@@ -201,7 +197,7 @@ export class PaperWidget extends DsignLocalizeElement {
      * @return {WidgetEntity}
      */
     getWidget() {
-        let widget = new Widget();
+        let widget = new WidgetEntity();
 
         widget.id = this.id;
         widget.width = this.width;

@@ -154,8 +154,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                 <paper-input id="data" label="{{localize('data')}}" class="hidden" on-value-changed="changeData"></paper-input>
                 <paper-button id="addButton" disabled on-tap="addWidget">{{localize('add')}}</paper-button>
             </paper-card>
-            <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="resize" on-move="move" row-autogrow col-autogrow draggable resizable animated overlappable>
-                <tile col="2" row="3" height="2" width="2">test</tile>
+            <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="_udpate" on-move="_udpate" row-autogrow col-autogrow draggable resizable animated overlappable>
             </paper-grid>
         `;
     }
@@ -197,12 +196,10 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
         storage.getAll()
             .then((data) => {
 
-                console.log('DATA', data);
                 for (let cont = 0; data.length > cont; cont++) {
                     this.appendWidget(data[cont]);
                 }
             });
-        //console.log('fdsfdsfdsfdsfds', storage);
     }
 
     /**
@@ -262,6 +259,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                 this.$.data.value = '';
                 this.$.addButton.disabled = false;
                 this.notify.notify('insert-widget');
+                this.appendWidget(data);
 
             })
             .catch((err) => {
@@ -277,9 +275,36 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
 
         let widgetElem = document.createElement('paper-widget');
         widgetElem.initFromWidget(widget);
-        widgetElem.addEventListener('customRemove', this._removeWidget.bind(this));
+        widgetElem.addEventListener('remove', this._removeWidget.bind(this));
         this._initSpanResizeWidget(widgetElem);
         this.$.grid.appendChild(widgetElem);
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _removeWidget(evt) {
+
+        let target = evt.target;
+
+        this.storage.delete(evt.target.getWidget())
+            .then((data) => {
+                this.notify.notify('delete-widget');
+                target.remove();
+            });
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _udpate(evt) {
+
+        this.storage.update(evt.target.getWidget())
+            .then((data) => {
+
+            });
     }
 
     /**
@@ -319,24 +344,6 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
 
             widget.appendChild(span);
         }
-    }
-
-    _removeWidget(evt) {
-
-        /*
-        serviceManager.get('StoragePluginManager')
-            .get(DashboardConfig.NAME_WIDGET_SERVICE)
-            .remove(evt.target.getWidget())
-            .then(function(data) {
-                serviceManager.get('PaperToastNotification').notify('Remove Widget');
-            }.bind(evt.target))
-            .catch((err) => {
-                    console.log(err)
-                }
-            );
-
-        evt.target.remove();
-        */
     }
 }
 window.customElements.define('dashboard-index', DashboardIndex);

@@ -147,7 +147,7 @@ class PaperTimeslot extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
                                 <div class="flex flex-horizontal-end">{{currentTime}} / {{entity.duration}} sec</div>
                             </div>
                         </div>
-                        <div id="crud">
+                        <div id="crud" hidden$="[[removeCrud]]">
                             <paper-menu-button ignore-select horizontal-align="right">
                                 <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                 <paper-listbox slot="dropdown-content" multi>
