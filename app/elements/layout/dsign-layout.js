@@ -105,6 +105,7 @@ class DsignLayout extends DsignLocalizeElement {
             section: {
                 type: String,
                 notify: true,
+                value : 'dashboard'
             },
 
             modules: {
@@ -113,18 +114,21 @@ class DsignLayout extends DsignLocalizeElement {
                 observer: 'changeModules'
             },
 
-            Application: {
-                notify: true,
+            services : {
+                value : {
+                    application:  "Application"
+                }
+            },
+
+            application :  {
                 observer: 'changeApplicationService'
             }
-
         }
     }
 
     constructor() {
         super();
         this.resources = lang;
-        // TODO debounce
     }
 
     connectedCallback() {
@@ -166,6 +170,10 @@ class DsignLayout extends DsignLocalizeElement {
         this.$.settingDrawer.open();
     }
 
+    /**
+     * @param evt
+     * @private
+     */
     _tapMenu(evt) {
         this.section = evt.target.id;
     }

@@ -2,11 +2,13 @@ export const lang = {
   "it": {
     "add": "aggiungi",
     "widget": "widget",
-    "data": "dati"
+    "data": "dati",
+    "widget-data-label" : "Dati widget"
   },
   "en": {
     "add": "add",
     "widget": "widget",
-    "data": "data"
+    "data": "data",
+    "widget-data-label" : "Data widget"
   }
 };

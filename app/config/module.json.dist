@@ -78,6 +78,7 @@
         "description": "Widget to view tagged timeslot",
         "name": "Timeslot tags",
         "wc": "paper-timeslot-tags",
+        "wcData": "paper-timeslot-tags-data",
         "dataProperty": "tags",
         "dataLabel": "tags",
         "dataRequired": true

@@ -11,7 +11,6 @@ export class DsignServiceInjectorElement extends PolymerElement {
         return {
             services: {
                 type: Object,
-                // reflectToAttribute: true,
                 observer: 'changeServices'
             }
         };
@@ -25,15 +24,7 @@ export class DsignServiceInjectorElement extends PolymerElement {
             return;
         }
 
-        /**
-         * delay to manage the load of the modules
-         */
-        timeOut.run(
-            () => {
-                this._searchService(newValue);
-            },
-            2000
-        );
+        this._searchService(newValue);
     }
 
     /**

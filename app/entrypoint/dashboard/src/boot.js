@@ -161,6 +161,11 @@ application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
 
+        this.get('DexieManager').on("ready", () => {
+            let appl = document.createElement('dsign-layout');
+            document.body.appendChild(appl);
+        });
+
         this.get('DexieManager').generateSchema();
         this.get('DexieManager').open();
     }.bind(container))

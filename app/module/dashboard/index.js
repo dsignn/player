@@ -39,8 +39,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                     margin-bottom: 8px;
                 }
                 
-                paper-card.header paper-input,
-                paper-card.header paper-autocomplete {
+                paper-card.header div.data {
                     @apply  --layout-flex-auto;
                 }
                  
@@ -138,6 +137,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                     value-property="name"
                     on-autocomplete-selected="_selectWidget"
                     on-autocomplete-change="_searchWidget"
+                    on-autocomplete-reset-blur="_clearWidget"
                     remote-source>
                      <template slot="autocomplete-custom-template">
                         ${autocompleteStyle}
@@ -151,7 +151,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                     </template>
                 </paper-autocomplete>
                 <div class="gutter"></div>
-                <paper-input id="data" label="{{localize('data')}}" class="hidden" on-value-changed="changeData"></paper-input>
+                <div id="dataContainer" class="data"></div>
                 <paper-button id="addButton" disabled on-tap="addWidget">{{localize('add')}}</paper-button>
             </paper-card>
             <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="_udpate" on-move="_udpate" row-autogrow col-autogrow draggable resizable animated overlappable>
@@ -211,7 +211,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
 
         let filter = widgets.filter(
             element => {
-                return element.name.search(new RegExp(evt.detail.value, 'i')) > -1;
+                return element.name.search(new RegExp(evt.detail.value.text, 'i')) > -1;
             }
         );
 
@@ -225,8 +225,50 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
      * @private
      */
     _selectWidget(evt) {
-        this.$.data.classList.remove("hidden");
+
+        this.removeDataWidget();
+
+        let element = document.createElement(evt.detail.value.wcData);
+        element.addEventListener('ready-data', this._enableAddButton.bind(this));
+        element.addEventListener('unready-data', this._disableAddButton.bind(this));
+        element.setAttribute('id', 'dataComponent');
+        element.label = this.localize('widget-data-label');
+        this.$.dataContainer.appendChild(element);
     }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _clearWidget(evt) {
+        this.removeDataWidget();
+    }
+
+    /**
+     *
+     */
+    removeDataWidget() {
+        while (this.$.dataContainer.firstChild) {
+            this.$.dataContainer.removeChild(this.$.dataContainer.firstChild);
+        }
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _disableAddButton(evt) {
+        this.$.addButton.disabled = true;
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _enableAddButton(evt) {
+        this.$.addButton.disabled = false;
+    }
+
 
     /**
      * @param evt
@@ -248,16 +290,15 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
 
         let widget = new WidgetEntity();
         widget.wc = this.$.widgetAutocomplete.value.wc;
-        widget.data =  this.$.data.value.trim().split(" ");
+        widget.data = this.shadowRoot.querySelector('#dataComponent').getData();
 
         this.storage
             .save(widget)
             .then((data) => {
 
-                this.$.data.classList.add("hidden");
                 this.$.widgetAutocomplete.clear();
-                this.$.data.value = '';
                 this.$.addButton.disabled = false;
+                this.removeDataWidget();
                 this.notify.notify('insert-widget');
                 this.appendWidget(data);
 

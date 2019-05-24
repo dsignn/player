@@ -29,6 +29,6 @@ setTimeout(
     () => {
         document.head.appendChild(template.content);
     },
-    2000
+    1000
 );
 

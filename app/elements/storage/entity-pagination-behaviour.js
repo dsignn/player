@@ -48,7 +48,6 @@ export const EntityPaginationBehavior = {
      * @param storage
      */
     observerPaginationEntities(page, itemPerPage, storage) {
-
         if (!page || !itemPerPage || !storage) {
             return;
         }
@@ -75,6 +74,7 @@ export const EntityPaginationBehavior = {
      *
      */
     getPagedEntities() {
+
         this.storage.getPaged(this.page, this.itemPerPage, this.filter)
             .then((data) => {
                 this.set('entities', data);
