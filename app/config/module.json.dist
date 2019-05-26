@@ -30,6 +30,7 @@
       "element/icons/icons.js",
       "element/paper-player/paper-player.js",
       "element/paper-player-manager/paper-player-manager.js",
+      "element/paper-player-timeslot/paper-player-timeslot.js",
       "element/paper-monitor-viewer/paper-monitor-viewer.js"
     ]
   },

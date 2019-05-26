@@ -7,16 +7,15 @@ import {DexieManager} from "@dsign/library/src/storage/adapter/dexie/index";
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
-const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../../';
-
+const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
 const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
-
-const config = JSON.parse(
-    fs.readFileSync(`${basePath}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
-);
-
+const resourceConfig = path.normalize(`${basePath}${path.sep}config${path.sep}`);
+console.log(basePath);
+console.log(modulePath);
+console.log(resourcePath);
+console.log(resourceConfig);
 /**
  * Container service of application
  *
@@ -66,6 +65,10 @@ receiverContainerAggregate.setPrototipeClass((new Object).constructor);
 receiverContainerAggregate.setContainer(container);
 container.set('ReceiverContainerAggregate', receiverContainerAggregate);
 
+const config = JSON.parse(
+    fs.readFileSync(`${resourceConfig}config-${process.env.APP_ENVIRONMENT}.json`).toString()
+);
+
 /***********************************************************************************************************************
                                                 CONFIG SERVICE
  **********************************************************************************************************************/
@@ -89,6 +92,22 @@ for (let cont = 0; modules.length > cont; cont++) {
 }
 
 const application = new Application();
+
+application.getEventManager().on(
+    Application.BOOTSTRAP_MODULE,
+    (evt) => {
+        console.log('fcdscsa', evt);
+        let appl = document.createElement('paper-player-manager');
+
+        if (document.body) {
+            document.body.appendChild(appl);
+        } else {
+            window.addEventListener('load', (event) => {
+                document.body.appendChild(appl);
+            });
+        }
+    }
+);
 
 application.setBasePath(basePath)
     .setModulePath(modulePath)

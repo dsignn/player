@@ -13,20 +13,35 @@ class PaperPlayerManager extends DsignServiceInjectorElement {
 
             monitor : {
                 notify: true
+            },
+
+            services : {
+                value : {
+                    "ReceiverContainerAggregate": {
+                        "monitorReceiver":"MonitorReceiver"
+                    },
+                    "HydratorContainerAggregate": {
+                        "monitorEntityHydrator": "MonitorEntityHydrator"
+                    }
+                }
+            },
+
+            monitorReceiver : {
+                observer : 'attachReceiver'
             }
         }
     }
 
-    ready() {
-        super.ready();
+    /**
+     * @param newValue
+     */
+    attachReceiver(newValue) {
+        if(!newValue) {
+            return
+        }
 
-        container.get('ReceiverContainerAggregate')
-            .get('MonitorReceiver')
-            .on('paper-player-config', this.configPaperPlayer.bind(this));
-
-        container.get('ReceiverContainerAggregate')
-            .get('MonitorReceiver')
-            .on('paper-player-update', this.updatePaperPlayer.bind(this));
+        newValue.on('paper-player-update', this.updatePaperPlayer.bind(this));
+        newValue.on('paper-player-config', this.configPaperPlayer.bind(this));
     }
 
     /**
@@ -35,27 +50,21 @@ class PaperPlayerManager extends DsignServiceInjectorElement {
      */
     configPaperPlayer(evt, msg) {
 
-        this._hydrateMonitor(msg);
-        this._appendPaperPlayer(document.body, this.monitor);
-    }
-
-    updatePaperPlayer(evt, msg) {
-
-        this._hydrateMonitor(msg);
-        // TODO implements better solution
-        let paperPlayer = document.querySelector('paper-player');
-        paperPlayer.remove();
+        this.monitor = this.monitorEntityHydrator.hydrate(msg);
         this._appendPaperPlayer(document.body, this.monitor);
     }
 
     /**
-     * @param monitorData
-     * @private
+     * @param evt
+     * @param msg
      */
-    _hydrateMonitor(monitorData) {
-        this.monitor = container.get('HydratorContainerAggregate')
-            .get('MonitorEntityHydrator')
-            .hydrate(monitorData);
+    updatePaperPlayer(evt, msg) {
+
+        this.monitor = this.monitorEntityHydrator.hydrate(msg);
+        // TODO implements better solution
+        let paperPlayer = document.querySelector('paper-player');
+        paperPlayer.remove();
+        this._appendPaperPlayer(document.body, this.monitor);
     }
 
     /**

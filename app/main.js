@@ -158,7 +158,13 @@ class Application {
         browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
-            browserWindows.send('paper-player-config', monitor);
+            // TODO delay for the fast load of the player index
+            setTimeout(
+                () => {
+                    browserWindows.send('paper-player-config', monitor);
+                },
+                2000
+            );
         });
 
         if (this.environment === 'development') {

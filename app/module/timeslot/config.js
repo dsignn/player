@@ -1,5 +1,3 @@
-import {ContainerAggregate} from "@dsign/library/src/container/index";
-
 /**
  *
  */
@@ -146,7 +144,7 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
      */
     initInjectorDataTimeslotCotainerAggregate() {
 
-        const entityContainerAggregate = new ContainerAggregate();
+        const entityContainerAggregate = new (require("@dsign/library").container.ContainerAggregate)();
         entityContainerAggregate.setPrototipeClass(AbstractInjector);
         entityContainerAggregate.setContainer(this.getContainer());
 

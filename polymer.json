@@ -17,7 +17,8 @@
     "app/main.js",
     "node_modules/@polymer/**/*.js",
     "node_modules/@p3e/**/*.*",
-    "node_modules/@fluidnext/**/*.*"
+    "node_modules/@fluidnext/**/*.*",
+    "node_modules/@fluidnext-polymer/**/*.*"
   ],
   "extraDependencies": [
     "package.json",

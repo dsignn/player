@@ -12,22 +12,24 @@ import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
-const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../../';
-
+const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
 const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
+const resourceConfig = path.normalize(`${basePath}${path.sep}config${path.sep}`);
+console.log(basePath);
+console.log(modulePath);
+console.log(resourcePath);
+console.log(resourceConfig);
 
 if (!fs.existsSync(resourcePath)) {
-   fs.mkdir(
-       resourcePath,
-       { recursive: true },
-       (err) => {
-            if (err) throw console.error(err);
-       }
-    );
+    try {
+        fs.mkdirSync(`${basePath}..${path.sep}storage`);
+        fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}resource`);
+    } catch (e) {
+        console.error(err);
+    }
 }
-
 /**
  * Container service of application
  *
