@@ -22,6 +22,9 @@ import '../../module/resource/element/wc-resource/wc-resource-test';
 
 import '../../module/timeslot/index';
 import '../../module/timeslot/element/icons/icons';
-import '../../module/timeslot/element/widget/paper-timeslo-tags/paper-timeslot-tags';
-import '../../module/timeslot/element/widget/paper-timeslo-tags/paper-timeslot-tags-data';
+// Widget
+import '../../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags';
+import '../../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data';
+import '../../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors';
+import '../../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data';
 

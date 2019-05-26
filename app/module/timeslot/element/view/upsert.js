@@ -304,8 +304,6 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _selectBindTimeslot(evt) {
 
-        console.log('SELECT Bind', evt);
-
         let reference = new (require("@dsign/library").storage.entity.EntityReference)();
         reference.setCollection('monitor');
         reference.setId(this.monitorService.getEnableMonitor().getId());
@@ -354,8 +352,6 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
         evt.preventDefault();
 
         let method = this.getStorageUpsertMethod();
-
-        console.log('timeslot', this.entity);
         this.timeslotStorage[method](this.entity)
             .then((data) => {
 

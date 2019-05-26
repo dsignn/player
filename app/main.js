@@ -336,7 +336,7 @@ class Application {
 
             switch (true) {
                 case index > -1:
-                    console.log('modifica monitor');
+
                     newMonitors[cont].browserWindows = this.monitorsContainerEntity.monitors[index].browserWindows;
 
                     newMonitors[cont].browserWindows.setAlwaysOnTop(newMonitors[cont].alwaysOnTop);
@@ -354,7 +354,7 @@ class Application {
                     this.monitorsContainerEntity.monitors[index] = newMonitors[cont];
                     break;
                 default:
-                    console.log('aggiungi monitor');
+
                     newMonitors[cont].browserWindows = this.createWindowPlayer(newMonitors[cont]);
                     this.monitorsContainerEntity.addMonitor(newMonitors[cont]);
                     break;
@@ -369,7 +369,7 @@ class Application {
             if (!this.monitorsContainerEntity.monitors[cont].remove) {
                 continue;
             }
-            console.log('remove monitor');
+
             if (this.monitorsContainerEntity.monitors[cont].browserWindows) {
                 this.monitorsContainerEntity.monitors[cont].browserWindows.close();
             }

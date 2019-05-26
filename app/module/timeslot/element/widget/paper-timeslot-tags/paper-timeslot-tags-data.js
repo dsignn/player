@@ -1,5 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element';
 import '@fluidnext-polymer/paper-chip/paper-chips'
+import '@polymer/paper-input/paper-input'
+
 /**
  *
  */

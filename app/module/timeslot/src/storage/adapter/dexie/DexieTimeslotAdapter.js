@@ -27,7 +27,21 @@ class DexieTimeslotAdapter extends require("@dsign/library").storage.adapter.dex
                         collection = this.manager.table(this.nameCollaction).where(property).startsWithIgnoreCase(filter[property]);
                         break;
                     case 'parentId':
-                        collection = this.manager.table(this.nameCollaction).where('monitorContainerReference.parentId').equals(filter[property]);
+                        let attribute = 'monitorContainerReference.id';
+                        switch (true) {
+                            case Array.isArray(filter[property]) === true:
+                                for (let cont = 0; filter[property].length > cont; cont++) {
+                                    if (cont === 0) {
+                                        collection = this.manager.table(this.nameCollaction).where(attribute).equals(filter[property][cont].id);
+                                    } else {
+                                        collection = collection.or(attribute).equals(filter[property][cont].id);
+                                    }
+                                }
+                                break;
+                            case typeof filter[property] === 'string':
+                                collection = this.manager.table(this.nameCollaction).where(attribute).equals(filter[property]);
+                                break;
+                        }
                         break;
                     case 'parentId+name':
                         collection = this.manager.table(this.nameCollaction)

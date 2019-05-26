@@ -85,7 +85,7 @@ class MonitorService {
     }
 
     /**
-     * @return {}
+     * @return {MonitorContainerEntity}
      */
     getEnableMonitor() {
         return this.enableMonitor;

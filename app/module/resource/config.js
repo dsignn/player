@@ -282,8 +282,6 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
                     }
 
                     storage.update(entity);
-
-                    console.log('UPDATE METADATA', metadata, resourceEntity, storage);
                 }.bind(this)
             );
         }
@@ -301,7 +299,6 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
         let packageJson = `${this.getContainer().get('ResourceService').getResourceDirectory(resourceEntity)}package.json`;
         if (this.fs.existsSync(packageJson)) {
             let wcConfig = JSON.parse(this.fs.readFileSync(packageJson).toString());
-            console.log(wcConfig);
 
             if (wcConfig.main === undefined) {
                 console.warn('Main property not set in package json');

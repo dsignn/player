@@ -212,7 +212,8 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
 
                     import(this.resourceService.getResourcePath(this.entity).replace('.html', '.js'))
                         .then((module) => {
-                            console.log("MyView1 loaded", module);
+                            element = document.createElement(this.entity.wcName);
+                            element.createMockData();
                         }).catch((reason) => {
                             console.error(`Web component ${this.entity.wcName}`, reason);
                         });

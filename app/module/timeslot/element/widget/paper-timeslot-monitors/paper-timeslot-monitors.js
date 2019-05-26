@@ -1,0 +1,148 @@
+import {html} from '@polymer/polymer/polymer-element';
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+import {DsignLocalizeElement} from "../../../../../elements/localize/dsign-localize";
+import {lang} from './language';
+import {EntityListBehavior} from "../../../../../elements/storage/entity-list-behaviour";
+import "../../paper-timeslot/paper-timeslot";
+
+/**
+ *
+ */
+export class PaperTimeslotMonitors extends mixinBehaviors([EntityListBehavior], DsignLocalizeElement) {
+
+    static get template() {
+        return html`
+            <template is="dom-repeat" items="[[entities]]" as="timeslot" sort="fromStatus">
+                <paper-timeslot entity="{{timeslot}}" on-play="play" on-resume="resume" on-stop="stop" on-pause="pause"
+                        hide-crud
+                        remove-crud>
+                </paper-timeslot>
+            </template>
+        `;
+    }
+
+    static get properties () {
+        return {
+
+            data : {
+                observer: "_changedData"
+            },
+
+            services : {
+                value : {
+                    "storageContainerAggregate": 'StorageContainerAggregate',
+                    "timeslotService" : "TimeslotService"
+                }
+            },
+
+            storageService : {
+                value: 'TimeslotStorage'
+            }
+        };
+    }
+
+    static get observers() {
+        return [
+            'observerStorage(storageContainerAggregate, storageService)',
+            'observerFilter(storage, filter)'
+        ]
+    }
+
+    constructor() {
+        super();
+        this.resources = lang;
+    }
+
+    /**
+     * @param storage
+     * @param filter
+     */
+    observerFilter(storage, filter) {
+
+        if (!storage || Object.entries(filter).length === 0) {
+            return;
+        }
+
+        this.getEntities();
+    }
+
+    /**
+     * @param ele1
+     * @param ele2
+     */
+    fromStatus(ele1, ele2) {
+        let compare = -1;
+        switch (true) {
+            case ele1.status === "idle" && ele1 !== ele2:
+                compare =  1;
+                break;
+            case ele1.status === "pause" && ele1 !== ele2 && ele2.status !== "idle":
+                compare =  1;
+                break;
+        }
+        return compare
+    }
+
+    /**
+     * @param newValue
+     * @private
+     */
+    _changedData(newValue) {
+
+        if (!newValue) {
+            return;
+        }
+
+        this.filter = {
+            'parentId' : newValue
+        };
+    }
+
+    /**
+     * @return {string}
+     */
+    getTitle() {
+        return this.localize('title');
+    }
+
+    /**
+     * @return {string}
+     */
+    getSubTitle() {
+        let tag = [];
+        tag = (this.data && Array.isArray(this.data)) ? this.data : {};
+        return tag.map((elem) => {
+            return elem.name;
+        }).join(",");
+    }
+
+    /**
+     * @param evt
+     */
+    play(evt) {
+        this.timeslotService.play(evt.detail);
+    }
+
+    /**
+     * @param evt
+     */
+    resume(evt) {
+        this.timeslotService.resume(evt.detail);
+    }
+
+    /**
+     * @param evt
+     */
+    stop(evt) {
+        this.timeslotService.stop(evt.detail);
+    }
+
+    /**
+     * @param evt
+     */
+    pause(evt) {
+        this.timeslotService.pause(evt.detail);
+    }
+}
+
+window.customElements.define('paper-timeslot-monitors', PaperTimeslotMonitors);

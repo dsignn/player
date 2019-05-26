@@ -222,7 +222,6 @@ class PaperInputInjectorDataService extends mixinBehaviors([EntityBehavior], Dsi
      * @private
      */
     _deleteChip(evt) {
-        console.log('deleeeeeeeeeeeeeeeeeee')
         this.splice('value', evt.target.index, 1);
     }
 

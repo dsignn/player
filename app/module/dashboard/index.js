@@ -301,6 +301,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                 this.removeDataWidget();
                 this.notify.notify('insert-widget');
                 this.appendWidget(data);
+                this._disableAddButton();
 
             })
             .catch((err) => {
