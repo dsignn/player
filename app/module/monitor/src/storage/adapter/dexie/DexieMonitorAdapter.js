@@ -7,16 +7,16 @@ class DexieMonitorAdapter extends require("@dsign/library").storage.adapter.dexi
     filter(filter) {
 
         let collection = super.filter(filter);
-        if (filter !== null && typeof filter === 'object') {
+        if (filter !== null && typeof filter === 'object' && Object.entries(filter).length > 0) {
 
             for (let property in filter) {
 
                 switch (property) {
                     case 'enable':
-                        collection = this.manager.table(this.nameCollaction).where(property).equals(filter[property]);
+                        collection = this.manager.table(this.getNameCollection()).where(property).equals(filter[property]);
                         break;
                     case 'name':
-                        collection = this.manager.table(this.nameCollaction).where(property).startsWithIgnoreCase(filter[property]);
+                        collection = this.manager.table(this.getNameCollection()).where(property).startsWithIgnoreCase(filter[property]);
                         break;
                 }
             }

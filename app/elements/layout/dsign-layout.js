@@ -3,16 +3,18 @@ import {Application}  from '@dsign/library/src/core/Application';
 
 import {html} from '@polymer/polymer/polymer-element.js';
 import {DsignLocalizeElement} from '../localize/dsign-localize';
-import '@polymer/app-layout/app-header-layout/app-header-layout.js';
-import '@polymer/app-layout/app-toolbar/app-toolbar.js';
-import '@polymer/app-layout/app-header/app-header.js';
-import '@polymer/app-layout/app-drawer/app-drawer.js';
+import '@polymer/app-layout/app-header-layout/app-header-layout';
+import '@polymer/app-layout/app-toolbar/app-toolbar';
+import '@polymer/app-layout/app-header/app-header';
+import '@polymer/app-layout/app-drawer/app-drawer';
 import '@polymer/app-layout/app-scroll-effects/effects/waterfall';
 import '@polymer/iron-pages/iron-pages';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@polymer/paper-tooltip/paper-tooltip.js';
+import '@polymer/paper-icon-button/paper-icon-button';
+import '@polymer/paper-tooltip/paper-tooltip';
 import '../icons/icons';
-import '../localize/select/dsign-select-language.js';
+import '../localize/select/dsign-select-language';
+import '../paper-backup/paper-backup';
+import '../paper-restore/paper-restore';
 import '../paper-always-on-top/paper-always-on-top';
 import { flexStyle } from '../../style/layout-style';
 import {lang} from './language/language.js';
@@ -72,6 +74,8 @@ class DsignLayout extends DsignLocalizeElement {
                     <app-toolbar>
                         <div main-title>{{localize('nameApp')}}</div>
                         <dsign-select-language></dsign-select-language>
+                        <paper-backup></paper-backup>
+                        <paper-restore></paper-restore>
                         <paper-always-on-top></paper-always-on-top>
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
                     </app-toolbar>

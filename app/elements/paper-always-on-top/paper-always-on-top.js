@@ -12,7 +12,7 @@ export class PaperAlwaysOnTop extends DsignLocalizeElement {
 
                 :host {
                     --paper-tooltip-opacity : 1;
-                    
+                    padding: 8px;
                     --paper-tooltip : {
                         background-color: var(--accent-color);
                         background:  var(--accent-color);

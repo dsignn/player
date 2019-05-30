@@ -1,12 +1,12 @@
 import {Application} from '@dsign/library/src/core/Application';
+import {Archive} from '@dsign/library/src/archive/Archive';
 import {Module} from '@dsign/library/src/core/module/Module';
 import {Widget} from '@dsign/library/src/core/widget/Widget';
-import {Path} from '@dsign/library/src/path/Path';
 import {Listener} from '@dsign/library/src/event/index'
 import {Container, ContainerAggregate} from  '@dsign/library/src/container/index';
 import {Localize} from '@dsign/library/src/localize/Localize';
 import {PropertyHydrator} from '@dsign/library/src/hydrator/index';
-import {HydratorStrategy} from '@dsign/library/src/hydrator/strategy/value/HydratorStrategy';
+import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
@@ -15,17 +15,15 @@ const path = require('path');
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
+const storagePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}`);
 const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
 const resourceConfig = path.normalize(`${basePath}${path.sep}config${path.sep}`);
-console.log(basePath);
-console.log(modulePath);
-console.log(resourcePath);
-console.log(resourceConfig);
 
 if (!fs.existsSync(resourcePath)) {
     try {
         fs.mkdirSync(`${basePath}..${path.sep}storage`);
         fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}resource`);
+        fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}archive`);
     } catch (e) {
         console.error(err);
     }
@@ -80,14 +78,17 @@ container.set('ReceiverContainerAggregate', receiverContainerAggregate);
 const config =  JSON.parse(
     fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
 );
+
 /***********************************************************************************************************************
                                                CONFIG SERVICE
 ***********************************************************************************************************************/
+
 container.set('Config', config);
 
 /***********************************************************************************************************************
                                               LOCALIZE SERVICE
  ***********************************************************************************************************************/
+
 container.set('Localize', new Localize(
     config.localize.defaultLanguage,
     config.localize.languages
@@ -96,11 +97,13 @@ container.set('Localize', new Localize(
 /***********************************************************************************************************************
                                             DEXIE MANAGER SERVICE
  **********************************************************************************************************************/
+
 container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 /***********************************************************************************************************************
                                             NOTIFICATION SERVICE
  **********************************************************************************************************************/
+
 container.set('Notify', {
     notify:  (text) => {
 
@@ -116,6 +119,16 @@ container.set('Notify', {
         paperToast.open();
     }
 });
+
+/***********************************************************************************************************************
+                                            ARCHIVE SERVICE
+ **********************************************************************************************************************/
+
+let archive = new Archive(`${storagePath}archive${path.sep}`);
+archive.appendDirectory(resourcePath, 'resource');
+archive.setStorageContainer(container.get('StorageContainerAggregate'));
+
+container.set('Archive', archive);
 
 /***********************************************************************************************************************
  APPLICATION SERVICE
@@ -137,11 +150,10 @@ container.set('Timer',
  **********************************************************************************************************************/
 let hydratorModule = new PropertyHydrator(new Module());
 let hydratorWidget = new PropertyHydrator(new Widget());
-let hydratorPath = new PropertyHydrator(new Path());
-let strategy = new HydratorStrategy();
-strategy.setHydrator(hydratorPath);
 
-hydratorWidget.addValueStrategy('path', strategy);
+let strategy = new PathStrategy();
+hydratorWidget.addValueStrategy('src', strategy);
+hydratorWidget.addValueStrategy('srcData', strategy);
 
 let modules = JSON.parse(fs.readFileSync(`${basePath}${path.sep}config${path.sep}module.json`).toString());
 let modulesHydrate = [];

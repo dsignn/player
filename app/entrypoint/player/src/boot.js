@@ -12,10 +12,7 @@ const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
 const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
 const resourceConfig = path.normalize(`${basePath}${path.sep}config${path.sep}`);
-console.log(basePath);
-console.log(modulePath);
-console.log(resourcePath);
-console.log(resourceConfig);
+
 /**
  * Container service of application
  *
@@ -96,10 +93,10 @@ const application = new Application();
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     (evt) => {
-        console.log('fcdscsa', evt);
+
         let appl = document.createElement('paper-player-manager');
 
-        if (document.body) {
+        if (document.body) {java
             document.body.appendChild(appl);
         } else {
             window.addEventListener('load', (event) => {

@@ -75,13 +75,25 @@
     ],
     "widgets": [
       {
-        "src": "widget/paper-timeslot-tags/paper-timeslot-tags.js",
+        "src": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags.js",
+        "srcData": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data.js",
         "description": "Widget to view tagged timeslot",
         "name": "Timeslot tags",
         "wc": "paper-timeslot-tags",
         "wcData": "paper-timeslot-tags-data",
         "dataProperty": "tags",
         "dataLabel": "tags",
+        "dataRequired": true
+      },
+      {
+        "src": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors.js",
+        "srcData": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data.js",
+        "description": "Widget to view the timeslots assiate to the montors",
+        "name": "Timeslot monitors",
+        "wc": "paper-timeslot-monitors",
+        "wcData": "paper-timeslot-monitors-data",
+        "dataProperty": "monitors",
+        "dataLabel": "monitors",
         "dataRequired": true
       }
     ]
