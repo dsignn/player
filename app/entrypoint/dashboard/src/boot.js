@@ -24,6 +24,7 @@ if (!fs.existsSync(resourcePath)) {
         fs.mkdirSync(`${basePath}..${path.sep}storage`);
         fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}resource`);
         fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}archive`);
+        fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}tmp`);
     } catch (e) {
         console.error(err);
     }
@@ -126,7 +127,9 @@ container.set('Notify', {
 
 let archive = new Archive(`${storagePath}archive${path.sep}`);
 archive.appendDirectory(resourcePath, 'resource');
-archive.setStorageContainer(container.get('StorageContainerAggregate'));
+archive.setTmpDir(`${storagePath}tmp${path.sep}`)
+    .setResourceDir(resourcePath)
+    .setStorageContainer(container.get('StorageContainerAggregate'));
 
 container.set('Archive', archive);
 
@@ -177,6 +180,7 @@ application.getEventManager().on(
 
         this.get('DexieManager').on("ready", () => {
             let appl = document.createElement('dsign-layout');
+            appl.section = 'resource';
             document.body.appendChild(appl);
         });
 

@@ -19,7 +19,7 @@
     "electron": "4.0.5",
     "electron-builder": "~20.39.0",
     "polymer-cli": "^1.9.9",
-    "typescript": "^3.4.4",
+    "typescript": "^3.5.1",
     "wct-browser-legacy": "^1.0.0"
   },
   "scripts": {
@@ -74,9 +74,11 @@
     "@polymer/polymer": "^3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "adm-zip": "^0.4.13",
+    "decompress": "^4.2.0",
     "archiver": "^3.0.0",
     "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v3.1.0",
     "fluent-ffmpeg": "^2.1.2",
+    "fs-extra": "^8.0.1",
     "paper-collapse-item": "^4.0.5",
     "source-map-support": "^0.5.12",
     "web-animations-js": "^2.3.1",

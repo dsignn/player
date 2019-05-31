@@ -28,16 +28,20 @@ export class PaperRestore extends DsignLocalizeElement {
                              background:  red;
                         }
                     }
+                    
+                    ::slotted(paper-dialog) { {
+                        background-color: red;
+                    }
                 }
   
             </style>
 
-            <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="restore"></paper-icon-button>
+            <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>
             <paper-tooltip id="paperTooltip" for="paperRestore" position="left">{{localize('run-restore')}}</paper-tooltip>
-            <paper-dialog id="restoreDialog" no-overlap horizontal-align="center" vertical-align="top" entry-animation="fade-in-animation" exit-animation="fade-out-animation">
+            <paper-dialog id="restoreDialog" auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
                 <div class="container">
-                    <paper-input-file id="restoreFile"></paper-input-file>
-                    <paper-button on-tap="restore">{{localize('import')}}</paper-button>
+                    <paper-input-file id="restoreFile" files="{{files}}" accept="application/zip"></paper-input-file>
+                    <paper-button id="importButton" on-tap="restore" disabled>{{localize('import')}}</paper-button>
                 </div>
             </paper-dialog>
         `
@@ -48,6 +52,10 @@ export class PaperRestore extends DsignLocalizeElement {
 
             archive : {
                 observer: 'changeArchiveService'
+            },
+
+            files : {
+                observer: 'changeFiles'
             },
 
             services : {
@@ -70,31 +78,75 @@ export class PaperRestore extends DsignLocalizeElement {
         if (!newValue) {
             return;
         }
+
+        newValue.addEventListener('close-extract', this._close.bind(this));
+        newValue.addEventListener('error-extract', this._close.bind(this));
     }
 
+    /**
+
+     * @param newValue
+     */
+    changeFiles(newValue) {
+        if (!newValue || (Array.isArray(newValue) && newValue.length === 0)) {
+            this.$.importButton.disabled = true;
+            return;
+        }
+
+        this.$.importButton.disabled = false;
+    }
 
     /**
      * @param {CustomEvent} evt
      */
     restore(evt) {
-        console.log('restore', evt);
-        this.$.restoreDialog.open();
+        console.log('restore', this.files);
+        this._startHtmlBackup();
+        this.archive.restore(this.files[0].path)
+            .then((data) => {
+                console.log('Restore ok', data)
+            })
+            .catch((err) => {
+                console.error(err)
+            });
+    }
 
+    /**
+     * @param evt
+     */
+    openDialog(evt) {
+        this.$.restoreDialog.open();
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _close(evt) {
+        this._stoptHtmlBackup();
     }
 
     /**
      * @private
      */
     _startHtmlBackup() {
-        this.$.paperBackup.disabled = true;
+        this.$.paperRestore.disabled = true;
         this.$.paperTooltip.innerHTML = this.localize('in-progress');
+        // TODO REFACTOR
+        setTimeout(
+            () => {
+                this.$.restoreFile.reset();
+            },
+            500
+        );
+        this.$.restoreDialog.close();
     }
 
     /**
      * @private
      */
     _stoptHtmlBackup() {
-        this.$.paperBackup.disabled = false;
+        this.$.paperRestore.disabled = false;
         this.$.paperTooltip.innerHTML = this.localize('run-backup');
     }
 }
