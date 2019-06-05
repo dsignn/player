@@ -8,6 +8,7 @@ import {Localize} from '@dsign/library/src/localize/Localize';
 import {PropertyHydrator} from '@dsign/library/src/hydrator/index';
 import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
+import {P2p} from '@dsign/library/src/net/index';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
@@ -134,9 +135,22 @@ archive.setTmpDir(`${storagePath}tmp${path.sep}`)
 container.set('Archive', archive);
 
 /***********************************************************************************************************************
- APPLICATION SERVICE
+
  **********************************************************************************************************************/
 
+let p2p = new P2p(
+    config.p2p.udpOption,
+    config.p2p.clientOption,
+    config.p2p.identifier
+);
+p2p.runKeepAlive();
+
+container.set('P2p', p2p);
+
+/***********************************************************************************************************************
+ APPLICATION SERVICE
+ **********************************************************************************************************************/
+console.log('CONFIG ',config);
 container.set('Timer',
     function (sm) {
         const Timer = require('easytimer.js').Timer;

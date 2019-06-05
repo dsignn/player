@@ -20,5 +20,17 @@
          "namespace" : "dsign"
        }
      }
+  },
+  "p2p": {
+      "identifier": "player-3333",
+      "udpOption": {
+          "portListening": 4000,
+          "portSender": 4000,
+          "transmissionTimeout": 2000
+      },
+      "clientOption": {
+          "type": "tcp",
+          "port": 4500
+      }
   }
 }

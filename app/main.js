@@ -9,7 +9,6 @@ const PropertyHydrator = require('@dsign/library').hydrator.PropertyHydrator;
 const HydratorStrategy = require('@dsign/library').hydrator.strategy.value.HydratorStrategy;
 const NumberStrategy = require('@dsign/library').hydrator.strategy.value.NumberStrategy;
 
-
 /**
  * @type Application
  */
@@ -26,6 +25,11 @@ class Application {
      * @param {Object} options
      */
     constructor(options) {
+
+        /**
+         * @type {module:child_process}
+         */
+        this.api = null;
 
         /**
          * @type BrowserWindow
@@ -292,6 +296,30 @@ class Application {
     }
 
     /**
+     * TODO
+     */
+    createApi() {
+
+        let express = require('express');
+        this.api = express();
+        console.log(this.api);
+
+        this.api.get('/timeslot', (req, res) => res.send('Hello World!'));
+
+        this.api.listen(3001 , () => console.log(`Example app listening on port ${3001}!`, this.api ));
+        let mainWindow = new BrowserWindow({
+            width: 0,
+            height: 0,
+            autoHideMenuBar: true,
+            useContentSize: true,
+            resizable: false,
+        });
+        mainWindow.loadURL('http://localhost:3001/');
+        mainWindow.focus();
+        mainWindow.hide();
+    }
+
+    /**
      * @return {Application}
      */
     createPlayerBrowserWindows() {
@@ -401,7 +429,7 @@ class Application {
      */
     run() {
         this.createPlayerDashboard();
-        this.createPlayerBrowserWindows()
+        this.createPlayerBrowserWindows();
     }
 }
 
