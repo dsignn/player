@@ -28,3 +28,5 @@ import '../../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-
 import '../../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors';
 import '../../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data';
 
+import '../../module/playlist/index';
+import '../../module/playlist/element/icons/icons';

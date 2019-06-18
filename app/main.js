@@ -8,6 +8,14 @@ const MonitorEntity = require('./module/monitor/src/storage/entity/MonitorEntity
 const PropertyHydrator = require('@dsign/library').hydrator.PropertyHydrator;
 const HydratorStrategy = require('@dsign/library').hydrator.strategy.value.HydratorStrategy;
 const NumberStrategy = require('@dsign/library').hydrator.strategy.value.NumberStrategy;
+const Enviroment = process.env.APP_ENVIRONMENT ? process.env.APP_ENVIRONMENT.trim() : 'production';
+
+/**
+ * GLobal setting eletron
+ */
+if (Enviroment === 'development') {
+    app.commandLine.appendSwitch('--show-fps-counter');
+}
 
 /**
  * @type Application
@@ -117,8 +125,11 @@ class Application {
             autoHideMenuBar: true,
             icon: path.join(__dirname, 'style/icon/logo.png'),
             title: `Dsign dashboard`,
-            width: 500,
-            height: 1200
+            minWidth: 600,
+            'min-width': 600,
+            width: 600,
+            height: 1200,
+            useContentWidth: true
         });
 
         if (this.environment === 'development') {
@@ -132,7 +143,7 @@ class Application {
          */
         this.dashboard.on('closed', () => {
             this.dashboard = null
-        })
+        });
     }
 
     /**
@@ -437,7 +448,7 @@ class Application {
  * @type {Application}
  */
 const application = new Application({
-        env: process.env.APP_ENVIRONMENT ? process.env.APP_ENVIRONMENT.trim() : 'production'
+        env: Enviroment
     }
 );
 

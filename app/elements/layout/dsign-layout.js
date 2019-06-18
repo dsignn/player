@@ -70,7 +70,7 @@ class DsignLayout extends DsignLocalizeElement {
                           
              </style>
              <app-header-layout>
-                <app-header fixed condenses effects="waterfall">
+                <app-header slot="header" fixed condenses effects="waterfall">
                     <app-toolbar>
                         <div main-title>{{localize('nameApp')}}</div>
                         <dsign-select-language></dsign-select-language>

@@ -19,7 +19,10 @@ export class PaperAlwaysOnTop extends DsignLocalizeElement {
                         font-size: 16px;
                     }
                 }
-  
+
+                paper-toggle-button {
+                    cursor: pointer !important;
+                }  
             </style>
             <paper-toggle-button id="paperToggleEnable" on-change="_changeAlwaysOnTop"></paper-toggle-button>
             <paper-tooltip for="paperToggleEnable" position="left">{{localize('enable-always-on-top')}}</paper-tooltip>

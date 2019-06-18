@@ -16,21 +16,21 @@ export class PaperRestore extends DsignLocalizeElement {
 
                 :host {
                     --paper-tooltip-opacity : 1;
-                    
+                    padding: 8px;
                     --paper-tooltip : {
                         background-color: var(--accent-color);
                         background:  var(--accent-color);
                         font-size: 16px;
                     }
                     
-                    paper-icon-button {
-                        --paper-icon-button-disabled : {
-                             background:  red;
-                        }
-                    }
+                    --paper-button : {
+                        background-color: var(--accent-color);
+                        background:  var(--accent-color);
+                    };
                     
-                    ::slotted(paper-dialog) { {
-                        background-color: red;
+                    --paper-button-disabled : {
+                        background-color: var(--divider-color);
+                        background:  var(--divider-color);
                     }
                 }
   

@@ -37,6 +37,7 @@ class MonitorIndex extends DsignLocalizeElement {
             <paper-tabs selected="{{selectedTad}}" tabindex="0">
                 <paper-tab>{{localize('monitor-data')}}</paper-tab>
                 <paper-tab>{{localize('current-topology')}}</paper-tab>
+                <paper-tab>{{localize('gpu-settings')}}</paper-tab>
             </paper-tabs>
             <iron-pages id="index" selected="{{selectedTad}}">
                 <div>
@@ -76,6 +77,9 @@ class MonitorIndex extends DsignLocalizeElement {
                              <paper-monitor-viewer width="{{monitor.size.width}}" height="{{monitor.size.height}}" top="{{monitor.bounds.y}}" left="{{monitor.bounds.x}}"></paper-monitor-viewer>
                         </template>
                     </dom-repeat>
+                </div>
+                <div>
+                    suca
                 </div>
             </iron-pages>
         `;
