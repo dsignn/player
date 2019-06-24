@@ -40,6 +40,13 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
     static get PLAYLIST_HYDRATOR_SERVICE() { return 'PlaylistEntityHydrator'; };
 
     /**
+     * @return {string}
+     * @constructor
+     */
+    static get PLAYLIST_SERVICE() { return 'PlaylistService'; };
+
+
+    /**
      *
      */
     init() {
@@ -81,9 +88,10 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
                 PlaylistConfig.STORAGE_SERVICE,
                 storage
             );
+
+            this.initPlaylistService();
         });
     }
-
 
     /**
      *
@@ -107,6 +115,23 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
     }
 
     /**
+     *
+     */
+    initPlaylistService() {
+        this.getContainer()
+            .set(
+                PlaylistConfig.PLAYLIST_SERVICE,
+                new PlaylistService(
+                    this.getContainer().get('StorageContainerAggregate').get(TimeslotConfig.STORAGE_SERVICE),
+                    this.getContainer().get('SenderContainerAggregate').get(TimeslotConfig.TIMESLOT_SENDER_SERVICE),
+                    this.getContainer().get('Timer'),
+                    this.getContainer().get(TimeslotConfig.TIMESLOT_INJECTOR_DATA_SERVICE),
+                    this.getContainer().get('StorageContainerAggregate').get(PlaylistConfig.STORAGE_SERVICE)
+                )
+            );
+    }
+
+    /**
      * @param {ContainerAggregate} container
      */
     static getPlaylistEntityHydrator(container) {
@@ -114,7 +139,14 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             container.get(PlaylistConfig.PLAYLIST_ENTITY_SERVICE)
         );
 
-        hydrator
+        let timeslotStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
+        timeslotStrategy.setHydrator(PlaylistConfig.getTimeslotReferenceHydrator(container));
+
+        let playlistStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
+        playlistStrategy.setHydrator(PlaylistConfig.getPlaylistReferenceHydrator(container));
+
+        hydrator.addValueStrategy('timeslots', timeslotStrategy)
+            .addValueStrategy('binds', playlistStrategy)
             .addValueStrategy('enableAudio', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
@@ -126,7 +158,6 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             .enableExtractProperty('context')
             .enableExtractProperty('rotation')
             .enableExtractProperty('enableAudio')
-            .enableExtractProperty('virtualMonitorReference')
             .enableExtractProperty('currentIndex')
             .enableExtractProperty('binds')
             .enableExtractProperty('timeslots');
@@ -137,15 +168,61 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             .enableHydrateProperty('context')
             .enableHydrateProperty('rotation')
             .enableHydrateProperty('enableAudio')
-            .enableHydrateProperty('virtualMonitorReference')
             .enableHydrateProperty('currentIndex')
             .enableHydrateProperty('binds')
             .enableHydrateProperty('timeslots');
 
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getTimeslotReferenceHydrator(container) {
+
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('parentId')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('monitorContainerReference')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('duration')
+            .enableHydrateProperty('currentTime');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('parentId')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('monitorContainerReference')
+            .enableExtractProperty('name')
+            .enableExtractProperty('duration')
+            .enableExtractProperty('currentTime');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getPlaylistReferenceHydrator(container) {
+
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name');
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name');
 
         return hydrator;
     }
 }
-
 
 module.exports = PlaylistConfig;

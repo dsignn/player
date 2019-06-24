@@ -16,6 +16,7 @@ import '../localize/select/dsign-select-language';
 import '../paper-backup/paper-backup';
 import '../paper-restore/paper-restore';
 import '../paper-always-on-top/paper-always-on-top';
+import '../paper-gpu-setting/paper-gpu-setting';
 import { flexStyle } from '../../style/layout-style';
 import {lang} from './language/language.js';
 
@@ -67,6 +68,19 @@ class DsignLayout extends DsignLocalizeElement {
                 .layout-menu {
                     background-color:  #FFFFFF;
                 }
+                  
+                #menuContent {
+                    height: 100%;
+                    display: block;
+                }
+                
+                #menuContent > div {
+                    position: fixed;
+                    flex-direction: column;
+                    display: flex;
+                    height: 100%;
+                    background-color: white;
+                }
                           
              </style>
              <app-header-layout>
@@ -74,6 +88,7 @@ class DsignLayout extends DsignLocalizeElement {
                     <app-toolbar>
                         <div main-title>{{localize('nameApp')}}</div>
                         <dsign-select-language></dsign-select-language>
+                        <paper-gpu-setting></paper-gpu-setting>
                         <paper-backup></paper-backup>
                         <paper-restore></paper-restore>
                         <paper-always-on-top></paper-always-on-top>
@@ -82,12 +97,14 @@ class DsignLayout extends DsignLocalizeElement {
                 </app-header>
                 <div class="layout-container layout-horizontal">
                     <div id="menuContent" class="layout-vertical layout-center-aligned layout-menu">
-                        <dom-repeat id="menu" items="{{modules}}" as="module">
-                            <template>
-                                <paper-icon-button id="{{module.name}}" class="menu" icon="{{module.icon}}" on-tap="_tapMenu"></paper-icon-button>
-                                <paper-tooltip for="{{module.name}}" position="right">{{module.title}}</paper-tooltip>
-                            </template>
-                        </dom-repeat>
+                        <div>
+                            <dom-repeat id="menu" items="{{modules}}" as="module">
+                                <template>
+                                    <paper-icon-button id="{{module.name}}" class="menu" icon="{{module.icon}}" on-tap="_tapMenu"></paper-icon-button>
+                                    <paper-tooltip for="{{module.name}}" position="right">{{module.title}}</paper-tooltip>
+                                </template>
+                            </dom-repeat>
+                        </div>
                     </div>
                     <div class="layout-vertical layout-flex-auto layout-content">
                         <iron-pages id="pages" selected="{{section}}" attr-for-selected="name"></iron-pages>
@@ -109,7 +126,7 @@ class DsignLayout extends DsignLocalizeElement {
             section: {
                 type: String,
                 notify: true,
-                value : 'dashboard'
+                value : 'playlist'
             },
 
             modules: {
@@ -137,7 +154,6 @@ class DsignLayout extends DsignLocalizeElement {
 
     connectedCallback() {
         super.connectedCallback();
-        this.computeHeightMenu();
     }
 
     /**
@@ -156,7 +172,6 @@ class DsignLayout extends DsignLocalizeElement {
                 new Listener(this.loadModules.bind(this))
             );
         }
-
     }
 
     /**
@@ -198,19 +213,6 @@ class DsignLayout extends DsignLocalizeElement {
             elem.name = this.modules[cont].getName();
             this.$.pages.appendChild(elem);
         }
-    }
-
-    /**
-     *
-     */
-    computeHeightMenu() {
-        let height = Math.max(
-            document.body.offsetHeight,
-            document.documentElement.clientHeight,
-            document.documentElement.offsetHeight
-        );
-
-        this.$.menuContent.style.height = `${height-64}px`;
     }
 }
 

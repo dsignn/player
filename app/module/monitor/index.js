@@ -34,12 +34,11 @@ class MonitorIndex extends DsignLocalizeElement {
                     position: relative;
                 }
             </style>
-            <paper-tabs selected="{{selectedTad}}" tabindex="0">
+            <paper-tabs selected="{{selectedTab}}" tabindex="0">
                 <paper-tab>{{localize('monitor-data')}}</paper-tab>
                 <paper-tab>{{localize('current-topology')}}</paper-tab>
-                <paper-tab>{{localize('gpu-settings')}}</paper-tab>
             </paper-tabs>
-            <iron-pages id="index" selected="{{selectedTad}}">
+            <iron-pages id="index" selected="{{selectedTab}}">
                 <div>
                     <iron-pages id="index" selected="{{selected}}">
                         <div id="list"> 
@@ -78,9 +77,6 @@ class MonitorIndex extends DsignLocalizeElement {
                         </template>
                     </dom-repeat>
                 </div>
-                <div>
-                    suca
-                </div>
             </iron-pages>
         `;
     }
@@ -92,7 +88,7 @@ class MonitorIndex extends DsignLocalizeElement {
 
     static get properties () {
         return {
-            selectedTad: {
+            selectedTab: {
                 value: 0
             },
 

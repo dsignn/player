@@ -2,16 +2,16 @@ import {html} from '@polymer/polymer/polymer-element.js';
 import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
 import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
 import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
-import "../paper-timeslot/paper-timeslot";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
+import "../paper-playlist/paper-playlist";
 import {lang} from './language/list-language';
 
 /**
  * @customElement
  * @polymer
  */
-class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
 
     static get template() {
         return html`
@@ -23,45 +23,45 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
                 }
                 
                 @media (max-width: 500px) {
-                    paper-timeslot {
+                    paper-monitor {
                         flex-basis: 100%;
                     }
                 }
     
                 @media (min-width: 501px) and (max-width: 900px) {
-                    paper-timeslot {
+                    paper-monitor {
                         flex-basis: 50%;
                     }
                 }
     
                 @media (min-width: 901px) and (max-width: 1200px) {
-                    paper-timeslot {
+                    paper-monitor {
                         flex-basis: 33.3%;
                     }
                 }
     
                 @media (min-width: 1201px) and (max-width: 1500px) {
-                    paper-timeslot {
+                    paper-monitor {
                         flex-basis: 25%;
                     }
                 }
     
                 @media (min-width: 1501px) and (max-width: 1919px) {
-                    paper-timeslot {
+                    paper-monitor {
                         flex-basis: 20%;
                     }
                 }
     
                 @media (min-width: 1920px) {
-                    paper-timeslot {
+                    paper-monitor {
                         flex-basis: 16.6%;
                     }
                 }
             </style>
             <slot name="header"></slot>
-                <div id="list">
-                <template is="dom-repeat" items="[[entities]]" as="timeslot">
-                    <paper-timeslot entity="{{timeslot}}" 
+            <div id="list">
+                <template is="dom-repeat" items="[[entities]]" as="playlist">
+                    <paper-playlist entity="{{playlist}}" 
                         on-play="play"
                         on-resume="resume"
                         on-stop="stop"
@@ -70,10 +70,10 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
                         on-update="_showUpdateView"
                         on-change-rotation="_updateEntity"
                         on-change-context="_updateEntity">
-                    </paper-timeslot>
+                    </paper-playlist>
                 </template>
             </div>
-            <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
+            <paper-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
         `;
     }
 
@@ -96,20 +96,19 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
 
             services : {
                 value : {
-                    "storageContainerAggregate": 'StorageContainerAggregate',
-                    "timeslotService" : "TimeslotService"
+                    "StorageContainerAggregate": 'StorageContainerAggregate'
                 }
             },
 
             storageService : {
-                value: 'TimeslotStorage'
+                value: 'PlaylistStorage'
             }
         };
     }
 
     static get observers() {
         return [
-            'observerStorage(storageContainerAggregate, storageService)',
+            'observerStorage(StorageContainerAggregate, storageService)',
             'observerPaginationEntities(page, itemPerPage, storage)'
         ]
     }
@@ -127,29 +126,28 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      * @param evt
      */
     play(evt) {
-        this.timeslotService.play(evt.detail);
+       console.log('play');
     }
 
     /**
      * @param evt
      */
     resume(evt) {
-        this.timeslotService.resume(evt.detail);
+        console.log('resume');
     }
 
     /**
      * @param evt
      */
     stop(evt) {
-        this.timeslotService.stop(evt.detail);
+        console.log('stop');
     }
 
     /**
      * @param evt
      */
     pause(evt) {
-        this.timeslotService.pause(evt.detail);
+        console.log('pause');
     }
-
 }
-window.customElements.define('timeslot-view-list', TimeslotViewList);
+window.customElements.define('playlist-view-list', PlaylistViewList);

@@ -3,6 +3,8 @@ import {DsignLocalizeElement} from "../../elements/localize/dsign-localize";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
+import './element/view/list'
+import './element/view/upsert'
 import {flexStyle} from '../../style/layout-style';
 import {lang} from './language';
 /**
@@ -34,13 +36,31 @@ class PlaylistIndex extends DsignLocalizeElement {
             </style>
                 <iron-pages id="index" selected="{{selected}}">
                     <div id="list"> 
-                       lista
+                         <playlist-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                             <div slot="header" class="layout-horizontal layout-center-aligned header">
+                                <div class="layout-flex">{{localize('list-playlist')}}</div>
+                                <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
+                                <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-playlist')}}</paper-tooltip>
+                             </div>
+                        </playlist-view-list>
                     </div>
                     <div id="insert"> 
-                       insert
+                         <playlist-view-upsert>
+                            <div slot="header" class="layout-horizontal layout-center-aligned header">
+                                <div class="layout-flex">{{localize('insert-playlist')}}</div>
+                                <paper-icon-button id="iconBackInsert" icon="arrow-back" class="circle" on-click="displayListView"></paper-icon-button>
+                                <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                            </div>
+                         </playlist-view-upsert>
                     </div>
                     <div id="update"> 
-                      update
+                        <playlist-view-upsert entity="{{entitySelected}}">
+                            <div slot="header" class="layout-horizontal layout-center-aligned header">
+                                <div class="layout-flex">{{localize('update-playlist')}}</div>
+                                <paper-icon-button id="iconBackUpdate" icon="arrow-back" class="circle" on-click="displayListView"></paper-icon-button>
+                                <paper-tooltip for="iconBackUpdate" position="left">{{localize('back')}}</paper-tooltip>
+                            </div>
+                        </playlist-view-upsert>
                     </div>
                 </iron-pages>          
         `;
@@ -53,13 +73,9 @@ class PlaylistIndex extends DsignLocalizeElement {
 
     static get properties () {
         return {
-            selectedTad: {
-                value: 0
-            },
-
             selected: {
                 type: Number,
-                value: 0
+                value: 1
             }
         };
     }

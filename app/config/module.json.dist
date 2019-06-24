@@ -97,5 +97,21 @@
         "dataRequired": true
       }
     ]
+  },
+  {
+    "title" : "Playlist",
+    "name": "playlist",
+    "icon" : "playlist:menu",
+    "configEntryPoint": "config.js",
+    "webComponentEntryPointName" : "playlist-index",
+    "webComponentEntryPointNameFile" : "index.js",
+    "autoloads" : [
+      "src/PlaylistService.js",
+      "src/storage/entity/PlaylistEntity.js",
+      "src/storage/adapter/dexie/DexiePlaylistAdapter.js"
+    ],
+    "autoloadsWs": [
+      "element/icons/icons.js"
+    ]
   }
 ]

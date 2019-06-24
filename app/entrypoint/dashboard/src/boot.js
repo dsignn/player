@@ -59,7 +59,6 @@ entityContainerAggregate.set(
     new (require("@dsign/library").storage.entity.EntityNestedReference)()
 );
 
-
 entityContainerAggregate.set(
     'EntityReference',
     new (require("@dsign/library").storage.entity.EntityReference)()
@@ -71,11 +70,15 @@ senderContainerAggregate.setPrototipeClass((new Object).constructor);
 senderContainerAggregate.setContainer(container);
 container.set('SenderContainerAggregate', senderContainerAggregate);
 
+senderContainerAggregate.set('Ipc', require('electron').ipcRenderer);
+
 const receiverContainerAggregate = new ContainerAggregate();
 // TODO review :)
 receiverContainerAggregate.setPrototipeClass((new Object).constructor);
 receiverContainerAggregate.setContainer(container);
 container.set('ReceiverContainerAggregate', receiverContainerAggregate);
+
+receiverContainerAggregate.set('Ipc', require('electron').ipcRenderer);
 
 const config =  JSON.parse(
     fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
@@ -143,14 +146,14 @@ let p2p = new P2p(
     config.p2p.clientOption,
     config.p2p.identifier
 );
-p2p.runKeepAlive();
+//p2p.runKeepAlive();
 
 container.set('P2p', p2p);
 
 /***********************************************************************************************************************
  APPLICATION SERVICE
  **********************************************************************************************************************/
-console.log('CONFIG ',config);
+
 container.set('Timer',
     function (sm) {
         const Timer = require('easytimer.js').Timer;
@@ -194,7 +197,6 @@ application.getEventManager().on(
 
         this.get('DexieManager').on("ready", () => {
             let appl = document.createElement('dsign-layout');
-            appl.section = 'resource';
             document.body.appendChild(appl);
         });
 

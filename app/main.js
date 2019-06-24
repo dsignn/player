@@ -14,7 +14,7 @@ const Enviroment = process.env.APP_ENVIRONMENT ? process.env.APP_ENVIRONMENT.tri
  * GLobal setting eletron
  */
 if (Enviroment === 'development') {
-    app.commandLine.appendSwitch('--show-fps-counter');
+   // app.commandLine.appendSwitch('--show-fps-counter');
 }
 
 /**
@@ -193,6 +193,37 @@ class Application {
         }));
 
         return browserWindows;
+    }
+
+    /**
+     *
+     */
+    createGpuWindows() {
+
+        this.gpuWindow = new BrowserWindow({
+            webPreferences: {
+                nodeIntegration: true,
+                allowRunningInsecureContent: false,
+                experimentalFeatures: true,
+            },
+            titleBarStyle: 'hidden',
+            autoHideMenuBar: true,
+            title: `Dsign gpu`,
+            width: 600,
+            height: 1200,
+            useContentWidth: true
+        });
+
+        this.gpuWindow.loadURL(`chrome://gpu`);
+
+        /**
+         * On close browser window
+         */
+        this.gpuWindow.on('closed', () => {
+            this.dashboard.send('paper-gpu-close');
+            this.gpuWindow = null
+        });
+
     }
 
     /**
@@ -487,7 +518,8 @@ app.on('activate', () => {
 ipcMain.on('proxy', (event, message) => {
 
     if (!message.event || !message.data)  {
-        console.error('Wrong message for proxy event');
+        let stringData = message.data !== null && typeof message.data === 'object' ? JSON.stringify(message.data) : 'not object';
+        console.error(`Wrong message for proxy event ${message.event}: ${stringData}`);
         return;
     }
 
@@ -497,6 +529,10 @@ ipcMain.on('proxy', (event, message) => {
             break;
         case 'paper-player-update':
             application.updatePlayerMonitors(message.data);
+            break;
+        case 'paper-gpu-open':
+            console.log('dai tponi')
+            application.createGpuWindows();
             break;
         case 'dashboard-always-on-top':
             application.config.dashboard = {alwaysOnTop : message.data};

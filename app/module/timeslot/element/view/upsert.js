@@ -75,7 +75,6 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     label="{{localize('monitor')}}" 
                                     text-property="name"
                                     value-property="name"
-                                    on-autocomplete-selected="_selectMonitor"
                                     on-autocomplete-change="_searchMonitor"
                                     value="{{entity.monitorContainerReference}}"
                                     remote-source>
@@ -233,20 +232,6 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
     }
 
     /**
-     * @param evt
-     * @private
-     */
-    _selectMonitor(evt) {
-
-        let reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
-        reference.setCollection('monitor');
-        reference.setId(evt.detail.value.id);
-        reference.setParentId(this.monitorService.getEnableMonitor().getId());
-        reference.name = evt.detail.value.name;
-        this.entity.monitorContainerReference = reference;
-    }
-
-    /**
      *
      * @param evt
      * @private
@@ -261,6 +246,16 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                 return element.name.search(new RegExp(evt.detail.value.text, 'i')) > -1;
             }
         );
+
+        let reference;
+        for (let cont =  0; filter.length > cont; cont++) {
+            reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
+            reference.setCollection('monitor');
+            reference.setId(filter[cont].id);
+            reference.setParentId(this.monitorService.getEnableMonitor().getId());
+            reference.name = filter[cont].name;
+            filter[cont] = reference;
+        }
 
         evt.detail.target.suggestions(
             filter

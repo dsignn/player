@@ -45,12 +45,6 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
         this.rotation = PlaylistEntity.ROTATION_NO;
 
         /**
-         *
-         * @type {null|Object}
-         */
-        this.virtualMonitorReference = {};
-
-        /**
          * @type {Boolean}
          */
         this.enableAudio = false;

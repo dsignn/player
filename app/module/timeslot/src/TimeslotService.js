@@ -7,7 +7,7 @@ class TimeslotService extends AbstractTimeslotService {
      * @param {Storage} timeslotStorage
      * @param {AbstractSender} sender
      * @param {Timer} timer
-     * @param {TimeslotDataInjectorServicePluginManager} dataInjectorManager
+     * @param {ContainerAggregate} dataInjectorManager
      */
     constructor(timeslotStorage, sender, timer, dataInjectorManager) {
 
