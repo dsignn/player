@@ -66,22 +66,17 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
     }
 
     /**
-     * @return {Number}
+     * @return boolean
      */
-    getDuration() {
-
-        let duration = 0;
-        for (let cont = 0; this.timeslots.length > cont; cont++) {
-            duration = duration + parseInt(this.timeslots[cont].duration);
-        }
-        return duration;
+    hasMonitorContainer() {
+        return this.timeslots.length > 0;
     }
 
     /**
-     * @return {Number}
+     * @return boolean
      */
-    count() {
-        return this.timeslots.length;
+    getMonitorContainer() {
+        return this.timeslots.length > 0 ? this.timeslots.monitorContainerReference : null;
     }
 
     /**
@@ -89,20 +84,12 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
      * @return {PlaylistEntity}
      */
     appendTimeslot(timeslot) {
-        if (this.timeslots.length === 0) {
-            this.virtualMonitorReference = timeslot.virtualMonitorReference;
+        if (!this._isValidTimeslot(timeslot)) {
+            console.warn(`Wrong timeslot to append to the playlist`);
+            return;
         }
         this.timeslots.push(timeslot);
         return this;
-    }
-
-    /**
-     * @return boolean
-     */
-    hasVirtualMonitorReference() {
-        return this.virtualMonitorReference !== null &&
-            typeof this.virtualMonitorReference === 'object' &&
-            Object.entries(this.virtualMonitorReference).length !== 0;
     }
 
     /**
@@ -117,15 +104,11 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
             this.timeslots.splice(index, 1);
         }
 
-        if (this.timeslots.length === 0) {
-            this.virtualMonitorReference = {};
-        }
-
         return index > -1;
     }
 
     /**
-     * @param index
+     * @param {number} index
      * @return {number}
      */
     removeTimeslotIndex(index) {
@@ -134,11 +117,6 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
             search = index;
             this.timeslots.splice(index, 1);
         }
-
-        if (this.timeslots.length === 0) {
-            this.virtualMonitorReference = {};
-        }
-
         return search;
     }
 
@@ -185,7 +163,7 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
     }
 
     /**
-     * @return {null|TimeslotEntity}
+     * @return {null|EntityReference}
      */
     first() {
         let timeslot = null;
@@ -241,19 +219,38 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
     }
 
     /**
-     * @return {String|null}
+     * @return {Number}
+     */
+    count() {
+        return this.timeslots.length;
+    }
+
+    /**
+     * @return {Number}
+     */
+    getDuration() {
+
+        let duration = 0;
+        for (let cont = 0; this.timeslots.length > cont; cont++) {
+            duration = duration + parseInt(this.timeslots[cont].duration);
+        }
+        return duration;
+    }
+
+    /**
+     * @return {string|null}
      */
     getMonitorId() {
         let monitorId = null;
         if (this.timeslots.length > 0) {
-            monitorId = this.timeslots[0].virtualMonitorReference.monitorId;
+            monitorId = this.timeslots[0].monitorContainerReference.id;
         }
         return monitorId
     }
 
     /**
      * TODO SPOSTARE FUORI
-     * @param timeslot
+     * @param {TimeslotEntity} timeslot
      * @return {boolean}
      * @private
      */
@@ -262,8 +259,8 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
         switch (true) {
             case timeslot === null:
             case typeof timeslot !== 'object':
-            case !timeslot.monitor || !timeslot.monitor.id:
-            case this.timeslots.length < 1 || !this.timeslots[0].monitor || this.timeslots[0].monitor.id !== timeslot.monitor.id:
+            case !timeslot.monitorContainerReference || !timeslot.monitorContainerReference.id:
+            case this.timeslots.length > 0 && !!this.timeslots[0].monitorContainerReference && this.timeslots[0].monitorContainerReference.id !== timeslot.monitorContainerReference.id:
                 check = false;
                 break
         }

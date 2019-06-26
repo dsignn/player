@@ -118,7 +118,7 @@ class Application {
         this.dashboard = new BrowserWindow({
             webPreferences: {
                 nodeIntegration: true,
-                allowRunningInsecureContent: false,
+                allowRunningInsecureContent: true,
                 experimentalFeatures: true,
             },
             titleBarStyle: 'hidden',
@@ -136,7 +136,7 @@ class Application {
             this.dashboard.webContents.openDevTools({detached: true});
         }
 
-        this.dashboard.loadURL(`file://${__dirname}/${this._getDashboardEntryPoint()}`);
+        this.dashboard.loadFile(`${__dirname}${path.sep}${this._getDashboardEntryPoint()}`);
 
         /**
          * On close browser window
@@ -186,11 +186,8 @@ class Application {
             browserWindows.webContents.openDevTools({detached: true});
         }
 
-        browserWindows.loadURL(url.format({
-            pathname: path.join(`${__dirname}/${this._getPlayerEntryPoint()}`),
-            protocol: 'file:',
-            slashes: true
-        }));
+
+        browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);
 
         return browserWindows;
     }

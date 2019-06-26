@@ -23,37 +23,37 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
                 }
                 
                 @media (max-width: 500px) {
-                    paper-monitor {
+                    paper-playlist {
                         flex-basis: 100%;
                     }
                 }
     
                 @media (min-width: 501px) and (max-width: 900px) {
-                    paper-monitor {
+                    paper-playlist {
                         flex-basis: 50%;
                     }
                 }
     
                 @media (min-width: 901px) and (max-width: 1200px) {
-                    paper-monitor {
+                    paper-playlist {
                         flex-basis: 33.3%;
                     }
                 }
     
                 @media (min-width: 1201px) and (max-width: 1500px) {
-                    paper-monitor {
+                    paper-playlist {
                         flex-basis: 25%;
                     }
                 }
     
                 @media (min-width: 1501px) and (max-width: 1919px) {
-                    paper-monitor {
+                    paper-playlist {
                         flex-basis: 20%;
                     }
                 }
     
                 @media (min-width: 1920px) {
-                    paper-monitor {
+                    paper-playlist {
                         flex-basis: 16.6%;
                     }
                 }
@@ -96,7 +96,8 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
 
             services : {
                 value : {
-                    "StorageContainerAggregate": 'StorageContainerAggregate'
+                    "StorageContainerAggregate": 'StorageContainerAggregate',
+                    "playlistService" : "PlaylistService"
                 }
             },
 
@@ -126,7 +127,8 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      * @param evt
      */
     play(evt) {
-       console.log('play');
+        console.log('play');
+        this.playlistService.play(evt.detail);
     }
 
     /**
@@ -141,6 +143,8 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     stop(evt) {
         console.log('stop');
+        console.log('play');
+        this.playlistService.stop(evt.detail);
     }
 
     /**

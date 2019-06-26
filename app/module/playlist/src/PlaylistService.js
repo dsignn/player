@@ -26,7 +26,6 @@ class PlaylistService extends AbstractTimeslotService {
         this.runningPlaylist = {};
 
         this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
-            // this.timer.addEventListener('secondsUpdated', (evt)  => {
             this._schedule();
         });
     }
@@ -48,16 +47,16 @@ class PlaylistService extends AbstractTimeslotService {
 
         let isRunning = false;
         switch (true) {
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${Playlist.CONTEXT_STANDARD}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${Playlist.CONTEXT_STANDARD}`].id === playlist.id:
+            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`] !== undefined &&
+            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`].id === playlist.id:
                 isRunning = true;
                 break;
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${Playlist.CONTEXT_OVERLAY}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${Playlist.CONTEXT_OVERLAY}`].id === playlist.id:
+            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`] !== undefined &&
+            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`].id === playlist.id:
                 isRunning = true;
                 break;
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${Playlist.CONTEXT_DEFAULT}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${Playlist.CONTEXT_DEFAULT}`].id === playlist.id:
+            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`] !== undefined &&
+            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`].id === playlist.id:
                 isRunning = true;
                 break;
         }
@@ -90,12 +89,12 @@ class PlaylistService extends AbstractTimeslotService {
      */
     _removeRunningPlaylist(playlist) {
 
-        let nameContext = `${playlist.getMonitorId()}-${Playlist.CONTEXT_OVERLAY}`;
+        let nameContext = `${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`;
         if (this.runningPlaylist[nameContext] && this.runningPlaylist[nameContext].id === playlist.id) {
             delete this.runningPlaylist[nameContext];
         }
 
-        nameContext = `${playlist.getMonitorId()}-${Playlist.CONTEXT_STANDARD}`;
+        nameContext = `${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`;
         if (this.runningPlaylist[nameContext] && this.runningPlaylist[nameContext].id === playlist.id) {
             delete this.runningPlaylist[nameContext];
         }
@@ -106,7 +105,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @return {Promise}
      */
     async play(playlist) {
-        let timeslot = await this.timeslotStorage.get(playlist.first().referenceId);
+        let timeslot = await this.timeslotStorage.get(playlist.first().getId());
         if (!timeslot) {
             // TODO ADD exception????
             return;
@@ -116,7 +115,7 @@ class PlaylistService extends AbstractTimeslotService {
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
         this._playPlaylist(playlist, timeslot, dataTimeslot);
         this._executeBids(bindPlaylists, 'play');
-        this.eventManager.fire(PlaylistService.PLAY, playlist);
+        this.getEventManager().emit(PlaylistService.PLAY, playlist);
     }
 
     /**
@@ -128,7 +127,7 @@ class PlaylistService extends AbstractTimeslotService {
         let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         this._stopPlaylist(playlist);
         this._executeBids(bindPlaylists, 'stop');
-        this.eventManager.fire(PlaylistService.STOP, playlist);
+        this.getEventManager().emit(PlaylistService.STOP, playlist);
     }
 
     /**
@@ -149,7 +148,7 @@ class PlaylistService extends AbstractTimeslotService {
         timeslot.currentTime = timeslotPlaylistReference.currentTime;
         this._resumePlaylist(playlist, timeslot, dataTimeslot);
         this._executeBids(bindPlaylists, 'resume');
-        this.eventManager.fire(PlaylistService.RESUME, playlist);
+        this.getEventManager().emit(PlaylistService.RESUME, playlist);
     }
 
     /**
@@ -161,7 +160,7 @@ class PlaylistService extends AbstractTimeslotService {
         let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
         this._pausePlaylist(playlist);
         this._executeBids(bindPlaylists, 'pause');
-        this.eventManager.fire(PlaylistService.PAUSE, playlist);
+        this.getEventManager().emit(PlaylistService.PAUSE, playlist);
     }
 
     /**
@@ -175,7 +174,7 @@ class PlaylistService extends AbstractTimeslotService {
                 /**
                  * Loop playlist
                  */
-                case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === Timeslot.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime() && this.runningPlaylist[property].rotation === Playlist.ROTATION_LOOP:
+                case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === PlaylistEntity.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime() && this.runningPlaylist[property].rotation === PlaylistEntity.ROTATION_LOOP:
                     console.log('LOOP playlist', this.runningPlaylist[property].name);
                     this.runningPlaylist[property].reset();
                     this._sendNextTimeslot(this.runningPlaylist[property], this.runningPlaylist[property].first());
@@ -183,7 +182,7 @@ class PlaylistService extends AbstractTimeslotService {
                 /**
                  * Next item in the playlist
                  */
-                case this.runningPlaylist[property].hasNext() === true && this.runningPlaylist[property].status === Timeslot.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
+                case this.runningPlaylist[property].hasNext() === true && this.runningPlaylist[property].status === PlaylistEntity.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
                     console.log('NEXT playlist', this.runningPlaylist[property].name);
                     timeslotPlaylistRef.currentTime = 0;
                     this._sendNextTimeslot(this.runningPlaylist[property], this.runningPlaylist[property].next());
@@ -191,7 +190,7 @@ class PlaylistService extends AbstractTimeslotService {
                 /**
                  * Stop playlist
                  */
-                case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === Timeslot.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
+                case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === PlaylistEntity.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
                     console.log('STOP playlist', this.runningPlaylist[property].name);
                     this._stopPlaylist( this.runningPlaylist[property]);
                     break;
@@ -216,7 +215,7 @@ class PlaylistService extends AbstractTimeslotService {
         timeslot.currentTime = 0;
         timeslot.context = playlist.context;
         this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
-        this.eventManager.fire(PlaylistService.PLAY, playlist);
+        this.getEventManager().emit(PlaylistService.PLAY, playlist);
     }
 
     /**
@@ -233,7 +232,7 @@ class PlaylistService extends AbstractTimeslotService {
         }
 
         this.setRunningPlaylist(playlist);
-        playlist.status = Playlist.RUNNING;
+        playlist.status = PlaylistEntity.RUNNING;
 
         timeslot.currentTime = 0;
         timeslot.context = playlist.context;
@@ -258,7 +257,7 @@ class PlaylistService extends AbstractTimeslotService {
         }
 
         this.setRunningPlaylist(playlist);
-        playlist.status = Playlist.RUNNING;
+        playlist.status = PlaylistEntity.RUNNING;
         timeslot.context = playlist.context;
         timeslot.enableAudio = playlist.enableAudio;
         this._send(PlaylistService.RESUME, playlist, timeslot, dataTimeslot);
@@ -272,7 +271,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @private
      */
     _pausePlaylist(playlist) {
-        playlist.status = Timeslot.PAUSE;
+        playlist.status = PlaylistEntity.PAUSE;
         this._removeRunningPlaylist(playlist);
         this._send(PlaylistService.PAUSE, playlist, playlist.current());
         this.playlistStorage.update(playlist)
@@ -286,7 +285,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @private
      */
     _stopPlaylist(playlist) {
-        playlist.status = Timeslot.IDLE;
+        playlist.status = PlaylistEntity.IDLE;
         playlist.reset();
         this._send(PlaylistService.STOP, playlist);
         this.playlistStorage.update(playlist)
@@ -352,13 +351,13 @@ class PlaylistService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Array} references
+     * @param {Array<EntityReference>} references
      * @return {Promise}
      */
     getPlaylistFromArrayReference(references) {
         let playlists = [];
         for (let cont = 0; references.length > cont; cont++) {
-            playlists.push(this.playlistStorage.get(references[cont].referenceId));
+            playlists.push(this.playlistStorage.get(references[cont].getId()));
         }
         return Promise.all(playlists);
     }

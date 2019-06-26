@@ -101,7 +101,7 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                                     </paper-item>
                                 </template>
                             </paper-autocomplete>
-                            <paper-chips id="listTimeslot" items="{{entity.binds}}"></paper-chips> 
+                            <paper-chips id="listPlaylist" items="{{entity.binds}}"></paper-chips> 
                             <div class="layout-horizontal layout-end-justified">
                                 <paper-button on-tap="submitPlaylistButton">{{localize('save')}}</paper-button>
                             </div>
@@ -184,7 +184,7 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      * @private
      */
     _searchTimeslot(evt) {
-
+        // TODO filter fot monitor id
         this.timeslotStorage.getAll({name : evt.detail.value.text})
             .then((timeslots) => {
 
@@ -200,7 +200,11 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _selectTimeslot(evt) {
 
-        this.push('entity.timeslots', evt.detail.value);
+        this.entity.appendTimeslot(evt.detail.value);
+        // this.set('entity.timeslots', this.entity.timeslots);
+        //this.$.listTimeslot.notifyPath('items');
+        // TODO better solution.
+        this.$.listTimeslot.shadowRoot.querySelector('dom-repeat').render();
 
         setTimeout(
             function () {

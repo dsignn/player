@@ -16,7 +16,7 @@
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
     "dexie": "^2.0.4",
-    "electron": "4.0.5",
+    "electron": "4.2.5",
     "electron-builder": "~20.39.0",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.5.1",

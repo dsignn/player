@@ -181,8 +181,15 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
      */
     static getTimeslotReferenceHydrator(container) {
 
-        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
-        hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
+        let monitorContainerStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
+        monitorContainerStrategy.setHydrator(
+            new (require("@dsign/library").hydrator.PropertyHydrator)(container.get('EntityNestedReference'))
+        );
+
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(container.get('EntityReference'));
+        hydrator.addValueStrategy('monitorContainerReference', monitorContainerStrategy)
+            .addValueStrategy('duration', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
+            .addValueStrategy('currentTime', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)());
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('parentId')
@@ -191,7 +198,6 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             .enableHydrateProperty('name')
             .enableHydrateProperty('duration')
             .enableHydrateProperty('currentTime');
-
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('parentId')

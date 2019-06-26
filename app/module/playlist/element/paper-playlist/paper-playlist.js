@@ -207,12 +207,12 @@ class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
             services : {
                 value : {
                     "StorageContainerAggregate": {
-                        "playlustStorage":"TimeslotStorage"
+                        "playlistStorage":"PlsylistStorage"
                     }
                 }
             },
 
-            playlustStorage : {
+            playlistStorage : {
                 observer: 'observerStorageToUpdateEntity'
             },
 
