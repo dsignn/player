@@ -136,5 +136,4 @@ class DashboardConfig extends require("@dsign/library").container.ContainerAware
     }
 }
 
-
 module.exports = DashboardConfig;

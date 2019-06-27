@@ -6,7 +6,26 @@
     <script src="../../../node_modules/@webcomponents/webcomponentsjs/custom-elements-es5-adapter.js"></script>
     <script src="../../../node_modules/web-animations-js/web-animations-next-lite.min.js"></script>
 
-    <script type="module" src="import.js"></script>
+    <script>
+        require('@babel/register')({
+            presets: [
+                [
+                    '@babel/preset-env',
+                    {
+                        "targets": {
+                            "node": "10"
+                        }
+                    }],
+
+            ],
+            plugins: [
+                "@babel/plugin-syntax-dynamic-import"
+            ],
+            ignore: []
+        });
+
+        require('./import.js')
+    </script>
 </head>
 <body>
     <paper-toast id="notification"></paper-toast>

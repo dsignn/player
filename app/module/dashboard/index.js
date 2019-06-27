@@ -15,7 +15,7 @@ import {autocompleteStyle} from '../../style/autocomplete-custom-style';
  * @customElement
  * @polymer
  */
-export class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
 
     static get resizeEvent() {
         return [
