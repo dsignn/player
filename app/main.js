@@ -220,7 +220,6 @@ class Application {
             this.dashboard.send('paper-gpu-close');
             this.gpuWindow = null
         });
-
     }
 
     /**

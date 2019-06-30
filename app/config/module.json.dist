@@ -3,22 +3,29 @@
     "title" : "Dashboard",
     "name": "dashboard",
     "icon" : "dashboard:menu",
-    "webComponentEntryPointName" : "dashboard-index",
-    "webComponentEntryPointNameFile" : "index.js",
+    "entryPoint" : {
+      "name" : "dashboard-index",
+      "path" : "index.js"
+    },
     "configEntryPoint": "config.js",
     "autoloads" : [
       "src/storage/entity/WidgetEntity.js"
     ],
     "autoloadsWs": [
-      "element/icons/icons.js"
+      {
+        "name" : "dashboard-icons",
+        "path" : "element/icons/icons.js"
+      }
     ]
   },
   {
     "title" : "Monitor",
     "name": "monitor",
     "icon" : "monitor:menu",
-    "webComponentEntryPointName" : "monitor-index",
-    "webComponentEntryPointNameFile" : "index.js",
+    "entryPoint" : {
+      "name" : "monitor-index",
+      "path" : "index.js"
+    },
     "configEntryPoint": "config.js",
     "autoloads" : [
       "src/MonitorService.js",
@@ -27,11 +34,26 @@
       "src/storage/adapter/dexie/DexieMonitorAdapter.js"
     ],
     "autoloadsWs": [
-      "element/icons/icons.js",
-      "element/paper-player/paper-player.js",
-      "element/paper-player-manager/paper-player-manager.js",
-      "element/paper-player-timeslot/paper-player-timeslot.js",
-      "element/paper-monitor-viewer/paper-monitor-viewer.js"
+      {
+        "name" : "monitor-icons",
+        "path" : "element/icons/icons.js"
+      },
+      {
+        "name" : "paper-player",
+        "path" : "element/paper-player/paper-player.js"
+      },
+      {
+        "name" : "paper-player-manager",
+        "path" : "element/paper-player-manager/paper-player-manager.js"
+      },
+      {
+        "name" : "paper-player-timeslot",
+        "path" : "element/paper-player-timeslot/paper-player-timeslot.js"
+      },
+      {
+        "name" : "paper-monitor-viewer",
+        "path" : "element/paper-monitor-viewer/paper-monitor-viewer.js"
+      }
     ]
   },
   {
@@ -39,8 +61,10 @@
     "name": "resource",
     "icon" : "resource:menu",
     "configEntryPoint": "config.js",
-    "webComponentEntryPointName" : "resource-index",
-    "webComponentEntryPointNameFile" : "index.js",
+    "entryPoint" : {
+      "name" : "resource-index",
+      "path" : "index.js"
+    },
     "autoloads" : [
       "src/storage/adapter/dexie/DexieResourceAdapter.js",
       "src/ResourceService.js",
@@ -50,7 +74,10 @@
       "src/storage/entity/VideoEntity.js"
     ],
     "autoloadsWs": [
-      "element/icons/icons.js"
+      {
+        "name" : "resource-icons",
+        "path" : "element/icons/icons.js"
+      }
     ]
   },
   {
@@ -58,8 +85,10 @@
     "name": "timeslot",
     "icon" : "timeslot:menu",
     "configEntryPoint": "config.js",
-    "webComponentEntryPointName" : "timeslot-index",
-    "webComponentEntryPointNameFile" : "index.js",
+    "entryPoint" : {
+      "name" : "timeslot-index",
+      "path" : "index.js"
+    },
     "autoloads" : [
       "src/injector/AbstractInjector.js",
       "src/AbstractTimeslotService.js",
@@ -71,7 +100,10 @@
       "src/injector/Test2.js"
     ],
     "autoloadsWs": [
-      "element/icons/icons.js"
+      {
+        "name" : "timeslot-icons",
+        "path" : "element/icons/icons.js"
+      }
     ],
     "widgets": [
       {
@@ -103,15 +135,20 @@
     "name": "playlist",
     "icon" : "playlist:menu",
     "configEntryPoint": "config.js",
-    "webComponentEntryPointName" : "playlist-index",
-    "webComponentEntryPointNameFile" : "index.js",
+    "entryPoint" : {
+      "name" : "playlist-index",
+      "path" : "index.js"
+    },
     "autoloads" : [
       "src/PlaylistService.js",
       "src/storage/entity/PlaylistEntity.js",
       "src/storage/adapter/dexie/DexiePlaylistAdapter.js"
     ],
     "autoloadsWs": [
-      "element/icons/icons.js"
+      {
+        "name" : "playlist-icons",
+        "path" : "element/icons/icons.js"
+      }
     ]
   }
 ]

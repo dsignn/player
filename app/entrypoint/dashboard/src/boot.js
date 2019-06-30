@@ -2,6 +2,7 @@ import {Application} from '@dsign/library/src/core/Application';
 import {Archive} from '@dsign/library/src/archive/Archive';
 import {Module} from '@dsign/library/src/core/module/Module';
 import {Widget} from '@dsign/library/src/core/widget/Widget';
+import {WebComponent} from '@dsign/library/src/core/webcomponent/WebComponent';
 import {Listener} from '@dsign/library/src/event/index'
 import {Container, ContainerAggregate} from  '@dsign/library/src/container/index';
 import {Localize} from '@dsign/library/src/localize/Localize';
@@ -168,12 +169,18 @@ container.set('Timer',
 /***********************************************************************************************************************
                                              APPLICATION SERVICE
  **********************************************************************************************************************/
-let hydratorModule = new PropertyHydrator(new Module());
-let hydratorWidget = new PropertyHydrator(new Widget());
 
-let strategy = new PathStrategy();
-hydratorWidget.addValueStrategy('src', strategy);
-hydratorWidget.addValueStrategy('srcData', strategy);
+let hydratorModule = new PropertyHydrator(new Module());
+
+let hydratorWebComponent = new PropertyHydrator(new WebComponent());
+hydratorWebComponent.addValueStrategy('path',  new PathStrategy());
+
+hydratorModule.addValueStrategy('autoloadsWs', new HydratorStrategy(hydratorWebComponent));
+hydratorModule.addValueStrategy('entryPoint', new HydratorStrategy(hydratorWebComponent));
+
+let hydratorWidget = new PropertyHydrator(new Widget());
+hydratorWidget.addValueStrategy('src', new PathStrategy());
+hydratorWidget.addValueStrategy('srcData', new PathStrategy());
 
 let modules = JSON.parse(fs.readFileSync(`${basePath}${path.sep}config${path.sep}module.json`).toString());
 let modulesHydrate = [];

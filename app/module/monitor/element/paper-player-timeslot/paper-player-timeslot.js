@@ -307,6 +307,7 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
         let element = document.createElement('video');
         element.src = this.resourceService.getResourcePath(resource);
         element.autoplay = true;
+        element.setAttribute('muted', true); // TODO remove use to debug
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
         element.muted = !this.timeslot.enableAudio;
         if (this.startAt > 0) {

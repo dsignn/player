@@ -14,3 +14,4 @@ const template = html`
 </iron-iconset-svg>`;
 
 document.head.appendChild(template.content);
+window.customElements.define('playlist-icons', class PlaylistIcons extends HTMLElement {});

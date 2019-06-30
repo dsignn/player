@@ -209,7 +209,7 @@ class DsignLayout extends DsignLocalizeElement {
         }
 
         for (let cont = 0; this.modules.length > cont; cont++) {
-            let elem = document.createElement(this.modules[cont].getWebComponentEntryPointName());
+            let elem = document.createElement(this.modules[cont].getEntryPoint().getName());
             elem.name = this.modules[cont].getName();
             this.$.pages.appendChild(elem);
         }

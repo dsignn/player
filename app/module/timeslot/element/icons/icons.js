@@ -23,3 +23,4 @@ const template = html`
 </iron-iconset-svg>`;
 
 document.head.appendChild(template.content);
+window.customElements.define('timeslot-icons', class TimeslotIcons extends HTMLElement {});

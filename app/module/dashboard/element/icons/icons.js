@@ -2,6 +2,7 @@ import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
 
 import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {PaperWidget} from "../paper-widget/paper-widget";
 
 
 const template = html`
@@ -14,3 +15,4 @@ const template = html`
 </iron-iconset-svg>`;
 
 document.head.appendChild(template.content);
+window.customElements.define('dashboard-icons', class DashboardIcons extends HTMLElement {});

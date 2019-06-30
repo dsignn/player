@@ -15,3 +15,4 @@ const template = html`
 </iron-iconset-svg>`;
 
 document.head.appendChild(template.content);
+window.customElements.define('resource-icons', class ResourceIcons extends HTMLElement {});

@@ -205,6 +205,7 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
                 element = document.createElement('video');
                 element.src = this.resourceService.getResourcePath(this.entity)  + '?' + new Date().getTime();
                 element.setAttribute('autoplay', true);
+                element.muted = true; // TODO remove for debug
                 element.setAttribute('controls', true);
                 break;
             case this.entity instanceof FileEntity === true:
