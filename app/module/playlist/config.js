@@ -25,6 +25,12 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
      * @return {string}
      * @constructor
      */
+    static get PLAYLIST_TIMESLOT_REF_SERVICE() { return 'TimeslotPlaylistReference'; };
+
+    /**
+     * @return {string}
+     * @constructor
+     */
     static get PLAYLIST_ENTITY_SERVICE() { return 'PlaylistEntity'; };
 
     /**
@@ -100,6 +106,10 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(PlaylistConfig.PLAYLIST_ENTITY_SERVICE, new PlaylistEntity());
+
+        this.getContainer()
+            .get('EntityContainerAggregate')
+            .set(PlaylistConfig.PLAYLIST_TIMESLOT_REF_SERVICE, new TimeslotPlaylistReference());
     }
 
     /**
@@ -186,7 +196,7 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             new (require("@dsign/library").hydrator.PropertyHydrator)(container.get('EntityNestedReference'))
         );
 
-        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(container.get('EntityReference'));
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(container.get(PlaylistConfig.PLAYLIST_TIMESLOT_REF_SERVICE));
         hydrator.addValueStrategy('monitorContainerReference', monitorContainerStrategy)
             .addValueStrategy('duration', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
             .addValueStrategy('currentTime', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)());

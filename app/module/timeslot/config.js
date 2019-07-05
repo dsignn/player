@@ -213,6 +213,8 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
         hydrator.addValueStrategy('resources', resourceStrategy)
             .addValueStrategy('monitorContainerReference', monitorStrategy)
             .addValueStrategy('binds', bindTimeslotStrategy)
+            .addValueStrategy('currentTime', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
+            .addValueStrategy('duration', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
             .addValueStrategy('dataReferences', injectorDataStrategy)
             .addValueStrategy('enableAudio', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,

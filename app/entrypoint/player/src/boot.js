@@ -3,6 +3,8 @@ import {Application} from "@dsign/library/src/core/Application";
 import {PropertyHydrator} from "@dsign/library/src/hydrator/index";
 import {Module} from "@dsign/library/src/core/module/Module";
 import {DexieManager} from "@dsign/library/src/storage/adapter/dexie/index";
+import {WebComponent} from "@dsign/library/src/core/webcomponent/WebComponent";
+import {HydratorStrategy, PathStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
@@ -81,11 +83,18 @@ container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.name
 /***********************************************************************************************************************
                                                 APPLICATION SERVICE
  **********************************************************************************************************************/
-let hydrator = new PropertyHydrator(new Module());
+
+let hydratorWebComponent = new PropertyHydrator(new WebComponent());
+hydratorWebComponent.addValueStrategy('path',  new PathStrategy());
+
+let hydratorModule = new PropertyHydrator(new Module());
+hydratorModule.addValueStrategy('autoloadsWs', new HydratorStrategy(hydratorWebComponent));
+hydratorModule.addValueStrategy('entryPoint', new HydratorStrategy(hydratorWebComponent));
+
 let modules = JSON.parse(fs.readFileSync(`${basePath}config${path.sep}module.json`).toString());
 let modulesHydrate = [];
 for (let cont = 0; modules.length > cont; cont++) {
-    modulesHydrate.push(hydrator.hydrate(modules[cont]));
+    modulesHydrate.push(hydratorModule.hydrate(modules[cont]));
 }
 
 const application = new Application();

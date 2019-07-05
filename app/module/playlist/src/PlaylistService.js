@@ -137,7 +137,7 @@ class PlaylistService extends AbstractTimeslotService {
     async resume(playlist) {
 
         let timeslotPlaylistReference = playlist.current();
-        let timeslot = await this.timeslotStorage.get(playlist.first().referenceId);
+        let timeslot = await this.timeslotStorage.get(timeslotPlaylistReference.id);
         if (!timeslot) {
             // TODO ADD exception????
             return;
@@ -204,7 +204,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @private
      */
     async _sendNextTimeslot(playlist, refTimeslotPlaylist) {
-        let timeslot = await this.timeslotStorage.get(refTimeslotPlaylist.referenceId);
+        let timeslot = await this.timeslotStorage.get(refTimeslotPlaylist.id);
         if (!timeslot) {
             // TODO ADD exception????
             return;
@@ -286,8 +286,9 @@ class PlaylistService extends AbstractTimeslotService {
      */
     _stopPlaylist(playlist) {
         playlist.status = PlaylistEntity.IDLE;
+        let runningPlaylist = this.getRunningPlaylist(playlist.getMonitorId(), playlist.context)
+        this._send(PlaylistService.STOP, playlist, runningPlaylist.current());
         playlist.reset();
-        this._send(PlaylistService.STOP, playlist);
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('STOP playlist EVT')})
             .catch((err) => { console.error(err)});
@@ -305,7 +306,6 @@ class PlaylistService extends AbstractTimeslotService {
             let timeslotPlaylistRef = playlist.current();
 
             timeslotPlaylistRef.currentTime = parseFloat(timeslotPlaylistRef.getCurrentTime() + 0.1).toFixed(1);
-            console.log(timeslotPlaylistRef.currentTime, timeslotPlaylistRef.name, playlist.name);
             this.playlistStorage.update(playlist)
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
@@ -336,18 +336,19 @@ class PlaylistService extends AbstractTimeslotService {
     _send(type, playlist, timeslot = null, data = null) {
 
         let message = {
-            context : { serviceId: playlist.id }
+            event : type,
+            data : {
+                timeslot : timeslot,
+                serviceId: playlist.id
+            }
+
         };
 
-        if (timeslot) {
-            message. timeslot = timeslot
-        }
-
         if(data) {
-            message.data = data;
+            message.data.data = data;
         }
 
-        this.sender.send(type, message);
+        this.sender.send('proxy', message);
     }
 
     /**

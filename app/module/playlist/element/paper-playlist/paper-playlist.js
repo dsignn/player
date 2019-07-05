@@ -144,7 +144,7 @@ class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
                                 <div class="nameTimeslot">{{entity.name}}</div>
                                 <div id="status">{{status}}</div>
                                 <div class="flex flex-horizontal-end">{{entity.monitorContainerReference.name}}</div>
-                                <div class="flex flex-horizontal-end">{{currentTime}} / {{entity.duration}} sec</div>
+                                <div class="flex flex-horizontal-end">{{currentTime}} / {{duration}} sec</div>
                             </div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
@@ -207,7 +207,7 @@ class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
             services : {
                 value : {
                     "StorageContainerAggregate": {
-                        "playlistStorage":"PlsylistStorage"
+                        "playlistStorage":"PlaylistStorage"
                     }
                 }
             },
@@ -270,7 +270,8 @@ class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
             return;
         }
 
-     //   this.currentTime = this.entity.getCurrentTimeString();
+        this.currentTime = this.entity.getCurrentTimeString();
+        this.duration = this.entity.getDuration();
         this.status = this.entity.status;
         this._updateActionHtml();
         this._updateContextHtml();

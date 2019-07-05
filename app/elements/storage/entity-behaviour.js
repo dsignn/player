@@ -56,7 +56,6 @@ export const EntityBehavior = {
         }
 
         this.updateListener = new (require("@dsign/library").event.Listener)(function (evt) {
-
             if (evt.data.id === this.entity.id) {
                 this.entity = null;
                 this.entity = evt.data;

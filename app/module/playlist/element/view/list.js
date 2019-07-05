@@ -136,6 +136,7 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     resume(evt) {
         console.log('resume');
+        this.playlistService.resume(evt.detail);
     }
 
     /**
@@ -143,7 +144,6 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     stop(evt) {
         console.log('stop');
-        console.log('play');
         this.playlistService.stop(evt.detail);
     }
 
@@ -152,6 +152,7 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     pause(evt) {
         console.log('pause');
+        this.playlistService.pause(evt.detail);
     }
 }
 window.customElements.define('playlist-view-list', PlaylistViewList);
