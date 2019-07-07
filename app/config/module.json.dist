@@ -142,6 +142,7 @@
     "autoloads" : [
       "src/PlaylistService.js",
       "src/storage/entity/PlaylistEntity.js",
+      "src/storage/entity/TimeslotPlaylistReference.js",
       "src/storage/adapter/dexie/DexiePlaylistAdapter.js"
     ],
     "autoloadsWs": [
