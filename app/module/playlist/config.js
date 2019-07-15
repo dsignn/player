@@ -59,13 +59,16 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
 
         this.initEntity();
         this.initHydrator();
-        this.initStorage();
+
+        //this.initDexieStorage();
+
+        this.initMongoStorage();
     }
 
     /**
      *
      */
-    initStorage() {
+    initDexieStorage() {
 
         const dexieManager = this.getContainer().get('DexieManager');
 
@@ -97,6 +100,43 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
 
             this.initPlaylistService();
         });
+    }
+
+    /**
+     *
+     */
+    initMongoStorage() {
+
+        let loadStorage = () => {
+
+            const adapter = new (require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter)(
+                this.getContainer().get('MongoDb'),
+                PlaylistConfig.COLLECTION
+            );
+
+            const storage = new (require("@dsign/library").storage.Storage)(adapter);
+            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(PlaylistConfig.PLAYLIST_HYDRATOR_SERVICE));
+
+            this.getContainer().get('StorageContainerAggregate').set(
+                PlaylistConfig.STORAGE_SERVICE,
+                storage
+            );
+
+            this.initPlaylistService();
+        };
+
+        if (!this.getContainer().get('MongoDb')) {
+            return;
+        }
+
+        if (this.getContainer().get('MongoDb').isConnected()) {
+            loadStorage();
+        } else {
+            this.getContainer().get('MongoDb').getEventManager().on(
+                require("@dsign/library").storage.adapter.mongo.MongoDb.READY_CONNECTION,
+                loadStorage
+            );
+        }
     }
 
     /**
@@ -155,7 +195,17 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
         let playlistStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         playlistStrategy.setHydrator(PlaylistConfig.getPlaylistReferenceHydrator(container));
 
-        hydrator.addValueStrategy('timeslots', timeslotStrategy)
+        hydrator.addPropertyStrategy(
+            'id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        ).addPropertyStrategy(
+            '_id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        );
+
+        hydrator.addValueStrategy('id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('_id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('timeslots', timeslotStrategy)
             .addValueStrategy('binds', playlistStrategy)
             .addValueStrategy('enableAudio', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
@@ -163,6 +213,7 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             ));
 
         hydrator.enableExtractProperty('id')
+            .enableExtractProperty('_id')
             .enableExtractProperty('name')
             .enableExtractProperty('status')
             .enableExtractProperty('context')
@@ -173,6 +224,7 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             .enableExtractProperty('timeslots');
 
         hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('_id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('status')
             .enableHydrateProperty('context')

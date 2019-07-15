@@ -103,7 +103,7 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
 
         this.initEntity();
         this.initHydrator();
-        this.initStorage();
+        this.initMongoStorage();
         this.initService();
     }
 
@@ -141,7 +141,7 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
     /**
      *
      */
-    initStorage() {
+    initDexieStorage() {
 
         const dexieManager = this.getContainer().get('DexieManager');
 
@@ -185,9 +185,54 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
     }
 
     /**
+     *
+     */
+    initMongoStorage() {
+
+        let loadStorage = () => {
+
+            const adapter = new MongoResourceAdapter(this.getContainer().get('MongoDb'), ResourceConfig.COLLECTION);
+            const storage = new (require("@dsign/library").storage.Storage)(adapter);
+
+            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(ResourceConfig.RESOURCE_HYDRATOR_SERVICE));
+
+            storage.getEventManager().on(
+                require("@dsign/library").storage.Storage.BEFORE_UPDATE,
+                this.onBeforeUpdate.bind(this)
+            ).on(
+                require("@dsign/library").storage.Storage.BEFORE_SAVE,
+                this.onBeforeSave.bind(this)
+            ).on(
+                require("@dsign/library").storage.Storage.POST_REMOVE,
+                this.onPostRemove.bind(this)
+            );
+
+            this.getContainer().get('StorageContainerAggregate').set(
+                ResourceConfig.STORAGE_SERVICE,
+                storage
+            );
+        };
+
+
+        if (!this.getContainer().get('MongoDb')) {
+            return;
+        }
+
+        if (this.getContainer().get('MongoDb').isConnected()) {
+            loadStorage();
+        } else {
+            this.getContainer().get('MongoDb').getEventManager().on(
+                require("@dsign/library").storage.adapter.mongo.MongoDb.READY_CONNECTION,
+                loadStorage
+            );
+        }
+    }
+
+    /**
      * @param evt
      */
     onBeforeSave(evt) {
+        evt.data.id = require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId();
         this._checkFileResource(evt.data);
     }
 
@@ -281,7 +326,14 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
                         entity.aspectRation = metadata.streams[0]['sample_aspect_ratio'];
                     }
 
-                    storage.update(entity);
+                    // TODO better solution
+                    setTimeout(
+                        () => {
+                            storage.update(entity);
+                        },
+                        3000
+                    );
+
                 }.bind(this)
             );
         }
@@ -391,9 +443,21 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
         let pathHydratorStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         pathHydratorStrategy.setHydrator(ResourceConfig.getPathHydrator(container));
 
-        hydrator.addValueStrategy('path', pathHydratorStrategy);
+        hydrator.addValueStrategy('path', pathHydratorStrategy)
+            .addValueStrategy('id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('_id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)());
+
+        hydrator.addPropertyStrategy(
+            'id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        ).addPropertyStrategy(
+            '_id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        );
+
 
         hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('_id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
@@ -401,6 +465,7 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
             .enableHydrateProperty('tags');
 
         hydrator.enableExtractProperty('id')
+            .enableExtractProperty('_id')
             .enableExtractProperty('name')
             .enableExtractProperty('size')
             .enableExtractProperty('type')

@@ -17,3 +17,5 @@ app/node_modules/**
 
 /storage
 /storage/**
+
+/docker

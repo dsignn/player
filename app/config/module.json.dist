@@ -31,7 +31,8 @@
       "src/MonitorService.js",
       "src/storage/entity/MonitorEntity.js",
       "src/storage/entity/MonitorContainerEntity.js",
-      "src/storage/adapter/dexie/DexieMonitorAdapter.js"
+      "src/storage/adapter/dexie/DexieMonitorAdapter.js",
+      "src/storage/adapter/mongo/MongoMonitorAdapter.js"
     ],
     "autoloadsWs": [
       {
@@ -67,6 +68,7 @@
     },
     "autoloads" : [
       "src/storage/adapter/dexie/DexieResourceAdapter.js",
+      "src/storage/adapter/mongo/MongoResourceAdapter.js",
       "src/ResourceService.js",
       "src/storage/entity/FileEntity.js",
       "src/storage/entity/AudioEntity.js",
@@ -96,6 +98,7 @@
       "src/storage/entity/TimeslotEntity.js",
       "src/storage/entity/embedded/Injector.js",
       "src/storage/adapter/dexie/DexieTimeslotAdapter.js",
+      "src/storage/adapter/mongo/MongoTimeslotAdapter.js",
       "src/injector/Test1.js",
       "src/injector/Test2.js"
     ],
@@ -143,7 +146,8 @@
       "src/PlaylistService.js",
       "src/storage/entity/PlaylistEntity.js",
       "src/storage/entity/TimeslotPlaylistReference.js",
-      "src/storage/adapter/dexie/DexiePlaylistAdapter.js"
+      "src/storage/adapter/dexie/DexiePlaylistAdapter.js",
+      "src/storage/adapter/mongo/MongoPlaylistAdapter.js"
     ],
     "autoloadsWs": [
       {

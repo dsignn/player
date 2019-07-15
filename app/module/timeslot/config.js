@@ -61,16 +61,18 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
         this.initTimeslotReceiver();
         this.initEntity();
         this.initHydrator();
-        this.initStorage();
+
+        // this.initDexieStorage();
+
+        this.initMongoStorage();
     }
 
     /**
      *
      */
-    initStorage() {
+    initDexieStorage() {
 
         const dexieManager = this.getContainer().get('DexieManager');
-
 
         let store = new (require("@dsign/library").storage.adapter.dexie.Store)(
             TimeslotConfig.COLLECTION,
@@ -79,8 +81,6 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
         );
 
         dexieManager.addStore(store);
-
-
 
         dexieManager.on("ready", () => {
 
@@ -101,11 +101,46 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
     /**
      *
      */
+    initMongoStorage() {
+
+        let loadStorage = () => {
+
+            const adapter = new MongoTimeslotAdapter(this.getContainer().get('MongoDb'), TimeslotConfig.COLLECTION);
+            const storage = new (require("@dsign/library").storage.Storage)(adapter);
+
+            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(TimeslotConfig.TIMESLOT_HYDRATOR_SERVICE));
+
+            this.getContainer().get('StorageContainerAggregate').set(
+                TimeslotConfig.STORAGE_SERVICE,
+                storage
+            );
+
+            this.initTimeslotService();
+        };
+
+
+        if (!this.getContainer().get('MongoDb')) {
+            return;
+        }
+
+
+        if (this.getContainer().get('MongoDb').isConnected()) {
+            loadStorage();
+        } else {
+            this.getContainer().get('MongoDb').getEventManager().on(
+                require("@dsign/library").storage.adapter.mongo.MongoDb.READY_CONNECTION,
+                loadStorage
+            );
+        }
+    }
+
+    /**
+     *
+     */
     initEntity() {
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(TimeslotConfig.TIMESLOT_ENTITY_SERVICE, new TimeslotEntity());
-
     }
 
     /**
@@ -210,7 +245,17 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
         let injectorDataStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         injectorDataStrategy.setHydrator(TimeslotConfig.getInjectorHydrator(container));
 
+        hydrator.addPropertyStrategy(
+            'id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        ).addPropertyStrategy(
+            '_id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        );
+
         hydrator.addValueStrategy('resources', resourceStrategy)
+            .addValueStrategy('id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('_id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
             .addValueStrategy('monitorContainerReference', monitorStrategy)
             .addValueStrategy('binds', bindTimeslotStrategy)
             .addValueStrategy('currentTime', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
@@ -222,6 +267,7 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
             ));
 
         hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('_id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('status')
             .enableHydrateProperty('binds')
@@ -237,6 +283,7 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
             .enableHydrateProperty('filters');
 
         hydrator.enableExtractProperty('id')
+            .enableHydrateProperty('_id')
             .enableExtractProperty('name')
             .enableExtractProperty('status')
             .enableExtractProperty('binds')

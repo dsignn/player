@@ -61,13 +61,13 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
         this.initSender();
         this.initReceiver();
         this.initHydrator();
-        this.initStorage();
+        this.initMongoStorage();
     }
 
     /**
      *
      */
-    initStorage() {
+    initDexieStorage() {
 
         const dexieManager = this.getContainer().get('DexieManager');
 
@@ -111,6 +111,50 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
         });
     }
 
+    /**
+     *
+     */
+    initMongoStorage() {
+
+        let loadStorage = () => {
+
+            const adapter = new MongoMonitorAdapter(this.getContainer().get('MongoDb'), MonitorConfig.COLLECTION);
+            const storage = new (require("@dsign/library").storage.Storage)(adapter);
+
+            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(MonitorConfig.MONITOR_CONTAINER_HYDRATOR_SERVICE));
+
+            this.getContainer().get('StorageContainerAggregate').set(
+                MonitorConfig.STORAGE_SERVICE,
+                storage
+            );
+
+            let dashboardAlwayOnTop =  this.getContainer().get('Config').dashboard &&  this.getContainer().get('Config').dashboard.alwaysOnTop ?
+                this.getContainer().get('Config').dashboard.alwaysOnTop : false;
+
+            this.getContainer().set(
+                'MonitorService',
+                new MonitorService(
+                    storage,
+                    this.getContainer().get('SenderContainerAggregate').get(MonitorConfig.MONITOR_SENDER_SERVICE),
+                    dashboardAlwayOnTop
+                )
+            )
+        };
+
+
+        if (!this.getContainer().get('MongoDb')) {
+            return;
+        }
+
+        if (this.getContainer().get('MongoDb').isConnected()) {
+            loadStorage();
+        } else {
+            this.getContainer().get('MongoDb').getEventManager().on(
+                require("@dsign/library").storage.adapter.mongo.MongoDb.READY_CONNECTION,
+                loadStorage
+            );
+        }
+    }
 
     /**
      *

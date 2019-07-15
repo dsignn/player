@@ -289,7 +289,7 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
             currentTime += this.timeslots[cont].getDuration();
         }
 
-        currentTime += this.current().getCurrentTime();
+        currentTime += this.current() ? this.current().getCurrentTime() : 0;
 
         currentTime += '';
         switch (true) {

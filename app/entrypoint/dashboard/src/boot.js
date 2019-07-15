@@ -9,6 +9,7 @@ import {Localize} from '@dsign/library/src/localize/Localize';
 import {PropertyHydrator} from '@dsign/library/src/hydrator/index';
 import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
+import {MongoDb, MongoCollectionAdapter} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
@@ -107,6 +108,17 @@ container.set('Localize', new Localize(
 container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 /***********************************************************************************************************************
+                                           MONGODB
+ **********************************************************************************************************************/
+
+container.set('MongoDb', new MongoDb(
+    config.storage.adapter.mongo.name,
+    config.storage.adapter.mongo.uri,
+    config.storage.adapter.mongo.port,
+    )
+);
+
+/***********************************************************************************************************************
                                             NOTIFICATION SERVICE
  **********************************************************************************************************************/
 
@@ -139,7 +151,7 @@ archive.setTmpDir(`${storagePath}tmp${path.sep}`)
 container.set('Archive', archive);
 
 /***********************************************************************************************************************
-
+                                        P2P
  **********************************************************************************************************************/
 
 let p2p = new P2p(
@@ -204,11 +216,18 @@ application.getEventManager().on(
 
         this.get('DexieManager').on("ready", () => {
             let appl = document.createElement('dsign-layout');
-            document.body.appendChild(appl);
+            setTimeout(
+                () => {
+                    document.body.appendChild(appl);
+                },
+                2000
+            );
+
         });
 
         this.get('DexieManager').generateSchema();
         this.get('DexieManager').open();
+
     }.bind(container))
 );
 

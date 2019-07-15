@@ -286,8 +286,7 @@ class PlaylistService extends AbstractTimeslotService {
      */
     _stopPlaylist(playlist) {
         playlist.status = PlaylistEntity.IDLE;
-        let runningPlaylist = this.getRunningPlaylist(playlist.getMonitorId(), playlist.context)
-        this._send(PlaylistService.STOP, playlist, runningPlaylist.current());
+        this._send(PlaylistService.STOP, playlist, playlist.current());
         playlist.reset();
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('STOP playlist EVT')})
