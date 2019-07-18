@@ -1,10 +1,11 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {lang} from './language/language';
 
-export class PaperBackup extends DsignLocalizeElement {
+export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -36,13 +37,22 @@ export class PaperBackup extends DsignLocalizeElement {
     static get properties() {
         return {
 
-            archive : {
-                observer: 'changeArchiveService'
+            /**
+             * @type Archive
+             */
+            _archive : {
+                type: Object,
+                readOnly: true,
+                observer: 'changeArchive'
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    archive:  "Archive"
+                    _archive:  "Archive",
+                    _localizeService: 'Localize'
                 }
             },
         }
@@ -54,16 +64,16 @@ export class PaperBackup extends DsignLocalizeElement {
     }
 
     /**
-     * @param newValue
+     * @param {Archive} archiveService
      */
-    changeArchiveService(newValue) {
-        if (!newValue) {
+    changeArchive(archiveService) {
+        if (!archiveService) {
             return;
         }
 
-        newValue.addEventListener('progress', this._progress.bind(this));
-        newValue.addEventListener('close', this._close.bind(this));
-        newValue.addEventListener('error', this._close.bind(this));
+        archiveService.addEventListener('progress', this._progress.bind(this));
+        archiveService.addEventListener('close', this._close.bind(this));
+        archiveService.addEventListener('error', this._close.bind(this));
     }
 
     /**
@@ -88,7 +98,7 @@ export class PaperBackup extends DsignLocalizeElement {
     backup(evt) {
 
         this._startHtmlBackup();
-        this.archive.archive();
+        this._archive.archive();
     }
 
     /**

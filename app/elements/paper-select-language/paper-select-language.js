@@ -1,16 +1,17 @@
-import {html} from '@polymer/polymer/polymer-element.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/polymer/lib/elements/dom-repeat.js';
 import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-item/paper-item';
-import {DsignLocalizeElement} from "../dsign-localize";
 import {lang} from "./language/language.js";
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin"
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
 
 /**
  * @customElement
  * @polymer
  */
-export class DsignSelectLanguage extends DsignLocalizeElement {
+export class PaperSelectLanguage extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -27,6 +28,16 @@ export class DsignSelectLanguage extends DsignLocalizeElement {
         `;
     }
 
+    static get properties() {
+        return {
+            services : {
+                value : {
+                    _localizeService: 'Localize'
+                }
+            },
+        };
+    }
+
     constructor() {
         super();
         this.resources = lang;
@@ -40,7 +51,7 @@ export class DsignSelectLanguage extends DsignLocalizeElement {
      * @private
      */
     _selectLanguage(evt) {
-        this.localizeService.setDefaultLang(evt.detail.item.value);
+        this._localizeService.setDefaultLang(evt.detail.item.value);
     }
 
     /**
@@ -48,7 +59,7 @@ export class DsignSelectLanguage extends DsignLocalizeElement {
      */
     changeLocalizeService(changeLocalizeService) {
         super.changeLocalizeService(changeLocalizeService);
-        this.languages = this.localizeService.getLanguages();
+        this.languages = this._localizeService.getLanguages();
         for (let cont = 0; this.languages.length > cont; cont++) {
             if (this.languages[cont] === this.language) {
                 this.$.listbox.selected = cont;
@@ -58,4 +69,4 @@ export class DsignSelectLanguage extends DsignLocalizeElement {
     }
 }
 
-window.customElements.define('dsign-select-language', DsignSelectLanguage);
+window.customElements.define('paper-select-language', PaperSelectLanguage);

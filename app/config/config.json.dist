@@ -1,36 +1,41 @@
 {
   "localize": {
-    "defaultLanguage" : "it",
-    "languages" : [
+    "defaultLanguage": "it",
+    "languages": [
       "it",
       "en"
     ]
   },
-  "sender" : {
-    "ipcProxy" : {
-        "proxyName" : "proxy"
+  "sender": {
+    "ipcProxy": {
+      "proxyName": "proxy"
     }
   },
-  "storage" : {
-     "adapter" : {
-        "dexie" : {
-            "nameDb" : "dsign"
-        },
-       "localStorage" : {
-         "namespace" : "dsign"
-       }
-     }
+  "storage": {
+    "adapter": {
+      "mongo": {
+        "name": "dsign",
+        "uri": "127.0.0.140",
+        "port": 27017
+      },
+      "dexie": {
+        "nameDb": "dsign"
+      },
+      "localStorage": {
+        "namespace": "dsign"
+      }
+    }
   },
   "p2p": {
-      "identifier": "player-3333",
-      "udpOption": {
-          "portListening": 4000,
-          "portSender": 4000,
-          "transmissionTimeout": 2000
-      },
-      "clientOption": {
-          "type": "tcp",
-          "port": 4500
-      }
+    "identifier": "player-3333",
+    "udpOption": {
+      "portListening": 4000,
+      "portSender": 4000,
+      "transmissionTimeout": 2000
+    },
+    "clientOption": {
+      "type": "tcp",
+      "port": 4500
+    }
   }
 }

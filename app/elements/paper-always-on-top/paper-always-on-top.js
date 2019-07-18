@@ -1,10 +1,14 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
 import '@polymer/paper-toggle-button/paper-toggle-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {lang} from './language/language';
 
-export class PaperAlwaysOnTop extends DsignLocalizeElement {
+/**
+ * @class
+ */
+export class PaperAlwaysOnTop extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -31,14 +35,23 @@ export class PaperAlwaysOnTop extends DsignLocalizeElement {
 
     static get properties () {
         return {
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    monitorService: "MonitorService"
+                    _monitorService: "MonitorService",
+                    _localizeService: 'Localize'
                 }
             },
 
-            monitorService: {
-                observer: "observerMonitorService"
+            /**
+             * @type MonitorService
+             */
+            _monitorService: {
+                type: Object,
+                readOnly: true,
+                observer: "changeMonitorService"
             }
         }
     }
@@ -48,21 +61,23 @@ export class PaperAlwaysOnTop extends DsignLocalizeElement {
         this.resources = lang;
     }
 
-    observerMonitorService(service) {
-        if (!service) {
+    /**
+     * @param {MonitorService} monitorService
+     */
+    changedMonitorService(monitorService) {
+        if (!monitorService) {
             return;
         }
 
-        this.$.paperToggleEnable.checked = service.getAlwaysOnToDashboard();
+        this.$.paperToggleEnable.checked = monitorService.getAlwaysOnToDashboard();
     }
 
     /**
-     *
      * @param evt
      * @private
      */
     _changeAlwaysOnTop(evt) {
-        this.monitorService.setAlwaysOnToDashboard(evt.target.checked);
+        this._monitorService.setAlwaysOnToDashboard(evt.target.checked);
     }
 }
 window.customElements.define('paper-always-on-top', PaperAlwaysOnTop);

@@ -1,14 +1,14 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
 import '@fluidnext-polymer/paper-input-file/paper-input-file';
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-dialog/paper-dialog';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
-
 import {lang} from './language/language';
 
-export class PaperRestore extends DsignLocalizeElement {
+export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -35,7 +35,6 @@ export class PaperRestore extends DsignLocalizeElement {
                 }
   
             </style>
-
             <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>
             <paper-tooltip id="paperTooltip" for="paperRestore" position="left">{{localize('run-restore')}}</paper-tooltip>
             <paper-dialog id="restoreDialog" auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
@@ -50,17 +49,29 @@ export class PaperRestore extends DsignLocalizeElement {
     static get properties() {
         return {
 
-            archive : {
-                observer: 'changeArchiveService'
+            /**
+             * @type Archive
+             */
+            _archive : {
+                type: Object,
+                readOnly: true,
+                observer: 'changeArchive'
             },
 
+            /**
+             * @type Array
+             */
             files : {
                 observer: 'changeFiles'
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    archive:  "Archive"
+                    _archive:  "Archive",
+                    _localizeService: 'Localize'
                 }
             },
         }
@@ -72,19 +83,18 @@ export class PaperRestore extends DsignLocalizeElement {
     }
 
     /**
-     * @param newValue
+     * @param {Archive} archiveService
      */
-    changeArchiveService(newValue) {
-        if (!newValue) {
+    changeArchive(archiveService) {
+        if (!archiveService) {
             return;
         }
 
-        newValue.addEventListener('close-extract', this._close.bind(this));
-        newValue.addEventListener('error-extract', this._close.bind(this));
+        archiveService.addEventListener('close-extract', this._close.bind(this));
+        archiveService.addEventListener('error-extract', this._close.bind(this));
     }
 
     /**
-
      * @param newValue
      */
     changeFiles(newValue) {
@@ -100,9 +110,9 @@ export class PaperRestore extends DsignLocalizeElement {
      * @param {CustomEvent} evt
      */
     restore(evt) {
-        console.log('restore', this.files);
+
         this._startHtmlBackup();
-        this.archive.restore(this.files[0].path)
+        this._archive.restore(this.files[0].path)
             .then((data) => {
                 console.log('Restore ok', data)
             })

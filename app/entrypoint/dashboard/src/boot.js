@@ -6,6 +6,8 @@ import {WebComponent} from '@dsign/library/src/core/webcomponent/WebComponent';
 import {Listener} from '@dsign/library/src/event/index'
 import {Container, ContainerAggregate} from  '@dsign/library/src/container/index';
 import {Localize} from '@dsign/library/src/localize/Localize';
+import {Acl} from '@dsign/library/src/permission/acl/Acl';
+import {JsAclAdapter} from '@dsign/library/src/permission/acl/adapter/JsAclAdapter';
 import {PropertyHydrator} from '@dsign/library/src/hydrator/index';
 import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
@@ -100,6 +102,35 @@ container.set('Localize', new Localize(
     config.localize.defaultLanguage,
     config.localize.languages
 ));
+
+/***********************************************************************************************************************
+                                            ACL
+ ***********************************************************************************************************************/
+
+const jsAcl = new (require('js-acl'))();
+
+//All these actions you also can do in the middle of app execution
+jsAcl.addRole('guest');
+jsAcl.addRole('user', 'guest');
+jsAcl.addRole('admin', 'user');
+
+jsAcl.addResource('Post');
+jsAcl.addResource('Users');
+jsAcl.addResource('AdminPanel');
+
+jsAcl.allow('guest', 'Post', 'view');
+
+//Users can edit edit their own posts & view it because user inherits all guest permissions
+jsAcl.allow('user', 'Post', 'edit', function (role, resource, privilege) {
+    return resource.authorId === role.id;
+});
+
+//Full access to all actions that available for Post
+jsAcl.allow('admin', 'Post');
+jsAcl.allow('admin', 'AdminPanel');
+
+
+container.set('Acl', new Acl(new JsAclAdapter(jsAcl)));
 
 /***********************************************************************************************************************
                                             DEXIE MANAGER SERVICE
@@ -215,7 +246,7 @@ application.getEventManager().on(
     new Listener( function(modules) {
 
         this.get('DexieManager').on("ready", () => {
-            let appl = document.createElement('dsign-layout');
+            let appl = document.createElement('application-layout');
             setTimeout(
                 () => {
                     document.body.appendChild(appl);

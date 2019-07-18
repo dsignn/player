@@ -1,7 +1,7 @@
 import '@polymer/paper-toast/paper-toast';
 
 import '../../style/dashboard-style';
-import '../../elements/layout/dsign-layout';
+import '../../elements/layout/application-layout';
 
 /**
  * Dashboard module

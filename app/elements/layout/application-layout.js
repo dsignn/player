@@ -1,8 +1,9 @@
 import {Listener} from '@dsign/library/src/event/Listener';
 import {Application}  from '@dsign/library/src/core/Application';
-
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from '../localize/dsign-localize';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
+import {AclMixin} from "../mixin/acl/acl-mixin";
 import '@polymer/app-layout/app-header-layout/app-header-layout';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
 import '@polymer/app-layout/app-header/app-header';
@@ -12,7 +13,7 @@ import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '../icons/icons';
-import '../localize/select/dsign-select-language';
+import '../paper-select-language/paper-select-language';
 import '../paper-backup/paper-backup';
 import '../paper-restore/paper-restore';
 import '../paper-always-on-top/paper-always-on-top';
@@ -24,7 +25,7 @@ import {lang} from './language/language.js';
  * @customElement
  * @polymer
  */
-class DsignLayout extends DsignLocalizeElement {
+class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -87,7 +88,10 @@ class DsignLayout extends DsignLocalizeElement {
                 <app-header slot="header" fixed condenses effects="waterfall">
                     <app-toolbar>
                         <div main-title>{{localize('nameApp')}}</div>
-                        <dsign-select-language></dsign-select-language>
+                        <template is="dom-if" if="[[isAllowed('Post')]]">
+                            test
+                        </template>
+                        <paper-select-language></paper-select-language>
                         <paper-gpu-setting></paper-gpu-setting>
                         <paper-backup></paper-backup>
                         <paper-restore></paper-restore>
@@ -137,7 +141,9 @@ class DsignLayout extends DsignLocalizeElement {
 
             services : {
                 value : {
-                    application:  "Application"
+                    application:  "Application",
+                    _aclService: 'Acl',
+                    _localizeService: 'Localize'
                 }
             },
 
@@ -216,4 +222,4 @@ class DsignLayout extends DsignLocalizeElement {
     }
 }
 
-window.customElements.define('dsign-layout', DsignLayout);
+window.customElements.define('application-layout', ApplicationLayout);

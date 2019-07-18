@@ -1,10 +1,14 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {lang} from './language/language';
 
-export class PaperGpuSetting extends DsignLocalizeElement {
+/**
+ * @class
+ */
+export class PaperGpuSetting extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -38,23 +42,32 @@ export class PaperGpuSetting extends DsignLocalizeElement {
     static get properties() {
         return {
 
-            archive : {
-                observer: 'changeArchiveService'
-            },
-
             services : {
                 value : {
                     SenderContainerAggregate:  {
-                        sender : 'Ipc'
+                        _sender : 'Ipc'
                     },
                     ReceiverContainerAggregate:  {
-                        receiver : 'Ipc'
+                        _receiver : 'Ipc'
                     }
                 }
             },
 
-            receiver : {
-                observer: "observerReceiverService"
+            /**
+             * @type SenderInterface
+             */
+            _sender : {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type ReceiverInterface
+             */
+            _receiver : {
+                type: Object,
+                readOnly: true,
+                observer: "changedReceiver"
             }
         }
     }
@@ -69,7 +82,7 @@ export class PaperGpuSetting extends DsignLocalizeElement {
      */
     open(evt) {
 
-        this.sender.send('proxy', {
+        this._sender.send('proxy', {
             event : PaperGpuSetting.OPEN,
             data: {}
         });
@@ -79,11 +92,11 @@ export class PaperGpuSetting extends DsignLocalizeElement {
     /**
      * @param newValue
      */
-    observerReceiverService(newValue) {
-        if (!newValue) {
+    changedReceiver(receiverService) {
+        if (!receiverService) {
             return;
         }
-        newValue.on(PaperGpuSetting.CLOSE, this._enable.bind(this))
+        receiverService.on(PaperGpuSetting.CLOSE, this._enable.bind(this))
     }
 
     /**
