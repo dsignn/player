@@ -1,7 +1,8 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
+import {LocalizeMixin} from "../mixin/localize/localize-mixin";
 
-export class PaperWidget extends DsignLocalizeElement {
+export class PaperWidget extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -225,7 +226,7 @@ export class PaperWidget extends DsignLocalizeElement {
     }
 
     /**
-     *
+     *  @event remove
      */
     _remove() {
         this.dispatchEvent(new CustomEvent('remove'));

@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityPaginationBehavior} from "../../elements/storage/entity-pagination-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
+import {StorageListMixin} from "../../elements/mixin/storage/list-mixin";
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-grid/paper-grid';
 import '@polymer/iron-flex-layout/iron-flex-layout';
@@ -15,7 +15,7 @@ import {autocompleteStyle} from '../../style/autocomplete-custom-style';
  * @customElement
  * @polymer
  */
-class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get resizeEvent() {
         return [
@@ -128,6 +128,22 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                     height: 100%;
                     width: 8px;
                 }
+                
+                paper-button#addButton {
+                    height: 60px;
+                    background-color: var(--accent-color);
+                }
+                
+                paper-button#addButton[disabled] {
+                    background-color: transparent;
+                }
+                
+                .button-container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                }
+                
             </style>
             <paper-card class="header">
                 <paper-autocomplete
@@ -152,7 +168,10 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
                 </paper-autocomplete>
                 <div class="gutter"></div>
                 <div id="dataContainer" class="data"></div>
-                <paper-button id="addButton" disabled on-tap="addWidget">{{localize('add')}}</paper-button>
+                <div class="button-container">
+                    <paper-button id="addButton" disabled on-tap="addWidget">{{localize('add')}}</paper-button>
+                </div>
+        
             </paper-card>
             <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="_udpate" on-move="_udpate" row-autogrow col-autogrow draggable resizable animated overlappable>
             </paper-grid>
@@ -164,23 +183,39 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
 
             services : {
                 value : {
-                    application: "Application",
-                    notify : "Notify",
-                    storageContainerAggregate: 'StorageContainerAggregate'
+                    _application: "Application",
+                    _notify : "Notify",
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        _storage: "WidgetStorage"
+                    }
                 }
             },
 
-            storageService : {
-                value: 'WidgetStorage'
+            /**
+             * @type Application
+             */
+            _application: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type any
+             */
+            _notify: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type StorageInterface
+             */
+            _widgetStorage: {
+                type: Object,
+                readOnly: true
             }
         };
-    }
-
-    static get observers() {
-        return [
-            'observerStorage(storageContainerAggregate, storageService)',
-            'observerStorageService(storage)'
-        ]
     }
 
     constructor() {
@@ -189,11 +224,13 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
     }
 
     /**
-     * @param storage
+     * @param {StorageInterface} widgetStorage
+     * @private
      */
-    observerStorageService(storage) {
+    _changedStorage(widgetStorage) {
+        super._changedStorage(widgetStorage);
 
-        storage.getAll()
+        widgetStorage.getAll()
             .then((data) => {
 
                 for (let cont = 0; data.length > cont; cont++) {
@@ -207,7 +244,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
      * @private
      */
     _searchWidget(evt) {
-        let widgets = this.application.getWidgets();
+        let widgets = this._application.getWidgets();
 
         let filter = widgets.filter(
             element => {
@@ -292,14 +329,14 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
         widget.wc = this.$.widgetAutocomplete.value.wc;
         widget.data = this.shadowRoot.querySelector('#dataComponent').getData();
 
-        this.storage
+        this._storage
             .save(widget)
             .then((data) => {
 
                 this.$.widgetAutocomplete.clear();
                 this.$.addButton.disabled = false;
                 this.removeDataWidget();
-                this.notify.notify('insert-widget');
+                this._notify.notify('insert-widget');
                 this.appendWidget(data);
                 this._disableAddButton();
 
@@ -328,11 +365,12 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
      */
     _removeWidget(evt) {
 
+
         let target = evt.target;
 
-        this.storage.delete(evt.target.getWidget())
+        this._storage.delete(evt.target.getWidget())
             .then((data) => {
-                this.notify.notify('delete-widget');
+                this._notify.notify('delete-widget');
                 target.remove();
             });
     }
@@ -343,7 +381,7 @@ class DashboardIndex extends mixinBehaviors([EntityPaginationBehavior], DsignLoc
      */
     _udpate(evt) {
 
-        this.storage.update(evt.target.getWidget())
+        this._storage.update(evt.target.getWidget())
             .then((data) => {
 
             });

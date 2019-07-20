@@ -43,22 +43,13 @@ export const StorageListMixin = (superClass) => {
                     type: Object,
                     value: {}
                     // TODO add observer
+                },
+
+                autoladEntities: {
+                    type: Boolean,
+                    value: false
                 }
             };
-        }
-
-        /**
-         * @param {Number} page
-         * @param {Number} itemPerPage
-         * @param storage
-         */
-        observerPaginationEntities(page, itemPerPage, storage) {
-
-            if (!page || !itemPerPage || !storage) {
-                return;
-            }
-
-            this.getEntities();
         }
 
         /**
@@ -77,6 +68,10 @@ export const StorageListMixin = (superClass) => {
 
             this.listenerUpdate = new (require("@dsign/library").event.Listener)(this.getAll.bind(this));
             newValue.getEventManager().on(require("@dsign/library").storage.Storage.POST_SAVE, this.listenerUpdate);
+
+            if(this.autoladEntities) {
+                this.getAll();
+            }
         }
 
         /**

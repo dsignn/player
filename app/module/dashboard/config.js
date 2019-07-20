@@ -78,6 +78,14 @@ class DashboardConfig extends require("@dsign/library").container.ContainerAware
 
         storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(DashboardConfig.WIDGET_HYDRATOR_SERVICE));
 
+        storage.getEventManager().on(
+            require("@dsign/library").storage.Storage.BEFORE_SAVE,
+            (evt) => {
+                let mongoIdGen = new (require("@dsign/library").storage.util.MongoIdGenerator)();
+                evt.data.id = mongoIdGen.generateId();
+            }
+        );
+
         this.getContainer().get('StorageContainerAggregate').set(
             DashboardConfig.WIDGET_STORAGE_SERVICE,
             storage
