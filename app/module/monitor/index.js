@@ -1,5 +1,6 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../elements/localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
@@ -11,7 +12,7 @@ import {lang} from './language';
  * @customElement
  * @polymer
  */
-class MonitorIndex extends DsignLocalizeElement {
+class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -88,27 +89,46 @@ class MonitorIndex extends DsignLocalizeElement {
 
     static get properties () {
         return {
+
+            /**
+             * @type number
+             */
             selectedTab: {
                 value: 0
             },
 
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 value: 0
             },
 
+            /**
+             * @type Array
+             */
             physicalMonitors: {
                 type: Array,
                 value: []
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    monitorService: "MonitorService"
+                    _monitorService: "MonitorService",
+                    _localizeService: 'Localize'
                 }
             },
 
-            monitorService: {
+            /**
+             * @type MonitorService
+             */
+            _monitorService: {
+                type: Object,
+                readOnly: true,
                 observer: "observerMonitorService"
             }
         };
@@ -129,14 +149,14 @@ class MonitorIndex extends DsignLocalizeElement {
     }
 
     /**
-     * @param {MonitorService} service
+     * @param {MonitorService} monitorService
      */
-    observerMonitorService(service) {
-        if (!service) {
+    observerMonitorService(monitorService) {
+        if (!monitorService) {
             return;
         }
 
-        this.set('physicalMonitors', service.getPhysicalMonitor());
+        this.set('physicalMonitors', monitorService.getPhysicalMonitor());
     }
 }
 window.customElements.define('monitor-index', MonitorIndex);

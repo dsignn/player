@@ -34,7 +34,7 @@ export class PaperSelectLanguage extends LocalizeMixin(ServiceInjectorMixin(Poly
                 value : {
                     _localizeService: 'Localize'
                 }
-            },
+            }
         };
     }
 
@@ -55,10 +55,10 @@ export class PaperSelectLanguage extends LocalizeMixin(ServiceInjectorMixin(Poly
     }
 
     /**
-     * @param changeLocalizeService
+     * @param {Localize} localizeService
      */
-    changeLocalizeService(changeLocalizeService) {
-        super.changeLocalizeService(changeLocalizeService);
+    changedLocalizeService(localizeService) {
+        super.changedLocalizeService(localizeService);
         this.languages = this._localizeService.getLanguages();
         for (let cont = 0; this.languages.length > cont; cont++) {
             if (this.languages[cont] === this.language) {

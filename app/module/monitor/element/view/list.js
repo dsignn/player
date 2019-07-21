@@ -1,7 +1,8 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StoragePaginationMixin} from "../../../../elements/mixin/storage/pagination-mixin";
+import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import "../../element/paper-monitor/paper-monitor";
@@ -11,7 +12,7 @@ import {lang} from './language/list-language';
  * @customElement
  * @polymer
  */
-class MonitorViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
 
     static get template() {
         return html`
@@ -64,7 +65,7 @@ class MonitorViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLo
                     <paper-monitor entity="{{monitor}}" on-delete="_deleteEntity" on-update="_showUpdateView" on-enable-monitor="_updateEntity"></paper-monitor>
                 </template>
             </div>
-            <paper-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
+            <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
         `;
     }
 
@@ -75,32 +76,41 @@ class MonitorViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLo
 
     static get properties () {
         return {
+
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 notify: true,
                 value: 0
             },
 
+            /**
+             * @type MonitorEntity
+             */
             entitySelected: {
                 notify: true
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "StorageContainerAggregate": 'StorageContainerAggregate'
+                    _notify : "Notify",
+                    _localizeService: 'Localize',
+                    "StorageContainerAggregate": {
+                        _storage: "MonitorStorage"
+                    }
                 }
-            },
-
-            storageService : {
-                value: 'MonitorStorage'
             }
         };
     }
 
     static get observers() {
         return [
-            'observerStorage(StorageContainerAggregate, storageService)',
-            'observerPaginationEntities(page, itemPerPage, storage)'
+            'observerPaginationEntities(page, itemPerPage, _storage)'
         ]
     }
 
@@ -111,6 +121,10 @@ class MonitorViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLo
     _showUpdateView(evt) {
         this.entitySelected = evt.detail;
         this.selected = 2;
+    }
+
+    _deleteCallback() {
+        this._notify.notify(this.localize('notify-delete'));
     }
 }
 window.customElements.define('monitor-view-list', MonitorViewList);

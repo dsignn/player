@@ -1,11 +1,11 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {DsignServiceInjectorElement} from "../../../../elements/service/dsign-service-injector";
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
 
 /**
  * @customElement
  * @polymer
  */
-class PaperPlayer extends DsignServiceInjectorElement {
+class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
     static get template() {
         return html`
@@ -62,28 +62,43 @@ class PaperPlayer extends DsignServiceInjectorElement {
     static get properties () {
         return {
 
+            /**
+             * @type string
+             */
             nodeName : {
                 type: String,
                 readOnly: true,
                 value: 'paperMonitor'
             },
 
+            /**
+             * @type string
+             */
             identifier: {
                 type: String,
                 reflectToAttribute : true,
             },
 
+            /**
+             * @type string
+             */
             defaultTimeslotId: {
                 type: String,
                 notify : true
             },
 
+            /**
+             * @type number
+             */
             height: {
                 type: Number,
                 notify : true,
                 observer: '_changeHeight'
             },
 
+            /**
+             * @type number
+             */
             width: {
                 type: Number,
                 notify : true,
@@ -95,54 +110,101 @@ class PaperPlayer extends DsignServiceInjectorElement {
                 observer: '_changeBackgroundColor'
             },
 
+            /**
+             * @type number
+             */
             offsetX : {
                 type: Number,
                 value: 0,
                 observer: '_changeOffsetX'
             },
 
+            /**
+             * @type number
+             */
             offsetY : {
                 type: Number,
                 value: 0,
                 observer: '_changeOffsetY'
             },
 
+            /**
+             * @type string
+             */
             polygon : {
                 type: String,
                 observer: '_changePolygon'
             },
 
-
+            /**
+             * @type object
+             */
             timeslotDefault : {},
 
-
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "resourceService": "ResourceService",
+                    "_resourceService": "ResourceService",
                     "ReceiverContainerAggregate": {
-                        "timeslotReceiver" : "TimeslotReceiver"
+                        "_timeslotReceiver" : "TimeslotReceiver"
                     },
+                    // TODO add storage service on the player
                     "StorageContainerAggregate": {
-                        "timeslotStorage":"TimeslotStorage"
+                        "_timeslotStorage":"TimeslotStorage"
                     },
                     "HydratorContainerAggregate": {
-                        "timeslotEntityHydrator" : "TimeslotEntityHydrator"
+                        "_timeslotEntityHydrator" : "TimeslotEntityHydrator"
                     }
                 }
             },
 
-            timeslotReceiver : {
+            /**
+             * @type ResourceService
+             */
+            _resourceService: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type ReceiverInterface
+             */
+            _timeslotReceiver : {
+                type: Object,
+                readOnly: true,
                 observer: '_changeTimeslotReceiver'
+            },
+
+            /**
+             * @type StorageInterface
+             */
+            _timeslotStorage : {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type HydratorInteface
+             */
+            _timeslotEntityHydrator : {
+                type: Object,
+                readOnly: true
             }
         }
     }
 
     static get observers() {
         return [
-            '_changeDefaultTimeslotId(defaultTimeslotId, timeslotStorage)',
+            '_changeDefaultTimeslotId(defaultTimeslotId, _timeslotStorage)',
         ]
     }
 
+    /**
+     * @param newValue
+     * @private
+     */
     _changeTimeslotReceiver(newValue) {
 
         if (!newValue) {
@@ -308,7 +370,7 @@ class PaperPlayer extends DsignServiceInjectorElement {
     startTimeslot(timeslot, data, context) {
         let playerTimeslot = document.createElement('paper-player-timeslot');
         // TODO refactor service injector
-        playerTimeslot.resourceService = this.resourceService;
+        playerTimeslot.resourceService = this._resourceService;
 
         playerTimeslot.height = this.height;
         playerTimeslot.width  = this.width;
@@ -384,7 +446,7 @@ class PaperPlayer extends DsignServiceInjectorElement {
                 break;
             default:
                 let timeslotWc = document.createElement('paper-player-timeslot');
-                timeslotWc.resourceService = this.resourceService;
+                timeslotWc.resourceService = this._resourceService;
                 let timeslot = this._hydrateTimeslot(msg.timeslot);
                 timeslotWc.height = this.height;
                 timeslotWc.width  = this.width;
@@ -499,11 +561,11 @@ class PaperPlayer extends DsignServiceInjectorElement {
 
     /**
      * @param data
-     * @returns {Timeslot}
+     * @returns {TimeslotEntity}
      * @private
      */
     _hydrateTimeslot(data) {
-        let timeslot = this.timeslotEntityHydrator.hydrate(data);
+        let timeslot = this._timeslotEntityHydrator.hydrate(data);
 
         if (!(timeslot instanceof TimeslotEntity)) {
             console.error('Wrong data timeslot');

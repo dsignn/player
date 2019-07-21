@@ -31,6 +31,7 @@ export const StoragePaginationMixin = (superClass) => {
                  */
                 page: {
                     type: Number,
+                    notify: true,
                     value: 1
                 },
 
@@ -39,7 +40,8 @@ export const StoragePaginationMixin = (superClass) => {
                  */
                 itemPerPage: {
                     type: Number,
-                    value: 10
+                    notify: true,
+                    value: 3
                 },
 
                 /**
@@ -47,6 +49,7 @@ export const StoragePaginationMixin = (superClass) => {
                  */
                 totalItems: {
                     type: Number,
+                    notify: true,
                     readOnly: true,
                     value: 0
                 },
@@ -73,18 +76,24 @@ export const StoragePaginationMixin = (superClass) => {
                 return;
             }
 
-            this.getEntities();
+            this.getPagedEntities();
+
+
+            this.listenerUpdate = new (require("@dsign/library").event.Listener)(this.getPagedEntities.bind(this));
+            storage.getEventManager().on(require("@dsign/library").storage.Storage.POST_SAVE, this.listenerUpdate);
         }
 
         /**
          * @private
          */
-        _getPagedEntities() {
+        getPagedEntities() {
 
             this._storage.getPaged(this.page, this.itemPerPage, this.filter)
                 .then((data) => {
                     this.set('entities', data);
                     this._setTotalItems(data.totalItems);
+                    this.notifyPath('totalItems');
+                    console.log(this.totalItems, this)
                 });
         }
     }

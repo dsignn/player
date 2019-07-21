@@ -43,10 +43,14 @@ export const StorageCrudMixin = (superClass) => {
                 this.splice('entities', index, 1);
             }
 
-            this._storage.delete(evt.detail)
-                .then((data) => {
-                    console.log('Delete crud mizin', data);
-                });
+            this._storage.delete(evt.detail).then(this._deleteCallback.bind(this));
+        }
+
+        /**
+         * @private
+         */
+        _deleteCallback(data) {
+            console.log('Delete crud mizin', data);
         }
 
         /**
@@ -59,10 +63,15 @@ export const StorageCrudMixin = (superClass) => {
                 return;
             }
 
-            this._storage.update(evt.detail)
-                .then((data) => {
-                    console.log('Update crud mizin', data);
-                });
+            this._storage.update(evt.detail).then(this._updateCallback.bind(this));
+        }
+
+        /**
+         * @param data
+         * @private
+         */
+        _updateCallback(data) {
+            console.log('Save crud mizin', data);
         }
 
         /**
@@ -75,10 +84,15 @@ export const StorageCrudMixin = (superClass) => {
                 return;
             }
 
-            this._storage.save(evt.detail)
-                .then((data) => {
-                    console.log('Save crud mizin', data);
-                });
+            this._storage.save(evt.detail).then(this._saveCallback.bind(this));
+        }
+
+        /**
+         * @param data
+         * @private
+         */
+        _saveCallback(data) {
+            console.log('Save crud mizin', data);
         }
     }
 };

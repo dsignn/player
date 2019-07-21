@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/paper-input/paper-input';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-form/iron-form';
@@ -13,13 +13,11 @@ import '@polymer/iron-flex-layout/iron-flex-layout';
 import '../paper-monitor-update/paper-monitor-update';
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language/upsert-language';
-import {DsignServiceInjectorElement} from "../../../../elements/service/dsign-service-injector";
-
 /**
  * @customElement
  * @polymer
  */
-class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -127,46 +125,61 @@ class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeEl
     static get properties () {
         return {
 
-            entityHydrator: {
-                type: String,
-                value: 'MonitorContaninerEntityHydrator'
-            },
-
-            services : {
-                value : {
-                    "EntityContainerAggregate" : "EntityContainerAggregate",
-                    "HydratorContainerAggregate" : "HydratorContainerAggregate",
-                    "StorageContainerAggregate": {
-                        "MonitorStorage":"MonitorStorage"
-                    }
-                }
-            },
-
+            /**
+             * @type object
+             */
             entity: {
                 observer: '_changeEntity',
                 value: {}
             },
 
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 value: 0
             },
 
+            /**
+             * @type string
+             */
             labelAction: {
                 type: String,
                 value: 'save'
             },
 
+            /**
+             * @type boolean
+             */
             showAlwaysOnTop: {
                 value: false
-            }
-        };
-    }
+            },
 
-    static get observers() {
-        return [
-            'observerEntityToInject(entity, entityHydrator, HydratorContainerAggregate)'
-        ]
+            /**
+             * @type object
+             */
+            services : {
+                value : {
+                    _notify : "Notify",
+                    _localizeService: 'Localize',
+                    "HydratorContainerAggregate" : {
+                        _monitorHydrator : "MonitorEntityHydrator"
+                    },
+                    StorageContainerAggregate : {
+                        _storage :"MonitorStorage"
+                    }
+                }
+            },
+
+            /**
+             * @type Notify
+             */
+            _notify: {
+                type: Object,
+                readOnly: true
+            },
+        };
     }
 
     ready() {
@@ -226,13 +239,15 @@ class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeEl
      */
     submitMonitorContainer(evt) {
         let method = this.getStorageUpsertMethod();
-        this.MonitorStorage[method](this.entity)
+        this._storage[method](this.entity)
             .then((data) => {
 
                 if (method === 'save') {
-                    this.entity = new (this.EntityContainerAggregate.get(MonitorConfig.MONITOR_CONTAINER_ENTITY_SERVICE).constructor)();
+                    this.entity = this._storage.getHydrator().hydrate({});
                     this.$.formMonitorContainer.reset();
                 }
+
+                this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
             });
     }
 
@@ -248,9 +263,7 @@ class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeEl
      */
     submitMonitor(evt) {
         evt.preventDefault();
-        let monitor = this.HydratorContainerAggregate
-            .get(MonitorConfig.MONITOR_HYDRATOR_SERVICE)
-            .hydrate(this.$.formMonitor.serializeForm());
+        let monitor = this._monitorHydrator.hydrate(this.$.formMonitor.serializeForm());
 
         monitor.setId(
             require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId()
@@ -291,7 +304,7 @@ class MonitorViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeEl
      * @private
      */
     _toogleAlwaysOnTop(evt) {
-        this.MonitorStorage.update(this.entity)
+        this._storage.update(this.entity)
             .then((data) => {
                 console.info('Change always on top');
             });

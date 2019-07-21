@@ -53,16 +53,20 @@ export const StorageEntityMixin = (superClass) => {
                 return;
             }
 
-            let hydrator = new newValue.getHydrator();
+            /**
+             * auto update entity
+             */
+            if (this.autoUpdateEntity) {
+                this._autoUpdateFn();
+            }
+
+            let hydrator = newValue.getHydrator();
 
             if (typeof hydrator.getTemplateObjectHydration !== 'function' || this.entity instanceof hydrator.getTemplateObjectHydration().constructor) {
                 return;
             }
 
-            this.entity = hydratorContainerAggregate.get(entityHydrator).hydrate(this.entity);
-            if (this.autoUpdateEntity) {
-                this._autoUpdateFn();
-            }
+            this.entity = hydrator.hydrate(this.entity);
         }
 
         /**

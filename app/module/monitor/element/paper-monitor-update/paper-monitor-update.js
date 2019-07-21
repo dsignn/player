@@ -1,8 +1,6 @@
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {html} from '@polymer/polymer/polymer-element.js';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
-import '@polymer/iron-flex-layout/iron-flex-layout';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-input/paper-input';
@@ -12,12 +10,11 @@ import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-toggle-button/paper-toggle-button';
 import {lang} from './language/language';
 
-
 /**
  * @customElement
  * @polymer
  */
-class PaperMonitorUpdate extends  mixinBehaviors([EntityBehavior], DsignLocalizeElement)  {
+class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -112,16 +109,34 @@ class PaperMonitorUpdate extends  mixinBehaviors([EntityBehavior], DsignLocalize
     static get properties () {
         return {
 
+            /**
+             * @object
+             */
+            services : {
+                value : {
+                    _localizeService: 'Localize'
+                }
+            },
+
+            /**
+             * @type string
+             */
             identifier : {
                 type: String,
                 reflectToAttribute : true
 
             },
 
+            /**
+             * @type object
+             */
             entity: {
                 observer: 'changeMonitor'
             },
 
+            /**
+             * @type boolean
+             */
             hiddenAlwaysOnTop: {
                 type: Boolean,
                 notify: true,

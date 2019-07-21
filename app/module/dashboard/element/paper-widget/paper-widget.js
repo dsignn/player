@@ -1,6 +1,6 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
-import {LocalizeMixin} from "../mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
 
 export class PaperWidget extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 

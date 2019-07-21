@@ -1,47 +1,67 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {DsignServiceInjectorElement} from "../../../../elements/service/dsign-service-injector";
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
 
 /**
  * @customElement
  * @polymer
  */
-class PaperPlayerManager extends DsignServiceInjectorElement {
+class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
 
 
     static get properties () {
         return {
 
+            /**
+             * @type MonitorEntity
+             */
             monitor : {
                 notify: true
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
                     "ReceiverContainerAggregate": {
-                        "monitorReceiver":"MonitorReceiver"
+                        "_monitorReceiver":"MonitorReceiver"
                     },
                     "HydratorContainerAggregate": {
-                        "monitorEntityHydrator": "MonitorEntityHydrator"
+                        // TODO add storage service on the player
+                        "_monitorEntityHydrator": "MonitorEntityHydrator"
                     }
                 }
             },
 
-            monitorReceiver : {
-                observer : 'attachReceiver'
+            /**
+             * @type ReceiverInterface
+             */
+            _monitorReceiver : {
+                type: Object,
+                readOnly: true,
+                observer : 'changeMonitorReceiver'
+            },
+
+            /**
+             * @type ReceiverInterface
+             */
+            _monitorEntityHydrator : {
+                type: Object,
+                readOnly: true
             }
         }
     }
 
     /**
-     * @param newValue
+     * @param {ReceiverInterface} monitorReceiver
      */
-    attachReceiver(newValue) {
-        if(!newValue) {
+    changeMonitorReceiver(monitorReceiver) {
+        if(!monitorReceiver) {
             return
         }
 
-        newValue.on('paper-player-update', this.updatePaperPlayer.bind(this));
-        newValue.on('paper-player-config', this.configPaperPlayer.bind(this));
+        monitorReceiver.on('paper-player-update', this.updatePaperPlayer.bind(this));
+        monitorReceiver.on('paper-player-config', this.configPaperPlayer.bind(this));
     }
 
     /**
@@ -50,7 +70,7 @@ class PaperPlayerManager extends DsignServiceInjectorElement {
      */
     configPaperPlayer(evt, msg) {
 
-        this.monitor = this.monitorEntityHydrator.hydrate(msg);
+        this.monitor = this._monitorEntityHydrator.hydrate(msg);
         this._appendPaperPlayer(document.body, this.monitor);
     }
 
@@ -60,7 +80,7 @@ class PaperPlayerManager extends DsignServiceInjectorElement {
      */
     updatePaperPlayer(evt, msg) {
 
-        this.monitor = this.monitorEntityHydrator.hydrate(msg);
+        this.monitor = this._monitorEntityHydrator.hydrate(msg);
         // TODO implements better solution
         let paperPlayer = document.querySelector('paper-player');
         paperPlayer.remove();

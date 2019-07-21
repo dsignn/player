@@ -19,6 +19,7 @@ export const LocalizeMixin = (superClass) => {
                 _localizeService: {
                     type: Object,
                     readOnly: true,
+                    notify: true,
                     observer: 'changedLocalizeService'
                 }
             };
@@ -28,11 +29,9 @@ export const LocalizeMixin = (superClass) => {
          * @param newValue
          */
         changedLocalizeService(newValue) {
-
             if (!newValue) {
                 return;
             }
-
             this.language = this._localizeService.getDefaultLang();
             this._evtListener = new Listener(this.changeLanguage.bind(this));
             this._localizeService.getEventManager().on(Localize.CHANGE_LANGUAGE, this._evtListener)

@@ -228,18 +228,32 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
 
         let strategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         strategy.setHydrator(MonitorConfig.getMonitorEntityHydrator(container));
-        hydrator.addValueStrategy('monitors', strategy)
+
+        hydrator.addPropertyStrategy(
+            'id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        ).addPropertyStrategy(
+            '_id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        );
+
+        hydrator.addValueStrategy('id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('_id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('monitors', strategy)
             .addValueStrategy('enable', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
             ));
 
         hydrator.enableExtractProperty('id')
+            .enableExtractProperty('_id')
             .enableExtractProperty('name')
             .enableExtractProperty('enable')
             .enableExtractProperty('monitors');
 
         hydrator.enableHydrateProperty('id')
+
+            .enableHydrateProperty('_id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('enable')
             .enableHydrateProperty('monitors');
@@ -257,6 +271,7 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
 
         let strategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
         strategy.setHydrator(hydrator);
+
         hydrator.addValueStrategy('monitors', strategy)
             .addValueStrategy('alwaysOnTop', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,

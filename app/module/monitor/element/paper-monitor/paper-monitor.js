@@ -1,8 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
-import '@polymer/iron-flex-layout/iron-flex-layout';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-listbox/paper-listbox';
@@ -14,7 +13,7 @@ import {lang} from './language/language';
  * @customElement
  * @polymer
  */
-class PaperMonitor extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class PaperMonitor extends  StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -54,6 +53,8 @@ class PaperMonitor extends mixinBehaviors([EntityBehavior], DsignLocalizeElement
                 #content {
                     @apply --layout-flex;
                     padding: 4px;
+                    word-break: break-all;
+                    overflow: hidden;
                 }  
                    
                 paper-menu-button {
@@ -94,16 +95,31 @@ class PaperMonitor extends mixinBehaviors([EntityBehavior], DsignLocalizeElement
 
     static get properties () {
         return {
+            /**
+             * @object
+             */
             services : {
                 value : {
+                    _localizeService: 'Localize',
                     "StorageContainerAggregate": {
-                        "monitorStorage":"MonitorStorage"
+                        "_storage":"MonitorStorage"
                     }
                 }
             },
 
-            monitorStorage : {
-                observer: 'observerStorageToUpdateEntity'
+            /**
+             * @type StorageInterface
+             */
+            _storage: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type true
+             */
+            autoUpdateEntity: {
+                value: true
             }
         }
     }

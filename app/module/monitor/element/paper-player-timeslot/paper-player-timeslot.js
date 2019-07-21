@@ -1,11 +1,11 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {DsignServiceInjectorElement} from "../../../../elements/service/dsign-service-injector";
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
 
 /**
  * @customElement
  * @polymer
  */
-class PaperPlayerTimeslot extends DsignServiceInjectorElement {
+class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
 
 
     static get template() {
@@ -55,10 +55,16 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
     static get properties () {
         return {
 
+            /**
+             * @type object
+             */
             timeslot: {
                 type: Object
             },
 
+            /**
+             * @type string
+             */
             timeslotId: {
                 type: String,
                 reflectToAttribute: true,
@@ -66,38 +72,57 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
 
             /**
              * Is the of the Object that may contain the timeslot EX. playlist
+             * @type string
              */
             wrapperTimeslotId: {
                 type: String,
                 reflectToAttribute: true
             },
 
+            /**
+             * @type number
+             */
             height: {
                 type: Number,
                 notify : true
             },
 
+            /**
+             * @type number
+             */
             width: {
                 type: Number,
                 notify : true
             },
 
+            /**
+             * @type number
+             */
             startAt: {
                 type: Number,
                 value : 0
             },
 
+            /**
+             * @type object
+             */
             filters: {
                 type: Object,
                 observer: '_changeFilters'
             },
 
+            /**
+             * @type object
+             */
             data: {
                 type: Object,
                 notify: true,
                 value: {}
             },
 
+            /**
+             * @type string
+             */
             basePath : {
                 type: String,
                 readOnly : true
@@ -105,6 +130,7 @@ class PaperPlayerTimeslot extends DsignServiceInjectorElement {
 
             /**
              * For debug
+             * @type number
              */
             _timeInterval: {
                 type: Number,
