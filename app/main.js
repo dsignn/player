@@ -527,7 +527,6 @@ ipcMain.on('proxy', (event, message) => {
             application.updatePlayerMonitors(message.data);
             break;
         case 'paper-gpu-open':
-            console.log('dai tponi')
             application.createGpuWindows();
             break;
         case 'dashboard-always-on-top':
