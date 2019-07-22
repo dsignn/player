@@ -93,7 +93,6 @@ export const StoragePaginationMixin = (superClass) => {
                     this.set('entities', data);
                     this._setTotalItems(data.totalItems);
                     this.notifyPath('totalItems');
-                    console.log(this.totalItems, this)
                 });
         }
     }

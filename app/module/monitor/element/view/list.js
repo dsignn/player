@@ -123,6 +123,9 @@ class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMi
         this.selected = 2;
     }
 
+    /**
+     * @private
+     */
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
     }

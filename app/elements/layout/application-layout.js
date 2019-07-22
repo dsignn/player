@@ -130,7 +130,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'monitor'
+                value : 'resource'
             },
 
             modules: {

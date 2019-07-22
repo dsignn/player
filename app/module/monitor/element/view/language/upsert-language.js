@@ -13,7 +13,7 @@ export const lang = {
     "update" : "Modifica",
     "father-monitor" : "Monitor padre",
     "notify-save" : "Monitor saved",
-    "notify-update" : "Monitor update"
+    "notify-update" : "Monitor updated"
   },
   "en": {
     "header": "List monitor",

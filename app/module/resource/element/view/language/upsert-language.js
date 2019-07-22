@@ -13,7 +13,9 @@ export const lang = {
     "update" : "Modifica",
     "father-monitor" : "Monitor padre",
     "search-file" : "Cerca file",
-    "tag" : 'Tag'
+    "tag" : 'Tag',
+    "notify-save" : "Risorsa salvata",
+    "notify-update" : "Risorsa modificata"
   },
   "en": {
     "header": "List monitor",
@@ -29,6 +31,8 @@ export const lang = {
     "update" : "Update",
     "father-monitor" : "Father monitor",
     "search-file" : "Search file",
-    "tag" : 'Tag'
+    "tag" : 'Tag',
+    "notify-save" : "Resource saved",
+    "notify-update" : "Resource updated"
   }
 };

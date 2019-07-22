@@ -1,7 +1,8 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StoragePaginationMixin} from "../../../../elements/mixin/storage/pagination-mixin";
+import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import "../../element/paper-resource/paper-resource";
@@ -11,7 +12,7 @@ import {lang} from './language/list-language';
  * @customElement
  * @polymer
  */
-class ResourceViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
 
     static get template() {
         return html`
@@ -75,32 +76,41 @@ class ResourceViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
 
     static get properties () {
         return {
+
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 notify: true,
                 value: 0
             },
 
+            /**
+             * @type FileEntity
+             */
             entitySelected: {
                 notify: true
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "storageContainerAggregate": 'StorageContainerAggregate'
+                    _notify : "Notify",
+                    _localizeService: 'Localize',
+                    "StorageContainerAggregate": {
+                        _storage: "ResourceStorage"
+                    }
                 }
-            },
-
-            storageService : {
-                value: 'ResourceStorage'
             }
         };
     }
 
     static get observers() {
         return [
-            'observerStorage(storageContainerAggregate, storageService)',
-            'observerPaginationEntities(page, itemPerPage, storage)'
+            'observerPaginationEntities(page, itemPerPage, _storage)'
         ]
     }
 
@@ -111,6 +121,13 @@ class ResourceViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
     _showUpdateView(evt) {
         this.entitySelected = evt.detail;
         this.selected = 2;
+    }
+
+    /**
+     * @private
+     */
+    _deleteCallback() {
+        this._notify.notify(this.localize('notify-delete'));
     }
 }
 window.customElements.define('resource-view-list', ResourceViewList);

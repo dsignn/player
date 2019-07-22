@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-dialog/paper-dialog';
@@ -15,7 +15,7 @@ import {lang} from './language/language';
  * @customElement
  * @polymer
  */
-class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class PaperResource extends  StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -52,9 +52,12 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
                     @apply --layout-flex;
                 }
                 
+                          
                 #content {
                     @apply --layout-flex;
                     padding: 4px;
+                    word-break: break-all;
+                    overflow: hidden;
                 }  
                    
                 paper-menu-button {
@@ -142,19 +145,42 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
         return {
             services : {
                 value : {
-                    "StorageContainerAggregate": {
-                        "resourceStorage":"ResourceStorage"
-                    },
-                    "resourceService" : "ResourceService"
+                    _localizeService: 'Localize',
+                    _resourceService : "ResourceService",
+                    StorageContainerAggregate: {
+                        "_storage":"ResourceStorage"
+                    }
                 }
             },
 
-            resourceStorage : {
-                observer: 'observerStorageToUpdateEntity'
+            /**
+             * @type StorageInterface
+             */
+            _storage: {
+                type: Object,
+                readOnly: true
             },
 
+            /**
+             * @type ResourceService
+             */
+            _resourceService: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type FileEntity
+             */
             entity: {
                 observer: '_entityChanged'
+            },
+
+            /**
+             * @type true
+             */
+            autoUpdateEntity: {
+                value: true
             }
         }
     }
@@ -198,12 +224,12 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
         switch (true) {
             case this.entity instanceof ImageEntity === true:
                 element = document.createElement('img');
-                element.src = this.resourceService.getResourcePath(this.entity)  + '?' + new Date().getTime();
+                element.src = this._resourceService.getResourcePath(this.entity)  + '?' + new Date().getTime();
                 break;
             case this.entity instanceof AudioEntity === true:
             case this.entity instanceof VideoEntity === true:
                 element = document.createElement('video');
-                element.src = this.resourceService.getResourcePath(this.entity)  + '?' + new Date().getTime();
+                element.src = this._resourceService.getResourcePath(this.entity)  + '?' + new Date().getTime();
                 element.setAttribute('autoplay', true);
                 element.muted = true; // TODO remove for debug
                 element.setAttribute('controls', true);
@@ -211,7 +237,7 @@ class PaperResource extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
             case this.entity instanceof FileEntity === true:
                 if (!customElements.get(this.entity.wcName)) {
 
-                    import(this.resourceService.getResourcePath(this.entity).replace('.html', '.js'))
+                    import(this._resourceService.getResourcePath(this.entity).replace('.html', '.js'))
                         .then((module) => {
                             element = document.createElement(this.entity.wcName);
                             element.createMockData();

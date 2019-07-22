@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/paper-input/paper-input';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-chip/paper-chips';
@@ -20,7 +20,7 @@ import {lang} from './language/upsert-language';
  * @customElement
  * @polymer
  */
-class ResourceViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -54,27 +54,45 @@ class ResourceViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
     static get properties () {
         return {
 
+            /**
+             * @type FileEntity
+             */
             entity: {
                 observer: '_changeEntity',
-                value: {}
+                value: {type: "text/html"}
             },
 
+            /**
+             * @type string
+             */
             labelAction: {
                 type: String,
                 value: 'save'
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "StorageContainerAggregate": {
-                        "resourceStorage":"ResourceStorage"
+                    _notify : "Notify",
+                    _localizeService: 'Localize',
+                    "HydratorContainerAggregate" : {
+                        _resourceHydrator : "ResourceEntityHydrator"
                     },
-                    "HydratorContainerAggregate": {
-                        "resourceEntityHydrator":"ResourceEntityHydrator"
+                    StorageContainerAggregate : {
+                        _storage :"ResourceStorage"
                     }
                 }
             },
 
+            /**
+             * @type Notify
+             */
+            _notify: {
+                type: Object,
+                readOnly: true
+            },
         };
     }
 
@@ -130,12 +148,11 @@ class ResourceViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
         let name = this.$.name.value;
         let toHydrate =  method === 'update' ? this.entity : undefined;
 
-        this.entity = this.resourceEntityHydrator.hydrate(this.$.fileUpload.files[0], toHydrate);
+        this.entity = this._resourceHydrator.hydrate(this.$.fileUpload.files[0], toHydrate);
         this.entity.name = name;
         this.entity.resourceToImport = this.$.fileUpload.files[0];
 
-
-        this.resourceStorage[method](this.entity)
+        this._storage[method](this.entity)
             .then((data) => {
 
                 if (method === 'save') {
@@ -146,6 +163,7 @@ class ResourceViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                 }
 
                 this.$.fileUpload.reset();
+                this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
             });
 
     }
