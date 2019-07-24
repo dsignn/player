@@ -41,7 +41,7 @@ export const StoragePaginationMixin = (superClass) => {
                 itemPerPage: {
                     type: Number,
                     notify: true,
-                    value: 3
+                    value: 4
                 },
 
                 /**

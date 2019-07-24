@@ -64,7 +64,7 @@ export class PaperAlwaysOnTop extends LocalizeMixin(ServiceInjectorMixin(Polymer
     /**
      * @param {MonitorService} monitorService
      */
-    changedMonitorService(monitorService) {
+    changeMonitorService(monitorService) {
         if (!monitorService) {
             return;
         }

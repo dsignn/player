@@ -42,9 +42,9 @@ class TimeslotEntity extends require("@dsign/library").storage.entity.EntityIden
         this.context = TimeslotEntity.CONTEXT_STANDARD;
 
         /**
-         * @type {null|integer}
+         * @type {integer}
          */
-        this.duration = null;
+        this.duration = 0;
 
         /**
          * @type {string}

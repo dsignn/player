@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-chip/paper-chips';
 import '@polymer/paper-checkbox/paper-checkbox';
@@ -18,7 +18,7 @@ import {lang} from './language/upsert-language';
  * @customElement
  * @polymer
  */
-class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))  {
 
     static get template() {
         return html`
@@ -161,16 +161,17 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
     static get properties () {
         return {
 
-            entityHydrator: {
-                type: String,
-                value: 'TimeslotEntityHydrator'
-            },
-
+            /**
+             * @type TimeslotEntity
+             */
             entity: {
                 observer: '_changeEntity',
                 value: {}
             },
 
+            /**
+             * @type string
+             */
             labelAction: {
                 type: String,
                 value: 'save'
@@ -178,22 +179,40 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
 
             services : {
                 value : {
-                    "hydratorContainerAggregate" : "HydratorContainerAggregate",
-                    "StorageContainerAggregate": {
-                        "timeslotStorage":"TimeslotStorage",
-                        "resourceStorage":"ResourceStorage"
+                    _notify: "Notify",
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate : {
+                        _storage : "TimeslotStorage",
+                        _resourceStorage: "ResourceStorage"
                     },
-                    "monitorService": "MonitorService"
+                    _monitorService: "MonitorService",
                 }
             },
 
-        };
-    }
+            /**
+             * @type Notify
+             */
+            _notify: {
+                type: Object,
+                readOnly: true
+            },
 
-    static get observers() {
-        return [
-            'observerEntityToInject(entity, entityHydrator, hydratorContainerAggregate)'
-        ]
+            /**
+             * @type StorageInterface
+             */
+            _resourceStorage: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type MonitorService
+             */
+            _monitorService: {
+                type: Object,
+                readOnly: true
+            }
+        };
     }
 
     constructor() {
@@ -238,7 +257,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _searchMonitor(evt) {
 
-        let enableMonitor = this.monitorService.getEnableMonitor();
+        let enableMonitor = this._monitorService.getEnableMonitor();
         let monitors = enableMonitor.id ? enableMonitor.getMonitors({nested: true}) : [];
 
         let filter = monitors.filter(
@@ -252,7 +271,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
             reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
             reference.setCollection('monitor');
             reference.setId(filter[cont].id);
-            reference.setParentId(this.monitorService.getEnableMonitor().getId());
+            reference.setParentId(this._monitorService.getEnableMonitor().getId());
             reference.name = filter[cont].name;
             filter[cont] = reference;
         }
@@ -268,7 +287,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _searchResource(evt) {
 
-        this.resourceStorage.getAll({name : evt.detail.value.text})
+        this._resourceStorage.getAll({name : evt.detail.value.text})
             .then((resources) => {
 
                 evt.detail.target.suggestions(
@@ -301,7 +320,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
 
         let reference = new (require("@dsign/library").storage.entity.EntityReference)();
         reference.setCollection('monitor');
-        reference.setId(this.monitorService.getEnableMonitor().getId());
+        reference.setId(this._monitorService.getEnableMonitor().getId());
         reference.name = evt.detail.value.name;
 
         this.push('entity.binds', reference);
@@ -320,7 +339,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _searchBindTimeslot(evt) {
 
-        this.timeslotStorage.getAll({name : evt.detail.value.text})
+        this._storage.getAll({name : evt.detail.value.text})
             .then((resources) => {
 
                 evt.detail.target.suggestions(
@@ -347,7 +366,7 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
         evt.preventDefault();
 
         let method = this.getStorageUpsertMethod();
-        this.timeslotStorage[method](this.entity)
+        this._storage[method](this.entity)
             .then((data) => {
 
                 if (method === 'save') {
@@ -356,6 +375,8 @@ class TimeslotViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
                     this.entity = new TimeslotEntity();
                     this.$.formTimeslot.reset();
                 }
+
+                this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
             });
 
     }

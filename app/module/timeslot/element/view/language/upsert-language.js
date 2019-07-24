@@ -10,7 +10,9 @@ export const lang = {
     "tag" : "Tag",
     "save" : "Salva",
     "update" : "Modifica",
-    "bind-timeslot" : "Aggancia un timeslot"
+    "bind-timeslot" : "Aggancia un timeslot",
+    "notify-save" : "Timeslot salvato",
+    "notify-update" : "Timeslot modificato"
   },
   "en": {
     "header": "List monitor",
@@ -23,6 +25,8 @@ export const lang = {
     "tag" : 'Tag',
     "save" : "Save",
     "update" : "Update",
-    "bind-timeslot" : "Bind timeslot"
+    "bind-timeslot" : "Bind timeslot",
+    "notify-save" : "Timeslot saved",
+    "notify-update" : "Timeslot updated"
   }
 };

@@ -1,7 +1,8 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StoragePaginationMixin} from "../../../../elements/mixin/storage/pagination-mixin";
+import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
 import "../paper-timeslot/paper-timeslot";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
@@ -11,7 +12,7 @@ import {lang} from './language/list-language';
  * @customElement
  * @polymer
  */
-class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
 
     static get template() {
         return html`
@@ -84,34 +85,48 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
 
     static get properties () {
         return {
+
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 notify: true,
                 value: 0
             },
 
+            /**
+             * @type boolean
+             */
             entitySelected: {
+                type: Boolean,
                 notify: true
             },
 
             services : {
                 value : {
-                    "storageContainerAggregate": 'StorageContainerAggregate',
-                    "timeslotService" : "TimeslotService"
+                    _notify : "Notify",
+                    _localizeService: "Localize",
+                    _timeslotService : "TimeslotService",
+                    StorageContainerAggregate: {
+                        _storage: "TimeslotStorage"
+                    }
                 }
-            },
-
-            storageService : {
-                value: 'TimeslotStorage'
             }
         };
     }
 
     static get observers() {
         return [
-            'observerStorage(storageContainerAggregate, storageService)',
-            'observerPaginationEntities(page, itemPerPage, storage)'
+            'observerPaginationEntities(page, itemPerPage, _storage)'
         ]
+    }
+
+    /**
+     * @private
+     */
+    _deleteCallback() {
+        this._notify.notify(this.localize('notify-delete'));
     }
 
     /**
@@ -127,28 +142,28 @@ class TimeslotViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      * @param evt
      */
     play(evt) {
-        this.timeslotService.play(evt.detail);
+        this._timeslotService.play(evt.detail);
     }
 
     /**
      * @param evt
      */
     resume(evt) {
-        this.timeslotService.resume(evt.detail);
+        this._timeslotService.resume(evt.detail);
     }
 
     /**
      * @param evt
      */
     stop(evt) {
-        this.timeslotService.stop(evt.detail);
+        this._timeslotService.stop(evt.detail);
     }
 
     /**
      * @param evt
      */
     pause(evt) {
-        this.timeslotService.pause(evt.detail);
+        this._timeslotService.pause(evt.detail);
     }
 
 }

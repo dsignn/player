@@ -23,7 +23,6 @@ export class PaperTimeslotTagsData extends PolymerElement {
         };
     }
 
-
     /**
      * @param evt
      */

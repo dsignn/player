@@ -1,17 +1,16 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {lang} from './language/language';
-
 
 /**
  * @customElement
  * @polymer
  */
-class PaperTimeslot extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -58,6 +57,8 @@ class PaperTimeslot extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
                 #content {
                     @apply --layout-flex;
                     padding: 4px;
+                    word-break: break-all;
+                    overflow: hidden;
                 }  
                    
                 paper-menu-button {
@@ -204,41 +205,66 @@ class PaperTimeslot extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
 
     static get properties () {
         return {
-            services : {
-                value : {
-                    "StorageContainerAggregate": {
-                        "timeslotStorage":"TimeslotStorage"
-                    }
-                }
-            },
 
-            timeslotStorage : {
-                observer: 'observerStorageToUpdateEntity'
-            },
-
+            /**
+             * @type TimeslotEntity
+             */
             entity : {
                 observer: '_entityChanged'
             },
 
+            /**
+             * @type number
+             */
             currentTime : {
+                type: Number,
                 notify: true,
                 value: 0
             },
 
+            /**
+             * @type string
+             */
             status : {
+                type: String,
                 notify: true
             },
 
+            /**
+             * @type boolean
+             */
             hideCrud : {
                 type: Boolean,
                 notify: true,
                 value: false
             },
 
+            /**
+             * @type boolean
+             */
             removeCrud: {
                 type: Boolean,
                 notify: true,
                 value: false
+            },
+
+            /**
+             * @type true
+             */
+            autoUpdateEntity: {
+                value: true
+            },
+
+            /**
+             * @type object
+             */
+            services : {
+                value : {
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        _storage: "TimeslotStorage"
+                    }
+                }
             }
         }
     }

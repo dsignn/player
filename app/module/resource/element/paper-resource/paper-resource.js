@@ -15,7 +15,7 @@ import {lang} from './language/language';
  * @customElement
  * @polymer
  */
-class PaperResource extends  StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
+class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -143,6 +143,25 @@ class PaperResource extends  StorageEntityMixin(LocalizeMixin(ServiceInjectorMix
 
     static get properties () {
         return {
+
+
+            /**
+             * @type FileEntity
+             */
+            entity: {
+                observer: '_entityChanged'
+            },
+
+            /**
+             * @type true
+             */
+            autoUpdateEntity: {
+                value: true
+            },
+
+            /**
+             * @type object
+             */
             services : {
                 value : {
                     _localizeService: 'Localize',
@@ -167,20 +186,6 @@ class PaperResource extends  StorageEntityMixin(LocalizeMixin(ServiceInjectorMix
             _resourceService: {
                 type: Object,
                 readOnly: true
-            },
-
-            /**
-             * @type FileEntity
-             */
-            entity: {
-                observer: '_entityChanged'
-            },
-
-            /**
-             * @type true
-             */
-            autoUpdateEntity: {
-                value: true
             }
         }
     }

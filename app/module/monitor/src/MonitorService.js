@@ -130,7 +130,7 @@ class MonitorService {
      * @return {Electron.Display[]}
      */
     getPhysicalMonitor() {
-        return require('electron').screen.getAllDisplays();
+        return require('electron').remote.screen.getAllDisplays();
     }
 
     /**

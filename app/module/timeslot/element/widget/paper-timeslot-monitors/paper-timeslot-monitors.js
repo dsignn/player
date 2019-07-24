@@ -1,21 +1,19 @@
-import {html} from '@polymer/polymer/polymer-element';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {DsignLocalizeElement} from "../../../../../elements/localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../../elements/mixin/localize/localize-mixin";
+import {StorageListMixin} from "../../../../../elements/mixin/storage/list-mixin";
 import {lang} from './language';
-import {EntityListBehavior} from "../../../../../elements/storage/entity-list-behaviour";
 import "../../paper-timeslot/paper-timeslot";
 
 /**
  *
  */
-export class PaperTimeslotMonitors extends mixinBehaviors([EntityListBehavior], DsignLocalizeElement) {
+export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))  {
 
     static get template() {
         return html`
             <template is="dom-repeat" items="[[entities]]" as="timeslot" sort="fromStatus">
-                <paper-timeslot entity="{{timeslot}}" on-play="play" on-resume="resume" on-stop="stop" on-pause="pause"
-                        hide-crud
-                        remove-crud>
+                <paper-timeslot entity="{{timeslot}}" on-play="play" on-resume="resume" on-stop="stop" on-pause="pause" hide-crud remove-crud>
                 </paper-timeslot>
             </template>
         `;
@@ -24,46 +22,46 @@ export class PaperTimeslotMonitors extends mixinBehaviors([EntityListBehavior], 
     static get properties () {
         return {
 
+            /**
+             *
+             */
             data : {
                 observer: "_changedData"
             },
 
+            /**
+             * @type FileEntity
+             */
+            entitySelected: {
+                notify: true
+            },
+
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "storageContainerAggregate": 'StorageContainerAggregate',
-                    "timeslotService" : "TimeslotService"
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        _storage: "TimeslotStorage"
+                    },
+                    _timeslotService: "TimeslotService"
                 }
             },
 
-            storageService : {
-                value: 'TimeslotStorage'
+            /**
+             * @type TimeslotService
+             */
+            _timeslotService: {
+                type: Object,
+                readOnly: true
             }
         };
-    }
-
-    static get observers() {
-        return [
-            'observerStorage(storageContainerAggregate, storageService)',
-            'observerFilter(storage, filter)'
-        ]
     }
 
     constructor() {
         super();
         this.resources = lang;
-    }
-
-    /**
-     * @param storage
-     * @param filter
-     */
-    observerFilter(storage, filter) {
-
-        if (!storage || Object.entries(filter).length === 0) {
-            return;
-        }
-
-        this.getEntities();
     }
 
     /**
@@ -93,6 +91,7 @@ export class PaperTimeslotMonitors extends mixinBehaviors([EntityListBehavior], 
             return;
         }
 
+        console.log('paper-timeslot-monitor', newValue);
         this.filter = {
             'parentId' : newValue
         };
@@ -120,28 +119,28 @@ export class PaperTimeslotMonitors extends mixinBehaviors([EntityListBehavior], 
      * @param evt
      */
     play(evt) {
-        this.timeslotService.play(evt.detail);
+        this._timeslotService.play(evt.detail);
     }
 
     /**
      * @param evt
      */
     resume(evt) {
-        this.timeslotService.resume(evt.detail);
+        this._timeslotService.resume(evt.detail);
     }
 
     /**
      * @param evt
      */
     stop(evt) {
-        this.timeslotService.stop(evt.detail);
+        this._timeslotService.stop(evt.detail);
     }
 
     /**
      * @param evt
      */
     pause(evt) {
-        this.timeslotService.pause(evt.detail);
+        this._timeslotService.pause(evt.detail);
     }
 }
 

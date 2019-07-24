@@ -1,13 +1,11 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
 import '@fluidnext-polymer/paper-chip/paper-chip';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/iron-icon/iron-icon';
 
-class PaperInputInjectorDataService extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement) {
 
     static get template() {
         return html`
@@ -112,18 +110,27 @@ class PaperInputInjectorDataService extends mixinBehaviors([EntityBehavior], Dsi
     static get properties() {
         return {
 
+            /**
+             * @type boolean
+             */
             hideDataInput: {
                 type: Boolean,
                 notify: true,
                 value: true
             },
 
+            /**
+             * @type string
+             */
             textProperty : {
                 type: String,
                 notify: true,
                 value: 'name'
             },
 
+            /**
+             * @type Array
+             */
             value: {
                 type: Array,
                 notify: true,
@@ -132,9 +139,17 @@ class PaperInputInjectorDataService extends mixinBehaviors([EntityBehavior], Dsi
 
             services : {
                 value : {
-                    injectorServices:"InjectorDataTimeslotAggregate"
+                    _injectorServices:"InjectorDataTimeslotAggregate"
                 }
             },
+
+            /**
+             * @type MonitorService
+             */
+            _injectorServices: {
+                type: Object,
+                readOnly: true
+            }
         }
     }
 
@@ -152,9 +167,9 @@ class PaperInputInjectorDataService extends mixinBehaviors([EntityBehavior], Dsi
     _serviceSearch(evt) {
 
         let suggestions = [];
-        for (let property in this.injectorServices.services) {
-            if (this.injectorServices.services[property].serviceLabel.search(new RegExp(evt.detail.value.text, 'i')) > -1) {
-                suggestions.push(this.injectorServices.services[property]);
+        for (let property in this._injectorServices.services) {
+            if (this._injectorServices.services[property].serviceLabel.search(new RegExp(evt.detail.value.text, 'i')) > -1) {
+                suggestions.push(this._injectorServices.services[property]);
             }
         }
 
@@ -213,8 +228,8 @@ class PaperInputInjectorDataService extends mixinBehaviors([EntityBehavior], Dsi
      * @private
      */
     _computeInjectorData(injector) {
-        let data = this.injectorServices.get(injector.name).getTimeslotData(injector.data);
-        return `${this.injectorServices.get(injector.name).serviceName} - ${data.name}`;
+        let data = this._injectorServices.get(injector.name).getTimeslotData(injector.data);
+        return `${this._injectorServices.get(injector.name).serviceName} - ${data.name}`;
     }
 
     /**

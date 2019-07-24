@@ -1,15 +1,15 @@
-import {html} from '@polymer/polymer/polymer-element';
-import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../../elements/mixin/localize/localize-mixin";
 import '@fluidnext-polymer/paper-chip/paper-chips';
 import '@polymer/paper-input/paper-input';
 import {DsignLocalizeElement} from "../../../../../elements/localize/dsign-localize";
-import {EntityPaginationBehavior} from "../../../../../elements/storage/entity-pagination-behaviour";
+import {StorageListMixin} from "../../../../../elements/mixin/storage/list-mixin";
 
 /**
  *
  */
-export class PaperTimeslotMonitorsData extends DsignLocalizeElement {
+export class PaperTimeslotMonitorsData extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -25,18 +25,25 @@ export class PaperTimeslotMonitorsData extends DsignLocalizeElement {
                 type: String
             },
 
+
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "monitorService": 'MonitorService'
+                    _localizeService: 'Localize',
+                    _monitorService: "MonitorService"
                 }
+            },
+
+            /**
+             * @type MonitorService
+             */
+            _monitorService: {
+                type: Object,
+                readOnly: true
             }
         };
-    }
-
-    static get observers() {
-        return [
-            'observerStorage(storageContainerAggregate, storageService)'
-        ]
     }
 
     /**
@@ -44,7 +51,7 @@ export class PaperTimeslotMonitorsData extends DsignLocalizeElement {
      * @private
      */
     _searchMonitor(evt) {
-        let enableMonitor = this.monitorService.getEnableMonitor();
+        let enableMonitor = this._monitorService.getEnableMonitor();
 
         let filter = enableMonitor.getMonitors({nested: true}).filter(
             element => {
@@ -96,7 +103,7 @@ export class PaperTimeslotMonitorsData extends DsignLocalizeElement {
             reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
             reference.setCollection('monitor');
             reference.setId(this.$.paperChips.items[cont].id);
-            reference.setParentId(this.monitorService.getEnableMonitor().getId());
+            reference.setParentId(this._monitorService.getEnableMonitor().getId());
             reference.name = this.$.paperChips.items[cont].name;
             data.push(reference);
         }
