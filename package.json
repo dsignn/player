@@ -1,7 +1,7 @@
 {
   "version": "0.1.0",
   "author": "antonino.visalli@gmail.com",
-  "name": "p3e",
+  "name": "@dsign/player",
   "description": "Polymer 3 in an electron application",
   "repository": "git@github.com:visa4/p3e.git",
   "license": "BSD-3-Clause",
@@ -12,6 +12,7 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
     "@babel/runtime": "^7.4.5",
+    "@dsignn/player-cli": "github:dsignn/player-cli",
     "@types/source-map": "^0.5.7",
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
@@ -32,13 +33,13 @@
     "postpolymer-build": "mv build/es6bundle/package.json build/es6bundle/app && cp app/style/icon/logo.png build/es6bundle/app/icon.png",
     "start-pre-build": "electron ./build/es6bundle/app/main.js --inspect=5858",
     "test": "polymer test",
-    "dist": "cd build/es6bundle/app && electron-builder -c.extraMetadata.main=main.js -w --x64",
+    "dist": "electron-builder --project build/es6bundle/app/ -c.extraMetadata.main=main.js -w --x64",
     "tsc-commonjs": "tsc  -p lib/commonjs",
-    "tsc-es6": "tsc  -p lib/es6"
+    "tsc-es6": "tsc  -p lib/es6",
+    "@dsign/player-cli": "github:dsignn/player-cli"
   },
   "dependencies": {
     "@dsign/library": "github:dsignn/library",
-    "@dsign/player-cli": "github:dsignn/player-cli",
     "@fluidnext-polymer/paper-autocomplete": "^3.0.2",
     "@fluidnext-polymer/paper-chip": "^3.1.1",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
@@ -81,17 +82,14 @@
     "archiver": "^3.0.0",
     "decompress": "^4.2.0",
     "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v3.1.0",
-    "express": "^4.17.1",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^8.0.1",
     "paper-collapse-item": "^4.0.5",
-    "source-map-support": "^0.5.12",
     "web-animations-js": "^2.3.1",
-    "webrtc-adapter": "^7.2.3",
     "js-acl": "^1.0.0"
   },
   "build": {
-    "appId": "p3e.app",
+    "appId": "dsign.player",
     "npmRebuild": false,
     "files": [
       "index.html",
@@ -103,10 +101,6 @@
       "entrypoint/**/*",
       "elements/**/*",
       "manifest.json",
-      {
-        "from": "../node_modules",
-        "to": "../node_modules"
-      },
       {
         "from": "../lib",
         "to": "../lib"
