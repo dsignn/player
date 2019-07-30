@@ -13,7 +13,7 @@ import {lang} from './language/language';
  * @customElement
  * @polymer
  */
-class PaperMonitor extends  StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
+class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`

@@ -56,14 +56,12 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
      */
     init() {
 
+        this.initAcl();
         this.initInjectorDataTimeslotCotainerAggregate();
         this.initTimeslotSender();
         this.initTimeslotReceiver();
         this.initEntity();
         this.initHydrator();
-
-        // this.initDexieStorage();
-
         this.initMongoStorage();
     }
 
@@ -362,6 +360,21 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
             .enableExtractProperty('data');
 
         return hydrator;
+    }
+
+    /**
+     *
+     */
+    initAcl() {
+
+        if (this.getContainer().has('Acl')) {
+
+            let aclService = this.getContainer().get('Acl');
+
+            // TODO add method on service
+            aclService.adapter.acl.addResource('timeslot');
+            aclService.adapter.acl.allow('guest', 'timeslot');
+        }
     }
 }
 

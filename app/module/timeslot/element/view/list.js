@@ -103,6 +103,9 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                 notify: true
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
                     _notify : "Notify",

@@ -88,9 +88,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 <app-header slot="header" fixed condenses effects="waterfall">
                     <app-toolbar>
                         <div main-title>{{localize('nameApp')}}</div>
-                        <template is="dom-if" if="[[isAllowed('Post')]]">
-                            test
-                        </template>
                         <paper-select-language></paper-select-language>
                         <paper-gpu-setting></paper-gpu-setting>
                         <paper-backup></paper-backup>
@@ -104,8 +101,10 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                         <div>
                             <dom-repeat id="menu" items="{{modules}}" as="module">
                                 <template>
-                                    <paper-icon-button id="{{module.name}}" class="menu" icon="{{module.icon}}" on-tap="_tapMenu"></paper-icon-button>
-                                    <paper-tooltip for="{{module.name}}" position="right">{{module.title}}</paper-tooltip>
+                                    <template is="dom-if" if="{{isAllowed(module.name)}}">
+                                        <paper-icon-button id="{{module.name}}" class="menu" icon="{{module.icon}}" on-tap="_tapMenu"></paper-icon-button>
+                                        <paper-tooltip for="{{module.name}}" position="right">{{module.title}}</paper-tooltip>
+                                    </template>
                                 </template>
                             </dom-repeat>
                         </div>
@@ -130,7 +129,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'timeslot'
+                value : 'dashboard'
             },
 
             modules: {

@@ -57,6 +57,7 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
      */
     init() {
 
+        this.initAcl();
         this.initEntity();
         this.initSender();
         this.initReceiver();
@@ -303,6 +304,21 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .enableHydrateProperty('defaultTimeslotId');
 
         return hydrator;
+    }
+
+    /**
+     *
+     */
+    initAcl() {
+
+        if (this.getContainer().has('Acl')) {
+
+            let aclService = this.getContainer().get('Acl');
+
+            // TODO add method on service
+            aclService.adapter.acl.addResource('monitor');
+            aclService.adapter.acl.allow('guest', 'monitor');
+        }
     }
 }
 

@@ -111,26 +111,12 @@ const jsAcl = new (require('js-acl'))();
 
 //All these actions you also can do in the middle of app execution
 jsAcl.addRole('guest');
-jsAcl.addRole('user', 'guest');
-jsAcl.addRole('admin', 'user');
+jsAcl.addRole('admin', 'guest');
 
-jsAcl.addResource('Post');
-jsAcl.addResource('Users');
-jsAcl.addResource('AdminPanel');
+const aclService = new Acl(new JsAclAdapter(jsAcl));
+aclService.setRole('guest');
 
-jsAcl.allow('guest', 'Post', 'view');
-
-//Users can edit edit their own posts & view it because user inherits all guest permissions
-jsAcl.allow('user', 'Post', 'edit', function (role, resource, privilege) {
-    return resource.authorId === role.id;
-});
-
-//Full access to all actions that available for Post
-jsAcl.allow('admin', 'Post');
-jsAcl.allow('admin', 'AdminPanel');
-
-
-container.set('Acl', new Acl(new JsAclAdapter(jsAcl)));
+container.set('Acl', aclService);
 
 /***********************************************************************************************************************
                                             DEXIE MANAGER SERVICE

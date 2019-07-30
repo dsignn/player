@@ -138,6 +138,10 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
                     background-color: transparent;
                 }
                 
+                paper-grid {
+                 background-color: red;
+                }
+                
                 .button-container {
                     display: flex;
                     flex-direction: column;
@@ -173,7 +177,7 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
                 </div>
         
             </paper-card>
-            <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="_udpate" on-move="_udpate" row-autogrow col-autogrow draggable resizable animated overlappable>
+            <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="_udpate" on-move="_udpate" row-autogrow col-autogrow draggable resizable animated overlappable auto-adjustment>
             </paper-grid>
         `;
     }

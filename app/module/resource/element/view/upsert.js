@@ -156,9 +156,7 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
             .then((data) => {
 
                 if (method === 'save') {
-                   // this.entity = new (this.EntityContainerAggregate.get(MonitorConfig.MONITOR_CONTAINER_ENTITY_SERVICE).constructor)();
-                   // this.$.formResource.reset();
-                    this.entity = {};
+                    this.entity = this._storage.getHydrator().hydrate({type: "text/html"});
                     this.$.formResource.reset();
                 }
 

@@ -57,11 +57,9 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
      */
     init() {
 
+        this.initAcl();
         this.initEntity();
         this.initHydrator();
-
-        //this.initDexieStorage();
-
         this.initMongoStorage();
     }
 
@@ -109,7 +107,7 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
 
         let loadStorage = () => {
 
-            const adapter = new (require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter)(
+            const adapter = new MongoPlaylistAdapter(
                 this.getContainer().get('MongoDb'),
                 PlaylistConfig.COLLECTION
             );
@@ -290,6 +288,21 @@ class PlaylistConfig extends require("@dsign/library").container.ContainerAware 
             .enableExtractProperty('name');
 
         return hydrator;
+    }
+
+    /**
+     *
+     */
+    initAcl() {
+
+        if (this.getContainer().has('Acl')) {
+
+            let aclService = this.getContainer().get('Acl');
+
+            // TODO add method on service
+            aclService.adapter.acl.addResource('playlist');
+            aclService.adapter.acl.allow('guest', 'playlist');
+        }
     }
 }
 

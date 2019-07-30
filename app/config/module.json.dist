@@ -1,159 +1,175 @@
 [
-  {
-    "title" : "Dashboard",
-    "name": "dashboard",
-    "icon" : "dashboard:menu",
-    "entryPoint" : {
-      "name" : "dashboard-index",
-      "path" : "index.js"
+    {
+        "title": "Dashboard",
+        "name": "dashboard",
+        "icon": "dashboard:menu",
+        "entryPoint": {
+            "name": "dashboard-index",
+            "path": "index.js"
+        },
+        "configEntryPoint": "config.js",
+        "autoloads": [
+            "src/storage/entity/WidgetEntity.js"
+        ],
+        "autoloadsWs": [
+            {
+                "name": "dashboard-icons",
+                "path": "element/icons/icons.js"
+            }
+        ]
     },
-    "configEntryPoint": "config.js",
-    "autoloads" : [
-      "src/storage/entity/WidgetEntity.js"
-    ],
-    "autoloadsWs": [
-      {
-        "name" : "dashboard-icons",
-        "path" : "element/icons/icons.js"
-      }
-    ]
-  },
-  {
-    "title" : "Monitor",
-    "name": "monitor",
-    "icon" : "monitor:menu",
-    "entryPoint" : {
-      "name" : "monitor-index",
-      "path" : "index.js"
+    {
+        "title": "Monitor",
+        "name": "monitor",
+        "icon": "monitor:menu",
+        "entryPoint": {
+            "name": "monitor-index",
+            "path": "index.js"
+        },
+        "configEntryPoint": "config.js",
+        "autoloads": [
+            "src/MonitorService.js",
+            "src/storage/entity/MonitorEntity.js",
+            "src/storage/entity/MonitorContainerEntity.js",
+            "src/storage/adapter/dexie/DexieMonitorAdapter.js",
+            "src/storage/adapter/mongo/MongoMonitorAdapter.js"
+        ],
+        "autoloadsWs": [
+            {
+                "name": "monitor-icons",
+                "path": "element/icons/icons.js"
+            },
+            {
+                "name": "paper-player",
+                "path": "element/paper-player/paper-player.js"
+            },
+            {
+                "name": "paper-player-manager",
+                "path": "element/paper-player-manager/paper-player-manager.js"
+            },
+            {
+                "name": "paper-player-timeslot",
+                "path": "element/paper-player-timeslot/paper-player-timeslot.js"
+            },
+            {
+                "name": "paper-monitor-viewer",
+                "path": "element/paper-monitor-viewer/paper-monitor-viewer.js"
+            }
+        ]
     },
-    "configEntryPoint": "config.js",
-    "autoloads" : [
-      "src/MonitorService.js",
-      "src/storage/entity/MonitorEntity.js",
-      "src/storage/entity/MonitorContainerEntity.js",
-      "src/storage/adapter/dexie/DexieMonitorAdapter.js",
-      "src/storage/adapter/mongo/MongoMonitorAdapter.js"
-    ],
-    "autoloadsWs": [
-      {
-        "name" : "monitor-icons",
-        "path" : "element/icons/icons.js"
-      },
-      {
-        "name" : "paper-player",
-        "path" : "element/paper-player/paper-player.js"
-      },
-      {
-        "name" : "paper-player-manager",
-        "path" : "element/paper-player-manager/paper-player-manager.js"
-      },
-      {
-        "name" : "paper-player-timeslot",
-        "path" : "element/paper-player-timeslot/paper-player-timeslot.js"
-      },
-      {
-        "name" : "paper-monitor-viewer",
-        "path" : "element/paper-monitor-viewer/paper-monitor-viewer.js"
-      }
-    ]
-  },
-  {
-    "title" : "Resource",
-    "name": "resource",
-    "icon" : "resource:menu",
-    "configEntryPoint": "config.js",
-    "entryPoint" : {
-      "name" : "resource-index",
-      "path" : "index.js"
+    {
+        "title": "Resource",
+        "name": "resource",
+        "icon": "resource:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "resource-index",
+            "path": "index.js"
+        },
+        "autoloads": [
+            "src/storage/adapter/dexie/DexieResourceAdapter.js",
+            "src/storage/adapter/mongo/MongoResourceAdapter.js",
+            "src/ResourceService.js",
+            "src/storage/entity/FileEntity.js",
+            "src/storage/entity/AudioEntity.js",
+            "src/storage/entity/ImageEntity.js",
+            "src/storage/entity/VideoEntity.js"
+        ],
+        "autoloadsWs": [
+            {
+                "name": "resource-icons",
+                "path": "element/icons/icons.js"
+            }
+        ]
     },
-    "autoloads" : [
-      "src/storage/adapter/dexie/DexieResourceAdapter.js",
-      "src/storage/adapter/mongo/MongoResourceAdapter.js",
-      "src/ResourceService.js",
-      "src/storage/entity/FileEntity.js",
-      "src/storage/entity/AudioEntity.js",
-      "src/storage/entity/ImageEntity.js",
-      "src/storage/entity/VideoEntity.js"
-    ],
-    "autoloadsWs": [
-      {
-        "name" : "resource-icons",
-        "path" : "element/icons/icons.js"
-      }
-    ]
-  },
-  {
-    "title" : "Timeslot",
-    "name": "timeslot",
-    "icon" : "timeslot:menu",
-    "configEntryPoint": "config.js",
-    "entryPoint" : {
-      "name" : "timeslot-index",
-      "path" : "index.js"
+    {
+        "title": "Timeslot",
+        "name": "timeslot",
+        "icon": "timeslot:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "timeslot-index",
+            "path": "index.js"
+        },
+        "autoloads": [
+            "src/injector/AbstractInjector.js",
+            "src/AbstractTimeslotService.js",
+            "src/TimeslotService.js",
+            "src/storage/entity/TimeslotEntity.js",
+            "src/storage/entity/embedded/Injector.js",
+            "src/storage/adapter/dexie/DexieTimeslotAdapter.js",
+            "src/storage/adapter/mongo/MongoTimeslotAdapter.js",
+            "src/injector/Test1.js",
+            "src/injector/Test2.js"
+        ],
+        "autoloadsWs": [
+            {
+                "name": "timeslot-icons",
+                "path": "element/icons/icons.js"
+            }
+        ],
+        "widgets": [
+            {
+                "src": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags.js",
+                "srcData": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data.js",
+                "description": "Widget to view tagged timeslot",
+                "name": "Timeslot tags",
+                "wc": "paper-timeslot-tags",
+                "wcData": "paper-timeslot-tags-data",
+                "dataProperty": "tags",
+                "dataLabel": "tags",
+                "dataRequired": true
+            },
+            {
+                "src": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors.js",
+                "srcData": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data.js",
+                "description": "Widget to view the timeslots assiate to the montors",
+                "name": "Timeslot monitors",
+                "wc": "paper-timeslot-monitors",
+                "wcData": "paper-timeslot-monitors-data",
+                "dataProperty": "monitors",
+                "dataLabel": "monitors",
+                "dataRequired": true
+            }
+        ]
     },
-    "autoloads" : [
-      "src/injector/AbstractInjector.js",
-      "src/AbstractTimeslotService.js",
-      "src/TimeslotService.js",
-      "src/storage/entity/TimeslotEntity.js",
-      "src/storage/entity/embedded/Injector.js",
-      "src/storage/adapter/dexie/DexieTimeslotAdapter.js",
-      "src/storage/adapter/mongo/MongoTimeslotAdapter.js",
-      "src/injector/Test1.js",
-      "src/injector/Test2.js"
-    ],
-    "autoloadsWs": [
-      {
-        "name" : "timeslot-icons",
-        "path" : "element/icons/icons.js"
-      }
-    ],
-    "widgets": [
-      {
-        "src": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags.js",
-        "srcData": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data.js",
-        "description": "Widget to view tagged timeslot",
-        "name": "Timeslot tags",
-        "wc": "paper-timeslot-tags",
-        "wcData": "paper-timeslot-tags-data",
-        "dataProperty": "tags",
-        "dataLabel": "tags",
-        "dataRequired": true
-      },
-      {
-        "src": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors.js",
-        "srcData": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data.js",
-        "description": "Widget to view the timeslots assiate to the montors",
-        "name": "Timeslot monitors",
-        "wc": "paper-timeslot-monitors",
-        "wcData": "paper-timeslot-monitors-data",
-        "dataProperty": "monitors",
-        "dataLabel": "monitors",
-        "dataRequired": true
-      }
-    ]
-  },
-  {
-    "title" : "Playlist",
-    "name": "playlist",
-    "icon" : "playlist:menu",
-    "configEntryPoint": "config.js",
-    "entryPoint" : {
-      "name" : "playlist-index",
-      "path" : "index.js"
+    {
+        "title": "Playlist",
+        "name": "playlist",
+        "icon": "playlist:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "playlist-index",
+            "path": "index.js"
+        },
+        "autoloads": [
+            "src/PlaylistService.js",
+            "src/storage/entity/PlaylistEntity.js",
+            "src/storage/entity/TimeslotPlaylistReference.js",
+            "src/storage/adapter/dexie/DexiePlaylistAdapter.js",
+            "src/storage/adapter/mongo/MongoPlaylistAdapter.js"
+        ],
+        "autoloadsWs": [
+            {
+                "name": "playlist-icons",
+                "path": "element/icons/icons.js"
+            }
+        ]
     },
-    "autoloads" : [
-      "src/PlaylistService.js",
-      "src/storage/entity/PlaylistEntity.js",
-      "src/storage/entity/TimeslotPlaylistReference.js",
-      "src/storage/adapter/dexie/DexiePlaylistAdapter.js",
-      "src/storage/adapter/mongo/MongoPlaylistAdapter.js"
-    ],
-    "autoloadsWs": [
-      {
-        "name" : "playlist-icons",
-        "path" : "element/icons/icons.js"
-      }
-    ]
-  }
+    {
+        "title": "Admin",
+        "name": "admin",
+        "icon": "admin:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "admin-index",
+            "path": "index.js"
+        },
+        "autoloadsWc": [
+            {
+                "name": "admin-icons",
+                "path": "element/icons/icons.js"
+            }
+        ]
+    }
 ]

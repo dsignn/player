@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/paper-checkbox/paper-checkbox';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-chip/paper-chips';
@@ -16,13 +16,12 @@ import '@polymer/iron-flex-layout/iron-flex-layout';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/upsert-language';
-import {DsignServiceInjectorElement} from "../../../../elements/service/dsign-service-injector";
 
 /**
  * @customElement
  * @polymer
  */
-class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -115,43 +114,63 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
     static get properties () {
         return {
 
-            entityHydrator: {
-                type: String,
-                value: 'PlaylistEntityHydrator'
-            },
-
-            services : {
-                value : {
-                    "EntityContainerAggregate" : "EntityContainerAggregate",
-                    "HydratorContainerAggregate" : "HydratorContainerAggregate",
-                    "StorageContainerAggregate": {
-                        "playlistStorage":"PlaylistStorage",
-                        "timeslotStorage":"TimeslotStorage",
-                    }
-                }
-            },
-
+            /**
+             * @type PlaylistEntity
+             */
             entity: {
                 observer: '_changeEntity',
                 value: {}
             },
 
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 value: 0
             },
 
+            /**
+             * @type string
+             */
             labelAction: {
                 type: String,
                 value: 'save'
+            },
+
+            /**
+             * @type object
+             */
+            services : {
+                value : {
+                    _notify : "Notify",
+                    _localizeService: 'Localize',
+                    "HydratorContainerAggregate" : {
+                        _monitorHydrator : "MonitorEntityHydrator"
+                    },
+                    StorageContainerAggregate : {
+                        _storage :"PlaylistStorage",
+                        _timeslotStorage:"TimeslotStorage",
+                    }
+                }
+            },
+
+            /**
+             * @type Notify
+             */
+            _notify: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type StorageInterface
+             */
+            _timeslotStorage: {
+                type: Object,
+                readOnly: true
             }
         };
-    }
-
-    static get observers() {
-        return [
-            'observerEntityToInject(entity, entityHydrator, HydratorContainerAggregate)'
-        ]
     }
 
     constructor() {
@@ -185,7 +204,7 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      */
     _searchTimeslot(evt) {
         // TODO filter fot monitor id
-        this.timeslotStorage.getAll({name : evt.detail.value.text})
+        this._timeslotStorage.getAll({name : evt.detail.value.text})
             .then((timeslots) => {
 
                 evt.detail.target.suggestions(
@@ -234,7 +253,7 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
      * @private
      */
     _searchBindPlaylist(evt) {
-        this.playlistStorage.getAll({name : evt.detail.value.text})
+        this._storage.getAll({name : evt.detail.value.text})
             .then((filter) => {
 
                 let reference;
@@ -266,15 +285,17 @@ class PlaylistViewUpsert extends mixinBehaviors([EntityBehavior], DsignLocalizeE
         evt.preventDefault();
 
         let method = this.getStorageUpsertMethod();
-        this.playlistStorage[method](this.entity)
+        this._storage[method](this.entity)
             .then((data) => {
 
                 if (method === 'save') {
                     console.log('SALVATO');
-                    // TODO pass to entity manager
-                    this.entity = new PlaylistEntity();
+
+                    this.entity = this._storage.getHydrator().hydrate({});
                     this.$.formPlaylist.reset();
                 }
+
+                this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
             });
 
     }

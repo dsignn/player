@@ -1,7 +1,8 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityPaginationBehavior} from "../../../../elements/storage/entity-pagination-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StoragePaginationMixin} from "../../../../elements/mixin/storage/pagination-mixin";
+import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import "../paper-playlist/paper-playlist";
@@ -11,7 +12,7 @@ import {lang} from './language/list-language';
  * @customElement
  * @polymer
  */
-class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignLocalizeElement) {
+class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
 
     static get template() {
         return html`
@@ -73,7 +74,7 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
                     </paper-playlist>
                 </template>
             </div>
-            <paper-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
+            <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
         `;
     }
 
@@ -84,33 +85,42 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
 
     static get properties () {
         return {
+
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 notify: true,
                 value: 0
             },
 
+            /**
+             * @type boolean
+             */
             entitySelected: {
                 notify: true
             },
 
+            /**
+             * @type object
+             */
             services : {
                 value : {
-                    "StorageContainerAggregate": 'StorageContainerAggregate',
-                    "playlistService" : "PlaylistService"
+                    _notify : "Notify",
+                    _localizeService: "Localize",
+                    _playlistService : "PlaylistService",
+                    StorageContainerAggregate: {
+                        _storage: "PlaylistStorage"
+                    }
                 }
             },
-
-            storageService : {
-                value: 'PlaylistStorage'
-            }
         };
     }
 
     static get observers() {
         return [
-            'observerStorage(StorageContainerAggregate, storageService)',
-            'observerPaginationEntities(page, itemPerPage, storage)'
+            'observerPaginationEntities(page, itemPerPage, _storage)'
         ]
     }
 
@@ -124,11 +134,18 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
     }
 
     /**
+     * @private
+     */
+    _deleteCallback() {
+        this._notify.notify(this.localize('notify-delete'));
+    }
+
+    /**
      * @param evt
      */
     play(evt) {
         console.log('play');
-        this.playlistService.play(evt.detail);
+        this._playlistService.play(evt.detail);
     }
 
     /**
@@ -136,7 +153,7 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     resume(evt) {
         console.log('resume');
-        this.playlistService.resume(evt.detail);
+        this._playlistService.resume(evt.detail);
     }
 
     /**
@@ -144,7 +161,7 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     stop(evt) {
         console.log('stop');
-        this.playlistService.stop(evt.detail);
+        this._playlistService.stop(evt.detail);
     }
 
     /**
@@ -152,7 +169,7 @@ class PlaylistViewList extends mixinBehaviors([EntityPaginationBehavior], DsignL
      */
     pause(evt) {
         console.log('pause');
-        this.playlistService.pause(evt.detail);
+        this._playlistService.pause(evt.detail);
     }
 }
 window.customElements.define('playlist-view-list', PlaylistViewList);

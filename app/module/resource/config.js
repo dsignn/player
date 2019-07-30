@@ -101,6 +101,7 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
      */
     init() {
 
+        this.initAcl()
         this.initEntity();
         this.initHydrator();
         this.initMongoStorage();
@@ -565,6 +566,21 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
             .enableExtractProperty('extension');
 
         return hydrator;
+    }
+
+    /**
+     *
+     */
+    initAcl() {
+
+        if (this.getContainer().has('Acl')) {
+
+            let aclService = this.getContainer().get('Acl');
+
+            // TODO add method on service
+            aclService.adapter.acl.addResource('resource');
+            aclService.adapter.acl.allow('guest', 'resource');
+        }
     }
 }
 

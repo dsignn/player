@@ -1,4 +1,10 @@
 export const lang = {
-  "it": { "header": "Lista playlist" },
-  "en": { "header": "List playlist" }
+    "it": {
+        "header": "Lista playlist",
+        "notify-delete": "Playlist eliminata"
+    },
+    "en": {
+        "header": "List playlist",
+        "notify-delete": "Playlist deleted"
+    }
 };

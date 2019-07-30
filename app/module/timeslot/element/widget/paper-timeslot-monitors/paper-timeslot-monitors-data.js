@@ -3,8 +3,6 @@ import {ServiceInjectorMixin} from "../../../../../elements/mixin/service/inject
 import {LocalizeMixin} from "../../../../../elements/mixin/localize/localize-mixin";
 import '@fluidnext-polymer/paper-chip/paper-chips';
 import '@polymer/paper-input/paper-input';
-import {DsignLocalizeElement} from "../../../../../elements/localize/dsign-localize";
-import {StorageListMixin} from "../../../../../elements/mixin/storage/list-mixin";
 
 /**
  *

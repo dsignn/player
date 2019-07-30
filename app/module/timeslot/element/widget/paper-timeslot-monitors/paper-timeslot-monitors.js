@@ -91,7 +91,6 @@ export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(Servic
             return;
         }
 
-        console.log('paper-timeslot-monitor', newValue);
         this.filter = {
             'parentId' : newValue
         };

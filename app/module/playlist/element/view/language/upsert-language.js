@@ -6,7 +6,9 @@ export const lang = {
     "working-only-video": "si attiva solo sulle risorse audio",
     "bind-playlist": "Aggancia playlist",
     "timeslots" : "Timeslots",
-    "save": "Salva"
+    "save": "Salva",
+    "notify-save" : "Playlist saved",
+    "notify-update" : "Playlist updated"
   },
   "en": {
     "header": "List playlist",
@@ -15,6 +17,8 @@ export const lang = {
     "working-only-video": "working only on video resource",
     "bind-playlist": "Bind playlist",
     "timeslots" : "Timeslots",
-    "save": "Save"
+    "save": "Save",
+    "notify-save" : "Playlist salvata",
+    "notify-update" : "Playlist aggiornata"
   }
 };

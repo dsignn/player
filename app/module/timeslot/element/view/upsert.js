@@ -372,7 +372,7 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                 if (method === 'save') {
 
                     // TODO pass to entity manager
-                    this.entity = new TimeslotEntity();
+                    this.entity = this._storage.getHydrator().hydrate({});
                     this.$.formTimeslot.reset();
                 }
 

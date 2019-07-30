@@ -19,7 +19,6 @@
     "dexie": "^2.0.4",
     "electron": "5.0.6",
     "electron-builder": "~20.39.0",
-    "js-acl": "^1.0.0",
     "mongodb": "^3.2.7",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.5.1",
@@ -39,6 +38,7 @@
   },
   "dependencies": {
     "@dsign/library": "github:dsignn/library",
+    "@dsign/player-cli": "github:dsignn/player-cli",
     "@fluidnext-polymer/paper-autocomplete": "^3.0.2",
     "@fluidnext-polymer/paper-chip": "^3.1.1",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
@@ -87,7 +87,8 @@
     "paper-collapse-item": "^4.0.5",
     "source-map-support": "^0.5.12",
     "web-animations-js": "^2.3.1",
-    "webrtc-adapter": "^7.2.3"
+    "webrtc-adapter": "^7.2.3",
+    "js-acl": "^1.0.0"
   },
   "build": {
     "appId": "p3e.app",

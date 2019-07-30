@@ -1,7 +1,7 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../../../elements/localize/dsign-localize";
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {EntityBehavior} from "../../../../elements/storage/entity-behaviour";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import {lang} from './language/language';
@@ -11,7 +11,7 @@ import {lang} from './language/language';
  * @customElement
  * @polymer
  */
-class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElement) {
+class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))  {
 
     static get template() {
         return html`
@@ -204,42 +204,62 @@ class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
 
     static get properties () {
         return {
-            services : {
-                value : {
-                    "StorageContainerAggregate": {
-                        "playlistStorage":"PlaylistStorage"
-                    }
-                }
-            },
 
-            playlistStorage : {
-                observer: 'observerStorageToUpdateEntity'
-            },
-
+            /**
+             * @type PlaylistEntity
+             */
             entity : {
                 observer: '_entityChanged'
             },
 
+            /**
+             * @type number
+             */
             currentTime : {
                 notify: true,
                 value: 0
             },
 
+            /**
+             * @type string
+             */
             status : {
                 notify: true
             },
 
+            /**
+             * @type boolean
+             */
             hideCrud : {
                 type: Boolean,
                 notify: true,
                 value: false
             },
 
+            /**
+             * @type true
+             */
+            autoUpdateEntity: {
+                value: true
+            },
+
+            /**
+             * @type boolean
+             */
             removeCrud: {
                 type: Boolean,
                 notify: true,
                 value: false
-            }
+            },
+
+            services : {
+                value : {
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        _storage: "PlaylistStorage"
+                    }
+                }
+            },
         }
     }
 
@@ -260,7 +280,6 @@ class PaperPlaylist extends mixinBehaviors([EntityBehavior], DsignLocalizeElemen
             PaperPlaylist.LIST_ROTATION_LABEL_ICON[this.entity.rotation]
         );
     }
-
 
     /**
      * @param newValue

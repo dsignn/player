@@ -1,5 +1,6 @@
-import {html} from '@polymer/polymer/polymer-element.js';
-import {DsignLocalizeElement} from "../../elements/localize/dsign-localize";
+import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
@@ -11,7 +12,7 @@ import {lang} from './language';
  * @customElement
  * @polymer
  */
-class PlaylistIndex extends DsignLocalizeElement {
+class PlaylistIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -73,9 +74,22 @@ class PlaylistIndex extends DsignLocalizeElement {
 
     static get properties () {
         return {
+
+            /**
+             * @type number
+             */
             selected: {
                 type: Number,
                 value: 0
+            },
+
+            /**
+             * @type object
+             */
+            services : {
+                value : {
+                    _localizeService: 'Localize'
+                }
             }
         };
     }
