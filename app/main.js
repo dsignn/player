@@ -65,6 +65,7 @@ class Application {
         );
 
         this._loadMonitorsConfig();
+        this._startScript();
     }
 
     /**
@@ -107,6 +108,46 @@ class Application {
             this.monitorsContainerEntity = this.getMonitorContainerEntityHydrator().hydrate(monitorsData.monitorConfig);
         }
         return this;
+    }
+
+    /**
+     * @private
+     */
+    _startScript() {
+
+        switch (true) {
+            case this.config.storage !== undefined && this.config.storage.adapter !== undefined && this.config.storage.adapter.mongo !== undefined:
+
+                if (this.environment === 'development') {
+                    let dockerCompose = require('child_process').spawn('docker-compose', ['up', '-d']);
+                    dockerCompose.stdout.on('data',(data) => {
+                        console.log("start docker compose: ",data.toString('utf8'));
+                    });
+                } else {
+                    console.warn('Star mongo service');
+                }
+        }
+    }
+
+    /**
+     * @private
+     */
+    _stopScript() {
+
+
+        switch (true) {
+            case this.config.storage !== undefined && this.config.storage.adapter !== undefined && this.config.storage.adapter.mongo !== undefined:
+
+                if (this.environment === 'development') {
+                    console.log('composecomposecomposecomposecomposecomposecomposecomposecomposecomposecomposecompose');
+                    let dockerCompose = require('child_process').spawn('docker-compose', ['stop']);
+                    dockerCompose.stdout.on('data',(data) => {
+                        console.log("stop docker compose: ",data.toString('utf8'));
+                    });
+                } else {
+                    console.warn('stop mongo service');
+                }
+        }
     }
 
     /**
@@ -469,6 +510,13 @@ class Application {
         this.createPlayerDashboard();
         this.createPlayerBrowserWindows();
     }
+
+    /**
+     * Close application
+     */
+    close() {
+        this._stopScript();
+    }
 }
 
 /**
@@ -496,6 +544,8 @@ app.on('ready', () => {
  */
 app.on('window-all-closed', () => {
     // On OS X it is common for applications and their menu bar to stay active until the user quits explicitly with Cmd + Q
+    application.close();
+    console.log('SUCAAAAAAAAAAAAAAAAAAA');
     if (process.platform !== 'darwin') {
         app.quit()
     }

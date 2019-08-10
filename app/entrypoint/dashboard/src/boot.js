@@ -17,29 +17,33 @@ import {P2p} from '@dsign/library/src/net/index';
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
+// when is compile generate the __dirname is different
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
-const storagePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}`);
-const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
-const resourceConfig = path.normalize(`${basePath}${path.sep}config${path.sep}`);
+const packageJson =  JSON.parse(fs.readFileSync(`${basePath}${path.sep}package.json`).toString());
+process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
 
-if (!fs.existsSync(resourcePath)) {
-    try {
-        fs.mkdirSync(`${basePath}..${path.sep}storage`);
-        fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}resource`);
-        fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}archive`);
-        fs.mkdirSync(`${basePath}..${path.sep}storage${path.sep}tmp`);
-    } catch (e) {
-        console.error(err);
-    }
-}
+const applicationDataPath = Application.getHomeApplicationDataDir(process.env);
+Application.createDirectories(applicationDataPath);
+const storagePath = path.normalize(`${applicationDataPath}${path.sep}storage${path.sep}`);
+const resourcePath = path.normalize(`${applicationDataPath}${path.sep}storage${path.sep}resource${path.sep}`);
+
+
 /**
  * Container service of application
- *
  * @type {Container}
  */
 const container = new Container();
+
+/**
+ * @type {Application}
+ */
+const application = new Application();
+application.setBasePath(basePath)
+    .setModulePath(modulePath)
+    .setResourcePath(resourcePath);
+
 /**
  * Inject general container aggregate service
  */
@@ -225,8 +229,6 @@ for (let cont = 0; modules.length > cont; cont++) {
     }
 }
 
-const application = new Application();
-
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
@@ -248,10 +250,7 @@ application.getEventManager().on(
     }.bind(container))
 );
 
-application.setBasePath(basePath)
-    .setModulePath(modulePath)
-    .setWidgets(widgetHydrate)
-    .setResourcePath(resourcePath)
+application.setWidgets(widgetHydrate)
     .loadModules(modulesHydrate, container);
 
 container.set('Application', application);

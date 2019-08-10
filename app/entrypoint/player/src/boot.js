@@ -10,18 +10,31 @@ import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/index";
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
+// when is compile generate the __dirname is different
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 const basePath = path.normalize(`${__dirname}${back}`);
 const modulePath = path.normalize(`${__dirname}${back}module${path.sep}`);
-const resourcePath = path.normalize(`${__dirname}${back}${path.sep}..${path.sep}storage${path.sep}resource${path.sep}`);
-const resourceConfig = path.normalize(`${basePath}${path.sep}config${path.sep}`);
+const packageJson =  JSON.parse(fs.readFileSync(`${basePath}${path.sep}package.json`).toString());
+process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
+
+const applicationDataPath = Application.getHomeApplicationDataDir(process.env);
+Application.createDirectories(applicationDataPath);
+const storagePath = path.normalize(`${applicationDataPath}${path.sep}storage${path.sep}`);
+const resourcePath = path.normalize(`${applicationDataPath}${path.sep}storage${path.sep}resource${path.sep}`);
 
 /**
  * Container service of application
- *
  * @type {Container}
  */
 const container = new Container();
+
+/**
+ * @type {Application}
+ */
+const application = new Application();
+application.setBasePath(basePath)
+    .setModulePath(modulePath)
+    .setResourcePath(resourcePath);
 
 /**
  * Inject general container aggregate service
@@ -46,7 +59,6 @@ entityContainerAggregate.set(
     new (require("@dsign/library").storage.entity.EntityNestedReference)()
 );
 
-
 entityContainerAggregate.set(
     'EntityReference',
     new (require("@dsign/library").storage.entity.EntityReference)()
@@ -66,7 +78,7 @@ receiverContainerAggregate.setContainer(container);
 container.set('ReceiverContainerAggregate', receiverContainerAggregate);
 
 const config = JSON.parse(
-    fs.readFileSync(`${resourceConfig}config-${process.env.APP_ENVIRONMENT}.json`).toString()
+    fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
 );
 
 /***********************************************************************************************************************
@@ -98,8 +110,6 @@ for (let cont = 0; modules.length > cont; cont++) {
     modulesHydrate.push(hydratorModule.hydrate(modules[cont]));
 }
 
-const application = new Application();
-
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     (evt) => {
@@ -116,13 +126,9 @@ application.getEventManager().on(
     }
 );
 
-application.setBasePath(basePath)
-    .setModulePath(modulePath)
-    .setResourcePath(resourcePath)
-    .loadModules(modulesHydrate, container);
+application.loadModules(modulesHydrate, container);
 
 container.set('Application', application);
-
 
 /**
  * Load application in global scope

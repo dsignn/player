@@ -1,0 +1,112 @@
+{
+  "version": "0.1.0",
+  "author": "antonino.visalli@gmail.com",
+  "name": "dsign-player",
+  "description": "Polymer 3 in an electron application",
+  "repository": "git@github.com:dsignn/player.git",
+  "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "@babel/register": "^7.4.4",
+    "@babel/runtime": "^7.4.5",
+    "@dsignn/player-cli": "github:dsignn/player-cli",
+    "@types/source-map": "^0.5.7",
+    "acl": "^0.4.11",
+    "babel-polyfill": "^6.26.0",
+    "devtron": "^1.4.0",
+    "electron": "5.0.6",
+    "electron-builder": "~20.39.0",
+    "polymer-cli": "^1.9.9",
+    "typescript": "^3.5.1",
+    "wct-browser-legacy": "^1.0.0"
+  },
+  "dependencies": {
+    "@dsign/library": "github:dsignn/library",
+    "@fluidnext-polymer/paper-autocomplete": "^3.0.2",
+    "@fluidnext-polymer/paper-chip": "^3.1.1",
+    "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
+    "@fluidnext-polymer/paper-input-file": "^3.0.0",
+    "@fluidnext-polymer/paper-input-color": "^3.1.0",
+    "@fluidnext-polymer/paper-pagination": "^3.0.0",
+    "@polymer/app-layout": "^3.0.2",
+    "@polymer/app-localize-behavior": "^3.0.1",
+    "@polymer/app-media": "^3.0.1",
+    "@polymer/iron-form": "^3.0.1",
+    "@polymer/iron-icons": "^3.0.1",
+    "@polymer/iron-pages": "^3.0.1",
+    "@polymer/paper-badge": "^3.0.1",
+    "@polymer/paper-button": "^3.0.1",
+    "@polymer/paper-card": "^3.0.1",
+    "@polymer/paper-checkbox": "^3.0.1",
+    "@polymer/paper-dialog": "^3.0.1",
+    "@polymer/paper-dialog-scrollable": "^3.0.1",
+    "@polymer/paper-dropdown-menu": "^3.0.1",
+    "@polymer/paper-fab": "^3.0.1",
+    "@polymer/paper-icon-button": "^3.0.2",
+    "@polymer/paper-input": "^3.0.2",
+    "@polymer/paper-item": "^3.0.1",
+    "@polymer/paper-listbox": "^3.0.1",
+    "@polymer/paper-menu-button": "^3.0.1",
+    "@polymer/paper-progress": "^3.0.1",
+    "@polymer/paper-radio-button": "^3.0.1",
+    "@polymer/paper-radio-group": "^3.0.1",
+    "@polymer/paper-ripple": "^3.0.1",
+    "@polymer/paper-slider": "^3.0.1",
+    "@polymer/paper-spinner": "^3.0.2",
+    "@polymer/paper-swatch-picker": "^3.0.1",
+    "@polymer/paper-tabs": "^3.1.0",
+    "@polymer/paper-toast": "^3.0.1",
+    "@polymer/paper-toggle-button": "^3.0.1",
+    "@polymer/paper-tooltip": "^3.0.1",
+    "@polymer/polymer": "^3.2.0",
+    "@webcomponents/webcomponentsjs": "^2.2.10",
+    "adm-zip": "^0.4.13",
+    "archiver": "^3.0.0",
+    "decompress": "^4.2.0",
+    "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v3.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs-extra": "^8.0.1",
+    "paper-collapse-item": "^4.0.5",
+    "web-animations-js": "^2.3.1",
+    "js-acl": "^1.0.0",
+    "dexie": "^2.0.4",
+    "mongodb": "^3.2.7"
+  },
+  "build": {
+    "appId": "dsign.player",
+    "npmRebuild": false,
+    "files": [
+      "index.html",
+      "main.js",
+      "icon.png",
+      "config/**/*",
+      "style/**/*",
+      "module/**/*",
+      "entrypoint/**/*",
+      "elements/**/*",
+      "manifest.json",
+      {
+        "from": "../lib",
+        "to": "../lib"
+      }
+    ],
+    "directories": {
+      "output": "../../releases"
+    },
+    "win": {
+      "legalTrademarks": "Dsign",
+      "asar": true
+    },
+    "linux": {
+      "asar": true
+    }
+  },
+  "keywords": [
+    "polymer 3",
+    "electron",
+    "starter kit polymer 3"
+  ]
+}

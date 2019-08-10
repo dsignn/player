@@ -1,0 +1,45 @@
+{
+  "npm": true,
+  "entrypoint": "entrypoint/dashboard/index.html",
+  "lint": {
+    "rules": [
+      "polymer-3"
+    ]
+  },
+  "sources": [
+    "lib/**/*.js",
+    "elements/**",
+    "style/**",
+    "entrypoint/**",
+    "module/**",
+    "config/**",
+    "!config/config.json.dist",
+    "!config/config-development.json",
+    "!storage",
+    "main.js",
+    "node_modules/@polymer/**/*.*",
+    "node_modules/@fluidnext-polymer/**/*.*",
+    "node_modules/@dsign/**/*.*"
+  ],
+  "extraDependencies": [
+    "package.json",
+    "manifest.json"
+  ],
+  "builds": [
+    {
+      "name": "es6bundle",
+      "js": {
+        "compile": "es2018",
+        "minify": false,
+        "transformModulesToAmd": true
+      },
+      "css": {
+        "minify": false
+      },
+      "html": {
+        "minify": false
+      }
+    }
+  ],
+  "moduleResolution": "node"
+}
