@@ -18,7 +18,7 @@ export const ServiceInjectorMixin = (superClass) => {
          * @param newValue
          */
         changeServices(newValue) {
-            if (!newValue) {
+            if (!newValue || !container) {
                 return;
             }
 
@@ -37,7 +37,6 @@ export const ServiceInjectorMixin = (superClass) => {
             }
 
             for (let property in services) {
-
 
                 switch (true) {
                     case typeof services[property] === 'object' && container.has(property):
