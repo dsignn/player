@@ -1,6 +1,6 @@
-# P3E
+# Dsign player
 
-P3E is a starter kit to start an electron project with [Polymer 3 ](https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview)
+Dsign player is a player write on electron with [Polymer 3 ](https://polymer-library.polymer-project.org/3.0/docs/devguide/feature-overview)
 
 ## Install
 
