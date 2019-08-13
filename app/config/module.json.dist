@@ -1,5 +1,21 @@
 [
     {
+        "title": "Admin",
+        "name": "admin",
+        "icon": "admin:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "admin-index",
+            "path": "index.js"
+        },
+        "autoloadsWc": [
+            {
+                "name": "admin-icons",
+                "path": "element/icons/icons.js"
+            }
+        ]
+    },
+    {
         "title": "Dashboard",
         "name": "dashboard",
         "icon": "dashboard:menu",
@@ -157,17 +173,17 @@
         ]
     },
     {
-        "title": "Admin",
-        "name": "admin",
-        "icon": "admin:menu",
+        "title": "Media device",
+        "name": "media-device",
+        "icon": "media-device:menu",
         "configEntryPoint": "config.js",
         "entryPoint": {
-            "name": "admin-index",
+            "name": "media-device-index",
             "path": "index.js"
         },
         "autoloadsWc": [
             {
-                "name": "admin-icons",
+                "name": "media-device-icons",
                 "path": "element/icons/icons.js"
             }
         ]

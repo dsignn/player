@@ -1,0 +1,157 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-toggle-button/paper-toggle-button.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-behaviour.html">
+
+<dom-module id="media-device-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .card-content,
+            .card-actions {
+                padding: 0;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+            .running {
+                color: var(--playlist-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--playlist-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--playlist-pause);
+                font-style: italic;
+            }
+
+            .card-actions {
+                justify-content: flex-start;
+                padding-left: 6px;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+            #rightSection {
+                background-image: url("img/tegnology.jpg") !important;
+            }
+
+
+        </style>
+        <paper-card id="design">
+            <div class="card-content flex flex-horizontal">
+                <div class="data flex-1 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <div>{{mediaDevice.name}}</div>
+                        <div>{{mediaDevice.type}}</div>
+                        <div>{{mediaDevice.deviceName}}</div>
+                    </div>
+                </div>
+                <div class="flags">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-tap="_update">Modifica</paper-item>
+                            <paper-item  on-tap="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div class="card-actions"></div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementMediaDevice extends StorageAdapterBehaviour {
+
+            static get is() {
+                return 'media-device-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    mediaDevice: {
+                        type: Object,
+                        notify:true
+                    },
+
+                    storageName: {
+                        value: MediaDeviceConfig.NAME_SERVICE
+                    },
+                };
+            }
+
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_UPDATE, this._updateFromStorage.bind(this))
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _updateFromStorage(evt) {
+                if (evt.data.id === this.mediaDevice.id) {
+                    this.mediaDevice = {};
+                    this.mediaDevice = evt.data;
+                }
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('remove', {detail: this.mediaDevice}));
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _update(evt) {
+                this.dispatchEvent(new CustomEvent('update-view', {detail: this.mediaDevice}));
+            }
+        }
+
+        window.customElements.define(ElementMediaDevice.is, ElementMediaDevice);
+
+    </script>
+</dom-module>

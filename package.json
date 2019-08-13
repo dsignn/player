@@ -5,6 +5,10 @@
   "description": "Polymer 3 in an electron application",
   "repository": "git@github.com:dsignn/player.git",
   "license": "BSD-3-Clause",
+  "devDependencies": {
+    "@dsign/player-cli": "github:dsignn/player-cli",
+    "dexie": "^2.0.4"
+  },
   "scripts": {
     "postinstall": "cp app/config/config.json.dist app/config/config-development.json && cp app/config/config.json.dist app/config/config-production.json && cp app/config/module.json.dist app/config/module.json && cd app && npm install",
     "start": "cd app && export APP_ENVIRONMENT=development && export ELECTRON_DISABLE_SECURITY_WARNINGS=true && ./node_modules/.bin/electron ./main.js --inspect=5858",

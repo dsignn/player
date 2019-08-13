@@ -1,0 +1,227 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
+
+<link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="media-device-view-upsert">
+    <template>
+        <style>
+            #cardSubSideline {
+                padding: 8px;
+            }
+
+            .paper-sideline {
+                padding: 8px;
+            }
+
+            .padding-left {
+                margin-left: 30px;
+
+            }
+
+            .pd-r {
+                padding-right: 6px;
+            }
+
+            #formResource {
+                width:100%;
+            }
+
+            .paper-sideline paper-input,
+            .paper-sub-monitor paper-input,
+            .paper-sideline paper-autocomplete,
+            .paper-sub-monitor paper-autocomplete {
+                padding-left: 6px;
+            }
+
+            paper-dropdown-menu {
+                width: 100%;
+            }
+
+        </style>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <slot name="header"></slot>
+        <div class="flex flex-horizontal">
+            <iron-form id="formResource">
+                <form method="post">
+                    <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                    <paper-autocomplete
+                            id="mediaDevice"
+                            label="Media device"
+                            text-property="label"
+                            value-property="label"
+                            remote-source
+                            on-autocomplete-selected="_selectMediaDevice"
+                            on-autocomplete-change="_searchMediaDeviceChanged">
+                        <template slot="autocomplete-custom-template">
+                            <style>
+                                :host {
+                                    display: block;
+                                }
+
+                                paper-item.account-item {
+                                    padding: 8px 16px;
+                                }
+
+                                .service-name {
+                                    color: #333;
+                                }
+
+                                .service-description {
+                                    margin-top: 4px;
+                                    color: #999;
+                                }
+                            </style>
+                            <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                <div>
+                                    <div class="service-name">[[item.label]]</div>
+                                    <div class="service-description">[[item.kind]]</div>
+                                </div>
+                                <paper-ripple></paper-ripple>
+                            </paper-item>
+                        </template>
+                    </paper-autocomplete>
+                    <div>
+                        <div class="flex flex-horizontal-end" style="margin-top: 20px;">
+                            <paper-button on-tap="submitResourceButton">{{labelAction}}</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </div>
+
+    </template>
+
+    <script>
+        class ElementMediaDeviceViewUpsert extends StorageAdapterResourceBehaviour {
+
+            static get is() {
+                return 'media-device-view-upsert';
+            }
+
+            static get properties() {
+                return {
+
+                    /**
+                     * @param {MediaDevice}
+                     */
+                    resource: {
+                        type: Object,
+                        notify: true,
+                        value: new MediaDevice(),
+                        observer: '_resourceChanged'
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: MediaDeviceConfig.NAME_SERVICE
+
+                    },
+
+                    labelAction: {
+                        type: String,
+                        value: 'Save'
+                    }
+                }
+            }
+
+            ready() {
+                super.ready();
+                this.$.formResource.addEventListener('iron-form-presubmit', this.submitResource.bind(this));
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             */
+            _resourceChanged(newValue, oldValue) {
+
+                if (!newValue) {
+                    return;
+                }
+
+                this.labelAction = newValue && newValue.id ? 'Update' : 'Save';
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _selectMediaDevice(evt) {
+
+                evt.detail.option.name = this.$.name.value;
+                this.resource = serviceManager.get('HydratorPluginManager')
+                    .get('mediaDeviceFromApiApiHydrator')
+                    .hydrate(evt.detail.option);
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _searchMediaDeviceChanged(evt) {
+                navigator.mediaDevices.enumerateDevices()
+                    .then(function(devices) {
+                        let filter = devices.filter(
+                            (element) => {
+                                return element.label.search(new RegExp(evt.detail.value, 'i')) > -1;
+                            }
+                        );
+
+                        evt.detail.target.suggestions(
+                            filter
+                        );
+                    })
+                    .catch(function(err) {
+                        console.error(err);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            submitResourceButton(evt) {
+                this.$.formResource.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitResource(evt) {
+                evt.preventDefault();
+
+                let method = this.resource.id ? 'update' : 'save';
+
+                this.storage[method](this.resource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' media device');
+                        if (method === 'save') {
+                            this.resource = new MediaDevice();
+                            this.$.mediaDevice.reset();
+                        }
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+        }
+
+        window.customElements.define(ElementMediaDeviceViewUpsert.is, ElementMediaDeviceViewUpsert);
+
+    </script>
+</dom-module>

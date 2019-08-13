@@ -1,0 +1,509 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-autocomplete/paper-autocomplete.html">
+<link rel="import" href="../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-input.html">
+<link rel="import" href="../../../../bower_components/paper-chip/paper-chip-icons.html">
+<link rel="import" href="../../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../../bower_components/paper-progress/paper-progress.html">
+
+<link rel="import" href="../../../../element/file-upload/file-upload.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-resource-behaviour.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="video-panel-view-resource-upsert">
+    <template>
+        <style>
+            paper-material {
+                padding: 8px 12px;
+                background-color: #fffff0;
+                margin-right: 4px;
+            }
+
+            paper-material .title {
+                font-size: 20px;
+            }
+
+            paper-material .subtitle {
+                font-style: italic;
+            }
+
+            paper-progress {
+                --paper-progress-indeterminate-cycle-duration: 20s;
+                margin-top: 10px;
+                width: 100%;
+            }
+        </style>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <slot name="header"></slot>
+        <iron-form id="formPanelResource">
+            <form method="post" action="">
+                <div>
+                    <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                    <paper-input id="nameResource" name="name" label="Name resource" value="{{resource.resourceReference.name}}" required></paper-input>
+                    <div class="flex flex-horizontal">
+                        <paper-autocomplete
+                                style="flex: 1;"
+                                id="panel"
+                                label="Panel"
+                                text-property="name"
+                                value-property="name"
+                                remote-source
+                                on-autocomplete-selected="_autocompletePanelSelect"
+                                on-autocomplete-change="_autocompletePanelChanged"
+                                on-autocomplete-reset-blur="autocompletePanelReset">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
+
+                                    paper-item.account-item {
+                                        padding: 8px 16px;
+                                    }
+
+                                    .service-name {
+                                        color: #333;
+                                    }
+
+                                    .service-description {
+                                        margin-top: 4px;
+                                        color: #999;
+                                    }
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div>
+                                        <div class="service-name">[[item.name]]</div>
+                                        <div class="service-description">
+                                            Width [[item.videoPanel.width]]px
+                                            Height [[item.videoPanel.height]]px
+                                        </div>
+                                    </div>
+                                    <paper-ripple></paper-ripple>
+                                </paper-item>
+                            </template>
+                        </paper-autocomplete>
+                    </div>
+                    <div hidden$="{{!hideResourceSection}}">
+                        <div id="multi">
+                            <div class="flex flex-horizontal">
+                                <template is="dom-repeat" items="[[videoPanels]]" as="videoPanel">
+                                    <paper-material videoPanel="videoPanel" class="flex-1" id="{{videoPanel.id}}">
+                                        <div class="flex flex-horizontal-center title">{{videoPanel.name}}</div>
+                                        <div class="flex flex-horizontal-center subtitle"> height {{videoPanel.height}} px - width {{videoPanel.width}} px</div>
+                                        <paper-autocomplete
+                                                label="Select resource"
+                                                text-property="name"
+                                                value-property="name"
+                                                remote-source
+                                                video-panel="{{videoPanel}}"
+                                                on-autocomplete-selected="_autocompleteResourceSelect"
+                                                on-autocomplete-change="_autocompleteResourceChanged">
+                                            <template slot="autocomplete-custom-template">
+                                                <style>
+                                                    :host {
+                                                        display: block;
+                                                    }
+
+                                                    paper-item.account-item {
+                                                        padding: 8px 16px;
+                                                    }
+
+                                                    .service-name {
+                                                        color: #333;
+                                                    }
+
+                                                    .service-description {
+                                                        margin-top: 4px;
+                                                        color: #999;
+                                                    }
+                                                </style>
+                                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                                    <div>
+                                                        <div class="service-name">[[item.name]]</div>
+                                                    </div>
+                                                    <paper-ripple></paper-ripple>
+                                                </paper-item>
+                                            </template>
+                                        </paper-autocomplete>
+                                        <div class="listClass">
+                                            <template is="dom-repeat" items="{{videoPanel.resources}}" as="resource">
+                                                <paper-chip removable single-line index="{{index}}" on-remove="removeResource" video-panel="{{videoPanel}}">
+                                                    {{resource.name}}
+                                                </paper-chip>
+                                            </template>
+                                        </div>
+                                        <template is="dom-if" if="{{computeMonitorPolygon(videoPanel)}}">
+                                            <paper-checkbox single-resource checked="{{videoPanel.singleResource}}" on-tap="resetCheckBox">Single content</paper-checkbox>
+                                        </template>
+                                    </paper-material>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <paper-progress id="resourceProgress" hidden$="{{progressResource}}" indeterminate class="slow"></paper-progress>
+                <div>
+                    <div class="flex flex-horizontal-end" style="margin-top: 20px;">
+                        <paper-button id="createVideoResource" on-tap="createResource">Create resource</paper-button>
+                        <paper-button id="upsertResource" on-tap="submitVideoPanelResourceButton">{{labelAction}}</paper-button>
+                    </div>
+                </div>
+            </form>
+        </iron-form>
+    </template>
+
+    <script>
+        class ElementVideoPanelViewResourceUpsert extends StorageAdapterResourceBehaviour {
+
+            static get is() {
+                return 'video-panel-view-resource-upsert';
+            }
+
+            static get properties() {
+                return {
+
+                    resource: {
+                        type: Object,
+                        notify: true,
+                        value: new PanelResource()
+                    },
+
+                    videoPanels: {
+                        type: Array,
+                        readOnly: true,
+                        notify: true,
+                        value: []
+                    },
+
+                    hideResourceSection: {
+                        type: Boolean,
+                        notify: true,
+                        value: false
+                    },
+
+                    labelAction: {
+                        type: String,
+                        notify: true,
+                        value: 'Save'
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: VideoPanelConfig.RESOURCE_SERVICE
+
+                    },
+
+                    progressResource: {
+                        readOnly: true,
+                        notify: true,
+                        value: true
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    '_changeResource(resource)'
+                ]
+            }
+
+            ready() {
+                super.ready();
+                this.$.formPanelResource.addEventListener('iron-form-presubmit', this.submitPanelResource.bind(this));
+            }
+
+            /**
+             * @param {null|PanelResource} resource
+             */
+            _changeResource(resource) {
+                if (!resource) {
+                    this.labelAction ='Save';
+                    return;
+                }
+
+                this.$.panel.text = this.resource.getVideoPanel().virtualMonitorReference ? this.resource.getVideoPanel().virtualMonitorReference.name : '';
+                this.hideResourceSection = true;
+                this._setVideoPanels(resource.hasVideoPanel()
+                    ? resource.getVideoPanel().getVideoPanels()
+                    : []
+                );
+                this.labelAction = resource.id ? 'Update' : 'Save';
+            }
+
+            /**
+             * @param evt
+             */
+            _autocompletePanelChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(VideoPanelConfig.NAME_SERVICE)
+                    .getAll({name: evt.detail.value})
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            _autocompletePanelSelect(evt) {
+
+                this.hideResourceSection = true;
+                let videoPanel = evt.detail.option.hasVideoPanel()
+                    ? serviceManager.get('HydratorPluginManager')
+                        .get('videoPanelResourceHydrator').hydrate(evt.detail.option.getVideoPanel())
+                    : {};
+
+                this.resource.setVideoPanel(videoPanel);
+
+                this.notifyPath('resource.videoPanel.resources');
+
+                this._setVideoPanels(this.resource.hasVideoPanel()
+                    ? this.resource.getVideoPanel().getVideoPanels()
+                    : []
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            autocompletePanelReset(evt) {
+                this.hideResourceSection = false;
+                this.resource.setVideoPanel({});
+            }
+
+            /**
+             *
+             */
+            createResource() {
+
+                let locationResource = new LocationPath(
+                    `${dsign.Utils.uid}.mp4`,
+                    serviceManager.get('Application').getBasePath('../tmp')
+                );
+
+                this._setProgressResource(false);
+                this.disableButton();
+                serviceManager.get('VideoPanelResourceService').generateResource(
+                    this.resource,
+                    locationResource
+                ).then((data) => {
+
+                    this._setProgressResource(true);
+                    this.enableButton();
+
+                    // TODO get metadata from resource
+                    let videoResource = new Video();
+                    videoResource.location = locationResource;
+                    videoResource.type = 'video/mp4';
+                    videoResource.setTmpSourcePath(new SourcePath(locationResource.getFullPath()));
+                    videoResource.name = this.resource.resourceReference.name;
+                    videoResource.tags = ['video-panel'];
+
+                    let method = 'save';
+                    if (this.resource.resourceReference.referenceId) {
+                        method = 'update';
+                        videoResource.id = this.resource.resourceReference.referenceId;
+                    }
+
+                    serviceManager.get('StoragePluginManager')
+                        .get(ResourceConfig.NAME_SERVICE)[method](videoResource)
+                        .then((data) => {
+                            serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' resource');
+                            if (method === 'save') {
+                                this.resource.resourceReference.referenceId = data.id;
+                                this.storage['update'](this.resource)
+                                    .then((data) => {
+                                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' video panel resource');
+
+                                    })
+                                    .catch((err) => {
+                                            console.log(err);
+                                        }
+                                    );
+                            }
+                        })
+                        .catch((err) => {
+                                console.log(err)
+                            }
+                        );
+
+
+                }).catch((error) => {
+                    console.error(error);
+                    this._setProgressResource(true);
+                    this.enableButton();
+                });
+            }
+
+            /**
+             * @param evt
+             */
+            _autocompleteResourceChanged(evt) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(ResourceConfig.NAME_SERVICE)
+                    .getAll({name: evt.detail.value})
+                    .then((data) => {
+                        evt.detail.target.suggestions(data);
+                });
+            }
+            /**
+             * @param evt
+             */
+
+            _autocompleteResourceSelect(evt) {
+
+                evt.target.videoPanel.appendResource(
+                    new ResourceReference(
+                        evt.detail.option.id,
+                        evt.detail.option.name
+                    )
+                );
+
+                evt.target.parentElement.querySelector('dom-repeat').render();
+
+                setTimeout(
+                    function () {
+                        this.clear();
+                    }.bind(evt.target),
+                    200
+                );
+            }
+
+            /**
+             *
+             */
+            submitVideoPanelResourceButton() {
+                this.$.formPanelResource.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitPanelResource(evt) {
+                evt.preventDefault();
+
+                let method = this.getStoragePersistMethod();
+                this.storage[method](this.resource)
+                    .then((data) => {
+                        serviceManager.get('PaperToastNotification').notify(method.charAt(0).toUpperCase() + method.slice(1) + ' video panel resource');
+                        if (method === 'save') {
+                            this.resetResource();
+                        }
+
+                    })
+                    .catch((err) => {
+                            console.log(err)
+                        }
+                    );
+            }
+
+            /**
+             *
+             */
+            resetResource() {
+
+                this.$.formPanelResource.reset();
+                this.$.panel.reset();
+                this.hideResourceSection = false;
+                this.resource = new PanelResource();
+            }
+
+            /**
+             * @param videoPanel
+             * @return {boolean}
+             */
+            computeMonitorPolygon(videoPanel) {
+
+                serviceManager.get('StoragePluginManager')
+                    .get(MonitorConfig.NAME_SERVICE)
+                    .get(videoPanel.virtualMonitorReference.virtualMonitorId)
+                    .then((data) => {
+                        if (!data) {
+                            return false;
+                        }
+
+                        let monitor = data.getMonitor(videoPanel.virtualMonitorReference.monitorId);
+                        if (!monitor.polygon) {
+                            this._visibilityCheckerMonitorPolygon(videoPanel.id);
+                        }
+                    });
+                return true;
+            }
+
+            /**
+             * @private
+             */
+            _visibilityCheckerMonitorPolygon(videoPanelId, hyde = true) {
+                let elements = this.shadowRoot.querySelectorAll('dom-if');
+                for (let cont = 0; elements.length > cont; cont++) {
+                    if (elements[cont].parentElement.id === videoPanelId) {
+                        elements[cont].if = !hyde;
+                    }
+                }
+            }
+
+            /**
+             *
+             */
+            disableButton() {
+                this.$.createVideoResource.disabled = true;
+                this.$.upsertResource.disabled = true;
+            }
+
+            /**
+             *
+             */
+            enableButton() {
+                this.$.createVideoResource.disabled = false;
+                this.$.upsertResource.disabled = false;
+            }
+
+            /**
+             * @param evt
+             */
+            resetCheckBox(evt) {
+                let elements = this.shadowRoot.querySelectorAll('paper-checkbox[single-resource]');
+
+                for (let cont = 0; elements.length > cont; cont++) {
+                    if (evt.target.parentElement.id !== elements[cont].parentElement.id) {
+                        elements[cont].checked = false;
+                    }
+                }
+            }
+
+            /**
+             * @param evt
+             */
+            removeResource(evt) {
+                let remove = evt.target.videoPanel.removeResourceByIndex(evt.target.index);
+
+                let resources = evt.target.videoPanel.resources;
+                let domRepeat =  evt.target.parentElement.querySelector('dom-repeat');
+                domRepeat.items = [];
+                setTimeout(
+                    () => {
+                        domRepeat.items = resources;
+                    },
+                    100
+                );
+            }
+        }
+
+        window.customElements.define(ElementVideoPanelViewResourceUpsert.is, ElementVideoPanelViewResourceUpsert);
+
+    </script>
+</dom-module>

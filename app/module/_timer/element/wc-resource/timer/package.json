@@ -1,0 +1,6 @@
+{
+  "name": "wc-resource-timer",
+  "version": "0.1.0",
+  "description": "View the progress timer",
+  "main": "wc-resource-timer.html"
+}

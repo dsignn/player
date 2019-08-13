@@ -1,0 +1,6 @@
+{
+  "name": "wc-resource-media-device",
+  "version": "0.1.0",
+  "description": "View video device ws",
+  "main": "wc-resource-media-device.html"
+}

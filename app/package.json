@@ -12,7 +12,6 @@
     "@babel/preset-env": "^7.4.5",
     "@babel/register": "^7.4.4",
     "@babel/runtime": "^7.4.5",
-    "@dsignn/player-cli": "github:dsignn/player-cli",
     "@types/source-map": "^0.5.7",
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",

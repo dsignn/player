@@ -72,7 +72,15 @@ import '../../module/admin/element/icons/icons'
  * end admin
  */
 
-
+/**
+ * start media-device
+ */
+import '../../module/media-device/index'
+import '../../module/media-device/element/icons/icons'
+/**
+ * end media-device
+ */
+ 
 /**
  * boot application
  */

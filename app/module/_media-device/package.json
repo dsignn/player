@@ -1,0 +1,16 @@
+{
+  "title": "Media device",
+  "name": "media-device",
+  "icon": "media-device:menu",
+  "configEntryPoint": "config.js",
+  "entryPoint": {
+    "name": "media-device-index",
+    "path": "index.js"
+  },
+  "autoloadsWc": [
+    {
+      "name": "media-device-icons",
+      "path": "element/icons/icons.js"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-pagination-resource-behaviour.html">
+
+<link rel="import" href="../timeline/timeline.html">
+
+<dom-module id="timeline-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            /** TODO insert style    */
+            :host ::slotted(.header) {
+                margin-bottom: 16px;
+            }
+
+            @media (max-width: 800px) {
+                timeline-wc {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (min-width: 801px) and (max-width: 1100px) {
+                timeline-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 1101px) and (max-width: 1400px) {
+                timeline-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1401px) and (max-width: 1700px) {
+                timeline-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1701px) and (max-width: 2219px) {
+                timeline-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 2220px) {
+                timeline-wc {
+                    flex-basis: 16.6%;
+                }
+            }
+        </style>
+        <slot name="header"></slot>
+        <div hidden$="{{!totalItems}}">
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="timeline">
+                    <timeline-wc
+                            timeline="{{timeline}}"
+                            on-update-view="displayUpdateView"
+                            on-remove="_removeResource"
+                            on-change-rotation="updateResource"
+                            on-change-context="updateResource"
+                            on-play="play"
+                            on-resume="resume"
+                            on-stop="stop"
+                            on-pause="pause">
+                    </timeline-wc>
+                </template>
+            </div>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{totalItems}}">
+            Non sono presenti timeline
+        </div>
+    </template>
+
+    <script>
+        class ElementTimelineViewList extends StorageAdapterPaginationResourceBehaviour {
+
+            static get is() {
+                return 'timeline-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    resourceSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimelineConfig.NAME_SERVICE
+
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
+            }
+
+            /**
+             * @param evt
+             */
+            displayUpdateView(evt) {
+                this.resourceSelected = evt.detail;
+                this.selected = 2;
+            }
+
+            /**
+             * @param evt
+             */
+            play(evt) {
+                serviceManager.get('TimelineService')
+                    .play(evt.detail)
+                    .catch((err) => {
+                        console.error('Timeline service', err);
+                    });
+            }
+
+            /**
+             * @param evt
+             */
+            resume(evt) {
+                serviceManager.get('TimelineService').resume(evt.detail);
+            }
+
+            /**
+             * @param evt
+             */
+            stop(evt) {
+                serviceManager.get('TimelineService')
+                    .stop(evt.detail)
+                    .catch((err) => {
+                    console.error('Timeline service', err);
+                });
+            }
+
+            /**
+             * @param evt
+             */
+            pause(evt) {
+                serviceManager.get('TimelineService')
+                    .pause(evt.detail)
+                    .catch((err) => {
+                    console.error('Timeline service', err);
+                });
+            }
+        }
+
+        window.customElements.define(ElementTimelineViewList.is, ElementTimelineViewList);
+
+    </script>
+</dom-module>

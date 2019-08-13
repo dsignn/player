@@ -1,0 +1,178 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/pagination/pagination.html">
+<link rel="import" href="../../element/timer/timer.html">
+<link rel="import" href="../../../../element/storage/storage-adapter-pagination-resource-behaviour.html">
+
+<dom-module id="timer-view-list">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+            /** TODO insert style    */
+            :host ::slotted(.header) {
+                margin-bottom: 16px;
+            }
+
+            @media (max-width: 600px) {
+                timer-wc {
+                    flex-basis: 100%;
+                }
+            }
+
+            @media (min-width: 601px) and (max-width: 900px) {
+                timer-wc {
+                    flex-basis: 50%;
+                }
+            }
+
+            @media (min-width: 901px) and (max-width: 1200px) {
+                timer-wc {
+                    flex-basis: 33.3%;
+                }
+            }
+
+            @media (min-width: 1201px) and (max-width: 1500px) {
+                timer-wc {
+                    flex-basis: 25%;
+                }
+            }
+
+            @media (min-width: 1501px) and (max-width: 1919px) {
+                timer-wc {
+                    flex-basis: 20%;
+                }
+            }
+
+            @media (min-width: 1920px) {
+                timer-wc {
+                    flex-basis: 16.6%;
+                }
+            }
+        </style>
+        <slot name="header"></slot>
+        <div hidden$="{{!totalItems}}">
+            <div class="flex flex-wrap">
+                <template is="dom-repeat" items="[[resources]]" as="resource">
+                    <timer-wc
+                            timer="{{resource}}"
+                            on-play="play"
+                            on-stop="stop"
+                            on-pause="pause"
+                            on-resume="resume"
+                            on-update-view="displayUpdateView"
+                            on-remove="_removeResource">
+                    </timer-wc>
+                </template>
+            </div>
+            <application-pagination page="{{page}}" total-item="{{totalItems}}" item-per-page="{{itemPerPage}}"></application-pagination>
+        </div>
+        <div hidden$="{{totalItems}}">
+            Non sono presenti timer
+        </div>
+    </template>
+
+    <script>
+        class ElementTimerViewList extends StorageAdapterPaginationResourceBehaviour {
+
+            static get is() {
+                return 'timer-view-list';
+            }
+
+            static get properties() {
+                return {
+
+                    resourceSelected: {
+                        type: Object,
+                        notify: true,
+                        value: {}
+                    },
+
+                    selected: {
+                        type: Number,
+                        notify: true
+                    },
+
+                    storageName: {
+                        type: String,
+                        readOnly: true,
+                        value: TimerConfig.NAME_SERVICE
+
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+                this.addStorageListener(dsign.storage.Storage.STORAGE_POST_SAVE, this.getResources.bind(this))
+            }
+
+            /**
+             * @param evt
+             */
+            play(evt) {
+                serviceManager.get('TimerService').play(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            stop(evt) {
+                serviceManager.get('TimerService').stop(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            pause(evt) {
+                serviceManager.get('TimerService').pause(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            resume(evt) {
+                serviceManager.get('TimerService').resume(
+                    evt.detail
+                ).catch(
+                    (err) => {
+                        console.error(err)
+                    }
+                );
+            }
+
+            /**
+             * @param evt
+             */
+            displayUpdateView(evt) {
+                this.resourceSelected = evt.target.timer;
+                this.selected = 2;
+            }
+        }
+        window.customElements.define(ElementTimerViewList.is, ElementTimerViewList);
+    </script>
+</dom-module>

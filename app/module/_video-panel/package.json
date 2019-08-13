@@ -1,0 +1,31 @@
+{
+  "name": "dsign-video-panel-module",
+  "version": "0.1.0",
+  "author": "antonino visalli <antonino.visalli@gmail.com>",
+  "description": "Dsign video panel plugin",
+  "homepage": "https://github.com/dsign",
+  "customeStyle": {
+    "color": " green"
+  },
+  "configFile": "config.js",
+  "autoloads": [
+    "src/model/Panel.js",
+    "src/model/VideoPanel.js",
+    "src/model/PanelResource.js",
+    "src/model/VideoPanelResource.js",
+
+    "src/model/mosaic/MonitorMosaic.js",
+    "src/model/mosaic/VideoPanelMosaic.js",
+    "src/model/mosaic/ResourceMosaic.js",
+
+    "src/ffmpg/Mosaic.js",
+    "src/ffmpg/filter/Crop.js",
+    "src/ffmpg/filter/Default.js",
+
+    "src/VideoPanelResourceService.js"
+  ],
+  "autoloadWs" : [],
+  "widgets": [],
+  "icon": "app:video-panel",
+  "nameWc": "video-panel-index"
+}
