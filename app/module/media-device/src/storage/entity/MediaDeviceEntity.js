@@ -1,13 +1,14 @@
 /*
  *
  */
-class MediaDeviceEntity {
+class MediaDeviceEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     static get TYPE_VIDEO() { return 'video'; };
 
     static get TYPE_AUDIO() { return 'audio'; };
 
     constructor() {
+        super();
 
         /**
          * @type {string}

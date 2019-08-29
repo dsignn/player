@@ -12,5 +12,9 @@
             "name": "media-device-icons",
             "path": "element/icons/icons.js"
         }
+    ],
+    "autoloads": [
+        "src/storage/entity/MediaDeviceEntity.js",
+        "src/injector/MediaDeviceDataInjector.js"
     ]
 }

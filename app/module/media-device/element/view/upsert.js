@@ -10,6 +10,7 @@ import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-ripple/paper-ripple';
 import {flexStyle} from '../../../../style/layout-style';
+import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/upsert-language';
 
 /**
@@ -64,8 +65,26 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                 <iron-form id="formTimeslot">
                     <form method="post">
                         <div id="container">
-                          
-                             
+                          <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                            <paper-autocomplete
+                                    id="mediaDevice"
+                                    label="Media device"
+                                    text-property="label"
+                                    value-property="label"
+                                    remote-source
+                                    on-autocomplete-selected="_selectMediaDevice"
+                                    on-autocomplete-change="_searchMediaDeviceChanged">
+                                <template slot="autocomplete-custom-template">
+                                    ${autocompleteStyle}
+                                    <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                        <div>
+                                            <div class="service-name">[[item.label]]</div>
+                                            <div class="service-description">[[item.kind]]</div>
+                                        </div>
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                </template>
+                              </paper-autocomplete>
                         </div>
                         <div>
                             <div class="flex flex-horizontal-end" style="margin-top: 20px;">
