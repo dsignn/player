@@ -133,9 +133,12 @@ container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.name
  **********************************************************************************************************************/
 
 container.set('MongoDb', new MongoDb(
-    config.storage.adapter.mongo.name,
-    config.storage.adapter.mongo.uri,
-    config.storage.adapter.mongo.port,
+        config.storage.adapter.mongo.name,
+        config.storage.adapter.mongo.uri,
+        config.storage.adapter.mongo.port,
+{
+            useUnifiedTopology: true
+        }
     )
 );
 
