@@ -8,14 +8,14 @@ class MediaDeviceConfig extends require("@dsign/library").container.ContainerAwa
      * @return {string}
      * @constructor
      */
-    static get NAME_SERVICE() { return 'media-device.service'; };
+    static get NAME_SERVICE() { return 'media-camera.service'; };
 
     /**
      *
      * @return {string}
      * @constructor
      */
-    static get NAME_STORAGE() { return 'media-device.data'; };
+    static get NAME_STORAGE() { return 'media-camera.data'; };
 
     /**
      *

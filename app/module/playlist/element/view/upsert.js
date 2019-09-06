@@ -289,8 +289,6 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
             .then((data) => {
 
                 if (method === 'save') {
-                    console.log('SALVATO');
-
                     this.entity = this._storage.getHydrator().hydrate({});
                     this.$.formPlaylist.reset();
                 }

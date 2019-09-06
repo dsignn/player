@@ -14,7 +14,7 @@ import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
 import {MongoDb, MongoCollectionAdapter} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 
-process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
+process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? '<<<<<<<production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
 const path = require('path');
 // when is compile generate the __dirname is different

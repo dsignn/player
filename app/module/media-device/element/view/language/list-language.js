@@ -1,10 +1,10 @@
 export const lang = {
     "it": {
-        "header": "Lista playlist",
-        "notify-delete": "Playlist eliminata"
+        "header": "Lista media device",
+        "notify-delete": "Media device eliminata"
     },
     "en": {
-        "header": "List playlist",
-        "notify-delete": "Playlist deleted"
+        "header": "List media device",
+        "notify-delete": "Media device deleted"
     }
 };

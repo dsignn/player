@@ -31,8 +31,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                         @apply --paper-card-container;
                     }
                     
-                    @media (max-width: 900px) {
-                        #container {
+                    #container {
                             @apply --layout-vertical;
                         }
                     
@@ -43,29 +42,15 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                         #content-right {
                             @apply --layout-flex;
                             padding-top: 12px;
-                        }
-                    }
+                        }<<<<<
                         
-                    @media (min-width: 901px) {
-                        #container {
-                             @apply  --layout-horizontal;
-                        }
-                    
-                        #content-left {
-                           @apply --layout-flex-8;
-                        }
-                        
-                        #content-right {
-                           @apply --layout-flex-4;
-                           margin-left: 4px;
-                        }
-                    }
+      
                 </style>
                 <slot name="header"></slot>
-                <iron-form id="formTimeslot">
+                <iron-form id="formMediaDevice">
                     <form method="post">
                         <div id="container">
-                          <paper-input id="name" name="name" label="Name" value="{{resource.name}}" required></paper-input>
+                          <paper-input id="name" name="name" label="Name" value="{{entity.name}}" required></paper-input>
                             <paper-autocomplete
                                     id="mediaDevice"
                                     label="Media device"
@@ -77,7 +62,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                                 <template slot="autocomplete-custom-template">
                                     ${autocompleteStyle}
                                     <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
-                                        <div>
+                                        <div index="[[index]]">
                                             <div class="service-name">[[item.label]]</div>
                                             <div class="service-description">[[item.kind]]</div>
                                         </div>
@@ -88,7 +73,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                         </div>
                         <div>
                             <div class="flex flex-horizontal-end" style="margin-top: 20px;">
-                                <paper-button on-tap="submitTimeslotButton">{{localize(labelAction)}}</paper-button>
+                                <paper-button on-tap="submitMediaDeviceButton">{{localize(labelAction)}}</paper-button>
                             </div>
                         </div>
                     </form>
@@ -120,8 +105,11 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                     _notify: "Notify",
                     _localizeService: 'Localize',
                     StorageContainerAggregate : {
-                        _storage : "TimeslotStorage",
+                        _storage : "MediaDeviceStorage",
                         _resourceStorage: "ResourceStorage"
+                    },
+                    HydratorContainerAggregate: {
+                        _chromeDeviceHydrator : "MediaDeviceEntityChromeApiHydrator"
                     },
                     _monitorService: "MonitorService",
                 }
@@ -149,6 +137,14 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
             _monitorService: {
                 type: Object,
                 readOnly: true
+            },
+
+            /**
+             * @type MonitorService
+             */
+            _chromeDeviceHydrator: {
+                type: Object,
+                readOnly: true
             }
         };
     }
@@ -156,6 +152,87 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
     constructor() {
         super();
         this.resources = lang;
+    }
+
+    ready() {
+        super.ready();
+        this.$.formMediaDevice.addEventListener('iron-form-presubmit', this.submitMediaDevice.bind(this));
+    }
+
+    /**
+     * @param newValue
+     * @private
+     */
+    _changeEntity(newValue) {
+        this.labelAction = 'save';
+        if (!newValue) {
+            return;
+        }
+
+        if (newValue.id) {
+            this.labelAction = 'update';
+            this.$.mediaDevice.value = !this.$.mediaDevice.value ? this._chromeDeviceHydrator.extract(newValue) : this.$.mediaDevice.value
+        }
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _searchMediaDeviceChanged(evt) {
+        navigator.mediaDevices.enumerateDevices()
+            .then(function (devices) {
+                let filter = devices.filter(
+                    (element) => {
+                        return element.label.search(new RegExp(evt.detail.value, 'i')) > -1;
+                    }
+                );
+
+                evt.detail.target.suggestions(
+                    filter
+                );
+            })
+            .catch(function (err) {
+                console.error(err);
+            });
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _selectMediaDevice(evt) {
+        evt.detail.value.name = this.$.name.value;
+        this.entity = this._chromeDeviceHydrator.hydrate(evt.detail.value);
+    }
+
+    /**
+     * @param evt
+     */
+    submitMediaDeviceButton(evt) {
+        this.$.formMediaDevice.submit();
+    }
+
+    /**
+     * @param evt
+     */
+    submitMediaDevice(evt) {
+        evt.preventDefault();
+
+        let method = this.getStorageUpsertMethod();
+        this._storage[method](this.entity)
+            .then((data) => {
+
+                if (method === 'save') {
+                    this.entity = this._storage.getHydrator().hydrate({});
+                    this.$.formMediaDevice.reset();
+                }
+
+                this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
+            }).catch((err) => {
+                    console.log(err)
+                }
+            );
     }
 }
 window.customElements.define('media-device-view-upsert', MediaDeviceViewUpsert);

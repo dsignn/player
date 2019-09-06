@@ -139,7 +139,6 @@ class Application {
             case this.config.storage !== undefined && this.config.storage.adapter !== undefined && this.config.storage.adapter.mongo !== undefined:
 
                 if (this.environment === 'development') {
-                    console.log('composecomposecomposecomposecomposecomposecomposecomposecomposecomposecomposecompose');
                     let dockerCompose = require('child_process').spawn('docker-compose', ['stop']);
                     dockerCompose.stdout.on('data',(data) => {
                         console.log("stop docker compose: ",data.toString('utf8'));
@@ -544,8 +543,7 @@ app.on('ready', () => {
  */
 app.on('window-all-closed', () => {
     // On OS X it is common for applications and their menu bar to stay active until the user quits explicitly with Cmd + Q
-    application.close();
-    console.log('SUCAAAAAAAAAAAAAAAAAAA');
+    application.close();;
     if (process.platform !== 'darwin') {
         app.quit()
     }

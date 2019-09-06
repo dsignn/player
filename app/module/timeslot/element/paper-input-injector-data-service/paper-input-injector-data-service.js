@@ -97,9 +97,9 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
                 </div>
             </div>
             <div>
-                 <template is="dom-repeat" items="[[value]]" as="injectorData">
+                 <template is="dom-repeat" items="[[paperItemsData]]" as="item">
                     <paper-chip selectable>
-                        [[_computeInjectorData(injectorData)]]
+                         [[item.serviceLabel]] - [[item.name]]
                         <iron-icon index="[[index]]" icon="icons:clear" on-tap="_deleteChip" class="delete"></iron-icon>
                     </paper-chip>
                  </template>
@@ -131,10 +131,20 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
             /**
              * @type Array
              */
-            value: {
+            paperItemsData: {
                 type: Array,
                 notify: true,
                 value: []
+            },
+
+            /**
+             * @type Array
+             */
+            value: {
+                type: Array,
+                notify: true,
+                value: [],
+                observer: '_changeValue',
             },
 
             services : {
@@ -149,7 +159,41 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
             _injectorServices: {
                 type: Object,
                 readOnly: true
+            },
+
+            paperLabels: {
+                type: Array,
+                value: []
             }
+        }
+    }
+
+    /**
+     * @param newValue
+     * @param oldValue
+     * @private
+     */
+    _changeValue(newValue, oldValue) {
+
+        if (!newValue || (Array.isArray(newValue) && newValue.length === 0)) {
+            this.paperItemsData = [];
+            return;
+        }
+
+        for (let cont = 0; newValue.length > cont; cont++) {
+            console.log('nuovo', newValue[cont]);
+            this._injectorServices.get(newValue[cont].name)
+                .getTimeslotData(newValue[cont].data)
+                .then(function(data) {
+
+                    let obj = {
+                        name: data ? data[ this.element._injectorServices.get(this.service.name).serviceNamespace].name : '',
+                        serviceLabel: this.element._injectorServices.get(this.service.name).serviceLabel,
+                        serviceName:  this.element._injectorServices.get(this.service.name).serviceName
+                    };
+
+                    this.element.push('paperItemsData', obj);
+                }.bind({element: this, service: newValue[cont]}));
         }
     }
 
@@ -204,6 +248,7 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
         let injector = new Injector();
         injector.setData(this.$.serviceInput.value.extractTimeslot(evt.detail.value));
         injector.setName(this.$.serviceInput.value.serviceName);
+
         this.push('value', injector);
         this.$.serviceInput.clear();
         setTimeout(
@@ -212,6 +257,19 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
             },
             200
         );
+
+        this._injectorServices.get(injector.name)
+            .getTimeslotData(injector.data)
+            .then(function(data) {
+
+                let obj = {
+                    name: data ? data[this._injectorServices.get(injector.name).serviceNamespace].name : '',
+                    serviceLabel: this._injectorServices.get(injector.name).serviceLabel,
+                    serviceName: this._injectorServices.get(injector.name).serviceName
+                };
+
+                this.push('paperItemsData', obj);
+            }.bind(this));
     }
 
     /**
@@ -224,20 +282,16 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
     }
 
     /**
-     * @param injector
-     * @private
-     */
-    _computeInjectorData(injector) {
-        let data = this._injectorServices.get(injector.name).getTimeslotData(injector.data);
-        return `${this._injectorServices.get(injector.name).serviceName} - ${data.name}`;
-    }
-
-    /**
      * @param evt
      * @private
      */
     _deleteChip(evt) {
-        this.splice('value', evt.target.index, 1);
+        console.log('dai toni');
+        let removeElement = this.splice('paperItemsData', evt.target.index, 1)[0];
+        let findIndexValue = this.value.findIndex((element) => {
+            return element.name === removeElement.serviceName;
+        });
+        this.splice('value', findIndexValue, 1);
     }
 
 }

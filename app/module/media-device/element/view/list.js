@@ -5,6 +5,7 @@ import {StoragePaginationMixin} from "../../../../elements/mixin/storage/paginat
 import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
+import "../paper-media-device/paper-media-device";
 
 import {lang} from './language/list-language';
 
@@ -62,7 +63,7 @@ class MediaDeviceViewList extends  StoragePaginationMixin(StorageCrudMixin(Local
             <slot name="header"></slot>
             <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="mediaDevice">
-                   <div style="width: 100%;">{{mediaDevice.name}}</div>
+                   <paper-media-device entity="{{mediaDevice}}" on-delete="_deleteEntity" on-update="_showUpdateView"></paper-media-device>
                 </template>
             </div>
             <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
@@ -101,7 +102,7 @@ class MediaDeviceViewList extends  StoragePaginationMixin(StorageCrudMixin(Local
                     _notify : "Notify",
                     _localizeService: "Localize",
                     StorageContainerAggregate: {
-                        _storage: "PlaylistStorage"
+                        _storage: "MediaDeviceStorage"
                     }
                 }
             },

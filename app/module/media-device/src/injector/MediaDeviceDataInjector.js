@@ -27,7 +27,7 @@ class MediaDeviceDataInjector extends AbstractInjector {
             this.storage.get(data.id).then(function(data) {
 
                 let obj = {};
-                obj[this.serviceNamespace()] = data;
+                obj[this.serviceNamespace] = data;
                 resolve(obj);
             }.bind(this)).catch((err) => {
                 reject(err);
@@ -46,7 +46,7 @@ class MediaDeviceDataInjector extends AbstractInjector {
      *  @return string
      */
     get serviceLabel() {
-        return 'MediaDeviceDataInjector';
+        return 'Media Device Data';
     }
 
     /**
@@ -63,7 +63,10 @@ class MediaDeviceDataInjector extends AbstractInjector {
         return 'Media Device metadata';
     }
 
-    serviceNamespace () {
+    /**
+     * @returns {string}
+     */
+    get serviceNamespace () {
         return 'mediaDevice';
     }
 }

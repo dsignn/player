@@ -5,7 +5,6 @@ import {Module} from "@dsign/library/src/core/module/Module";
 import {DexieManager} from "@dsign/library/src/storage/adapter/dexie/index";
 import {WebComponent} from "@dsign/library/src/core/webcomponent/WebComponent";
 import {HydratorStrategy, PathStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
-import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/index";
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');

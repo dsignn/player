@@ -13,6 +13,11 @@ class MediaDeviceEntity extends require("@dsign/library").storage.entity.EntityI
         /**
          * @type {string}
          */
+        this.deviceId = '';
+
+        /**
+         * @type {string}
+         */
         this.type = '';
 
         /**

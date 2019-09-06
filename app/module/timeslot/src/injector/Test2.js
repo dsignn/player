@@ -66,10 +66,15 @@ class Test2 extends AbstractInjector {
     }
 
     getTimeslotData(data) {
-        return this.mockData.find((element) => {
-                return data.id === element.id;
-            }
-        )
+        return new Promise((resolve, reject) => {
+            let dataReturn = this.mockData.find((element) => {
+                    return data.id === element.id;
+                }
+            );
+            let obj = {};
+            obj[this.serviceNamespace] = dataReturn;
+            resolve(obj);
+        });
     }
 
     /**

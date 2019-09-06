@@ -78,23 +78,12 @@ class MediaDeviceConfig extends require("@dsign/library").container.ContainerAwa
             MediaDeviceConfig.getMediaDeviceHydrator(this.getContainer().get('EntityContainerAggregate'))
         );
 
+        let chromeMediaDeviceHydrator =  MediaDeviceConfig.getMediaDeviceChromeApiHydrator(this.getContainer().get('EntityContainerAggregate'));
+
         this.getContainer().get('HydratorContainerAggregate').set(
-            MediaDeviceConfig.MEDIA_DEVICE_HYDRATOR_SERVICE,
-            MediaDeviceConfig.getMediaDeviceHydrator(this.getContainer().get('EntityContainerAggregate'))
+            MediaDeviceConfig.MEDIA_DEVICE_CHROME_API_HYDRATOR_SERVICE,
+            MediaDeviceConfig.getMediaDeviceChromeApiHydrator(this.getContainer().get('EntityContainerAggregate'))
         );
-
-        /*
-        hydrator = new dsign.hydrator.PropertyHydrator(
-            new MediaDevice(),
-            {},
-            {
-                kind : 'type',
-                label : 'deviceName'
-            }
-        );
-
-         */
-
     }
 
     /**
@@ -113,6 +102,12 @@ class MediaDeviceConfig extends require("@dsign/library").container.ContainerAwa
                 MediaDeviceConfig.STORAGE_SERVICE,
                 storage
             );
+
+            this.getContainer().get(TimeslotConfig.TIMESLOT_INJECTOR_DATA_SERVICE)
+                .set(
+                    'MediaDeviceDataInjector',
+                    new MediaDeviceDataInjector(storage)
+                );
         };
 
 
@@ -142,16 +137,31 @@ class MediaDeviceConfig extends require("@dsign/library").container.ContainerAwa
             container.get('MediaDeviceEntity')
         );
 
+        hydrator.addPropertyStrategy(
+            'id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        ).addPropertyStrategy(
+            '_id',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('id', '_id')
+        );
+
+        hydrator.addValueStrategy('id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)())
+            .addValueStrategy('_id', new (require("@dsign/library").hydrator.strategy.value.MongoIdStrategy)());
+
         hydrator.enableExtractProperty('id')
+            .enableExtractProperty('_id')
             .enableExtractProperty('name')
             .enableExtractProperty('groupId')
             .enableExtractProperty('deviceName')
+            .enableExtractProperty('deviceId')
             .enableExtractProperty('type');
 
         hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('_id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('groupId')
             .enableHydrateProperty('deviceName')
+            .enableHydrateProperty('deviceId')
             .enableHydrateProperty('type');
 
         return hydrator;
@@ -163,20 +173,23 @@ class MediaDeviceConfig extends require("@dsign/library").container.ContainerAwa
      */
     static getMediaDeviceChromeApiHydrator(container) {
 
-        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)(
-            container.get('MediaDeviceEntity')
+        let hydrator = MediaDeviceConfig.getMediaDeviceHydrator(container);
+
+        hydrator.addPropertyStrategy(
+            'kind',
+            new  (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('type', 'type')
+        ).addPropertyStrategy(
+            'label',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('deviceName', 'label')
+        ).addPropertyStrategy(
+            'deviceName',
+            new (require("@dsign/library").hydrator.strategy.property.MapHydratorStrategy)('deviceName', 'label')
         );
 
-        hydrator.enableExtractProperty('deviceId')
-            .enableExtractProperty('label')
-            .enableExtractProperty('name')
-            .enableExtractProperty('groupId')
+        hydrator.enableExtractProperty('label')
             .enableExtractProperty('kind');
 
-        hydrator.enableHydrateProperty('deviceId')
-            .enableHydrateProperty('label')
-            .enableHydrateProperty('name')
-            .enableHydrateProperty('groupId')
+        hydrator.enableHydrateProperty('label')
             .enableHydrateProperty('kind');
 
         return hydrator;

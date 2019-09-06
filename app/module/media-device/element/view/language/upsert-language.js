@@ -1,24 +1,18 @@
 export const lang = {
   "it": {
-    "header": "Lista playlist",
-    "enable-audio" :"Abilita audio",
+    "header": "Lista media device",
     "name" : "Nome",
-    "working-only-video": "si attiva solo sulle risorse audio",
-    "bind-playlist": "Aggancia playlist",
-    "timeslots" : "Timeslots",
     "save": "Salva",
-    "notify-save" : "Playlist saved",
-    "notify-update" : "Playlist updated"
+    "update": "Modifica",
+    "notify-save" : "Media device saved",
+    "notify-update" : "Media device updated"
   },
   "en": {
-    "header": "List playlist",
-    "enable-audio" :"Enable audio",
+    "header": "List media device",
     "name" : "Name",
-    "working-only-video": "working only on video resource",
-    "bind-playlist": "Bind playlist",
-    "timeslots" : "Timeslots",
     "save": "Save",
-    "notify-save" : "Playlist salvata",
-    "notify-update" : "Playlist aggiornata"
+    "update": "Update",
+    "notify-save" : "Media device salvato",
+    "notify-update" : "Media device aggiornato"
   }
 };

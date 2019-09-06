@@ -10,7 +10,7 @@ import '../../module/dashboard/index';
 import '../../module/dashboard/element/paper-widget/paper-widget';
 import '../../module/dashboard/element/icons/icons';
 /**
- * end ashboard
+ * end dashboard
  */
 
 
