@@ -107,6 +107,20 @@ class PaperTimer extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(P
                     color: var(--timer-pause, var(--timeslot-pause, yellow));
                     font-style: italic;
                 }
+                
+                paper-icon-button[disabled].action {
+                    background-color: grey;
+                    opacity: 0.5;
+                }
+    
+                paper-icon-button[disabled] {
+                    color: var(--disabled-text-color);
+                    opacity: 0.5;
+                }
+                
+                paper-icon-button.circle-small {
+                     @apply --application-paper-icon-button-circle;
+                }
     
             </style>
             <paper-card>
@@ -132,11 +146,11 @@ class PaperTimer extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(P
                     </div>
                     </div>
                     <div class="content-action">
-                        <paper-icon-button id="play" icon="timeslot:play" class="circle-small" on-click="_play"></paper-icon-button>
+                        <paper-icon-button id="play" icon="timeslot:play" class="circle-small action" on-click="_play"></paper-icon-button>
                         <paper-tooltip for="play" position="bottom">{{localize('play-timer')}}</paper-tooltip>
-                        <paper-icon-button id="stop" icon="timeslot:stop" class="circle-small" on-click="_stop"></paper-icon-button>
+                        <paper-icon-button id="stop" icon="timeslot:stop" class="circle-small action" on-click="_stop"></paper-icon-button>
                         <paper-tooltip for="stop" position="bottom">{{localize('stop-timer')}}</paper-tooltip>
-                        <paper-icon-button id="pause" icon="timeslot:pause" class="circle-small" on-click="_pause"></paper-icon-button>
+                        <paper-icon-button id="pause" icon="timeslot:pause" class="circle-small action" on-click="_pause"></paper-icon-button>
                         <paper-tooltip for="pause" position="bottom">{{localize('stop-pause')}}</paper-tooltip>
                     </div>
                 </div>
