@@ -2,60 +2,57 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
 import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
-import '@polymer/paper-icon-button/paper-icon-button';
-import '@polymer/paper-tooltip/paper-tooltip';
+import {flexStyle} from '../../style/layout-style';
+import {lang} from "./language";
 import './element/view/list'
 import './element/view/upsert'
-import {flexStyle} from '../../style/layout-style';
-import {lang} from './language';
 
 /**
- * Entry point for the module mediaDevice
+ * Entry point for the module timer
  *
  * @customElement
  * @polymer
  */
-class MediaDeviceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
-
+class TimerIndex extends  LocalizeMixin(ServiceInjectorMixin(PolymerElement))  {
     static get template() {
         return html`
-            ${flexStyle} 
-            <style>
-                div.header {
-                    @apply --header-view-list;
-                }
-                           
-                paper-icon-button.circle {
-                    @apply --paper-icon-button-action;
-                }
-            </style>
-            <iron-pages id="ironPages" selected="{{selected}}">
+                ${flexStyle} 
+                <style>
+                    div.header {
+                        @apply --header-view-list;
+                    }
+                               
+                    paper-icon-button.circle {
+                        @apply --paper-icon-button-action;
+                    }
+                </style>
+                <iron-pages id="ironPages" selected="{{selected}}">
                 <div id="list">
-                    <media-device-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                    <timer-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
                          <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <div class="layout-flex">{{localize('list-media-device')}}</div>
+                            <div class="layout-flex">{{localize('list-timer')}}</div>
                             <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
-                            <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-media-device')}}</paper-tooltip>
+                            <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-timer')}}</paper-tooltip>
                          </div>
-                    </media-device-view-list>
+                    </timer-view-list>
                 </div>
                 <div id="add">
-                    <media-device-view-upsert>
+                   <timer-view-upsert>
                         <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <div class="layout-flex">{{localize('insert-media-device')}}</div>
+                            <div class="layout-flex">{{localize('insert-timer')}}</div>
                             <paper-icon-button id="iconBackInsert" icon="arrow-back" class="circle" on-click="displayListView"></paper-icon-button>
                             <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
                         </div>
-                    </media-device-view-upsert>
+                    </timer-view-upsert>
                 </div>
                 <div id="update">
-                    <media-device-view-upsert entity="{{entitySelected}}">
+                    <timer-view-upsert  entity="{{entitySelected}}">
                         <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <div class="layout-flex">{{localize('update-media-device')}}</div>
+                            <div class="layout-flex">{{localize('insert-timer')}}</div>
                             <paper-icon-button id="iconBackInsert" icon="arrow-back" class="circle" on-click="displayListView"></paper-icon-button>
                             <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
                         </div>
-                    </media-device-view-upsert>               
+                    </timer-view-upsert>
                 </div>
             </iron-pages> 
         `;
@@ -83,6 +80,7 @@ class MediaDeviceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
         };
     }
 
+
     constructor() {
         super();
         this.resources = lang;
@@ -102,4 +100,4 @@ class MediaDeviceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
         this.selected = 0;
     }
 }
-window.customElements.define("media-device-index", MediaDeviceIndex);
+window.customElements.define("timer-index", TimerIndex);

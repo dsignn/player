@@ -29,6 +29,11 @@ Application.createDirectories(applicationDataPath);
 const storagePath = path.normalize(`${applicationDataPath}${path.sep}storage${path.sep}`);
 const resourcePath = path.normalize(`${applicationDataPath}${path.sep}storage${path.sep}resource${path.sep}`);
 
+/**
+ * IMPORTANT add absolute node module path for web component script
+ * TODO replace in application?
+ */
+require('app-module-path').addPath(`${basePath}${path.sep}node_modules`);
 
 /**
  * Container service of application

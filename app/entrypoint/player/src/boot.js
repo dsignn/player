@@ -28,6 +28,12 @@ const resourcePath = path.normalize(`${applicationDataPath}${path.sep}storage${p
 const container = new Container();
 
 /**
+ * IMPORTANT add absolute node module path for web component script
+ * TODO replace in application?
+ */
+require('app-module-path').addPath(`${basePath}${path.sep}node_modules`);
+
+/**
  * @type {Application}
  */
 const application = new Application();

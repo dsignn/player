@@ -1,0 +1,55 @@
+{
+    "title": "Timeslot",
+    "name": "timeslot",
+    "icon": "timeslot:menu",
+    "configEntryPoint": "config.js",
+    "entryPoint": {
+        "name": "timeslot-index",
+        "path": "index.js"
+    },
+    "autoloads": [
+        "src/injector/AbstractInjector.js",
+        "src/AbstractTimeslotService.js",
+        "src/TimeslotService.js",
+        "src/storage/entity/TimeslotEntity.js",
+        "src/storage/entity/embedded/Injector.js",
+        "src/storage/adapter/dexie/DexieTimeslotAdapter.js",
+        "src/storage/adapter/mongo/MongoTimeslotAdapter.js",
+        "src/injector/Test1.js",
+        "src/injector/Test2.js"
+    ],
+    "autoloadsWs": [
+        {
+            "name": "timeslot-icons",
+            "path": "element/icons/icons.js"
+        },
+        {
+            "name": "timeslot-style",
+            "path": "element/style/style.js"
+        }
+    ],
+    "widgets": [
+        {
+            "src": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags.js",
+            "srcData": "timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data.js",
+            "description": "Widget to view tagged timeslot",
+            "name": "Timeslot tags",
+            "wc": "paper-timeslot-tags",
+            "wcData": "paper-timeslot-tags-data",
+            "dataProperty": "tags",
+            "dataLabel": "tags",
+            "dataRequired": true
+        },
+        {
+            "src": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors.js",
+            "srcData": "timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data.js",
+            "description": "Widget to view the timeslots assiate to the montors",
+            "name": "Timeslot monitors",
+            "wc": "paper-timeslot-monitors",
+            "wcData": "paper-timeslot-monitors-data",
+            "dataProperty": "monitors",
+            "dataLabel": "monitors",
+            "dataRequired": true
+        }
+    ]
+}

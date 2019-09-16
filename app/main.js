@@ -531,6 +531,14 @@ const application = new Application({
  */
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
+app.commandLine.appendSwitch('enable-native-gpu-memory-buffers', 'true');
+app.commandLine.appendSwitch('enable-accelerated-mjpeg-decode', 'true');
+app.commandLine.appendSwitch('enable-gpu-rasterization', 'true');
+app.commandLine.appendSwitch('enable-accelerated-video', 'true');
+app.commandLine.appendSwitch('enable-zero-copy', 'true');
+app.commandLine.appendSwitch('disable-software-rasterizer', 'true');
+app.commandLine.appendSwitch('enable-native-gpu-memory-buffers', 'true');
+
 /**
  * Electron ready
  */

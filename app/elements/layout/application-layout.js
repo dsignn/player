@@ -129,7 +129,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'media-device'
+                value : 'timer'
             },
 
             modules: {

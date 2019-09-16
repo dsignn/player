@@ -87,20 +87,20 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 }
     
                 .running {
-                    color: var(--timeslot-running);
+                    color: var(--playlist-running, var(--timeslot-running, green));
                     font-style: italic;
                 }
     
                 .idle {
-                    color: var(--timeslot-idle);
+                    color: var(--playlist-idle, var(--timeslot-idle, red));
                     font-style: italic;
                 }
     
                 .pause {
-                    color: var(--timeslot-pause);
+                    color: var(--playlist-pause, var(--timeslot-pause, yellow));
                     font-style: italic;
                 }
-    
+                
                 .content-action {
                     border-top: 1px solid  var(--divider-color);
                     padding: 6px 10px;

@@ -2,5 +2,9 @@
   "name": "wc-resource-media-camera",
   "version": "0.1.0",
   "description": "Camera device web component",
-  "main": ""
+  "main": "wc-resource-media-camera.js",
+  "dependencies": {
+    "@polymer/polymer": "^3.3.0",
+    "polymer": "^0.5.0"
+  }
 }

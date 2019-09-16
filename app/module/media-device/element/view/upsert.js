@@ -47,7 +47,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
       
                 </style>
                 <slot name="header"></slot>
-                <iron-form id="formMediaDevice">
+                <iron-form id="formResource">
                     <form method="post">
                         <div id="container">
                           <paper-input id="name" name="name" label="Name" value="{{entity.name}}" required></paper-input>
@@ -73,7 +73,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                         </div>
                         <div>
                             <div class="flex flex-horizontal-end" style="margin-top: 20px;">
-                                <paper-button on-tap="submitMediaDeviceButton">{{localize(labelAction)}}</paper-button>
+                                <paper-button on-tap="submitResourceButton">{{localize(labelAction)}}</paper-button>
                             </div>
                         </div>
                     </form>
@@ -156,7 +156,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
 
     ready() {
         super.ready();
-        this.$.formMediaDevice.addEventListener('iron-form-presubmit', this.submitMediaDevice.bind(this));
+        this.$.formResource.addEventListener('iron-form-presubmit', this.submitResource.bind(this));
     }
 
     /**
@@ -209,14 +209,14 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
     /**
      * @param evt
      */
-    submitMediaDeviceButton(evt) {
-        this.$.formMediaDevice.submit();
+    submitResourceButton(evt) {
+        this.$.formResource.submit();
     }
 
     /**
      * @param evt
      */
-    submitMediaDevice(evt) {
+    submitResource(evt) {
         evt.preventDefault();
 
         let method = this.getStorageUpsertMethod();
@@ -225,7 +225,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
 
                 if (method === 'save') {
                     this.entity = this._storage.getHydrator().hydrate({});
-                    this.$.formMediaDevice.reset();
+                    this.$.formResource.reset();
                 }
 
                 this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));

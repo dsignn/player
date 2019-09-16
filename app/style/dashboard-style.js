@@ -74,18 +74,6 @@ const template = html`
             --padding-top-view-list: 20px;
             --app-background: #ECEDEF;
             
-            --timeslot-running : #39A33D;
-            --timeslot-pause   : #FAD646;
-            --timeslot-idle   : #F00755;
-
-            --playlist-running : #39A33D;
-            --playlist-pause   : #FAD646;
-            --playlist-idle   : #F00755;
-
-            --timeline-running : #39A33D;
-            --timeline-pause   : #FAD646;
-            --timeline-idle   : #F00755;
-            
             /**********************************************************
                             GLOBAL LAYOUT ELEMENTS
             **********************************************************/

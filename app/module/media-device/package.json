@@ -15,6 +15,7 @@
     ],
     "autoloads": [
         "src/storage/entity/MediaDeviceEntity.js",
-        "src/injector/MediaDeviceDataInjector.js"
+        "src/injector/MediaDeviceDataInjector.js",
+        "src/storage/adapter/mongo/MongoMediaDeviceAdapter.js"
     ]
 }

@@ -44,6 +44,7 @@ import '../../module/resource/element/wc-resource/wc-resource-test';
  */
 import '../../module/timeslot/index';
 import '../../module/timeslot/element/icons/icons';
+import '../../module/timeslot/element/style/style';
 
 import '../../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags';
 import '../../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data';
@@ -79,6 +80,15 @@ import '../../module/media-device/index'
 import '../../module/media-device/element/icons/icons'
 /**
  * end media-device
+ */
+ 
+/**
+ * start timer
+ */
+import '../../module/timer/index'
+import '../../module/timer/element/icons/icons'
+/**
+ * end timer
  */
  
 /**

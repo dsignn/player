@@ -78,8 +78,6 @@ class MediaDeviceConfig extends require("@dsign/library").container.ContainerAwa
             MediaDeviceConfig.getMediaDeviceHydrator(this.getContainer().get('EntityContainerAggregate'))
         );
 
-        let chromeMediaDeviceHydrator =  MediaDeviceConfig.getMediaDeviceChromeApiHydrator(this.getContainer().get('EntityContainerAggregate'));
-
         this.getContainer().get('HydratorContainerAggregate').set(
             MediaDeviceConfig.MEDIA_DEVICE_CHROME_API_HYDRATOR_SERVICE,
             MediaDeviceConfig.getMediaDeviceChromeApiHydrator(this.getContainer().get('EntityContainerAggregate'))

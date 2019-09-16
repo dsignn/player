@@ -1,0 +1,21 @@
+{
+    "title": "Timer",
+    "name": "timer",
+    "icon": "timer:menu",
+    "configEntryPoint": "config.js",
+    "entryPoint": {
+        "name": "timer-index",
+        "path": "index.js"
+    },
+    "autoloadsWc": [
+        {
+            "name": "timer-icons",
+            "path": "element/icons/icons.js"
+        }
+    ],
+    "autoloads": [
+        "src/TimerService.js",
+        "src/injector/TimerDataInjector.js",
+        "src/storage/entity/TimerEntity.js"
+    ]
+}

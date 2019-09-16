@@ -16,7 +16,6 @@ class WcResourceMediaCamera extends PolymerElement {
             }
 
         </style>
-        {{}}
         <video id="camera" autoplay></video>
         `;
     }
@@ -39,8 +38,8 @@ class WcResourceMediaCamera extends PolymerElement {
      */
     _mediaDeviceChanged(newValue, oldValue) {
 
-        let constraint = { video : {deviceId: { exact:  newValue.id}}};
-
+        let constraint = { video : {deviceId: { exact:  newValue.deviceId}}};
+        console.log(newValue);
         navigator.mediaDevices.getUserMedia(constraint)
             .then((stream) => {
                 this.$.camera.srcObject = stream;
@@ -56,8 +55,10 @@ class WcResourceMediaCamera extends PolymerElement {
     createMockData() {
 
         navigator.mediaDevices.enumerateDevices({video:true})
-            .then(function (devices) {
-                console.log(devices);
+            .then((devices) => {
+                this.mediaDevice = devices.find((element) => {
+                    return element.deviceId ==='4361251acb9d5732c5a970aeba29360e7f808dbc2aa41cc37bb46b28dbe424dd';
+                });
             })
             .catch(function (err) {
                 console.error(err);

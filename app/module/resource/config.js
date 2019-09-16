@@ -262,7 +262,8 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
     _clearDirectory(resourceEntity) {
 
         let dirToClear = `${this.getContainer().get('Application').getResourcePath()}${this.path.sep}${resourceEntity.id}`;
-        require("@dsign/library").fs.Fs.removeDirSync(dirToClear);
+        const fse = require("fs-extra");
+        fse.removeSync(dirToClear);
     }
 
     /**

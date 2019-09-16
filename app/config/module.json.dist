@@ -122,6 +122,10 @@
             {
                 "name": "timeslot-icons",
                 "path": "element/icons/icons.js"
+            },
+            {
+                "name": "timeslot-style",
+                "path": "element/style/style.js"
             }
         ],
         "widgets": [
@@ -189,7 +193,29 @@
         ],
         "autoloads": [
             "src/storage/entity/MediaDeviceEntity.js",
-            "src/injector/MediaDeviceDataInjector.js"
+            "src/injector/MediaDeviceDataInjector.js",
+            "src/storage/adapter/mongo/MongoMediaDeviceAdapter.js"
+        ]
+    },
+    {
+        "title": "Timer",
+        "name": "timer",
+        "icon": "timer:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "timer-index",
+            "path": "index.js"
+        },
+        "autoloadsWc": [
+            {
+                "name": "timer-icons",
+                "path": "element/icons/icons.js"
+            }
+        ],
+        "autoloads": [
+            "src/TimerService.js",
+            "src/injector/TimerDataInjector.js",
+            "src/storage/entity/TimerEntity.js"
         ]
     }
 ]
