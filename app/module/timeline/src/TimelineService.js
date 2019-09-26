@@ -179,21 +179,23 @@ class TimelineService extends AbstractTimeslotService {
      * @param {Timeline} timeline
      * @param {TimelineItem} item
      * @param {number} delay
+     * @return {Promise}
      */
     _runTimelineItem(type, timeline, item, delay = 0) {
         let promises = [];
 
         for (let cont = 0; item.timeslotReferences.length > cont; cont++) {
-            promises.push(this.timeslotStorage.get(item.timeslotReferences[cont].referenceId));
+            promises.push(this.timeslotStorage.get(item.timeslotReferences[cont].id));
         }
 
-        Promise.all(promises).then((timeslots) => {
+        Promise.all(promises).then(async (timeslots) => {
 
             for (let cont = 0; timeslots.length > cont; cont++) {
                 // TODO inject data
                 timeslots[cont].currentTime = delay;
                 timeslots[cont].context = timeline.context;
-                this._send(type, timeline,   timeslots[cont]);
+                let dataTimeslot = await this._synchExtractTimeslotData(timeslots[cont]);
+                this._send(type, timeline, timeslots[cont], dataTimeslot);
             }
         })
     }
@@ -257,23 +259,30 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     *
-     * @param {string} type
-     * @param {Timeline} timeline
-     * @param {Timeslot} timeslot
+     * @param type
+     * @param timeline
+     * @param timeslot
+     * @param data
      * @private
      */
-    _send(type, timeline, timeslot = null) {
+    _send(type, timeline, timeslot = null, data = null) {
 
         let message = {
-            context : { serviceId: timeline.id }
+            event : type,
+            data : {
+                timeslot : timeslot,
+                context : {
+                    serviceId: timeline.id
+                }
+            }
         };
 
-        if (timeslot) {
-            message. timeslot = timeslot
-        }
 
-        this.sender.send(type, message);
+        if(data) {
+            message.data.data = data;
+        }
+        console.log('TIMELINE', message);
+        this.sender.send('proxy', message);
     }
 
     /**
@@ -343,7 +352,7 @@ class TimelineService extends AbstractTimeslotService {
     getTimelineFromArrayReference(references) {
         let timelines = [];
         for (let cont = 0; references.length > cont; cont++) {
-            timelines.push(this.timelineStorage.get(references[cont].referenceId));
+            timelines.push(this.timelineStorage.get(references[cont].id));
         }
         return Promise.all(timelines);
     }

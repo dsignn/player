@@ -339,7 +339,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         let query = '';
         switch (true) {
             case context.serviceId !== undefined:
-                query = `paper-player-timeslot[wrapper-timeslot-id="${context.serviceId }"]`;
+                query = `paper-player-timeslot[wrapper-timeslot-id="${context.serviceId}"]`;
                 break;
             case timeslot !== undefined:
                 query = `paper-player-timeslot[timeslot-id="${timeslot.id}"]:not([wrapper-timeslot-id=""])`;
@@ -392,7 +392,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
      */
     _stopTimeslot(evt, msg) {
         // Check if the message is not broadcast and not this monitor
-        if ( msg.timeslot !== undefined && this.identifier !== msg.timeslot.monitorContainerReference.id) {
+        if ( msg.timeslot !== null && this.identifier !== msg.timeslot.monitorContainerReference.id) {
             return;
         }
 

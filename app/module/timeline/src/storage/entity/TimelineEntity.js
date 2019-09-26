@@ -170,20 +170,20 @@ class TimelineEntity  extends require("@dsign/library").storage.entity.EntityIde
 
     /**
      * @param {Time} time
-     * @param {TimeslotEntity} timeslot
+     * @param {EntityReference} timeslotReference
      * @return {TimelineEntity}
      */
-    removeItem(time, timeslot = null) {
+    removeItem(time, timeslotReference = null) {
 
         let index = this._getIndex(time);
 
         switch (true) {
 
-            case index > -1 && timeslot !== null:
+            case index > -1 && timeslotReference !== null:
                 let item = this.getItem(time);
-                item.removeTimeslotReference(TimeslotReference.getTimeslotReferenceFromTimeslot(timeslot));
+                item.removeTimeslotReference(timeslotReference);
                 break;
-            case index > -1 && timeslot === null:
+            case index > -1 && timeslotReference === null:
                 this.timelineItems.splice(index, 1);
                 break;
             default:

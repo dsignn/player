@@ -28,7 +28,7 @@ class TimelineItem {
      */
     _getTimeslotReferenceIndex(entityReference) {
         return this.timeslotReferences.findIndex((element) => {
-            return element.referenceId === timeslotReference.referenceId;
+            return element.id === entityReference.id;
         });
     }
 
@@ -59,7 +59,7 @@ class TimelineItem {
      * @return {TimelineItem}
      */
     removeTimeslotReference(entityReference) {
-        if (!this.hasTimeslotReference(entityReference)) {
+        if (this.hasTimeslotReference(entityReference)) {
             this.timeslotReferences.splice(this._getTimeslotReferenceIndex(entityReference), 1);
         }
         return this;

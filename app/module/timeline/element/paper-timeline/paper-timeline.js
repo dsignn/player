@@ -120,7 +120,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             <div class="dataWrapper">
                                 <div>{{entity.name}}</div>
                                 <div id="status">{{status}}</div>
-                                <div class="flex flex-horizontal-end">{{timer}}|{{total}}</div>
+                                <div class="flex flex-horizontal-end">{{timer}} | {{total}}</div>
                             </div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">

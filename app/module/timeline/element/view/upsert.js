@@ -303,6 +303,17 @@ class TimelineViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
     /**
      * @param evt
      */
+    removeItem(evt) {
+
+        this.entity.removeItem(evt.detail.timelineItem.time, evt.detail.timeslotReference);
+
+        this._updateTimelineTimeWc(evt.detail.timelineItem.time);
+        this.$.timelineItems.render();
+    }
+
+    /**
+     * @param evt
+     */
     addToTimeline(evt) {
 
 
@@ -331,7 +342,7 @@ class TimelineViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @param {Time} time
      */
     _updateTimelineTimeWc(time) {
-        let item = this.shadowRoot.querySelector(`timeline-item-wc[identifier="${time.toString()}"]`);
+        let item = this.shadowRoot.querySelector(`paper-timeline-item[identifier="${time.toString()}"]`);
         if (item) {
             item.updateData();
         }

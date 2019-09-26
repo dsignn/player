@@ -2,6 +2,7 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
 import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
 import {flexStyle} from '../../../../style/layout-style';
+import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-menu-button/paper-menu-button';
@@ -93,9 +94,10 @@ class PaperTimelineItem extends LocalizeMixin(ServiceInjectorMixin(PolymerElemen
                     <paper-dialog id="timelineItemDialog"  no-overlap horizontal-align="right" vertical-align="top" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
                         <div class="title no-thickness">{{localize('timeslot')}}</div>
                         <template id="repeatTimeslot" is="dom-repeat" items="[[timelineItem.timeslotReferences]]" as="timeslotReference">
-                            <div class="flex flex-horizontal no-thickness ">
-                                <div class=" flex flex-1 flex-vertical-center">{{timeslotReference.name}}</div>
-                                <paper-icon-button icon="timeline:remove" ref={{timeslotReference}} on-click="_removeReference"></paper-icon-button>
+                            <div class="layout horizontal no-thickness">
+                                <div class="layout flex-1 center">{{timeslotReference.name}}</div>
+                                <paper-icon-button id="delete{{index}}" icon="timeline:delete" ref={{timeslotReference}} on-click="_removeReference"></paper-icon-button>
+                                <paper-tooltip for="delete{{index}}" position="top">{{localize('delete')}}</paper-tooltip>
                             </div>
                         </template>
                     </paper-dialog>

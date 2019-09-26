@@ -338,7 +338,9 @@ class PlaylistService extends AbstractTimeslotService {
             event : type,
             data : {
                 timeslot : timeslot,
-                serviceId: playlist.id
+                context : {
+                    serviceId: playlist.id
+                }
             }
 
         };
@@ -346,7 +348,7 @@ class PlaylistService extends AbstractTimeslotService {
         if(data) {
             message.data.data = data;
         }
-
+        console.log('PLAYLIST', message);
         this.sender.send('proxy', message);
     }
 
