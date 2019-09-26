@@ -73,7 +73,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                         </div>
                         <div>
                             <div class="flex flex-horizontal-end" style="margin-top: 20px;">
-                                <paper-button on-tap="submitResourceButton">{{localize(labelAction)}}</paper-button>
+                                <paper-button on-tap="submitEntityButton">{{localize(labelAction)}}</paper-button>
                             </div>
                         </div>
                     </form>
@@ -209,7 +209,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
     /**
      * @param evt
      */
-    submitResourceButton(evt) {
+    submitEntityButton(evt) {
         this.$.formResource.submit();
     }
 

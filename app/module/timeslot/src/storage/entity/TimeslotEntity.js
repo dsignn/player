@@ -1,5 +1,5 @@
 /**
- *
+ * @class TimeslotEntity
  */
 class TimeslotEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 

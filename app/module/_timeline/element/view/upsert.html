@@ -224,7 +224,7 @@
                     resource: {
                         type: Object,
                         notify: true,
-                        value: new Timeline(),
+                        value: new TimelineEntity(),
                         observer: '_timelineChanged'
                     }
                 }
@@ -455,7 +455,7 @@
              * @private
              */
             _reset() {
-                this.resource = new Timeline();
+                this.resource = new TimelineEntity();
             }
         }
 

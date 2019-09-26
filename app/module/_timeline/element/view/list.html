@@ -131,7 +131,7 @@
                 serviceManager.get('TimelineService')
                     .play(evt.detail)
                     .catch((err) => {
-                        console.error('Timeline service', err);
+                        console.error('TimelineEntity service', err);
                     });
             }
 
@@ -149,7 +149,7 @@
                 serviceManager.get('TimelineService')
                     .stop(evt.detail)
                     .catch((err) => {
-                    console.error('Timeline service', err);
+                    console.error('TimelineEntity service', err);
                 });
             }
 
@@ -160,7 +160,7 @@
                 serviceManager.get('TimelineService')
                     .pause(evt.detail)
                     .catch((err) => {
-                    console.error('Timeline service', err);
+                    console.error('TimelineEntity service', err);
                 });
             }
         }

@@ -92,6 +92,15 @@ import '../../module/timer/element/icons/icons'
  */
  
 /**
+ * start timeline
+ */
+import '../../module/timeline/index'
+import '../../module/timeline/element/icons/icons'
+/**
+ * end timeline
+ */
+ 
+/**
  * boot application
  */
 import '../../entrypoint/dashboard/src/boot'

@@ -1,6 +1,6 @@
 
 /**
- * Config file to load services
+ * @class TimerConfig
  */
 class TimerConfig extends require("@dsign/library").container.ContainerAware {
 
@@ -100,7 +100,7 @@ class TimerConfig extends require("@dsign/library").container.ContainerAware {
 
         let loadStorage = () => {
 
-            const adapter = new MongoTimeslotAdapter(this.getContainer().get('MongoDb'), TimerConfig.COLLECTION);
+            const adapter = new MongoTimerAdapter(this.getContainer().get('MongoDb'), TimerConfig.COLLECTION);
             const storage = new (require("@dsign/library").storage.Storage)(adapter);
 
             storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(TimerConfig.TIMER_HYDRATOR_SERVICE));

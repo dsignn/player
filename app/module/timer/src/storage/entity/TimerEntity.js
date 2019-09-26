@@ -21,17 +21,17 @@ class TimerEntity extends require("@dsign/library").storage.entity.EntityIdentif
         /**
          * @type {Time}
          */
-        this.startAt = new  (require("@dsign/library").date.Time)();
+        this.startAt = new (require("@dsign/library").date.Time)();
 
         /**
          * @type {Time}
          */
-        this.endAt = new  (require("@dsign/library").date.Time)();
+        this.endAt = new (require("@dsign/library").date.Time)();
 
         /**
          * @type {Time}
          */
-        this.timer = new  (require("@dsign/library").date.Time)();
+        this.timer = new (require("@dsign/library").date.Time)();
 
         /**
          * @type string|Object

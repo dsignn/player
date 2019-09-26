@@ -2,20 +2,29 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
 import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
 import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
-import '@polymer/iron-flex-layout/iron-flex-layout';
+import {flexStyle} from '../../../../style/layout-style';
+import '@polymer/paper-card/paper-card';
 import '@polymer/paper-tooltip/paper-tooltip';
+import '@polymer/paper-icon-button/paper-icon-button';
+import '@polymer/paper-menu-button/paper-menu-button';
+import '@polymer/paper-listbox/paper-listbox';
+import '@polymer/paper-item/paper-item';
+import '@polymer/paper-dialog/paper-dialog';
+
 import {lang} from './language/language';
 
 /**
  * @customElement
  * @polymer
  */
-class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
+class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
-            <style >
-                paper-card {
+                ${flexStyle}
+            <style>
+
+                             paper-card {
                     @apply --layout-horizontal;
                     @apply --application-paper-card;
                     margin-right: 4px;
@@ -52,44 +61,34 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     @apply --layout-horizontal;
                     @apply --layout-flex;
                 }
-                
+                   
+                paper-icon-button#rotationIcon[aria-disabled="true"] {
+                    opacity: 0.4;
+                }
+    
+                paper-icon-button[disabled].action {
+                    background-color: grey;
+                    opacity: 0.5;
+                }
+                        
+                paper-menu-button {
+                    padding: 0;
+                }
                 
                 #content {
                     @apply --layout-flex;
                     padding: 4px;
                     word-break: break-all;
-                    overflow: hidden;
-                }  
-                   
-                paper-menu-button {
-                    padding: 0;
                 }
                 
-                .nameTimeslot {
-                    overflow: hidden;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                }
-    
-                paper-listbox {
-                    min-width: 0;
-                }
-    
-                #rightSection {
-                    background-image: url("img/timslot.jpg") !important;
-                }
-    
-                .activePaperButton {
-                    color: forestgreen;
-                }
-    
-                paper-icon-button#rotationIcon[aria-disabled="true"] {
-                    opacity: 0.4;
-                }
-    
                 .running {
                     color: var(--timeslot-running);
                     font-style: italic;
+                }
+    
+                .content-action {
+                    border-top: 1px solid  var(--divider-color);
+                    padding: 6px 10px;
                 }
     
                 .idle {
@@ -101,51 +100,27 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     color: var(--timeslot-pause);
                     font-style: italic;
                 }
-    
-                .content-action {
-                    border-top: 1px solid  var(--divider-color);
-                    padding: 6px 10px;
-                }
-    
-                .crud paper-icon-button {
-                    background-color: #0b8043 ;
-                }
-    
-                paper-icon-button[disabled].action {
-                    background-color: grey;
-                    opacity: 0.5;
-                }
-    
-                paper-icon-button[disabled] {
-                    color: var(--disabled-text-color);
-                    opacity: 0.5;
-                }
-    
-                div[hidden] {
-                    visibility: hidden;
-                }
-                
+                 
                 paper-icon-button.circle-small {
                      @apply --application-paper-icon-button-circle;
                 }
-    
+                 
             </style>
             <paper-card>
-                <div id="left-section"></div>
+                <div id="left-section"></div>   
                 <div id="fastAction">
-                    <paper-icon-button id="contextIcon" item="{{timeslot}}" class="activePaperButton" on-tap="_tapOverlay" disabled="{{hideCrud}}"></paper-icon-button>
-                    <paper-tooltip for="contextIcon" position="right">TODO</paper-tooltip>
-                    <paper-icon-button id="rotationIcon" item="{{timeslot}}" class="activePaperButton" on-tap="_tapRotation" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-icon-button id="overlayIcon" item="{{timeline}}" on-tap="_tapContext"></paper-icon-button>
+                    <paper-tooltip for="overlayIcon" position="right">TODO</paper-tooltip>
+                    <paper-icon-button id="rotationIcon" item="{{timeline}}" on-tap="_tapRotation"></paper-icon-button>
                     <paper-tooltip for="rotationIcon" position="right">TODO</paper-tooltip>
                 </div>
                 <div id="right-section">
                     <div class="top">
-                       <div id="content">
+                        <div id="content">
                             <div class="dataWrapper">
-                                <div class="nameTimeslot">{{entity.name}}</div>
+                                <div>{{entity.name}}</div>
                                 <div id="status">{{status}}</div>
-                                <div class="flex flex-horizontal-end">{{entity.monitorContainerReference.name}}</div>
-                                <div class="flex flex-horizontal-end">{{currentTime}} / {{entity.duration}} sec</div>
+                                <div class="flex flex-horizontal-end">{{timer}}|{{total}}</div>
                             </div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
@@ -160,15 +135,21 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     </div>
                     <div class="content-action">
                         <paper-icon-button id="play" icon="timeslot:play" on-click="_play" class="circle-small action"></paper-icon-button>
-                        <paper-tooltip for="play" position="bottom">{{localize('play-timeslot')}}</paper-tooltip>
+                        <paper-tooltip for="play" position="bottom">{{localize('play-timeline')}}</paper-tooltip>
                         <paper-icon-button id="stop" icon="timeslot:stop" on-click="_stop" class="circle-small action"></paper-icon-button>
-                        <paper-tooltip for="stop" position="bottom">{{localize('stop-timeslot')}}</paper-tooltip>
+                        <paper-tooltip for="stop" position="bottom">{{localize('stop-timeline')}}</paper-tooltip>
                         <paper-icon-button id="pause" icon="timeslot:pause" on-click="_pause" class="circle-small action"></paper-icon-button>
-                        <paper-tooltip for="pause" position="bottom">{{localize('pause-timeslot')}}</paper-tooltip>
+                        <paper-tooltip for="pause" position="bottom">{{localize('pause-timeline')}}</paper-tooltip>
                     </div>
                 </div>
+           
             </paper-card>
         `
+    }
+
+    constructor() {
+        super();
+        this.resources = lang;
     }
 
     /**
@@ -178,7 +159,6 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         return [
             'rotation-no',
             'rotation-loop',
-            'rotation-infinity'
         ];
     }
 
@@ -189,7 +169,6 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         let obj = {};
         obj['rotation-no'] = 'send-standalone';
         obj['rotation-loop'] = 'send-loop';
-        obj['rotation-infinity'] = 'send-imfinity';
         return obj;
     }
 
@@ -203,8 +182,9 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         return obj;
     }
 
-    static get properties () {
+    static get properties() {
         return {
+
 
             /**
              * @type TimeslotEntity
@@ -262,45 +242,83 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 value : {
                     _localizeService: 'Localize',
                     StorageContainerAggregate: {
-                        _storage: "TimeslotStorage"
+                        _storage: "TimelineStorage"
                     }
                 }
             }
-        }
+        };
     }
 
-    constructor() {
-        super();
-        this.resources = lang;
+    /**
+     * @param {TimelineEntity} timeline
+     */
+    _entityChanged(timeline) {
+        if (!timeline) {
+            return;
+        }
+        this.status = timeline.status;
+        this._clearStatusClass(timeline.status);
+        this._updateContextHtml();
+        this._updateRotationHtml();
+        this._updateTimer();
+        this._updateActionHtml();
     }
 
     /**
      *
+     * @param evt
+     * @private
      */
-    connectedCallback() {
-        super.connectedCallback();
-        this.root.querySelector('paper-tooltip[for="contextIcon"]').innerText = this.localize(
-            PaperTimeslot.LIST_CONTEXT_LABEL_ICON[this.entity.context]
-        );
-        this.root.querySelector('paper-tooltip[for="rotationIcon"]').innerText = this.localize(
-            PaperTimeslot.LIST_ROTATION_LABEL_ICON[this.entity.rotation]
-        );
+    _remove(evt) {
+        this.dispatchEvent(new CustomEvent('remove', {detail: this.timeline}));
     }
 
     /**
-     * @param timeslot
+     * @param evt
+     * @private
      */
-    _entityChanged(timeslot) {
-        if (!timeslot) {
-            return;
-        }
+    _update(evt) {
+        this.dispatchEvent(new CustomEvent('update-view', {detail: this.timeline}));
+    }
 
-        this.currentTime = this.entity.getCurrentTimeString();
-        this.status = this.entity.status;
-        this._updateActionHtml();
+    /**
+     * @param evt
+     * @private
+     */
+    _tapContext(evt) {
+        this.entity.context = this.entity.context === 'standard' || !this.entity.context ? 'overlay' : 'standard';
+        this.dispatchEvent(new CustomEvent('change-context', {detail: this.timeline}));
         this._updateContextHtml();
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _tapRotation(evt) {
+        let index = PaperTimeslot.LIST_ROTATION.findIndex((items) => {
+            return items === this.entity.rotation;
+        });
+
+        this.entity.rotation = index === 0 ? PaperTimeline.LIST_ROTATION[0] : PaperTimeline.LIST_ROTATION[1];
+
+        this.dispatchEvent(new CustomEvent('change-rotation', {detail: this.timeline}));
         this._updateRotationHtml();
-        this._clearStatusClass(this.entity.status);
+    }
+
+    /**
+     * @private
+     */
+    _updateRotationHtml() {
+        this.$.rotationIcon.icon = `timeslot:${this.entity.rotation}`;
+    }
+
+    /**
+     * @private
+     */
+    _updateContextHtml() {
+        this.$.rotationIcon.setAttribute('title', PaperTimeline.LIST_CONTEXT_LABEL_ICON[this.entity.context]);
+        this.$.overlayIcon.icon = `timeslot:${this.entity.context}`;
     }
 
     /**
@@ -310,17 +328,17 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         switch (true) {
             case this.entity.status === 'running':
                 this.hideCrud = true;
-                this.$.contextIcon.disabled = true;
+                this.$.overlayIcon.disabled = true;
                 this.$.rotationIcon.disabled = true;
 
                 this.$.play.disabled = true;
                 this.$.stop.disabled = false;
-                this.$.pause.disabled = this.entity.rotation === 'rotation-infinity' ? true : false;
+                this.$.pause.disabled =false;
                 break;
-            case this.entity.status === 'pause':
+            case  this.entity.status === 'pause':
 
                 this.hideCrud = false;
-                this.$.contextIcon.disabled = false;
+                this.$.overlayIcon.disabled = false;
                 this.$.rotationIcon.disabled = false;
 
                 this.$.play.disabled = false;
@@ -329,33 +347,13 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 break;
             default:
                 this.hideCrud = false;
-                this.$.contextIcon.disabled = false;
+                this.$.overlayIcon.disabled = false;
                 this.$.rotationIcon.disabled = false;
 
                 this.$.play.disabled = false;
                 this.$.stop.disabled = true;
                 this.$.pause.disabled = true;
         }
-    }
-
-    /**
-     * @private
-     */
-    _updateContextHtml() {
-        this.$.contextIcon.icon = `timeslot:${this.entity.context}`;
-        this.root.querySelector('paper-tooltip[for="contextIcon"]').innerText = this.localize(
-            PaperTimeslot.LIST_CONTEXT_LABEL_ICON[this.entity.context]
-        );
-    }
-
-    /**
-     * @private
-     */
-    _updateRotationHtml() {
-        this.$.rotationIcon.icon = `timeslot:${this.entity.rotation}`;
-        this.root.querySelector('paper-tooltip[for="rotationIcon"]').innerText = this.localize(
-            PaperTimeslot.LIST_ROTATION_LABEL_ICON[this.entity.rotation]
-        );
     }
 
     /**
@@ -367,32 +365,18 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
     }
 
     /**
-     * @param evt
      * @private
      */
-    _tapRotation(evt) {
+    _updateTimer() {
+        if (!this.entity) {
+            return;
+        }
 
-        let index = PaperTimeslot.LIST_ROTATION.findIndex((items) => {
-            return items === this.entity.rotation;
-        });
-
-        this.entity.rotation = (index < (PaperTimeslot.LIST_ROTATION.length - 1)) ? PaperTimeslot.LIST_ROTATION[index+1] : PaperTimeslot.LIST_ROTATION[0];
-        this.dispatchEvent(new CustomEvent('change-rotation', {detail: this.entity}));
-        this._updateRotationHtml();
+        this.timer = this.entity.timer.toString();
+        this.total = this.entity.time.toString();
     }
 
     /**
-     * @param evt
-     * @private
-     */
-    _tapOverlay(evt) {
-        this.entity.context = this.entity.context === 'standard' || !this.entity.context ? 'overlay' : 'standard';
-        this.dispatchEvent(new CustomEvent('change-context', {detail: this.entity}));
-        this._updateContextHtml();
-    }
-
-    /**
-     * @param evt
      * @private
      */
     _play(evt) {
@@ -404,7 +388,6 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
     }
 
     /**
-     * @param evt
      * @private
      */
     _stop(evt) {
@@ -412,13 +395,11 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
     }
 
     /**
-     * @param evt
      * @private
      */
     _pause(evt) {
         this.dispatchEvent(new CustomEvent('pause', {detail: this.entity}));
     }
-
     /**
      * @param evt
      * @private
@@ -435,5 +416,4 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
     }
 }
-
-window.customElements.define('paper-timeslot', PaperTimeslot);
+window.customElements.define('paper-timeline', PaperTimeline);

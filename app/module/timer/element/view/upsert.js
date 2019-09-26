@@ -98,14 +98,6 @@ class TimerViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMi
         return {
 
             /**
-             * @type TimeslotEntity
-             */
-            entity: {
-            //    observer: '_changeEntity',
-                value: {}
-            },
-
-            /**
              * @type string
              */
             labelAction: {

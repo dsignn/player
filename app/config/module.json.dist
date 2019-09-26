@@ -215,7 +215,30 @@
         "autoloads": [
             "src/TimerService.js",
             "src/injector/TimerDataInjector.js",
-            "src/storage/entity/TimerEntity.js"
+            "src/storage/entity/TimerEntity.js",
+            "src/storage/adapter/mongo/MongoTimerAdapter.js"
+        ]
+    },
+    {
+        "title": "TimelineEntity",
+        "name": "timeline",
+        "icon": "timeline:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "timeline-index",
+            "path": "index.js"
+        },
+        "autoloadsWc": [
+            {
+                "name": "timeline-icons",
+                "path": "element/icons/icons.js"
+            }
+        ],
+        "autoloads": [
+            "src/TimelineService.js",
+            "src/storage/entity/TimelineEntity.js",
+            "src/storage/entity/embedded/TimelineItem.js",
+            "src/storage/adapter/mongo/MongoTimelineAdapter.js"
         ]
     }
 ]

@@ -29,7 +29,7 @@ class TimelineItem {
     }
 
     /**
-     * @param timeslotRefence
+     * @param {EntityReference} timeslotRefence
      * @return {TimelineItem}
      */
     addTimeslotReference(timeslotRefence) {
@@ -38,12 +38,12 @@ class TimelineItem {
     }
 
     /**
-     * @param timeslotRefence
+     * @param {EntityReference} timeslotReference
      * @return {TimelineItem}
      */
     removeTimeslotReference(timeslotReference) {
         let index = this.timeslotReferences.findIndex((element) => {
-            return element.referenceId === element.referenceId;
+            return element.id === timeslotReference.id;
         });
 
         if (index > -1) {

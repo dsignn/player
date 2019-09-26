@@ -133,7 +133,7 @@
                     timeline: {
                         type: Object,
                         notify: true,
-                        value: new Timeline(),
+                        value: new TimelineEntity(),
                         observer: '_timelineChanged'
                     },
 
@@ -161,7 +161,7 @@
             }
 
             /**
-             * @param {Timeline} timeline
+             * @param {TimelineEntity} timeline
              */
             _timelineChanged(timeline) {
                 if (!timeline) {
