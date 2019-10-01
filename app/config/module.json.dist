@@ -240,5 +240,31 @@
             "src/storage/entity/embedded/TimelineItem.js",
             "src/storage/adapter/mongo/MongoTimelineAdapter.js"
         ]
+    },
+    {
+        "title": "Video panel",
+        "name": "video-panel",
+        "icon": "video-panel:menu",
+        "configEntryPoint": "config.js",
+        "entryPoint": {
+            "name": "video-panel-index",
+            "path": "index.js"
+        },
+        "autoloadsWc": [
+            {
+                "name": "video-panel-icons",
+                "path": "element/icons/icons.js"
+            }
+        ],
+        "autoloads": [
+            "src/ffmpg/Mosaic.js",
+            "src/ffmpg/filter/Crop.js",
+            "src/ffmpg/filter/Default.js",
+            "src/storage/entity/VideoPanelContainerEntity.js",
+            "src/storage/entity/VideoPanelResourceEntity.js",
+            "src/storage/entity/embedded/VideoPanel.js",
+            "src/storage/adapter/mongo/MongoVideoPanelAdapter.js",
+            "src/VideoPanelService.js"
+        ]
     }
 ]

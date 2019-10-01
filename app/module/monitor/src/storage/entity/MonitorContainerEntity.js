@@ -1,5 +1,5 @@
 /**
- *
+ * @class MonitorContainerEntity
  */
 class MonitorContainerEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
@@ -124,3 +124,4 @@ class MonitorContainerEntity extends require("@dsign/library").storage.entity.En
 }
 
 module.exports = MonitorContainerEntity;
+

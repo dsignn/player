@@ -101,6 +101,15 @@ import '../../module/timeline/element/icons/icons'
  */
  
 /**
+ * start video-panel
+ */
+import '../../module/video-panel/index'
+import '../../module/video-panel/element/icons/icons'
+/**
+ * end video-panel
+ */
+ 
+/**
  * boot application
  */
 import '../../entrypoint/dashboard/src/boot'

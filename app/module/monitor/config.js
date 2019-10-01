@@ -218,6 +218,20 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             );
     }
 
+    /**
+     *
+     */
+    initAcl() {
+
+        if (this.getContainer().has('Acl')) {
+
+            let aclService = this.getContainer().get('Acl');
+
+            // TODO add method on service
+            aclService.adapter.acl.addResource('monitor');
+            aclService.adapter.acl.allow('guest', 'monitor');
+        }
+    }
 
     /**
      * @param {ContainerAggregate} container
@@ -307,18 +321,26 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
     }
 
     /**
-     *
+     * @param container
+     * @return {PropertyHydrator}
      */
-    initAcl() {
+    static getMonitorContainerReferenceHydrator(container) {
 
-        if (this.getContainer().has('Acl')) {
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
 
-            let aclService = this.getContainer().get('Acl');
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('parentId');
 
-            // TODO add method on service
-            aclService.adapter.acl.addResource('monitor');
-            aclService.adapter.acl.allow('guest', 'monitor');
-        }
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name')
+            .enableExtractProperty('parentId');
+
+        return hydrator;
     }
 }
 

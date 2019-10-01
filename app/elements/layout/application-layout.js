@@ -129,7 +129,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'timeline'
+                value : 'video-panel'
             },
 
             modules: {

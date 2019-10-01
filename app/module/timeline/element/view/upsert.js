@@ -95,7 +95,7 @@ class TimelineViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                                         <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                            <div index="[[index]]">
                                                 <div class="service-name">[[item.name]]</div>
-                                                <div class="service-description">[[item.virtualMonitorReference.name]]</div>
+                                                <div class="service-description">[[item.monitorContainerReference.name]]</div>
                                             </div>
                                             <paper-ripple></paper-ripple>
                                         </paper-item>

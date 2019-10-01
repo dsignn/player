@@ -229,7 +229,7 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
          * Monitor strategy
          */
         let monitorStrategy = new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)();
-        monitorStrategy.setHydrator(TimeslotConfig.getContainerMonitorReferenceHydrator(container));
+        monitorStrategy.setHydrator(MonitorConfig.getMonitorContainerReferenceHydrator(container));
 
         /**
          * Timeslot bind strategy
@@ -295,29 +295,6 @@ class TimeslotConfig extends require("@dsign/library").container.ContainerAware 
             .enableExtractProperty('tags')
             .enableExtractProperty('rotation')
             .enableExtractProperty('filters');
-
-        return hydrator;
-    }
-
-    /**
-     * @param container
-     * @return {PropertyHydrator}
-     */
-    static getContainerMonitorReferenceHydrator(container) {
-
-        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
-        hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
-
-        hydrator.enableHydrateProperty('id')
-            .enableHydrateProperty('collection')
-            .enableHydrateProperty('name')
-            .enableHydrateProperty('parentId');
-
-
-        hydrator.enableExtractProperty('id')
-            .enableExtractProperty('collection')
-            .enableExtractProperty('name')
-            .enableExtractProperty('parentId');
 
         return hydrator;
     }

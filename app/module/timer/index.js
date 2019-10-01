@@ -80,7 +80,6 @@ class TimerIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))  {
         };
     }
 
-
     constructor() {
         super();
         this.resources = lang;
