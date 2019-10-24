@@ -131,9 +131,10 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type string
              */
-            polygon : {
-                type: String,
-                observer: '_changePolygon'
+            polygonPoints : {
+                type: Array,
+                value: [],
+                observer: '_changePolygonPoints'
             },
 
             /**
@@ -290,7 +291,10 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         this.offsetX = monitor.offsetX;
         this.offsetY = monitor.offsetY;
         this.backgroundColor = monitor.backgroundColor;
-        this.polygon = monitor.polygon;
+        // TODO remove?
+        //this.polygonPoints = [];
+        this.polygonPoints = monitor.polygonPoints;
+
         return this;
     }
 
@@ -549,14 +553,22 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
     /**
      * @param newValue
-     * @param oldValue
      * @private
      */
-    _changePolygon(newValue, oldValue) {
-        if (!newValue) {
+    _changePolygonPoints(newValue) {
+        if (!newValue || (Array.isArray(newValue) && newValue.length === 0)) {
             return;
         }
-        this.style.clipPath = `polygon(${newValue})`;
+
+        let stringPolygon = '';
+        for(let cont = 0; newValue.length > cont; cont++) {
+            stringPolygon += `${newValue[cont].x}px ${newValue[cont].y}px`;
+            if ((cont+1) < newValue.length) {
+                stringPolygon += ',';
+            }
+        }
+
+        this.style.clipPath = `polygon(${stringPolygon})`;
     }
 
     /**

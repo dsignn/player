@@ -11,6 +11,7 @@ import '@polymer/paper-card/paper-card';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '../paper-monitor-update/paper-monitor-update';
+import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language/upsert-language';
 
@@ -100,7 +101,7 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                                     <paper-input name="width" label="{{localize('width')}}" type="number" required></paper-input>
                                     <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" required></paper-input>
                                     <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" required></paper-input>
-                                    <paper-input name="polygon" label="{{localize('custom-polygon')}}"></paper-input>
+                                    <paper-input-points id="points"></paper-input-points>
                                     <paper-autocomplete id="parentMonitor" 
                                         label="{{localize('father-monitor')}}" 
                                         text-property="name" 
@@ -264,7 +265,9 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
      */
     submitMonitor(evt) {
         evt.preventDefault();
-        let monitor = this._monitorHydrator.hydrate(this.$.formMonitor.serializeForm());
+        let obj = this.$.formMonitor.serializeForm();
+        obj['polygonPoints'] = this.$.points.value ? this.$.points.value : [];
+        let monitor = this._monitorHydrator.hydrate(obj);
 
         monitor.setId(
             require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId()
@@ -282,6 +285,7 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
             this.notifyPath('entity.monitors.splice')
         }
         this.$.parentMonitor.clear();
+        this.$.points.clear();
         this.$.formMonitor.reset();
     }
 

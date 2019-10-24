@@ -42,10 +42,9 @@ class MonitorEntity extends require("@dsign/library").storage.entity.EntityIdent
         this.backgroundColor = 'transparent';
 
         /**
-         * TODO now string but in the future will be an array of point
-         * @type {null}
+         * @type {Array}
          */
-        this.polygon = null;
+        this.polygonPoints = [];
 
         /**
          * @type {Array}

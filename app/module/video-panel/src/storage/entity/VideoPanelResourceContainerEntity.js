@@ -18,7 +18,7 @@ class VideoPanelResourceEntity extends require("@dsign/library").storage.entity.
         /**
          * @type {(EntityReference|null)}
          */
-        this.videoPanelReference = null;
+        this.videoPanelContainerReference = null;
 
         /**
          * @type {(EntityReference|null)}

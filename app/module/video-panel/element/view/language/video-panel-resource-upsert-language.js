@@ -1,0 +1,50 @@
+export const lang = {
+  "it": {
+    "header": "Lista media device",
+    "name": "Nome",
+    "width" : "Larghezza",
+    "height" : "Altezza",
+    "add" : "Aggiungi",
+    "delete" : "Elimina",
+
+    "hours": "Ora",
+    "minutes": "Minuti",
+    "seconds": "Secondi",
+    "hours-end": "Ora di fine",
+    "minutes-end": "Minuto di fine",
+    "seconds-end": "Secondi di fine",
+    "type": "Tipo di timeline",
+    "timeslot": "Timeslot",
+    "add-to-timeline": "Aggiungi alla timeline",
+    "bind-timeline": "Associa una timeline",
+    "autostart": "Autostart",
+    "save": "Salva",
+    "update": "Modifica",
+    "notify-save" : "Quadro video salvato",
+    "notify-update" : "Quadro video aggiornato"
+  },
+  "en": {
+    "header": "List media device",
+    "name" : "Name",
+    "width" : "Width",
+    "height" : "Height",
+    "add" : "Add",
+    "delete" : "Delete",
+
+    "hours": "Hours",
+    "minutes": "Minutes",
+    "seconds": "Seconds",
+    "hours-end": "End hours",
+    "minutes-end": "End minutes",
+    "seconds-end": "End seconds",
+    "type": "Type of timeline",
+    "timeslot": "Timeslot",
+    "add-to-timeline": "Add to timeline",
+    "bind-timeline": "Bind a timeline",
+    "autostart": "Autostart",
+    "save": "Save",
+    "update": "Update",
+    "notify-save" : "Timeline saved",
+    "notify-update" : "Timeline updated"
+  }
+};

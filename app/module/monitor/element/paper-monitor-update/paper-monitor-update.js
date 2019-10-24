@@ -8,6 +8,8 @@ import '@polymer/paper-item/paper-item';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-toggle-button/paper-toggle-button';
+import '../../../../elements/paper-input-points/paper-input-points';
+import { flexStyle } from '../../../../style/layout-style';
 import {lang} from './language/language';
 
 /**
@@ -18,6 +20,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
 
     static get template() {
         return html`
+            ${flexStyle}
             <style >
                 :host {
                     display: block;
@@ -32,8 +35,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                     padding-left: 6px;
                 }
                 
-                paper-input[name="name"],
-                paper-input[name="polygon"] {
+                paper-input[name="name"] {
                     @apply --layout-flex;
                 }
                 
@@ -69,20 +71,26 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 }
 
             </style>
-            <paper-card>
+            <paper-card class="layout horizontal">
                 <div hidden$="{{hiddenAlwaysOnTop}}">
                     <div class="h-100 action">
                         <paper-toggle-button id="alwaysOnTop" checked="{{entity.alwaysOnTop}}" on-change="_toogleAlwaysOnTop"></paper-toggle-button>
                         <paper-tooltip for="alwaysOnTop" position="right">{{localize('always-on-top')}}</paper-tooltip>
                     </div>
                 </div>
-                <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}"></paper-input>
-                <paper-input name="height" label="{{localize('height')}}" type="number" value="{{entity.height}}" required></paper-input>
-                <paper-input name="width" label="{{localize('width')}}" type="number" value="{{entity.width}}"  required></paper-input>
-                <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" value="{{entity.offsetX}}" required></paper-input>
-                <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" value="{{entity.offsetY}}" required></paper-input>
-                <paper-input name="polygon" label="{{localize('custom-polygon')}}" value="{{entity.polygon}}"></paper-input>
-                <paper-input name="backgroundColor" label="{{localize('bg-color')}}" type="color" value="{{entity.backgroundColor}}" required></paper-input>
+                <div class="layout vertical flex-1">
+                    <div class="layout horizontal">
+                        <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}"></paper-input>
+                        <paper-input name="height" label="{{localize('height')}}" type="number" value="{{entity.height}}" required></paper-input>
+                        <paper-input name="width" label="{{localize('width')}}" type="number" value="{{entity.width}}"  required></paper-input>
+                        <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" value="{{entity.offsetX}}" required></paper-input>
+                        <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" value="{{entity.offsetY}}" required></paper-input>
+                        <paper-input name="backgroundColor" label="{{localize('bg-color')}}" type="color" value="{{entity.backgroundColor}}" required></paper-input>
+                    </div>
+                   <div>
+                        <paper-input-points position="horizontal" value="{{entity.polygonPoints}}" </paper-input-points>
+                    </div>    
+                </div>
                 <div class="action">
                      <paper-menu-button ignore-select horizontal-align="right">
                         <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>

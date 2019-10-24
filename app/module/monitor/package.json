@@ -1,0 +1,39 @@
+{
+    "title": "Monitor",
+    "name": "monitor",
+    "icon": "monitor:menu",
+    "entryPoint": {
+        "name": "monitor-index",
+        "path": "index.js"
+    },
+    "configEntryPoint": "config.js",
+    "autoloads": [
+        "src/MonitorService.js",
+        "src/storage/entity/MonitorEntity.js",
+        "src/storage/entity/MonitorContainerEntity.js",
+        "src/storage/adapter/dexie/DexieMonitorAdapter.js",
+        "src/storage/adapter/mongo/MongoMonitorAdapter.js"
+    ],
+    "autoloadsWs": [
+        {
+            "name": "monitor-icons",
+            "path": "element/icons/icons.js"
+        },
+        {
+            "name": "paper-player",
+            "path": "element/paper-player/paper-player.js"
+        },
+        {
+            "name": "paper-player-manager",
+            "path": "element/paper-player-manager/paper-player-manager.js"
+        },
+        {
+            "name": "paper-player-timeslot",
+            "path": "element/paper-player-timeslot/paper-player-timeslot.js"
+        },
+        {
+            "name": "paper-monitor-viewer",
+            "path": "element/paper-monitor-viewer/paper-monitor-viewer.js"
+        }
+    ]
+}

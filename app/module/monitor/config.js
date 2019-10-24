@@ -288,6 +288,9 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
         strategy.setHydrator(hydrator);
 
         hydrator.addValueStrategy('monitors', strategy)
+            .addValueStrategy('polygonPoints',  new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)(
+                MonitorConfig.getPointHydrator(container)
+            ))
             .addValueStrategy('alwaysOnTop', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
@@ -300,7 +303,7 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .enableExtractProperty('height')
             .enableExtractProperty('width')
             .enableExtractProperty('backgroundColor')
-            .enableExtractProperty('polygon')
+            .enableExtractProperty('polygonPoints')
             .enableExtractProperty('monitors')
             .enableExtractProperty('alwaysOnTop')
             .enableExtractProperty('defaultTimeslotId');
@@ -312,7 +315,7 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .enableHydrateProperty('height')
             .enableHydrateProperty('width')
             .enableHydrateProperty('backgroundColor')
-            .enableHydrateProperty('polygon')
+            .enableHydrateProperty('polygonPoints')
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('alwaysOnTop')
             .enableHydrateProperty('defaultTimeslotId');
@@ -339,6 +342,26 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .enableExtractProperty('collection')
             .enableExtractProperty('name')
             .enableExtractProperty('parentId');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getPointHydrator(container) {
+
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+
+        hydrator.addValueStrategy('x', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
+            .addValueStrategy('y', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)());
+
+        hydrator.enableHydrateProperty('x')
+            .enableHydrateProperty('y');
+
+        hydrator.enableExtractProperty('x')
+            .enableExtractProperty('y');
 
         return hydrator;
     }
