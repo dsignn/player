@@ -4,6 +4,7 @@ export const autocompleteStyle = html`
     <style>
         :host {
             display: block;
+            position: absolute;
         }
         
         paper-item.account-item {

@@ -1,4 +1,7 @@
-class ResourceMosaic extends GenericFile {
+/**
+ * @class ResourceMosaic
+ */
+class ResourceMosaic extends FileEntity {
 
     constructor() {
         super();
@@ -12,12 +15,6 @@ class ResourceMosaic extends GenericFile {
          * @type {number}
          */
         this.computedWidth = 0;
-
-        Object.defineProperty(
-            this,
-            "typeLabel",
-            {writable: false, enumerable: true, configurable: true, value: 'resourceMosaic'}
-        );
     }
 
     /**
@@ -47,6 +44,14 @@ class ResourceMosaic extends GenericFile {
      */
     sumRemainingWidth(addend) {
         this.computedWidth += addend;
+        return this;
+    }
+
+    /**
+     * @returns {ResourceMosaic}
+     */
+    resetComputedWidth() {
+        this.computedWidth = 0;
         return this;
     }
 }

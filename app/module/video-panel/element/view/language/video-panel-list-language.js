@@ -1,10 +1,10 @@
 export const lang = {
     "it": {
-        "header": "Lista timeline",
-        "notify-delete": "Timeline eliminata"
+        "header": "Lista quadro video",
+        "notify-delete": "Quadro video eliminata"
     },
     "en": {
-        "header": "List timeline",
-        "notify-delete": "Timeline deleted"
+        "header": "List video panel",
+        "notify-delete": "Video panel deleted"
     }
 };

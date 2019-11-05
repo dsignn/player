@@ -1,5 +1,5 @@
 /**
- *
+ * @class Mosaic
  */
 class Mosaic {
 
@@ -15,7 +15,7 @@ class Mosaic {
         this._basePanel = {};
 
         /**
-         * @type {LocationPath}
+         * @type {Path}
          */
         this._destination = {};
 
@@ -50,12 +50,12 @@ class Mosaic {
     }
 
     /**
-     * @param {LocationPath} dest
+     * @param {Path} path
      * @return {Mosaic}
      */
-    setDestination(dest) {
+    setDestination(path) {
 
-        this._destination = dest;
+        this._destination = path;
         return this;
     }
 
@@ -80,7 +80,7 @@ class Mosaic {
     }
 
     /**
-     * @param {GenericFile} resource
+     * @param {FileEntity} resource
      * @param {Number} x
      * @param {Number} y
      * @param filter
@@ -89,7 +89,7 @@ class Mosaic {
 
         filter = filter === null ? this.defaultFilter : filter;
 
-        this._resourceDestination.push(resource.getPath());
+        this._resourceDestination.push(resource.path.getPath());
         this._appendFilterComplexFilter(filter.toString());
         this._appendOverlayComplexFilter(x, y);
         this._index++;
@@ -110,7 +110,7 @@ class Mosaic {
      * @private
      */
     _getDestinationString() {
-        return this._destination.getFullPath();
+        return this._destination.getPath();
     }
 
     /**

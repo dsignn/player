@@ -6,6 +6,8 @@ import '@polymer/paper-tabs/paper-tabs';
 import {flexStyle} from '../../style/layout-style';
 import "./element/view/video-panel-list";
 import "./element/view/video-panel-upsert";
+import "./element/view/video-panel-resource-list";
+import "./element/view/video-panel-resource-upsert";
 import {lang} from "./language";
 
 /**
@@ -71,13 +73,31 @@ class VideoPanelIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)
                 <div>
                     <iron-pages id="ironPages" selected="{{viewResourceSelected}}">
                         <div id="listResource">
-                            video panel resource list     
+                            <video-panel-resource-view-list selected="{{viewResourceSelected}}" entity-selected="{{videoPanelResourceSelected}}">
+                                <div slot="header" class="layout-horizontal layout-center-aligned header">
+                                    <div class="layout-flex">{{localize('list-video-panel-resource')}}</div>
+                                    <paper-icon-button id="iconBackInsert" icon="insert" class="circle" on-click="displayAddViewResource"></paper-icon-button>
+                                    <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                                </div>
+                            </video-panel-resource-view-list>       
                         </div>
                         <div id="addResource">
-                            video panel resource add     
+                             <video-panel-resource-view-upsert>
+                                <div slot="header" class="layout-horizontal layout-center-aligned header">
+                                    <div class="layout-flex">{{localize('insert-video-panel-resource')}}</div>
+                                    <paper-icon-button id="iconBackInsert" icon="arrow-back" class="circle" on-click="displayListViewResource"></paper-icon-button>
+                                    <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                                </div>
+                            </video-panel-resource-view-upsert>   
                         </div>
                         <div id="editResource">
-                          video panel resource edit     
+                           <video-panel-resource-view-upsert  entity="{{videoPanelResourceSelected}}">
+                                <div slot="header" class="layout-horizontal layout-center-aligned header">
+                                    <div class="layout-flex">{{localize('edit-video-panel-resource')}}</div>
+                                    <paper-icon-button id="iconBackInsert" icon="arrow-back" class="circle" on-click="displayListViewResource"></paper-icon-button>
+                                    <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                                </div>
+                            </video-panel-resource-view-upsert>     
                         </div>
                     </iron-pages>
                 </div>
@@ -90,7 +110,7 @@ class VideoPanelIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)
 
             selected: {
                 type: Number,
-                value: 0
+                value: 1
             },
 
             viewSelected: {

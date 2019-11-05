@@ -548,7 +548,6 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
     }
 
     /**
-     *
      * @param container
      * @return {PropertyHydrator}
      */
@@ -565,6 +564,27 @@ class ResourceConfig extends require("@dsign/library").container.ContainerAware 
         hydrator.enableExtractProperty('directory')
             .enableExtractProperty('nameFile')
             .enableExtractProperty('extension');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     */
+    static getResourceReferenceHydrator(container) {
+
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name');
 
         return hydrator;
     }

@@ -209,6 +209,11 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _closePreview() {
         let element = this.$.contentPreview.firstChild;
+
+        if (!element) {
+            return
+        }
+
         switch (true) {
             case this.entity instanceof AudioEntity === true:
             case this.entity instanceof ImageEntity === true:
@@ -258,6 +263,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         }
 
         if (element) {
+            this._closePreview();
             this.$.contentPreview.append(element);
 
             switch (true) {

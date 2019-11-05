@@ -1,7 +1,7 @@
 /**
  *
  */
-class MongoVideoPanelAdapter extends require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter  {
+class MongoVideoPanelResourceAdapter extends require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter  {
 
     /**
      * @inheritDoc
@@ -25,4 +25,4 @@ class MongoVideoPanelAdapter extends require("@dsign/library").storage.adapter.m
     }
 }
 
-module.exports = MongoVideoPanelAdapter;
+module.exports = MongoVideoPanelResourceAdapter;

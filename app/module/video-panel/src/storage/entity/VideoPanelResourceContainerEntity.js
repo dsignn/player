@@ -1,7 +1,7 @@
 /**
- * @class VideoPanelResourceEntity
+ * @class VideoPanelResourceContainerEntity
  */
-class VideoPanelResourceEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+class VideoPanelResourceContainerEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     /**
      *
@@ -16,15 +16,40 @@ class VideoPanelResourceEntity extends require("@dsign/library").storage.entity.
         this.name = null;
 
         /**
-         * @type {(EntityReference|null)}
+         * @type {(EntityReference|Object)}
          */
-        this.videoPanelContainerReference = null;
+        this.resourceReference = {};
 
         /**
-         * @type {(EntityReference|null)}
+         * @type {(VideoPanelResource|Object)}
          */
-        this.resourceReference = null;
+        this.videoPanelResource = {};
+    }
+
+    /**
+     * @returns {(VideoPanelResource|object)}
+     */
+    getVideoPanelResource() {
+        return this.videoPanelResource;
+    }
+
+    /**
+     * @param {VideoPanelResource} videoPanelResource
+     * @return {VideoPanelResourceContainerEntity}
+     */
+    setVideoPanelResource(videoPanelResource) {
+
+        this.videoPanelResource = videoPanelResource;
+        return this;
+    }
+
+    /**
+     * @return {boolean}
+     */
+    hasVideoPanelResource() {
+
+        return Object.keys(this.videoPanelResource).length === 0 && this.videoPanelResource.constructor === Object ? false : true;
     }
 }
 
-module.exports = VideoPanelResourceEntity;
+module.exports = VideoPanelResourceContainerEntity;

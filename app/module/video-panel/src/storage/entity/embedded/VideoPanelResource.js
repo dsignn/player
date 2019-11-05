@@ -1,8 +1,8 @@
 /**
- * @class VideoPanel
+ * @class VideoPanelResource
  * TODO to inject into the entity container must be extend the EntityIdentifier
  */
-class VideoPanel extends require("@dsign/library").storage.entity.EntityIdentifier {
+class VideoPanelResource extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     /**
      *
@@ -11,105 +11,61 @@ class VideoPanel extends require("@dsign/library").storage.entity.EntityIdentifi
         super();
 
         /**
-         * @type {null|string}
+         * @type {(EntityNestedReference|Object)}
          */
-        this.name = null;
+        this.videoPanelReference = {};
 
         /**
-         * @type {(null|Number)}
+         * @type {Array<EntityReference>}
          */
-        this.height = null;
+        this.resources = [];
 
         /**
-         * @type {null|Number}
+         * @type {Array<VideoPanelResource>}
          */
-        this.width = null;
-
-        /**
-         * @type {(null|string)}
-         */
-        this.monitorContainerReference = null;
-
-        /**
-         * @type {Array<VideoPanel>}
-         */
-        this.videoPanels = [];
-    }
-
-    /**
-     * @param {VideoPanel} videoPanel
-     * @return {Panel}
-     */
-    appendVideoPanel(videoPanel) {
-        this.videoPanels.push(videoPanel);
-        return this;
+        this.videoPanelResources = []
     }
 
     /**
      *
      * @param {Object} options
-     * @return {Array<VideoPanel>}
+     * @return {Array<VideoPanelResource>}
      */
-    getVideoPanels(options) {
-        let videoPanels = this.videoPanels;
+    getVideoPanelResources(options) {
+        let videoPanelResources = this.videoPanelResources;
         if (options && !options.withoutRoot) {
-            videoPanels = videoPanels.concat(this);
+            videoPanelResources = videoPanelResources.concat(this);
         }
 
         if (options && typeof options === 'object' && options.nested) {
-            for (let cont = 0; this.videoPanels.length > cont; cont++) {
-                if (typeof this.videoPanels[cont].getVideoPanels === "function") {
+            for (let cont = 0; this.videoPanelResources.length > cont; cont++) {
+                if (typeof this.videoPanelResources[cont].getVideoPanelResources === "function") {
                     options.withoutRoot = true;
-                    let nestedVideoPanel = this.videoPanels[cont].getVideoPanels(options);
-                    if (nestedVideoPanel.length > 0) {
-                        videoPanels = videoPanels.concat(nestedVideoPanel);
+                    let nestedVideoPanelResources = this.videoPanelResources[cont].getVideoPanelResources(options);
+                    if (nestedVideoPanelResources.length > 0) {
+                        videoPanelResources = videoPanelResources.concat(nestedVideoPanelResources);
                     }
                 }
             }
         }
-        return videoPanels;
+        return videoPanelResources;
     }
 
     /**
      * @param {Number} index
-     * @return {VideoPanel}
+     * @return {(VideoPanelResource|null)}
      */
-    getVideoPanelByIndex(index) {
-        if (index < 0 && index > this.videoPanels.length) {
+    getVideoPanelResourceByIndex(index) {
+        if (index < 0 && index > this.videoPanelResources.length) {
             return null;
         }
 
-        return this.videoPanels[index];
-    }
-
-    /**
-     * @param {VideoPanel} videoPanel
-     * @return {boolean}
-     */
-    removeVideoPanel(videoPanel) {
-        let remove = false;
-        if (this.videoPanels.length > 0) {
-            for (let cont = 0; this.videoPanels.length > cont; cont++) {
-
-                switch (true) {
-                    case videoPanel.id === this.videoPanels[cont].id :
-                        this.videoPanels.splice(cont, 1);
-                        return true;
-                        break;
-
-                    case typeof this.videoPanels[cont].removeVideoPanel === "function":
-                        remove = remove || this.videoPanels[cont].removeVideoPanel(videoPanel);
-                        break
-                }
-
-            }
-        }
-        return remove;
+        return this.videoPanelResources[index];
     }
 
     /**
      * @param id
-     * @returns {(VideoPanel|null)}
+     * @returns {(VideoPanelResource|null)}
      */
     getVideoPanel(id) {
 
@@ -117,14 +73,38 @@ class VideoPanel extends require("@dsign/library").storage.entity.EntityIdentifi
             return this;
         }
 
-        let videoPanels = this.getVideoPanels({nested:true});
+        let videoPanelResources = this.getVideoPanelResources({nested:true});
 
-        return videoPanels.find(
+        return videoPanelResources.find(
             (element) => {
-                return element.id === id;
+                return element.videoPanelReference.id === id;
             }
         );
     }
+
+    /**
+     * @param {VideoPanel} videoPanel
+     * @return {boolean}
+     */
+    removeVideoPanel(id) {
+        let remove = false;
+        if (this.videoPanelReference.length > 0) {
+            for (let cont = 0; this.videoPanelReference.length > cont; cont++) {
+
+                switch (true) {
+                    case id === this.videoPanelReference[cont].id :
+                        this.videoPanelReference.splice(cont, 1);
+                        return true;
+                        break;
+
+                    case typeof this.videoPanelReference[cont].removeVideoPanel === "function":
+                        remove = remove || this.videoPanelReference[cont].removeVideoPanel(id);
+                        break
+                }
+            }
+        }
+        return remove;
+    }
 }
 
-module.exports = VideoPanel;
+module.exports = VideoPanelResource;

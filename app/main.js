@@ -165,10 +165,10 @@ class Application {
             autoHideMenuBar: true,
             icon: path.join(__dirname, 'style/icon/logo.png'),
             title: `Dsign dashboard`,
-            minWidth: 600,
-            'min-width': 600,
             width: 600,
-            height: 1200,
+            height: 800,
+            minHeight: 500,
+            minWidth: 600,
             useContentWidth: true
         });
 
@@ -303,6 +303,7 @@ class Application {
             return this.monitorHidrator;
         }
 
+
         let monitorEntityHydrator =  new PropertyHydrator(
             new MonitorEntity()
         );
@@ -321,7 +322,7 @@ class Application {
             .enableExtractProperty('height')
             .enableExtractProperty('width')
             .enableExtractProperty('backgroundColor')
-            .enableExtractProperty('polygon')
+            .enableExtractProperty('polygonPoints')
             .enableExtractProperty('monitors')
             .enableExtractProperty('alwaysOnTop')
             .enableExtractProperty('defaultTimeslotId');
@@ -333,7 +334,7 @@ class Application {
             .enableHydrateProperty('height')
             .enableHydrateProperty('width')
             .enableHydrateProperty('backgroundColor')
-            .enableHydrateProperty('polygon')
+            .enableHydrateProperty('polygonPoints')
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('alwaysOnTop')
             .enableHydrateProperty('defaultTimeslotId');
@@ -429,7 +430,7 @@ class Application {
         let newMonitorContainer = this.getMonitorContainerEntityHydrator().hydrate(monitorContainerData);
         let newMonitors = newMonitorContainer.getMonitors();
         let index;
-
+        console.log( monitorContainerData);
         let oldMonitors = this.monitorsContainerEntity.getMonitors();
 
         for (let cont = 0; this.monitorsContainerEntity.monitors.length > cont; cont++) {
@@ -461,7 +462,6 @@ class Application {
                         newMonitors[cont].width,
                         newMonitors[cont].height
                     );
-
                     newMonitors[cont].browserWindows.send('paper-player-update', newMonitors[cont]);
                     this.monitorsContainerEntity.monitors[index] = newMonitors[cont];
                     break;

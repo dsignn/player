@@ -220,7 +220,7 @@
         ]
     },
     {
-        "title": "TimelineEntity",
+        "title": "Timeline",
         "name": "timeline",
         "icon": "timeline:menu",
         "configEntryPoint": "config.js",
@@ -260,10 +260,17 @@
             "src/ffmpg/Mosaic.js",
             "src/ffmpg/filter/Crop.js",
             "src/ffmpg/filter/Default.js",
+            "src/ffmpg/Mosaic.js",
             "src/storage/entity/VideoPanelContainerEntity.js",
-            "src/storage/entity/VideoPanelResourceEntity.js",
+            "src/storage/entity/VideoPanelResourceContainerEntity.js",
             "src/storage/entity/embedded/VideoPanel.js",
+            "src/storage/entity/embedded/VideoPanelResource.js",
+            "src/storage/entity/embedded/MonitorMosaic.js",
+            "src/storage/entity/embedded/ResourceMosaic.js",
+            "src/storage/entity/embedded/VideoPanelMosaic.js",
             "src/storage/adapter/mongo/MongoVideoPanelAdapter.js",
+            "src/storage/adapter/mongo/MongoVideoPanelResourceAdapter.js",
+            "src/hydrator/VideoPanelToVideoPanelResourceHydrator.js",
             "src/VideoPanelService.js"
         ]
     }

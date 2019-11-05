@@ -6,14 +6,14 @@ import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 
-import './../paper-video-panel/paper-video-panel';
+import './../paper-video-panel-resource/paper-video-panel-resource';
 import {lang} from './language/video-panel-list-language';
 
 /**
  * @customElement
  * @polymer
  */
-class VideoPanelViewList extends  StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
+class VideoPanelResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
 
     static get template() {
         return html`
@@ -25,49 +25,51 @@ class VideoPanelViewList extends  StoragePaginationMixin(StorageCrudMixin(Locali
                 }
                 
                 @media (max-width: 500px) {
-                    paper-video-panel {
+                    paper-video-panel-resource {
                         flex-basis: 100%;
                     }
                 }
     
                 @media (min-width: 501px) and (max-width: 900px) {
-                    paper-video-panel {
+                    paper-video-panel-resource {
                         flex-basis: 50%;
                     }
                 }
     
                 @media (min-width: 901px) and (max-width: 1200px) {
-                    paper-video-panel {
+                    paper-video-panel-resource {
                         flex-basis: 33.3%;
                     }
                 }
     
                 @media (min-width: 1201px) and (max-width: 1500px) {
-                    paper-video-panel {
+                    paper-video-panel-resource {
                         flex-basis: 25%;
                     }
                 }
     
                 @media (min-width: 1501px) and (max-width: 1919px) {
-                    paper-video-panel {
+                    paper-video-panel-resource {
                         flex-basis: 20%;
                     }
                 }
     
                 @media (min-width: 1920px) {
-                    paper-video-panel {
+                    paper-video-panel-resource {
                         flex-basis: 16.6%;
                     }
                 }
+               
+                
             </style>
             <slot name="header"></slot>
             <div id="list">
-                <template is="dom-repeat" items="[[entities]]" as="videoPanel">
-                    <paper-video-panel 
-                        entity="{{videoPanel}}" 
+                <template is="dom-repeat" items="[[entities]]" as="videoPanelResource">
+                     <paper-video-panel-resource
+                        entity="{{videoPanelResource}}" 
                         on-delete="_deleteEntity" 
                         on-update="_showUpdateView">
-                    </paper-video-panel>
+                    </paper-video-panel-resource>
                 </template>
             </div>
             <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
@@ -106,7 +108,7 @@ class VideoPanelViewList extends  StoragePaginationMixin(StorageCrudMixin(Locali
                     _notify : "Notify",
                     _localizeService: "Localize",
                     StorageContainerAggregate: {
-                        _storage: "VideoPanelStorage"
+                        _storage: "VideoPanelResourceStorage"
                     }
                 }
             },
@@ -144,4 +146,4 @@ class VideoPanelViewList extends  StoragePaginationMixin(StorageCrudMixin(Locali
         this._notify.notify(this.localize('notify-delete'));
     }
 }
-window.customElements.define('video-panel-view-list', VideoPanelViewList);
+window.customElements.define('video-panel-resource-view-list', VideoPanelResourceViewList);

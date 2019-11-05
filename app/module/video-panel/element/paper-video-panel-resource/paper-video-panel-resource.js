@@ -14,7 +14,7 @@ import {lang} from './language/language';
  * @customElement
  * @polymer
  */
-class PaperVideoPanel extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
+class PaperVideoPanelResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -114,10 +114,7 @@ class PaperVideoPanel extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMi
                 <div id="right-section">
                     <div class="top">
                         <div id="content">
-                            <div class="name">{{entity.name}}</div>
-                            <div>
-                               {{entity.videoPanel.width}}px {{entity.videoPanel.height}}px
-                            </div>
+                            <div class="name">{{entity.resourceReference.name}} /  {{entity.videoPanelResource.videoPanelReference.name}}</div>
                         </div>
                         <div id="crud">
                             <paper-menu-button ignore-select horizontal-align="right">
@@ -149,7 +146,7 @@ class PaperVideoPanel extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMi
                 value : {
                     _localizeService: 'Localize',
                     StorageContainerAggregate: {
-                        "_storage" : "VideoPanelStorage"
+                        "_storage" : "VideoPanelResourceStorage"
                     }
                 }
             },
@@ -186,4 +183,4 @@ class PaperVideoPanel extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMi
         this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
     }
 }
-window.customElements.define('paper-video-panel', PaperVideoPanel);
+window.customElements.define('paper-video-panel-resource', PaperVideoPanelResource);

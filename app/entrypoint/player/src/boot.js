@@ -95,7 +95,7 @@ container.set('Config', config);
 /***********************************************************************************************************************
  DEXIE MANAGER SERVICE
  **********************************************************************************************************************/
-container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
+//container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 
 /***********************************************************************************************************************

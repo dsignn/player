@@ -1,4 +1,7 @@
-class VideoPanelMosaic extends VideoPanelResource {
+/**
+ * @class VideoPanelMosaic
+ */
+class VideoPanelMosaic extends VideoPanel {
 
     /**
      *

@@ -1,4 +1,6 @@
-
+/**
+ * @class FileEntity
+ */
 class FileEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
 
     constructor() {

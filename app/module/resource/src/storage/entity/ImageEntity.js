@@ -1,5 +1,5 @@
 /**
- *
+ * @class ImageEntity
  */
 class ImageEntity extends FileEntity {
 

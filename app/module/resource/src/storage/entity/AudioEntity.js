@@ -1,5 +1,5 @@
 /**
- *
+ * @class AudioEntity
  */
 class AudioEntity extends FileEntity {
 

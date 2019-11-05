@@ -42,7 +42,7 @@ class MediaDeviceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInje
                         #content-right {
                             @apply --layout-flex;
                             padding-top: 12px;
-                        }<<<<<
+                        }
                         
       
                 </style>

@@ -439,7 +439,6 @@ class VideoPanelViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjec
     submitEntity(evt) {
         evt.preventDefault();
 
-        console.log('SALVA STO CAZZO');
         let method = this.getStorageUpsertMethod();
         this._storage[method](this.entity)
             .then((data) => {

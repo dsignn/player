@@ -1,5 +1,5 @@
 /**
- *
+ * @class
  */
 class ResourceService {
 
@@ -11,6 +11,13 @@ class ResourceService {
         this.localPath = localPath;
 
         this.nodePath = require('path');
+    }
+
+    /**
+     * @returns {string}
+     */
+    getPath() {
+        return this.localPath
     }
 
     /**

@@ -7,7 +7,7 @@ import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 
 import './../paper-video-panel/paper-video-panel';
-import {lang} from './language/video-panel-list-language';
+import {lang} from './language/video-panel-resource-list-language';
 
 /**
  * @customElement

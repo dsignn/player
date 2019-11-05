@@ -1,5 +1,5 @@
 /**
- *
+ * @class VideoEntity
  */
 class VideoEntity extends FileEntity {
 

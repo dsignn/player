@@ -26,7 +26,7 @@ class VideoPanel extends require("@dsign/library").storage.entity.EntityIdentifi
         this.width = null;
 
         /**
-         * @type {(null|string)}
+         * @type {(null|EntityRef)}
          */
         this.monitorContainerReference = null;
 
@@ -101,7 +101,6 @@ class VideoPanel extends require("@dsign/library").storage.entity.EntityIdentifi
                         remove = remove || this.videoPanels[cont].removeVideoPanel(videoPanel);
                         break
                 }
-
             }
         }
         return remove;

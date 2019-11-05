@@ -294,7 +294,11 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .addValueStrategy('alwaysOnTop', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
-            ));
+            ))
+            .addValueStrategy('offsetX', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
+            .addValueStrategy('offsetY', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
+            .addValueStrategy('height', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)())
+            .addValueStrategy('width', new (require("@dsign/library").hydrator.strategy.value.NumberStrategy)());
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('name')

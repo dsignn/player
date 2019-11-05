@@ -11,7 +11,7 @@ import {JsAclAdapter} from '@dsign/library/src/permission/acl/adapter/JsAclAdapt
 import {PropertyHydrator} from '@dsign/library/src/hydrator/index';
 import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/index';
-import {MongoDb, MongoCollectionAdapter} from '@dsign/library/src/storage/adapter/mongo/index';
+import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? '<<<<<<<production' : process.env.APP_ENVIRONMENT;
@@ -47,7 +47,8 @@ const container = new Container();
 const application = new Application();
 application.setBasePath(basePath)
     .setModulePath(modulePath)
-    .setResourcePath(resourcePath);
+    .setResourcePath(resourcePath)
+    .setStoragePath(storagePath);
 
 /**
  * Inject general container aggregate service
@@ -131,7 +132,7 @@ container.set('Acl', aclService);
                                             DEXIE MANAGER SERVICE
  **********************************************************************************************************************/
 
-container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
+// container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 /***********************************************************************************************************************
                                            MONGODB
@@ -241,19 +242,17 @@ application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
 
-        this.get('DexieManager').on("ready", () => {
-            let appl = document.createElement('application-layout');
-            setTimeout(
-                () => {
+        container.get('MongoDb')
+            .getEventManager()
+            .on(
+                MongoDb.READY_CONNECTION,
+                (connection) =>  {
+                    let appl = document.createElement('application-layout');
                     document.body.appendChild(appl);
-                },
-                2000
+                }
             );
 
-        });
-
-        this.get('DexieManager').generateSchema();
-        this.get('DexieManager').open();
+        container.get('MongoDb').connect();
 
     }.bind(container))
 );

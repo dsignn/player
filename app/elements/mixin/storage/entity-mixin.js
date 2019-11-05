@@ -44,7 +44,7 @@ export const StorageEntityMixin = (superClass) => {
         }
 
         /**
-         * @param newValue
+         * @param {StorageInterface} newValue
          * @private
          */
         _changedStorage(newValue) {
@@ -62,7 +62,7 @@ export const StorageEntityMixin = (superClass) => {
 
             let hydrator = newValue.getHydrator();
 
-            if (typeof hydrator.getTemplateObjectHydration !== 'function' || this.entity instanceof hydrator.getTemplateObjectHydration().constructor) {
+            if (!hydrator || typeof hydrator.getTemplateObjectHydration !== 'function' || this.entity instanceof hydrator.getTemplateObjectHydration().constructor) {
                 return;
             }
 

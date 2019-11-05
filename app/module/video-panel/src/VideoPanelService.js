@@ -5,263 +5,301 @@ class VideoPanelService {
 
     /**
      *
-     * @param {Storage} storageMonitor
-     * @param {Storage} storageVideoPanel
-     * @param {Storage} storageResource
-     * @param {AbstractHydrator} virtualMonitorMosaicHydrator
-     * @param {AbstractHydrator} panelMosaicHydrator
-     * @param {AbstractHydrator} resourceMosaicHydrator
-     * @param {AbstractHydrator} monitorHydrator
-     * @param {string} relativeStoragePath
+     * @param {StorageInterface} storageMonitor
+     * @param {StorageInterface} storageVideoPanel
+     * @param {StorageInterface} storageResource
+     * @param {HydratorInterface} monitorContainerMosaicHydrator
+     * @param {HydratorInterface} videoPanelMosaicHydrator
+     * @param {HydratorInterface} resourceMosaicHydrator
+     * @param {ResourceService} resourceService
      */
     constructor(
         storageMonitor,
         storageVideoPanel,
         storageResource,
-        virtualMonitorMosaicHydrator,
-        panelMosaicHydrator,
+        monitorContainerMosaicHydrator,
+        videoPanelMosaicHydrator,
         resourceMosaicHydrator,
-        monitorHydrator,
-        relativeStoragePath = null
+        resourceService
     ) {
 
         /**
-         * @type {Storage}
+         * @type {StorageInterface}
          */
         this.storageMonitor = storageMonitor;
 
         /**
-         * @type {Storage}
+         * @type {StorageInterface}
          */
         this.storageVideoPanel = storageVideoPanel;
 
         /**
-         * @type {Storage}
+         * @type {StorageInterface}
          */
         this.storageResource = storageResource;
 
         /**
-         * @type {AbstractHydrator}
+         * @type {HydratorInterface}
          */
-        this.virtualMonitorMosaicHydrator = virtualMonitorMosaicHydrator;
+        this.monitorContainerMosaicHydrator = monitorContainerMosaicHydrator;
 
         /**
-         * @type {AbstractHydrator}
+         * @type {HydratorInterface}
          */
-        this.panelMosaicHydrator = panelMosaicHydrator;
+        this.videoPanelMosaicHydrator = videoPanelMosaicHydrator;
 
         /**
-         * @type {AbstractHydrator}
+         * @type {HydratorInterface}
          */
         this.resourceMosaicHydrator = resourceMosaicHydrator;
 
         /**
-         * @type {AbstractHydrator}
+         * @type {ResourceService}
          */
-        this.monitorHydrator = monitorHydrator;
-
-        /**
-         * @type {string|null}
-         */
-        this.relativeStoragePath = relativeStoragePath;
+        this.resourceService = resourceService;
     }
 
     /**
-     * @param {PanelResource} panelResource
-     * @param {LocationPath} locationPath
+     * @param {VideoPanelResource} videoPanelResource
+     * @param {Path} locationPath
      * @return {Promise}
      */
-    async generateResource(panelResource, locationPath) {
+    async generateResource(videoPanelResource, locationPath) {
 
-        /** @type {VirtualMonitor} */
-        let virtualMonitorMosaic = this.virtualMonitorMosaicHydrator.hydrate(
-            await this.storageMonitor.get(panelResource.getVideoPanel().virtualMonitorReference.virtualMonitorId)
+        /**
+         * @type {VideoPanelContainerEntity}
+         *
+         * Contains VideoPanelMosaic object
+         */
+        let videoPanelContainer = this.videoPanelMosaicHydrator.hydrate(
+            await this.storageVideoPanel.get(videoPanelResource.videoPanelReference.parentId)
         );
-        /** @type {Panel} */
-        let panelMosaic = this.panelMosaicHydrator.hydrate(panelResource);
-        /** @type {Number} */
-        let index = 0;
-        /** @type {VideoPanelMosaic} */
-        let parentVideoPanel = panelMosaic.getVideoPanel();
-        /** @type {VideoPanelMosaic} */
-        let currentInternalChildVideoPanel = panelMosaic.getVideoPanel().getVideoPanels()[index];
-        /** @type {Monitor} */
-        let parentMonitor =  virtualMonitorMosaic.getMonitor(parentVideoPanel.virtualMonitorReference.monitorId);
-        /** @type {MonitorMosaic} */
-        let currentInternalMonitor = virtualMonitorMosaic.getMonitor(currentInternalChildVideoPanel.virtualMonitorReference.monitorId);
-        currentInternalMonitor.initMonitor();
 
-        /** @type {Mosaic} */
+        // TODO add controll
+        /**
+         * @type {MonitorContainerEntity}
+         *
+         * Contains MonitorMosaic object
+         */
+        let monitorContainerEntity = this.monitorContainerMosaicHydrator.hydrate(
+            await this.storageMonitor.get(videoPanelContainer.getVideoPanel().monitorContainerReference.parentId)
+        );
+
+        // TODO add controll
+        let index = 0;
+
+        /**
+         *  @type {VideoPanelMosaic}
+         */
+        let parentVideoPanelMosaic = videoPanelContainer.getVideoPanel().getVideoPanel(videoPanelResource.videoPanelReference.id);
+
+        /**
+         * @type {(VideoPanelMosaic|Object)}
+         */
+        let childVideoPanelMosaic = parentVideoPanelMosaic.videoPanels.length > index ? parentVideoPanelMosaic.videoPanels[index] : parentVideoPanelMosaic;
+
+        /**
+         * @type {MonitorMosaic}
+         */
+        let currentMonitor = monitorContainerEntity.getMonitor(
+            childVideoPanelMosaic ? childVideoPanelMosaic.monitorContainerReference.id : parentVideoPanelMosaic.monitorContainerReference.id
+        );
+        currentMonitor.initMonitor();
+
+        /**
+         * @type {(VideoPanelResource|null)}
+         */
+        let currentVideoPanelResource = null;
+
+        /**
+         * @type {Mosaic}
+         * */
         let mosaic = new Mosaic();
-        let container = this.getMosaicMonitorContainer(virtualMonitorMosaic, panelMosaic);
+        let container = monitorContainerEntity.getMonitor(parentVideoPanelMosaic.monitorContainerReference.id);
 
         mosaic.setBasePanel(container.width, container.height, 'black');
         mosaic.setDestination(locationPath);
 
-        let crop = null;
-
+        let crop;
+        let resources = [];
+        let resource;
         /**
-         *
+         * @type ResourceMosaic
          */
-        while (parentVideoPanel.getRemainingWidth() > 0) {
+        let currentResource;
+        let indexResource;
 
-            while (currentInternalChildVideoPanel.getRemainingWidth() > 0) {
+        while (parentVideoPanelMosaic.getRemainingWidth() > 0) {
 
-                if (currentInternalChildVideoPanel.resources.length == 0) {
+            currentVideoPanelResource = videoPanelResource.getVideoPanel(childVideoPanelMosaic.id);
+            if (currentVideoPanelResource.resources.length == 0) {
 
-                    currentInternalChildVideoPanel.sumRemainingWidth(currentInternalChildVideoPanel.width);
-                    parentVideoPanel.sumRemainingWidth(currentInternalChildVideoPanel.width);
+                childVideoPanelMosaic.sumRemainingWidth(childVideoPanelMosaic.width);
+                parentVideoPanelMosaic.sumRemainingWidth(childVideoPanelMosaic.width);
+            }
+
+            indexResource = 0;
+            crop = null;
+            resources = await this._getResourceFromVideoPanel(currentVideoPanelResource);
+            currentResource = resources[indexResource];
+            currentResource.path.setDirectory(this.resourceService.getResourceDirectory(currentResource));
+/*
+            if (index === 0) {
+                index++;
+                childVideoPanelMosaic = videoPanelContainer.getVideoPanel().getVideoPanelByIndex(index);
+                currentMonitor = monitorContainerEntity.getMonitor(childVideoPanelMosaic.monitorContainerReference.id);
+                currentMonitor.initMonitor();
+                continue;
+            }
+ */
+            while (childVideoPanelMosaic.getRemainingWidth() > 0) {
+
+                this.log('CICLO', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
+                while (currentResource.getRemainingWidth() > 0 && childVideoPanelMosaic.getRemainingWidth() > 0) {
+
+                    /**
+                     * START SIMULATION
+                     */
+                   // childVideoPanelMosaic.sumRemainingWidth(currentResource.getWidth());
+                   // parentVideoPanelMosaic.sumRemainingWidth(currentResource.getWidth());
+                   // currentResource.sumRemainingWidth(currentResource.getWidth());
+                    /**
+                     * END SIMULATION
+                     */
+
+                    switch (true) {
+
+                        /**
+                         * Must be the end of the last row
+                         */
+                        case (currentMonitor.getRemainingWidth() >= childVideoPanelMosaic.getRemainingWidth() && currentResource.getRemainingWidth() >= childVideoPanelMosaic.getRemainingWidth()):
+                            crop = new Crop(
+                                childVideoPanelMosaic.getRemainingWidth(),
+                                currentResource.dimension.height,
+                                currentResource.computedWidth,
+                                0
+                            );
+                            /**
+                             * Add Resource
+                             */
+                            mosaic.addResource(currentResource, currentMonitor.progressOffsetX, currentMonitor.progressOffsetY, crop);
+
+                            /**
+                             * Calc next step
+                             */
+                            parentVideoPanelMosaic.sumRemainingWidth(childVideoPanelMosaic.getRemainingWidth());
+                            currentResource.sumRemainingWidth(childVideoPanelMosaic.getRemainingWidth());
+                            childVideoPanelMosaic.sumRemainingWidth(childVideoPanelMosaic.getRemainingWidth());
+                            /**
+                             * Debug
+                             */
+                            console.log('END ROW');
+                       //     this.log('LAST ROW', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
+                            break;
+                        /**
+                         * The width of the video resource it's the same of the end on the monitor
+                         */
+                        case currentResource.getRemainingWidth() === currentMonitor.getRemainingWidth():
+                            crop = new Crop(
+                                currentResource.getRemainingWidth(),
+                                currentResource.dimension.height,
+                                currentResource.computedWidth,
+                                0
+                            );
+                            /**
+                             * Add Resource
+                             */
+                            mosaic.addResource(currentResource, currentMonitor.progressOffsetX, currentMonitor.progressOffsetY, crop);
+                            /**
+                             * Calc next step
+                             */
+                            childVideoPanelMosaic.sumRemainingWidth(currentMonitor.getRemainingWidth());
+                            parentVideoPanelMosaic.sumRemainingWidth(currentMonitor.getRemainingWidth());
+                            currentResource.sumRemainingWidth(currentMonitor.getRemainingWidth());
+                            currentMonitor.resetProgressOffsetX();
+                            currentMonitor.sumProgressOffsetY(childVideoPanelMosaic.height);
+                            /**
+                             * Debug
+                             */
+                            console.log('END MONITOR');
+                    //        this.log('END MONITOR', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
+                            break;
+                        /**
+                         * The width of the resource is bigger than the width of th remaing monitor width
+                         */
+                        case currentResource.getRemainingWidth() > currentMonitor.getRemainingWidth():
+                            crop = new Crop(
+                                currentMonitor.getRemainingWidth(),
+                                currentResource.dimension.height,
+                                currentResource.computedWidth,
+                                0
+                            );
+                            /**
+                             * Add Resource
+                             */
+                            mosaic.addResource(currentResource, currentMonitor.progressOffsetX, currentMonitor.progressOffsetY, crop);
+                            /**
+                             * Calc next step
+                             */
+                            childVideoPanelMosaic.sumRemainingWidth(currentMonitor.getRemainingWidth());
+                            parentVideoPanelMosaic.sumRemainingWidth(currentMonitor.getRemainingWidth());
+                            currentResource.sumRemainingWidth(currentMonitor.getRemainingWidth());
+                            currentMonitor.resetProgressOffsetX();
+                            currentMonitor.sumProgressOffsetY(childVideoPanelMosaic.height);
+                            /**
+                             * Debug
+                             */
+                            console.log('A CAPO');
+                       //     this.log('RESOURCE BIGGER THEN MONITOR', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
+                            break;
+                        /***
+                         * TODO comment
+                         */
+                        case currentResource.getRemainingWidth() <= currentMonitor.getRemainingWidth():
+                            crop = new Crop(
+                                currentResource.getRemainingWidth(),
+                                currentResource.dimension.height,
+                                currentResource.computedWidth,
+                                0
+                            );
+                            /**
+                             * Add Resource
+                             */
+                            mosaic.addResource(currentResource, currentMonitor.progressOffsetX, currentMonitor.progressOffsetY, crop);
+                            /**
+                             * Calc next step
+                             */
+                            childVideoPanelMosaic.sumRemainingWidth(currentResource.getRemainingWidth());
+                            parentVideoPanelMosaic.sumRemainingWidth(currentResource.getRemainingWidth());
+                            currentMonitor.sumProgressOffsetX(currentResource.getRemainingWidth());
+                            currentResource.sumRemainingWidth(currentResource.getRemainingWidth());
+                            /**
+                             * Debug
+                             */
+                            console.log('CONTENUTA');
+                        //    this.log('RESOURCE SMALLEST THEN MONITOR', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
+                            break;
+                    }
+                }
+
+                indexResource = resources.length > (indexResource+1) ? indexResource + 1 : 0;
+                currentResource.resetComputedWidth();
+                currentResource = resources[indexResource];
+            }
+
+
+            if (parentVideoPanelMosaic.videoPanels.length > 0) {
+                index++;
+                childVideoPanelMosaic = videoPanelContainer.getVideoPanel().getVideoPanelByIndex(index);
+                if (!childVideoPanelMosaic) {
                     break;
                 }
 
-                let resources = currentInternalChildVideoPanel.resources;
-                for (let cont = 0; resources.length > cont; cont++) {
-
-                    if (currentInternalChildVideoPanel.getRemainingWidth() === 0) {
-                        break;
-                    }
-
-                    /** @type ResourceMosaic */
-                    let resourceMosaic = this.resourceMosaicHydrator.hydrate(
-                        await this.storageResource.get(resources[cont].referenceId)
-                    );
-
-                    /**
-                     * Check if resource has an absolute path
-                     */
-                    if (!resourceMosaic.location.isAbsolute()) {
-                        resourceMosaic.location.setPath(`${this.relativeStoragePath}/${resourceMosaic.location.getPath()}`);
-                    }
-
-                    while (resourceMosaic.getRemainingWidth() > 0) {
-
-
-                        switch (true) {
-                            /**
-                             * TODO comment
-                             */
-                            case resourceMosaic.getRemainingWidth() > currentInternalChildVideoPanel.getRemainingWidth():
-                                crop = new Crop(
-                                    currentInternalChildVideoPanel.getRemainingWidth(),
-                                    resourceMosaic.dimension.height,
-                                    resourceMosaic.computedWidth,
-                                    0
-                                );
-                                /**
-                                 * Add Resource
-                                 */
-                                mosaic.addResource(resourceMosaic, currentInternalMonitor.progressOffsetX, currentInternalMonitor.progressOffsetY, crop);
-                                /**
-                                 * Calc next step
-                                 */
-                                currentInternalChildVideoPanel.sumRemainingWidth(currentInternalChildVideoPanel.getRemainingWidth());
-                                parentVideoPanel.sumRemainingWidth(currentInternalChildVideoPanel.getRemainingWidth());
-                                resourceMosaic.sumRemainingWidth(resourceMosaic.getRemainingWidth());
-                                /**
-                                 * Debug
-                                 */
-                                //  console.log('FINE RIGA');
-                                //this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
-                                break;
-                            /**
-                             * TODO comment
-                             */
-                            case resourceMosaic.getRemainingWidth() === currentInternalMonitor.getRemainingWidth():
-                                crop = new Crop(
-                                    resourceMosaic.getRemainingWidth(),
-                                    resourceMosaic.dimension.height,
-                                    resourceMosaic.computedWidth,
-                                    0
-                                );
-                                /**
-                                 * Add Resource
-                                 */
-                                mosaic.addResource(resourceMosaic, currentInternalMonitor.progressOffsetX, currentInternalMonitor.progressOffsetY, crop);
-                                /**
-                                 * Calc next step
-                                 */
-                                currentInternalChildVideoPanel.sumRemainingWidth(currentInternalMonitor.getRemainingWidth());
-                                parentVideoPanel.sumRemainingWidth(currentInternalMonitor.getRemainingWidth());
-                                resourceMosaic.sumRemainingWidth(currentInternalMonitor.getRemainingWidth());
-                                currentInternalMonitor.resetProgressOffsetX();
-                                currentInternalMonitor.sumProgressOffsetY(currentInternalChildVideoPanel.height);
-                                /**
-                                 * Debug
-                                 */
-                                //console.log('UGUALE');
-                                //this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
-                                break;
-                            /***
-                             * TODO comment
-                             */
-                            case resourceMosaic.getRemainingWidth() > currentInternalMonitor.getRemainingWidth():
-                                crop = new Crop(
-                                    currentInternalMonitor.getRemainingWidth(),
-                                    resourceMosaic.dimension.height,
-                                    resourceMosaic.computedWidth,
-                                    0
-                                );
-                                /**
-                                 * Add Resource
-                                 */
-                                mosaic.addResource(resourceMosaic, currentInternalMonitor.progressOffsetX, currentInternalMonitor.progressOffsetY, crop);
-                                /**
-                                 * Calc next step
-                                 */
-                                currentInternalChildVideoPanel.sumRemainingWidth(currentInternalMonitor.getRemainingWidth());
-                                parentVideoPanel.sumRemainingWidth(currentInternalMonitor.getRemainingWidth());
-                                resourceMosaic.sumRemainingWidth(currentInternalMonitor.getRemainingWidth());
-                                currentInternalMonitor.resetProgressOffsetX();
-                                currentInternalMonitor.sumProgressOffsetY(currentInternalChildVideoPanel.height);
-                                /**
-                                 * Debug
-                                 */
-                                // console.log('MAGGIORE');
-                                //this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
-                                break;
-                            /***
-                             * TODO comment
-                             */
-                            case resourceMosaic.getRemainingWidth() <= currentInternalMonitor.getRemainingWidth():
-                                crop = new Crop(
-                                    resourceMosaic.getRemainingWidth(),
-                                    resourceMosaic.dimension.height,
-                                    resourceMosaic.computedWidth,
-                                    0
-                                );
-                                /**
-                                 * Add Resource
-                                 */
-                                mosaic.addResource(resourceMosaic, currentInternalMonitor.progressOffsetX, currentInternalMonitor.progressOffsetY, crop);
-                                /**
-                                 * Calc next step
-                                 */
-                                currentInternalChildVideoPanel.sumRemainingWidth(resourceMosaic.getRemainingWidth());
-                                parentVideoPanel.sumRemainingWidth(resourceMosaic.getRemainingWidth());
-                                currentInternalMonitor.sumProgressOffsetX(resourceMosaic.getRemainingWidth());
-                                resourceMosaic.sumRemainingWidth(resourceMosaic.getRemainingWidth());
-                                /**
-                                 * Debug
-                                 */
-                                //   console.log('MINORE');
-                                // this.log(parentVideoPanel, currentInternalChildVideoPanel, currentInternalMonitor, resourceMosaic, crop.toString());
-                                break;
-                        }
-                    }
+                currentMonitor = monitorContainerEntity.getMonitor(childVideoPanelMosaic.monitorContainerReference.id);
+                currentMonitor.initMonitor();
+                if (container.id === currentMonitor.id) {
+                    currentMonitor.progressOffsetY = 0;
                 }
-            }
-
-            index++;
-            currentInternalChildVideoPanel = panelMosaic.getVideoPanel().getVideoPanelByIndex(index);
-            // If the length of the sub panel is less the parent length
-            if (!currentInternalChildVideoPanel) {
-                break;
-            }
-
-            currentInternalMonitor = virtualMonitorMosaic.getMonitor(currentInternalChildVideoPanel.virtualMonitorReference.monitorId);
-            currentInternalMonitor.initMonitor();
-            if (container.id === currentInternalMonitor.id) {
-                currentInternalMonitor.progressOffsetY = 0;
             }
         }
 
@@ -269,84 +307,78 @@ class VideoPanelService {
     }
 
     /**
-     * @param {VirtualMonitor} virtualMonitor
-     * @param {Panel} panelMosaic
-     * @return {MonitorMosaic}
+     * @param {VideoPanelResource} videoPanel
+     * @returns {Promise}
+     * @private
      */
-    getMosaicMonitorContainer(virtualMonitor, panelMosaic) {
-
-        let containerPanel = panelMosaic.getVideoPanel()
-            .getVideoPanels({nested:true})
-            .find((element) => {
-                return element.singleResource === true;
-            });
-
-        if (!containerPanel) {
-            containerPanel = panelMosaic.getVideoPanel();
+    _getResourceFromVideoPanel(videoPanel) {
+        let promises = [];
+        for (let cont = 0; videoPanel.resources.length > cont; cont++) {
+            promises.push(
+                this._getResourceMosaic(videoPanel.resources[cont].id)
+            )
         }
-
-        return virtualMonitor.getMonitor(containerPanel.virtualMonitorReference.monitorId);
+        return Promise.all(promises);
     }
 
     /**
-     * @param {VideoPanelMosaic} container
-     * @param {VideoPanelMosaic} child
-     * @param {MonitorMosaic} currentMonitor
-     * @param {ResourceMosaic} resource
+     * @param {string} id
+     * @returns {Promise}
+     * @private
      */
-    log(container, child, currentMonitor, resource = null, cropString =null) {
-        return;
-        console.group('Cicle');
-        console.log(
-            'CONTAINER MOSAIC',
-            'remaining',
-            container.getRemainingWidth(),
-            'width',
-            container.width
-        );
+    _getResourceMosaic(id) {
+        return new Promise((resolve) => {
+            this.storageResource.get(id)
+                .then((resource) => {
+                    resolve(this.resourceMosaicHydrator.hydrate(resource))
+                })
+                .catch(() => {
+                    resolve({})
+                });
+        });
+    }
 
-        console.log(
-            'CHILD MOSAIC',
-            child.name,
-            'remaining',
-            child.getRemainingWidth(),
-            'width',
-            child.width);
+    /**
+     * @param {string} label
+     * @param {MonitorMosaic} monitor
+     * @param {VideoPanelMosaic} fatherVideoPanel
+     * @param {VideoPanelMosaic} childVideoPanel
+     * @param {ResourceMosaic} resourceMosaic
+     * @param {ResourceMosaic} cropString
+     */
+    log(label, monitor, fatherVideoPanel, childVideoPanel, resourceMosaic = null, cropString = null) {
 
-        console.log(
-            'CHILD MONITOR',
-            'width',
-            currentMonitor.width,
-            'height',
-            currentMonitor.height,
-            'remainingWidth',
-            currentMonitor.getRemainingWidth()
-          );
+        console.group(label);
 
-        console.log(
-            'CHILD MONITOR OFFSET',
-            'X',
-            currentMonitor.getComputedOffsetX(),
-            'Y',
-            currentMonitor.offsetY,
-            'progressY',
-            currentMonitor.progressOffsetY,
-            'progressX',
-            currentMonitor.progressOffsetX
-        );
+        console.groupCollapsed(`MONITOR ${ monitor.name}` );
+            console.log('Remaining',    monitor.getRemainingWidth());
+            console.log('Width',    monitor.width);
+            console.log('Progress x',    monitor.progressOffsetX);
+            console.log('Progress y',    monitor.progressOffsetY);
+            console.log('Object',    monitor);
+        console.groupEnd();
 
-        if (resource) {
-            console.log(
-                'RESOURCE',
-                'width',
-                resource.dimension.width,
-                'height',
-                resource.dimension.height,
-                'computed',
-                resource.getRemainingWidth(),
-                'cropstring',
-                cropString
-            );
+        console.groupCollapsed(`VIDEO PANEL FATHER ${fatherVideoPanel.name}` );
+            console.log('Remaining', fatherVideoPanel.getRemainingWidth());
+            console.log('Width', fatherVideoPanel.width);
+            console.log('Object',    fatherVideoPanel);
+        console.groupEnd();
+
+        console.groupCollapsed(`VIDEO PANEL CHILD ${childVideoPanel.name}` );
+            console.log('Remaining', childVideoPanel.getRemainingWidth());
+            console.log('Width', childVideoPanel.width);
+            console.log('Object',    childVideoPanel);
+        console.groupEnd();
+
+
+        if (resourceMosaic) {
+
+            console.groupCollapsed(`CURRENT RESOURCE ${resourceMosaic.name}`);
+                console.log('Remaining', resourceMosaic.getRemainingWidth());
+                console.log('Width', resourceMosaic.dimension.width);
+                console.log('Height', resourceMosaic.dimension.height);
+                console.log('Object',    resourceMosaic);
+            console.groupEnd();
         }
 
         console.groupEnd();
