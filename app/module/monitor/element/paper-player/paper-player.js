@@ -231,6 +231,11 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             AbstractTimeslotService.RESUME,
             this._resumeTimeslot.bind(this)
         );
+
+        newValue.on(
+            AbstractTimeslotService.CHANGE_TIME,
+            this._changeTimeTimeslot.bind(this)
+        );
     }
 
     /**
@@ -462,6 +467,27 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 this.appendTimeslot(timeslot.context, timeslotWc);
                 this.clearLayerButNotLast(timeslot);
                 break;
+        }
+    }
+
+    /**
+     * TODO add public interface
+     *
+     * @param evt
+     * @param msg
+     * @private
+     */
+    _changeTimeTimeslot(evt, msg) {
+        // The timeslot is not associate to thi monitor
+        if ( msg.timeslot !== undefined && this.identifier !== msg.timeslot.monitorContainerReference.id) {
+            return;
+        }
+
+        let element = this.getTimeslotElement(msg.timeslot, msg.context);
+
+        if (element) {
+            console.log('MONITOR CHANGE TIMESLOT', msg.timeslot);
+            element.changeTime(msg.timeslot.currentTime);
         }
     }
 

@@ -4,6 +4,7 @@ import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin"
 import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
+import '@polymer/paper-slider/paper-slider';
 import {lang} from './language/language';
 
 /**
@@ -44,6 +45,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 }
                 
                 #right-section {
+
                     @apply --layout-vertical;
                     @apply --layout-flex;
                 }
@@ -110,6 +112,10 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 .crud paper-icon-button {
                     background-color: #0b8043 ;
                 }
+                
+                paper-slider {
+                    width: 100%;
+                }
     
                 paper-icon-button[disabled].action {
                     background-color: grey;
@@ -140,7 +146,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 </div>
                 <div id="right-section">
                     <div class="top">
-                       <div id="content">
+                        <div id="content">
                             <div class="dataWrapper">
                                 <div class="nameTimeslot">{{entity.name}}</div>
                                 <div id="status">{{status}}</div>
@@ -158,6 +164,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             </paper-menu-button>
                         </div>
                     </div>
+                    <paper-slider id="slider" pin on-mousedown="sliderDown" on-mouseup="sliderUp" on-mouseout="sliderOut" disabled></paper-slider>
                     <div class="content-action">
                         <paper-icon-button id="play" icon="timeslot:play" on-click="_play" class="circle-small action"></paper-icon-button>
                         <paper-tooltip for="play" position="bottom">{{localize('play-timeslot')}}</paper-tooltip>
@@ -249,10 +256,18 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             },
 
             /**
-             * @type true
+             * @type boolean
              */
             autoUpdateEntity: {
                 value: true
+            },
+
+            /**
+             * @type boolean
+             */
+            excludeSlider: {
+                readOnly: true,
+                value: false
             },
 
             /**
@@ -288,6 +303,44 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
     }
 
     /**
+     * @param {Event} evt
+     */
+    sliderDown(evt) {
+        this._setExcludeSlider(true);
+    }
+
+    /**
+     * @param {Event} evt
+     */
+    sliderUp(evt) {
+        // TODO refactor understand if there is better event to attach
+        setTimeout(() => {
+                if (this.entity.status === 'running' ) {
+                    this.dispatchEvent(new CustomEvent(
+                        'timeupdate',
+                        {
+                            detail:  {
+                                timeslot: this.entity,
+                                time: this.$.slider.value
+                            }
+                        }
+                        )
+                    )
+                }
+                this._setExcludeSlider(false);
+            },
+            200
+        )
+    }
+
+    /**
+     * @param evt
+     */
+    sliderOut(evt) {
+        this._setExcludeSlider(false);
+    }
+
+    /**
      * @param timeslot
      */
     _entityChanged(timeslot) {
@@ -301,6 +354,19 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         this._updateContextHtml();
         this._updateRotationHtml();
         this._clearStatusClass(this.entity.status);
+
+        this.$.slider.max = this.entity.duration;
+        this.$.slider.disabled = this.entity.status === 'running' ? false : true;
+
+        if (!this.excludeSlider) {
+            this.$.slider.value = this.entity.currentTime;
+        }
+
+        if (this.entity.status === 'idle') {
+            this.$.slider.dispatchEvent(new Event('mouseup'));
+            this.$.slider.value = this.entity.currentTime;
+            this.$.slider.disabled = true;
+        }
     }
 
     /**

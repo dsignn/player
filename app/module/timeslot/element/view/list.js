@@ -70,7 +70,8 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                         on-delete="_deleteEntity" 
                         on-update="_showUpdateView"
                         on-change-rotation="_updateEntity"
-                        on-change-context="_updateEntity">
+                        on-change-context="_updateEntity"
+                        on-timeupdate="_updateTime">
                     </paper-timeslot>
                 </template>
             </div>
@@ -139,6 +140,14 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
     _showUpdateView(evt) {
         this.entitySelected = evt.detail;
         this.selected = 2;
+    }
+
+    /**
+     * @param {CustomEvent} evt
+     * @private
+     */
+    _updateTime(evt) {
+        this._timeslotService.changeTime(evt.detail.timeslot, evt.detail.time);
     }
 
     /**

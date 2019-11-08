@@ -32,6 +32,13 @@ class AbstractTimeslotService {
     static get RESUME() { return 'resume-timeslot'; }
 
     /**
+     * Name of the "message" send from sender when resume timeslot
+     *
+     * @return {string}
+     */
+    static get CHANGE_TIME() { return 'change-time-timeslot'; }
+
+    /**
      * @param {Storage} timeslotStorage
      * @param {sender} sender
      * @param {Timer} timer

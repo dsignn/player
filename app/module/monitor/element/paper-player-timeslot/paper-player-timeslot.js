@@ -438,6 +438,15 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
         return container;
     }
 
+    /**
+     * @param currentTime
+     */
+    changeTime(currentTime) {
+        let tags = this.shadowRoot.querySelectorAll('video, audio');
+        for (let cont = 0; tags.length > cont; cont++) {
+            tags[cont].currentTime = currentTime;
+        }
+    }
 
     /**
      *

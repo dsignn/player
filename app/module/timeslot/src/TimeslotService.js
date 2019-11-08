@@ -59,6 +59,31 @@ class TimeslotService extends AbstractTimeslotService {
     }
 
     /**
+     *
+     * @param {TimeslotEntity} timeslot
+     * @return {TimeslotEntity}
+     */
+    getTimeslot(timeslot) {
+        let running = null;
+        switch (true) {
+            case this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_STANDARD}`] !== undefined &&
+            this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_STANDARD}`].id === timeslot.id:
+
+                running = this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_STANDARD}`];
+                break;
+            case this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_OVERLAY}`] !== undefined &&
+            this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_OVERLAY}`].id === timeslot.id:
+                running = this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_OVERLAY}`];
+                break;
+            case this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_DEFAULT}`] !== undefined &&
+            this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_DEFAULT}`].id === timeslot.id:
+                running = this.runningTimeslots[`${timeslot.monitorContainerReference.id}-${TimeslotEntity.CONTEXT_DEFAULT}`];
+                break;
+        }
+        return running
+    }
+
+    /**
      * @param monitorId
      * @param context
      * @return {Object}
@@ -165,6 +190,34 @@ class TimeslotService extends AbstractTimeslotService {
 
     /**
      * @param {TimeslotEntity} timeslot
+     * @param {second} second
+     * @returns {Promise<void>}
+     */
+    async changeTime(timeslot, second) {
+        if (!this.isRunning(timeslot)) {
+            return;
+        }
+
+        let running = this.getTimeslot(timeslot);
+
+        if (!running) {
+            console.warn('Timeslot not running', timeslot, second);
+            return;
+        }
+
+        if (running.duration <= second) {
+            console.warn('Second too long', timeslot, second);
+            return;
+        }
+
+        running.currentTime = second;
+        this._changeTimeTimeslot(running, second);
+
+
+    }
+
+    /**
+     * @param {TimeslotEntity} timeslot
      * @param {Object} dataTimeslot
      * @private
      */
@@ -232,6 +285,19 @@ class TimeslotService extends AbstractTimeslotService {
 
         this.timeslotStorage.update(timeslot)
             .then((data) => { console.log('STOP timeslot EVT')})
+            .catch((err) => { console.error(err)});
+    }
+
+    /**
+     * @private
+     */
+    _changeTimeTimeslot(timeslot) {
+
+        this._send(TimeslotService.CHANGE_TIME, timeslot);
+        this.timeslotStorage.update(timeslot)
+            .then((data) => {
+               // console.log('CHANGE TIME timeslot EVT')
+            })
             .catch((err) => { console.error(err)});
     }
 
