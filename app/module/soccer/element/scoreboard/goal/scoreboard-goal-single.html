@@ -1,0 +1,254 @@
+<link rel="import" href="../../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../../../bower_components/neon-animation/neon-animation.html">
+
+<link rel="import" href="../../../../../css/global-layout.html">
+<link rel="import" href="../../../../../css/global-styles.html">
+<link rel="import" href="../../../../../element/iconset/iconset.html">
+<link rel="import" href="../scoreboard-utils.html">
+
+<dom-module id="soccer-scoreboar-goal-single-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .goal-content,
+            .goal-actions {
+                height: 40px;
+                padding: 0;
+                min-height: initial !important;
+                min-width: inherit !important;
+                margin-left: 0 !important;
+            }
+
+            paper-card {
+                width: 100%;
+                min-height: initial;
+                min-width: inherit;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                font-size: 16px;
+                margin: 8px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+            .number {
+                padding-right: 6px;
+                padding-left: 6px;
+            }
+
+            paper-dropdown-menu {
+                top: -2px;
+            }
+
+            .reverse {
+                flex-direction: row-reverse;
+            }
+
+            .flex-end {
+                align-items: flex-end;
+
+            }
+
+            #goal {
+                margin: 0;
+                margin-top: 18px;
+                width: 150px;
+                height: 220px;
+            }
+
+            #goal .button {
+                background-color: black;
+                color: white;
+                width: 100px;
+                min-width: 100px;
+                height: 40px;
+            }
+
+            .dialog-content {
+                height: 100%;
+                margin: 0;
+            }
+
+            .red {
+                background-color: red;
+            }
+
+            .yellow {
+                background-color: yellow;
+            }
+
+
+        </style>
+        <paper-card>
+            <div class="goal-container goal-content flex flex-horizontal">
+                <div class="player-data data flex-basis-80 flex flex-vertical">
+                    <div class="dataWrapper flex flex-horizontal">
+                        <div class="number">{{player.shirtNumber}}</div>
+                        <div>{{player.shirtName}} {{player.surname}}</div>
+                        <div>&nbsp;{{goal.time}} min</div>
+                    </div>
+                </div>
+                <div id="action" class="data flex-basis-20 flex flex-horizontal-end">
+                    <paper-menu-button>
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item on-tap="tapGoal" goal="{{goal}}">Modifica</paper-item>
+                            <paper-item on-tap="_remove" goal="{{goal}}">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+        </paper-card>
+        <paper-dialog id="goal" no-overlap horizontal-align="left" vertical-align="top" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <iron-form id="goalForm" style="height: 100%; margin: 0;">
+                <form method="post" style="height: 100%; margin: 0;">
+                    <div class="dialog-content flex flex-vertical">
+                        <div class="flex-basis-77">
+                            <paper-input id="time" label="Time" type="number" required></paper-input>
+                        </div>
+                        <div class="flex-basis-23 flex flex-horizontal-center">
+                            <paper-button class="button" on-tap="submitGoalButton">{{labelGoal}}</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
+    </template>
+    <script>
+        class ElementSoccerScoreboardGoalSingle extends ElementSoccerScoreboardUtils {
+
+            static get is() {
+                return 'soccer-scoreboar-goal-single-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    player: {
+                        type: new PlayerSoccer(),
+                        notify: true
+                    },
+
+                    goal: {
+                        type: new Goal(),
+                        notify: true
+                    },
+
+                    left: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_leftChanged'
+                    },
+
+                    labelGoal: {
+                        type: String,
+                        notify: true,
+                        value: 'Modify'
+                    }
+                };
+            }
+
+
+            ready() {
+                super.ready();
+                this.$.goalForm.addEventListener('iron-form-presubmit', this.submitGoal.bind(this));
+            }
+
+            /**
+             * @param evt
+             */
+            submitGoalButton(evt) {
+                this.$.goalForm.submit();
+            }
+
+            /**
+             * @param evt
+             */
+            submitGoal(evt) {
+                evt.preventDefault();
+
+                this.goal.time = parseInt(this.$.time.value);
+                this.dispatchEvent(new CustomEvent('wrap-update', {detail: {player: this.player, goal: this.goal}}));
+                this.$.goalForm.reset();
+                this.$.goal.close();
+            }
+
+            /**
+             * @param evt
+             */
+            tapGoal(evt) {
+
+                if (this.left) {
+                    this.$.goal.horizontalAlign = 'left';
+                } else {
+                    this.$.goal.horizontalAlign = 'right';
+                }
+
+                this.$.time.value = evt.target.goal.time;
+                this.$.goal.goal = evt.target.goal;
+
+                this.$.goal.open();
+            }
+
+            _computeCardBg(goal) {
+                return goal.type === Goal.TYPE_RED ? 'red' : 'yellow';
+            }
+
+            /**
+             * @param newValue
+             * @private
+             */
+            _leftChanged(newValue) {
+                if (newValue === true) {
+                    this.shadowRoot.querySelector('.goal-container').classList.add("reverse");
+                    this.shadowRoot.querySelector('.dataWrapper').classList.add("reverse");
+
+                    this.$['action'].classList.remove("flex-horizontal-end");
+                    this.$['action'].classList.add("flex-horizontal-start");
+
+                }
+
+                if (newValue === false) {
+                    this.shadowRoot.querySelector('.goal-container').classList.remove("reverse");
+                    this.shadowRoot.querySelector('.dataWrapper').classList.remove("reverse");
+
+                    this.$['action'].classList.remove("flex-horizontal-start");
+                    this.$['action'].classList.add("flex-horizontal-end");
+                }
+            }
+
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: {player: this.player, goal: this.goal}}));
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboardGoalSingle.is, ElementSoccerScoreboardGoalSingle);
+
+    </script>
+</dom-module>

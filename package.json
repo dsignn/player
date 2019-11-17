@@ -16,7 +16,7 @@
     "polymer-build": "cd app && ./node_modules/.bin/polymer build",
     "postpolymer-build": "rsync -avh app/build/ build/ --delete && rsync -avh --ignore-existing app/node_modules/ build/es6bundle/node_modules/ --delete && rm -rf app/build && cp app/style/icon/logo.png build/es6bundle/icon.png",
     "start-pre-build": "cd app && ./node_modules/.bin/electron ./../build/es6bundle/main.js --inspect=5858",
-    "test": "cd app && ./node_modules/.bin/polymer video-generator -l chrome",
+    "test": "cd app && ./node_modules/.bin/polymer test -l chrome",
     "dist": "cd app && ./node_modules/.bin/electron-builder --project ../build/es6bundle -c.extraMetadata.main=main.js -wl --x64",
     "clear-all": "rm -rf app/node_modules && rm -rf build && rm -rf releases"
   },

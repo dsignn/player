@@ -109,6 +109,10 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 .crud paper-icon-button {
                     background-color: #0b8043 ;
                 }
+                
+                paper-slider {
+                    width: 100%;
+                }
     
                 paper-icon-button[disabled].action {
                     background-color: grey;
@@ -148,7 +152,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             </div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
-                            <paper-menu-button ignore-select horizontal-align="right">
+                            <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                                 <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                 <paper-listbox slot="dropdown-content" multi>
                                     <paper-item on-click="_update">{{localize('modify')}}</paper-item>
@@ -157,6 +161,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             </paper-menu-button>
                         </div>
                     </div>
+                    <paper-slider id="slider" pin on-mousedown="sliderDown" on-mouseup="sliderUp" on-mouseout="sliderOut" disabled></paper-slider>
                     <div class="content-action">
                         <paper-icon-button id="play" icon="timeslot:play" on-click="_play" class="circle-small action"></paper-icon-button>
                         <paper-tooltip for="play" position="bottom">{{localize('play-timeslot')}}</paper-tooltip>
@@ -237,6 +242,14 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             },
 
             /**
+             * @type boolean
+             */
+            excludeSlider: {
+                readOnly: true,
+                value: false
+            },
+
+            /**
              * @type true
              */
             autoUpdateEntity: {
@@ -282,6 +295,44 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
     }
 
     /**
+     * @param {Event} evt
+     */
+    sliderDown(evt) {
+        this._setExcludeSlider(true);
+    }
+
+    /**
+     * @param {Event} evt
+     */
+    sliderUp(evt) {
+        // TODO refactor understand if there is better event to attach
+        setTimeout(() => {
+                if (this.entity.status === 'running' ) {
+                    this.dispatchEvent(new CustomEvent(
+                        'timeupdate',
+                        {
+                            detail:  {
+                                playlist: this.entity,
+                                time: this.$.slider.value
+                            }
+                        }
+                        )
+                    )
+                }
+                this._setExcludeSlider(false);
+            },
+            200
+        )
+    }
+
+    /**
+     * @param evt
+     */
+    sliderOut(evt) {
+        this._setExcludeSlider(false);
+    }
+
+    /**
      * @param newValue
      */
     _entityChanged(newValue) {
@@ -296,6 +347,25 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         this._updateContextHtml();
         this._updateRotationHtml();
         this._clearStatusClass(this.entity.status);
+
+        this.$.slider.max =  this.duration;
+        this.$.slider.disabled = this.entity.status === 'running' ? false : true;
+
+        if (!this.excludeSlider) {
+            this.$.slider.value = this.currentTime;
+        }
+
+        if (this.entity.status === 'idle') {
+            this.$.slider.dispatchEvent(new Event('mouseup'));
+            this.$.slider.value = this.entity.currentTime;
+            this.$.slider.disabled = true;
+        }
+
+        if (this.entity.status === 'running' || this.entity.status === 'pause') {
+            this.$.crudButton.disabled = true;
+        } else {
+            this.$.crudButton.disabled = false;
+        }
     }
 
     /**

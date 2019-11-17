@@ -1,0 +1,80 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<dom-module id="soccer-scoreboar-match-result-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .result {
+                padding-left: 6px;
+                padding-right: 6px;
+            }
+
+            .custom-style {
+
+                @apply --soccer-scoreboar-match-result-data;
+            }
+
+            .left {
+                flex-direction: row-reverse;
+            }
+        </style>
+        <div id="data" class="flex flex-horizontal custom-style">
+            <div>{{team.name}}</div>
+            <div class="result">{{result}}</div>
+        </div>
+    </template>
+
+    <script>
+        class ElementSoccerScoreboardTeamResult extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-scoreboar-match-result-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    team: {
+                        type: new TeamSoccer(),
+                        notify:true
+                    },
+
+                    result: {
+                        type: Number,
+                        notify:true,
+                        value: true
+                    },
+
+                    left: {
+                        type: Boolean,
+                        value: false,
+                        observer: '_leftChanged'
+                    }
+                };
+            }
+
+            /**
+             * @param newValue
+             * @private
+             */
+            _leftChanged(newValue) {
+
+                if (newValue === true) {
+                    this.$.data.classList.add("left");
+                }
+
+                if (newValue === false) {
+                    this.$.data.classList.remove("left");
+                }
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboardTeamResult.is, ElementSoccerScoreboardTeamResult);
+
+    </script>
+</dom-module>

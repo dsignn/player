@@ -1,0 +1,217 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+<link rel="import" href="../../../../element/iconset/iconset.html">
+
+<dom-module id="soccer-player-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            .card-content,
+            .card-actions {
+                padding: 0;
+            }
+
+            paper-card {
+                width: 100%;
+            }
+
+            .small {
+                min-height: initial !important;
+            }
+
+            .data {
+                overflow: hidden;
+            }
+
+            .dataWrapper {
+                margin: 6px;
+            }
+
+            paper-menu-button {
+                padding: 0;
+            }
+
+            paper-listbox {
+                min-width: 0;
+            }
+
+            .activePaperButton {
+                color: var(--app-primary-color);
+            }
+
+            .running {
+                color: var(--playlist-running);
+                font-style: italic;
+            }
+
+            .idle {
+                color: var(--playlist-idle);
+                font-style: italic;
+            }
+
+            .pause {
+                color: var(--playlist-pause);
+                font-style: italic;
+            }
+
+            .card-actions {
+                justify-content: flex-start;
+                padding-left: 6px;
+            }
+
+            .padding-right-6 {
+                padding-right: 6px;
+            }
+
+            paper-icon-button[aria-disabled="true"].action {
+                background-color: grey;
+                opacity: 0.5;
+            }
+
+            #rightSection {
+                background-image: url("img/player.jpg") !important;
+            }
+
+            paper-dropdown-menu {
+                top: -2px;
+            }
+
+        </style>
+        <paper-card id="design">
+            <div id="card-container" class="card-content flex flex-horizontal">
+                <div class="data flex-basis-85 flex flex-vertical">
+                    <div class="dataWrapper">
+                        <template is="dom-if" if="{{updated}}">
+                            <div class="flex flex-horizontal">
+                                <paper-input value="{{player.name}}" label="Name" class="padding-right-6"></paper-input>
+                                <paper-input value="{{player.surname}}" label="Surname"></paper-input>
+                            </div>
+                            <div  class="flex flex-horizontal">
+                                <paper-input value="{{player.shirtNumber}}" label="Shirt number" class="padding-right-6"></paper-input>
+                                <paper-input value="{{player.shirtName}}" label="Shirt name" class="padding-right-6"></paper-input>
+                                <paper-dropdown-menu id="position" label="Position">
+                                    <paper-listbox id="listBoxPosition" slot="dropdown-content" class="dropdown-content" on-iron-select="_positionSelected">
+                                        <template is="ùdom-repeat" items="[[listPosition]]" as="positionObj">
+                                            <paper-item value="{{positionObj.key}}">{{positionObj.value}}</paper-item>
+                                        </template>
+                                    </paper-listbox>
+                                </paper-dropdown-menu>
+                            </div>
+                        </template>
+                        <template is="dom-if" if="{{!updated}}">
+                            <div>{{player.name}} {{player.surname}}</div>
+                            <div>{{player.shirtNumber}} {{player.shirtName}} {{player.position}}</div>
+                        </template>
+
+                    </div>
+                </div>
+                <div class="flags flex flex-basis-15 flex-horizontal-end">
+                    <paper-menu-button ignore-select disabled="{{hideCrud}}">
+                        <paper-icon-button icon="app:more" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
+                        <paper-listbox slot="dropdown-content" multi>
+                            <paper-item  on-click="_remove">Elimina</paper-item>
+                        </paper-listbox>
+                    </paper-menu-button>
+                </div>
+            </div>
+            <div id="rightSection" class="rate-image"></div>
+        </paper-card>
+    </template>
+
+    <script>
+        class ElementSoccerPlayer extends Polymer.Element {
+
+            static get is() {
+                return 'soccer-player-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    player: {
+                        type: new PlayerSoccer(),
+                        notify:true,
+                        observer: '_playerChanged'
+                    },
+
+                    small: {
+                        type: Boolean,
+                        value: true,
+                        observer: '_smallChanged'
+                    },
+
+                    updated: {
+                        type: Boolean,
+                        value: false,
+                    },
+
+                    listPosition: {
+                        type: Object,
+                        readOnly : true,
+                        value: [
+                            {key: 'portiere', value: 'Goalkeeper'},
+                            {key: 'difensore', value: 'Defender'},
+                            {key: 'centrocampista', value: 'Midfielder'},
+                            {key: 'attaccante', value: 'Striker'}
+                        ]
+                    }
+                };
+            }
+
+            _playerChanged(newValue, oldValue) {
+                if(!newValue) {
+                    return;
+                }
+
+                let index = this.listPosition.findIndex((elemenet) => {
+                    return elemenet.key === newValue.position;
+                });
+
+                /**
+                 * TODO refactor
+                 */
+                setTimeout(
+                    () => {
+                        let ele = this.$.design.querySelector('paper-listbox#listBoxPosition');
+                        if (index > -1 && ele) {
+                            ele.selected = index;
+                        }
+                    },
+                    500
+                );
+            }
+
+            _positionSelected(evt) {
+                this.player.position = evt.detail.item.value;
+
+            }
+
+            _smallChanged(newValue) {
+
+                if (newValue) {
+                    this.$.design.classList.add("small");
+                    this.$.design.querySelector('#card-container').classList.add("small");
+                } else {
+                    this.$.design.classList.remove("small");
+                    this.$.design.querySelector('#card-container').classList.remove("small");
+                }
+            }
+
+            _remove(evt) {
+                this.dispatchEvent(new CustomEvent('wrap-remove', {detail: this.player}));
+            }
+        }
+
+        window.customElements.define(ElementSoccerPlayer.is, ElementSoccerPlayer);
+
+    </script>
+</dom-module>

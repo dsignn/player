@@ -70,7 +70,8 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
                         on-delete="_deleteEntity" 
                         on-update="_showUpdateView"
                         on-change-rotation="_updateEntity"
-                        on-change-context="_updateEntity">
+                        on-change-context="_updateEntity"
+                        on-timeupdate="_updateTime">
                     </paper-playlist>
                 </template>
             </div>
@@ -170,6 +171,14 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
     pause(evt) {
         console.log('pause');
         this._playlistService.pause(evt.detail);
+    }
+
+    /**
+     * @param {CustomEvent} evt
+     * @private
+     */
+    _updateTime(evt) {
+        this._playlistService.changeTime(evt.detail.playlist, evt.detail.time);
     }
 }
 window.customElements.define('playlist-view-list', PlaylistViewList);

@@ -155,7 +155,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             </div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
-                            <paper-menu-button ignore-select horizontal-align="right">
+                            <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                                 <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                 <paper-listbox slot="dropdown-content" multi>
                                     <paper-item on-click="_update">{{localize('modify')}}</paper-item>
@@ -366,6 +366,12 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             this.$.slider.dispatchEvent(new Event('mouseup'));
             this.$.slider.value = this.entity.currentTime;
             this.$.slider.disabled = true;
+        }
+
+        if (this.entity.status === 'running' || this.entity.status === 'pause') {
+            this.$.crudButton.disabled = true;
+        } else {
+            this.$.crudButton.disabled = false;
         }
     }
 

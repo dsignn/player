@@ -304,7 +304,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
-     * @param {Timeslot} timeslot
+     * @param {TimeslotEntity} timeslot
      */
     clearLayerButNotLast(timeslot) {
         if (!this.$[timeslot.context]) {
@@ -351,7 +351,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 query = `paper-player-timeslot[wrapper-timeslot-id="${context.serviceId}"]`;
                 break;
             case timeslot !== undefined:
-                query = `paper-player-timeslot[timeslot-id="${timeslot.id}"]:not([wrapper-timeslot-id=""])`;
+                query = `paper-player-timeslot[timeslot-id="${timeslot.id}"]:not([wrapper-timeslot-id])`;
                 break;
         }
         return this.shadowRoot.querySelector(query);
@@ -368,28 +368,13 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             return;
         }
 
-        this.startTimeslot(this._hydrateTimeslot(msg.timeslot), msg.data, msg.context);
-    }
-
-    /**
-     * @param {Timeslot} timeslot
-     * @param {Object|null} data
-     * @param context
-     */
-    startTimeslot(timeslot, data, context) {
-        let playerTimeslot = document.createElement('paper-player-timeslot');
-        // TODO refactor service injector
-        playerTimeslot.resourceService = this._resourceService;
-
-        playerTimeslot.height = this.height;
-        playerTimeslot.width  = this.width;
-        playerTimeslot.filters = timeslot.filters;
-        playerTimeslot.config(timeslot, context);
-        playerTimeslot.data = data;
-
-        this.appendTimeslot(timeslot.context, playerTimeslot);
+        /**
+         * @type {TimeslotEntity}
+         */
+        let timeslot =  this._hydrateTimeslot(msg.timeslot);
+        let element = this._createPaperPlayerTimeslot(timeslot, msg.data, msg.context);
+        this.appendTimeslot(timeslot.context, element);
         this.clearLayerButNotLast(timeslot);
-        console.log('append TM');
     }
 
     /**
@@ -454,18 +439,11 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 element.resume(msg.timeslot.currentTime);
                 break;
             default:
-                let timeslotWc = document.createElement('paper-player-timeslot');
-                timeslotWc.resourceService = this._resourceService;
-                let timeslot = this._hydrateTimeslot(msg.timeslot);
-                timeslotWc.height = this.height;
-                timeslotWc.width  = this.width;
-                timeslotWc.data = msg.data;
-                timeslotWc.config(timeslot);
-                timeslotWc.startAt = timeslot.currentTime;
-                timeslotWc.filters = timeslot.filters;
-
-                this.appendTimeslot(timeslot.context, timeslotWc);
+                let timeslot =  this._hydrateTimeslot(msg.timeslot);
+                let paperPlayerTimeslot = this._createPaperPlayerTimeslot(timeslot, msg.data, msg.context);
+                this.appendTimeslot(timeslot.context, paperPlayerTimeslot);
                 this.clearLayerButNotLast(timeslot);
+                paperPlayerTimeslot.resume(msg.timeslot.currentTime);
                 break;
         }
     }
@@ -484,11 +462,40 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         }
 
         let element = this.getTimeslotElement(msg.timeslot, msg.context);
+        let timeslot = this._hydrateTimeslot(msg.timeslot);
 
-        if (element) {
-            console.log('MONITOR CHANGE TIMESLOT', msg.timeslot);
-            element.changeTime(msg.timeslot.currentTime);
+        switch (true) {
+            case element !== null && timeslot.id === element.timeslotId:
+                // TODO pass currentTime to resume
+                element.resume(msg.timeslot.currentTime);
+                break;
+            default:
+                let paperPlayerTimeslot = this._createPaperPlayerTimeslot(timeslot, msg.data, msg.context);
+                this.appendTimeslot(timeslot.context, paperPlayerTimeslot);
+                this.clearLayerButNotLast(timeslot);
+                paperPlayerTimeslot.resume(msg.timeslot.currentTime);
+                break;
         }
+    }
+
+    /**
+     * @param timeslot
+     * @param data
+     * @param context
+     * @return HTMLElement
+     * @private
+     */
+    _createPaperPlayerTimeslot(timeslot, data, context) {
+        let paperPlayerTimeslot = document.createElement('paper-player-timeslot');
+        paperPlayerTimeslot.resourceService = this._resourceService;
+
+        paperPlayerTimeslot.height = this.height;
+        paperPlayerTimeslot.width  = this.width;
+        paperPlayerTimeslot.filters = timeslot.filters;
+        paperPlayerTimeslot.config(timeslot, context);
+        paperPlayerTimeslot.data = data;
+
+        return paperPlayerTimeslot
     }
 
     /**

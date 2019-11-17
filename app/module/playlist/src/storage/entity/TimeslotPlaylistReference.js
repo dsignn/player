@@ -16,6 +16,14 @@ class TimeslotPlaylistReference extends require("@dsign/library").storage.entity
     getCurrentTime() {
         return parseFloat(this.currentTime);
     }
+
+    /**
+     *
+     */
+    reset() {
+        this.currentTime = 0;
+
+    }
 }
 
 module.exports = TimeslotPlaylistReference;

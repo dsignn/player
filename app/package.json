@@ -19,8 +19,7 @@
     "electron": "5.0.6",
     "electron-builder": "~20.39.0",
     "polymer-cli": "^1.9.9",
-    "typescript": "^3.6.4",
-    "wct-browser-legacy": "^1.0.0"
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "@dsign/library": "github:dsignn/library",

@@ -1,0 +1,81 @@
+<dom-module id="wc-resource-soccer-cards">
+    <template>
+        <style>
+
+            .player {
+                padding: 0;
+                height: 100%;
+                width: 100%;
+                color: white;
+                font-size: 40px;
+                background-color: yellow;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+
+        </style>
+        <div class="player">
+            {{player.shirtNumber}} {{player.name}} {{player.surname}} Cards
+            <template is="dom-repeat" items="[[cards]]" as="card">
+                <div>{{card.type}} {{card.time}}</div>
+            </template>
+        </div>
+    </template>
+
+    <script>
+        class WcResourceSoccerCards extends Polymer.Element {
+
+            static get is() {
+                return 'wc-resource-soccer-cards';
+            }
+
+            static get properties() {
+                return {
+
+                    player: {
+                        type: Object,
+                        notify: true,
+                        observer: '_playerChanged',
+                    },
+
+                    cards: {
+                        type: Array,
+                        notify: true,
+                        observer: '_cardChanged',
+                    },
+                };
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _playerChanged(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                console.log('DATI PLAYER', newValue);
+            }
+
+            /**
+             * @param newValue
+             * @param oldValue
+             * @private
+             */
+            _cardChanged(newValue, oldValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                console.log('DATI CARDS', newValue);
+            }
+        }
+
+        window.customElements.define(WcResourceSoccerCards.is, WcResourceSoccerCards);
+
+    </script>
+</dom-module>

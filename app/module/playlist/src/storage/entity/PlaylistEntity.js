@@ -151,7 +151,7 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
     }
 
     /**
-     * @return {null|TimeslotEntity}
+     * @return {null|TimeslotPlaylistReference}
      */
     current() {
         let timeslot = null;
@@ -182,7 +182,7 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
     }
 
     /**
-     * @return {null|TimeslotEntity}
+     * @return {null|TimeslotPlaylistReference}
      */
     next() {
         let timeslot = null;
@@ -196,7 +196,7 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
     }
 
     /**
-     * @return {null|TimeslotEntity}
+     * @return {null|TimeslotPlaylistReference}
      */
     previous() {
         let timeslot = null;
@@ -235,6 +235,33 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
             duration = duration + parseInt(this.timeslots[cont].duration);
         }
         return duration;
+    }
+
+    /**
+     * @param {Number} second
+     * @return {PlaylistEntity}
+     */
+    setSecond(second) {
+        if(second < 1 || second > this.getDuration()) {
+            return;
+        }
+
+        let index = 0;
+
+        for (let cont = 0; this.timeslots.length > cont; cont++) {
+            let durationTimeslot = this.timeslots[cont].duration;
+            if (second > durationTimeslot) {
+                second = second - durationTimeslot;
+                index++;
+            } else {
+
+                this.current().reset();
+                this.timeslots[cont].currentTime = second;
+                this.currentIndex = index;
+                break;
+            }
+        }
+        return this;
     }
 
     /**

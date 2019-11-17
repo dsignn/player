@@ -211,7 +211,7 @@ class TimeslotService extends AbstractTimeslotService {
         }
 
         running.currentTime = second;
-        this._changeTimeTimeslot(running, second);
+        this._changeTimeTimeslot(running);
 
 
     }

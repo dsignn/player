@@ -1,0 +1,315 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="scoreboard-player.html">
+<link rel="import" href="scoreboard-match-result.html">
+<link rel="import" href="scoreboard-replacement.html">
+<link rel="import" href="card/scoreboard-cards.html">
+<link rel="import" href="goal/scoreboard-goals.html">
+<link rel="import" href="../iconset/iconset.html">
+
+<link rel="import" href="../../../../css/global-layout.html">
+<link rel="import" href="../../../../css/global-styles.html">
+
+<link rel="import" href="scoreboard-utils.html">
+
+<dom-module id="soccer-scoreboard-wc">
+    <template>
+        <style include="global-layout"></style>
+        <style include="global-style"></style>
+        <style>
+
+            soccer-scoreboar-match-result-wc {
+                --soccer-scoreboar-match-result-data: {
+                    font-size: 30px;
+                    height: 46px;
+                }
+            }
+
+            .padding-left-6 {
+                padding-left: 4px;
+            }
+
+            .padding-right-6 {
+                padding-right: 6px;
+            }
+
+            .team-title {
+                font-size: 24px;
+            }
+
+            .teamRose {
+                font-size: 20px;
+                text-align: center;
+                height: 40px;
+                margin-bottom: 6px;
+            }
+
+            .margin-bottom-200 {
+                margin-bottom: 300px;
+            }
+
+            .debug1 {
+                background-color: red;
+            }
+            .debug2 {
+                background-color: blue;
+            }
+        </style>
+
+        <div class="flex flex-horizontal margin-bottom-200">
+            <div class="home flex-basis-50 flex flex-horizontal padding-right-6">
+                <div class="flex-basis-30">
+                    <div class="teamRose">Goal</div>
+                    <soccer-scoreboard-goals-wc goals="{{match.homeTeam.goals}}" home></soccer-scoreboard-goals-wc>
+                    <div class="teamRose">Rosa</div>
+                    <template is="dom-repeat" items="[[match.homeTeam.players]]" as="player" filter="_isRostrumPlayer" home>
+                        <soccer-scoreboard-player-wc player="{{player}}" on-wrap-change-status="_changeStatus" home></soccer-scoreboard-player-wc>
+                    </template>
+                </div>
+                <div class="flex-basis-70 padding-left-6">
+                    <soccer-scoreboar-match-result-wc team="{{match.homeTeam}}" result="{{homeResult}}" home left></soccer-scoreboar-match-result-wc>
+                    <div class="teamRose">Titolari</div>
+                    <div>
+                        <template is="dom-repeat" items="[[match.homeTeam.players]]" as="player" filter="_isHolderPlayer" home>
+                            <soccer-scoreboard-player-wc player="{{player}}" on-wrap-change-status="_changeStatus" on-wrap-replace="_addReplacePlayer" home left></soccer-scoreboard-player-wc>
+                        </template>
+                    </div>
+                    <div class="teamRose">Panchina</div>
+                    <template is="dom-repeat" items="[[match.homeTeam.players]]" as="player" filter="_isBenchPlayer" home>
+                        <soccer-scoreboard-player-wc player="{{player}}" on-wrap-change-status="_changeStatus" home left></soccer-scoreboard-player-wc>
+                    </template>
+                    <div class="flex flex-horizontal">
+                        <div class="flex-basis-50 teamRose">
+                            <div class="teamRose">Cartellini</div>
+                            <soccer-scoreboard-cards-wc cards="{{match.homeTeam.cards}}" home></soccer-scoreboard-cards-wc>
+                        </div>
+                        <div class="flex-basis-50 teamRose padding-left-6">
+                            <div class="teamRose">Sostituzioni</div>
+                            <template is="dom-repeat" items="[[match.homeTeam.replacemens]]" as="replacement" home>
+                                <soccer-scoreboar-replacement-wc replacement="{{replacement}}" on-wrap-remove="_removeReplacementPlayer" home></soccer-scoreboar-replacement-wc>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="guest flex-basis-50 flex flex-horizontal padding-left-6">
+                <div class="flex-basis-70 padding-right-6">
+                    <soccer-scoreboar-match-result-wc team="{{match.guestTeam}}" result="{{guestResult}}"></soccer-scoreboar-match-result-wc>
+                    <div class="teamRose">Titolari</div>
+                    <template is="dom-repeat" items="[[match.guestTeam.players]]" as="player" filter="_isHolderPlayer" guest>
+                        <soccer-scoreboard-player-wc player="{{player}}" on-wrap-change-status="_changeStatus" on-wrap-replace="_addReplacePlayer" guest></soccer-scoreboard-player-wc>
+                    </template>
+                    <div class="teamRose">Panchina</div>
+                    <template is="dom-repeat" items="[[match.guestTeam.players]]" as="player" filter="_isBenchPlayer" guest>
+                        <soccer-scoreboard-player-wc player="{{player}}" on-wrap-change-status="_changeStatus" guest></soccer-scoreboard-player-wc>
+                    </template>
+                    <div class="flex flex-horizontal">
+                        <div class="flex-basis-50 teamRose">
+                            <div class="teamRose">Sostituzioni</div>
+                            <template is="dom-repeat" items="[[match.guestTeam.replacemens]]" as="replacement" guest>
+                                <soccer-scoreboar-replacement-wc replacement="{{replacement}}" on-wrap-remove="_removeReplacementPlayer" guest left></soccer-scoreboar-replacement-wc>
+                            </template>
+                        </div>
+                        <div class="flex-basis-50 teamRose padding-left-6">
+                            <div class="teamRose">Cartellini</div>
+                            <soccer-scoreboard-cards-wc cards="{{match.guestTeam.cards}}" guest left></soccer-scoreboard-cards-wc>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-basis-30">
+                    <div class="teamRose">Goal</div>
+                    <soccer-scoreboard-goals-wc goals="{{match.guestTeam.goals}}" guest left></soccer-scoreboard-goals-wc>
+                    <div class="teamRose">Rosa</div>
+                    <template is="dom-repeat" items="[[match.guestTeam.players]]" as="player" filter="_isRostrumPlayer" guest>
+                        <soccer-scoreboard-player-wc player="{{player}}" on-wrap-change-status="_changeStatus" guest left></soccer-scoreboard-player-wc>
+                    </template>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        class ElementSoccerScoreboard extends ElementSoccerScoreboardUtils {
+
+            static get is() {
+                return 'soccer-scoreboard-wc';
+            }
+
+            static get properties() {
+                return {
+
+                    match: {
+                        type: new MatchSoccer(),
+                        notify:true,
+                        observer: '_matchChanged'
+                    },
+
+                    homeResult: {
+                        type: Number,
+                        notify:true
+                    },
+
+                    guestResult: {
+                        type: Number,
+                        notify:true
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.match = serviceManager.get('SoccerService').getCurrentMatch();
+
+                serviceManager.get('SoccerService').eventManager.on(SoccerService.UPDATE_CURRENT_MATCH, this._updateMatch.bind(this))
+
+                serviceManager.get('SoccerService').eventManager.on('remove-goal-guest', this._changeGuestResult.bind(this));
+                serviceManager.get('SoccerService').eventManager.on('add-goal-guest', this._changeGuestResult.bind(this));
+
+                serviceManager.get('SoccerService').eventManager.on('remove-goal-home', this._changeHomeResult.bind(this));
+                serviceManager.get('SoccerService').eventManager.on('add-goal-home', this._changeHomeResult.bind(this));
+            }
+
+            /**
+             * @param {MatchSoccer} newValue
+             */
+            _matchChanged(newValue) {
+                if (!newValue) {
+                    return;
+                }
+
+                this.homeResult = this.match.getHomeTeam().getResult();
+                this.guestResult = this.match.getGuestTeam().getResult();
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _updateMatch(evt) {
+
+                this.match = evt.data;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _changeHomeResult(evt) {
+                this.homeResult = this.match.getHomeTeam().getResult();
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _changeGuestResult(evt) {
+                this.guestResult = this.match.getGuestTeam().getResult();
+            }
+
+            /**
+             * @param {PlayerSoccer} player
+             * @private
+             */
+            _isHolderPlayer(player) {
+                return player.status === PlayerSoccer.STATUS_HOLDER;
+            }
+
+            /**
+             * @param {PlayerSoccer} player
+             * @private
+             */
+            _isBenchPlayer(player) {
+                return player.status === PlayerSoccer.STATUS_BENCH;
+            }
+
+            /**
+             * @param {PlayerSoccer} player
+             * @return boolean
+             * @private
+             */
+            _isRostrumPlayer(player) {
+                return player.status === PlayerSoccer.STATUS_ROSTRUM;
+            }
+
+            /**
+             * @param {PlayerSoccer} player
+             * @return boolean
+             * @private
+             */
+            _hasCard(player) {
+                return player.cards.length > 0;
+            }
+
+            /**
+             * @param {PlayerSoccer} player
+             * @return boolean
+             * @private
+             */
+            _hasGoal(player) {
+                return player.goals.length > 0;
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _changeStatus(evt) {
+
+                let team = this._getTeamAttributeByElement(evt.target);
+                switch (evt.detail.status) {
+                    case PlayerSoccer.STATUS_ROSTRUM:
+                        this.match[team].setStatusPlayer(evt.detail.id, PlayerSoccer.STATUS_BENCH);
+                        break;
+                    case PlayerSoccer.STATUS_BENCH:
+                        this.match[team].setStatusPlayer(evt.detail.id, PlayerSoccer.STATUS_HOLDER);
+                        break;
+                    case PlayerSoccer.STATUS_HOLDER:
+                        this.match[team].setStatusPlayer(evt.detail.id, PlayerSoccer.STATUS_ROSTRUM);
+                        break;
+                }
+
+                this._updateData(team);
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _addReplacePlayer(evt) {
+
+                let team = this._getTeamAttributeByElement(evt.target);
+
+                let replacement = this.match[team].addReplacementPlayer(evt.detail.playerIn, evt.detail.playerOut, evt.detail.time);
+                if (replacement) {
+                    this._updateData(team);
+                }
+            }
+
+            /**
+             * @param evt
+             * @private
+             */
+            _removeReplacementPlayer(evt) {
+
+                let team = this._getTeamAttributeByElement(evt.target);
+
+                if (this.match[team].removeReplacementPlayer(evt.detail.replacement)) {
+                    this._updateData(team);
+                }
+
+            }
+
+            /**
+             * @private
+             */
+            _updateData(team) {
+
+                this._renderData(team);
+                serviceManager.get('SoccerService').updateCurrentMatch();
+            }
+        }
+
+        window.customElements.define(ElementSoccerScoreboard.is, ElementSoccerScoreboard);
+    </script>
+</dom-module>

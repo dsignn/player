@@ -77,6 +77,10 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
     static get properties () {
         return {
 
+            itemPerPage: {
+                value: 20
+            },
+
             /**
              * @type number
              */
