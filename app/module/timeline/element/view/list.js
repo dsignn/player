@@ -72,7 +72,8 @@ class TimelineViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
                         on-delete="_deleteEntity"
                         on-update="_showUpdateView"             
                         on-change-rotation="_updateEntity"
-                        on-change-context="_updateEntity">
+                        on-change-context="_updateEntity"   
+                        on-timeupdate="_updateTime">
                     </paper-timeline>
                 </template>
             </div>
@@ -173,10 +174,10 @@ class TimelineViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
     }
 
     /**
-     * @private
+     * @param evt
      */
-    _deleteCallback() {
-        this._notify.notify(this.localize('notify-delete'));
+    _updateTime(evt) {
+        this._timelineService.changeTime(evt.detail.timeline, evt.detail.time);
     }
 }
 window.customElements.define('timeline-view-list', TimelineViewList);

@@ -267,7 +267,7 @@ class PlaylistService extends AbstractTimeslotService {
         //this._executeBids(playlist, 'resume');
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
         timeslot.currentTime = 0;
-        this._injectDataFromPalylist(timeslot, playlist);
+        this._injectDataFromPlaylist(timeslot, playlist);
         this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
         this.getEventManager().emit(PlaylistService.PLAY, playlist);
     }
@@ -289,7 +289,7 @@ class PlaylistService extends AbstractTimeslotService {
         playlist.status = PlaylistEntity.RUNNING;
 
         timeslot.currentTime = 0;
-        this._injectDataFromPalylist(timeslot, playlist);
+        this._injectDataFromPlaylist(timeslot, playlist);
         this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('PLAY playlist EVT')})
@@ -311,7 +311,7 @@ class PlaylistService extends AbstractTimeslotService {
 
         this.setRunningPlaylist(playlist);
         playlist.status = PlaylistEntity.RUNNING;
-        this._injectDataFromPalylist(timeslot, playlist);
+        this._injectDataFromPlaylist(timeslot, playlist);
         this._send(PlaylistService.RESUME, playlist, timeslot, dataTimeslot);
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('RESUME playlist EVT')})
@@ -351,7 +351,7 @@ class PlaylistService extends AbstractTimeslotService {
      */
     _changeTimeTimeslot(playlist, timeslot, dataTimeslot) {
 
-        this._injectDataFromPalylist(timeslot, playlist);
+        this._injectDataFromPlaylist(timeslot, playlist);
         this._send(PlaylistService.CHANGE_TIME, playlist, timeslot, dataTimeslot);
         this.playlistStorage.update(playlist)
             .then((data) => { console.log('CHANGE_TIME playlist EVT')})
@@ -433,7 +433,7 @@ class PlaylistService extends AbstractTimeslotService {
      * @param {PlaylistEntity} playlist
      * @private
      */
-    _injectDataFromPalylist(timeslot, playlist) {
+    _injectDataFromPlaylist(timeslot, playlist) {
         timeslot.enableAudio = playlist.enableAudio;
         timeslot.context = playlist.context;
     }

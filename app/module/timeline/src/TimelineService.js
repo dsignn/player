@@ -73,7 +73,7 @@ class TimelineService extends AbstractTimeslotService {
      * @return boolean
      * @private
      */
-    _hasRunningTimeline(timeline) {
+    isRunning(timeline) {
         return !!this.runningTimelines[timeline.id];
     }
 
@@ -83,7 +83,7 @@ class TimelineService extends AbstractTimeslotService {
      */
     getRunningTimeline(timeline) {
         let runningTimeline = null;
-        if (this._hasRunningTimeline(timeline)) {
+        if (this.isRunning(timeline)) {
             runningTimeline = this.runningTimelines[timeline.id];
         }
         return runningTimeline;
@@ -193,7 +193,7 @@ class TimelineService extends AbstractTimeslotService {
             for (let cont = 0; timeslots.length > cont; cont++) {
                 // TODO inject data
                 timeslots[cont].currentTime = delay;
-                timeslots[cont].context = timeline.context;
+                this._injectDataFromTimeline(timeslots[cont], timeline);
                 let dataTimeslot = await this._synchExtractTimeslotData(timeslots[cont]);
                 this._send(type, timeline, timeslots[cont], dataTimeslot);
             }
@@ -201,8 +201,8 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
-     * @param {Timeslot} timeslot
+     * @param {TimelineEntity} timeline
+     * @param {TimelineEntity} timeslot
      * @private
      */
     _playTimeslot(timeline, timeslot) {
@@ -210,7 +210,7 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      * @private
      */
     _stopTimeline(timeline) {
@@ -226,7 +226,7 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      * @private
      */
     _pauseTimeline(timeline) {
@@ -241,21 +241,137 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      * @private
      */
-    _resumeTimeline(timeline) {
+    _restoreTimeline(timeline, event) {
 
         timeline.status = TimeslotEntity.RUNNING;
         let item = timeline.getPreviousItem(timeline.timer);
         // TODO control time timeslot in timeline
-        this._runTimelineItem(TimelineService.RESUME, timeline, item, item.time.getDiffSecond(timeline.timer));
+        this._runTimelineItem(event, timeline, item, item.time.getDiffSecond(timeline.timer));
         this._addRunningTimeline(timeline);
 
         this.timelineStorage.update(timeline)
             .then((data) => {
                 //console.log('RESUME timeline')
             }).catch((err) => { console.error(err)});
+    }
+
+    /**
+     * @param {TimelineEntity} timeline
+     * @return {TimelineService}
+     */
+    async play(timeline) {
+        if (this.isRunning(timeline)) {
+            return;
+        }
+
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+        timeline.status = TimelineEntity.TO_RUN;
+        if (this.isRunning(timeline) === false) {
+            this._addRunningTimeline(timeline);
+        }
+        this._executeBids(bindTimelines, 'play');
+        return this;
+    }
+
+    /**
+     * @param {TimelineEntity} timeline
+     * @return {TimelineService}
+     */
+    async stop(timeline) {
+
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+        this._stopTimeline(timeline);
+        this._executeBids(bindTimelines, 'stop');
+        return this;
+    }
+
+    /**
+     * @param {TimelineEntity} timeline
+     * @return {TimelineService}
+     */
+    async pause(timeline) {
+        if (!this.isRunning(timeline)) {
+            return;
+        }
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+        this._pauseTimeline(timeline);
+        this._executeBids(bindTimelines, 'pause');
+        return this;
+    }
+
+    /**
+     * @param {TimelineEntity} timeline
+     * @return {TimelineService}
+     */
+    async resume(timeline) {
+        if (this.isRunning(timeline)) {
+            return;
+        }
+
+        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+        this._restoreTimeline(timeline, TimelineService.RESUME);
+        this._executeBids(bindTimelines, 'resume');
+        return this;
+    }
+
+    /**
+     * @param {TimelineEntity} timeline
+     * @param {second} second
+     * @returns {Promise}
+     */
+    async changeTime(timeline, second) {
+
+
+        if (!this.isRunning(timeline)) {
+            return;
+        }
+
+
+        let running = this.getRunningTimeline(timeline);
+
+        if (!running) {
+            console.warn('Timeline not running', timeline, second);
+            return;
+        }
+
+        let timeToShift = new (require("@dsign/library").date.Time)();
+        timeToShift.sumSeconds(second);
+        if (running.time.getDuration() <= timeToShift.getDuration()) {
+            console.warn('Second too long', timeline, second);
+            return;
+        }
+
+        running.timer = timeToShift;
+        this._restoreTimeline(timeline, TimelineService.CHANGE_TIME);
+    }
+
+
+    /**
+     * @param {Array} references
+     * @return {Promise}
+     */
+    getTimelineFromArrayReference(references) {
+        let timelines = [];
+        for (let cont = 0; references.length > cont; cont++) {
+            timelines.push(this.timelineStorage.get(references[cont].id));
+        }
+        return Promise.all(timelines);
+    }
+
+    /**
+     * @param {Array} timelines
+     * @param {String} method
+     * @private
+     */
+    _executeBids(timelines, method) {
+        for (let cont = 0; timelines.length > cont; cont++) {
+            timelines[cont].isBind = true;
+            this[method](timelines[cont])
+                .catch((err) => {console.error('Error bind timeline service', err)});
+        }
     }
 
     /**
@@ -286,88 +402,13 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
-     * @return {TimelineService}
-     */
-    async play(timeline) {
-        if (this._hasRunningTimeline(timeline)) {
-            return;
-        }
-
-        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-        timeline.status = TimelineEntity.TO_RUN;
-        if (this._hasRunningTimeline(timeline) === false) {
-            this._addRunningTimeline(timeline);
-        }
-        this._executeBids(bindTimelines, 'play');
-        return this;
-    }
-
-    /**
-     * @param {Timeline} timeline
-     * @return {TimelineService}
-     */
-    async stop(timeline) {
-
-        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-        this._stopTimeline(timeline);
-        this._executeBids(bindTimelines, 'stop');
-        return this;
-    }
-
-    /**
-     * @param {Timeline} timeline
-     * @return {TimelineService}
-     */
-    async pause(timeline) {
-        if (!this._hasRunningTimeline(timeline)) {
-            return;
-        }
-        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-        this._pauseTimeline(timeline);
-        this._executeBids(bindTimelines, 'pause');
-        return this;
-    }
-
-    /**
-     * @param {Timeline} timeline
-     * @return {TimelineService}
-     */
-    async resume(timeline) {
-        if (this._hasRunningTimeline(timeline)) {
-            return;
-        }
-
-        let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-        this._resumeTimeline(timeline);
-        this._executeBids(bindTimelines, 'resume');
-        return this;
-    }
-
-
-    /**
-     * @param {Array} references
-     * @return {Promise}
-     */
-    getTimelineFromArrayReference(references) {
-        let timelines = [];
-        for (let cont = 0; references.length > cont; cont++) {
-            timelines.push(this.timelineStorage.get(references[cont].id));
-        }
-        return Promise.all(timelines);
-    }
-
-    /**
-     * @param {Array} timelines
-     * @param {String} method
+     * @param {TimeslotEntity} timeslot
+     * @param {TimelineEntity} timeline
      * @private
      */
-    _executeBids(timelines, method) {
-        for (let cont = 0; timelines.length > cont; cont++) {
-            timelines[cont].isBind = true;
-            this[method](timelines[cont])
-                .catch((err) => {console.error('Error bind timeline service', err)});
-        }
+    _injectDataFromTimeline(timeslot, timeline) {
+        timeslot.enableAudio = timeline.enableAudio;
+        timeslot.context = timeline.context;
     }
 }
 

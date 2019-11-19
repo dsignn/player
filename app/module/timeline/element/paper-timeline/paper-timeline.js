@@ -4,6 +4,7 @@ import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin"
 import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
 import {flexStyle} from '../../../../style/layout-style';
 import '@polymer/paper-card/paper-card';
+import '@polymer/paper-slider/paper-slider';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-menu-button/paper-menu-button';
@@ -124,7 +125,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             </div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
-                            <paper-menu-button ignore-select horizontal-align="right">
+                            <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                                 <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                 <paper-listbox slot="dropdown-content" multi>
                                     <paper-item on-click="_update">{{localize('modify')}}</paper-item>
@@ -133,6 +134,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             </paper-menu-button>
                         </div>
                     </div>
+                    <paper-slider id="slider" pin on-mousedown="sliderDown" on-mouseup="sliderUp" on-mouseout="sliderOut" disabled></paper-slider>
                     <div class="content-action">
                         <paper-icon-button id="play" icon="timeslot:play" on-click="_play" class="circle-small action"></paper-icon-button>
                         <paper-tooltip for="play" position="bottom">{{localize('play-timeline')}}</paper-tooltip>
@@ -236,6 +238,14 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             },
 
             /**
+             * @type boolean
+             */
+            excludeSlider: {
+                readOnly: true,
+                value: false
+            },
+
+            /**
              * @type object
              */
             services : {
@@ -247,6 +257,44 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 }
             }
         };
+    }
+
+    /**
+     * @param {Event} evt
+     */
+    sliderDown(evt) {
+        this._setExcludeSlider(true);
+    }
+
+    /**
+     * @param {Event} evt
+     */
+    sliderUp(evt) {
+        // TODO refactor understand if there is better event to attach
+        setTimeout(() => {
+                if (this.entity.status === 'running' ) {
+                    this.dispatchEvent(new CustomEvent(
+                        'timeupdate',
+                        {
+                            detail:  {
+                                timeline: this.entity,
+                                time: this.$.slider.value
+                            }
+                        }
+                        )
+                    )
+                }
+                this._setExcludeSlider(false);
+            },
+            200
+        )
+    }
+
+    /**
+     * @param evt
+     */
+    sliderOut(evt) {
+        this._setExcludeSlider(false);
     }
 
     /**
@@ -262,6 +310,25 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         this._updateRotationHtml();
         this._updateTimer();
         this._updateActionHtml();
+
+        this.$.slider.max = this.entity.time.getDuration();
+        this.$.slider.disabled = this.entity.status === 'running' ? false : true;
+
+        if (!this.excludeSlider) {
+            this.$.slider.value = this.entity.timer.getDuration();
+        }
+
+        if (this.entity.status === 'idle') {
+            this.$.slider.dispatchEvent(new Event('mouseup'));
+            this.$.slider.value = this.entity.timer.getDuration();
+            this.$.slider.disabled = true;
+        }
+
+        if (this.entity.status === 'running' || this.entity.status === 'pause') {
+            this.$.crudButton.disabled = true;
+        } else {
+            this.$.crudButton.disabled = false;
+        }
     }
 
     /**
@@ -270,7 +337,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      * @private
      */
     _remove(evt) {
-        this.dispatchEvent(new CustomEvent('remove', {detail: this.timeline}));
+        this.dispatchEvent(new CustomEvent('remove', {detail: this.entity}));
     }
 
     /**
@@ -278,7 +345,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      * @private
      */
     _update(evt) {
-        this.dispatchEvent(new CustomEvent('update-view', {detail: this.timeline}));
+        this.dispatchEvent(new CustomEvent('update-view', {detail: this.entity}));
     }
 
     /**
@@ -287,7 +354,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _tapContext(evt) {
         this.entity.context = this.entity.context === 'standard' || !this.entity.context ? 'overlay' : 'standard';
-        this.dispatchEvent(new CustomEvent('change-context', {detail: this.timeline}));
+        this.dispatchEvent(new CustomEvent('change-context', {detail: this.entity}));
         this._updateContextHtml();
     }
 
@@ -302,7 +369,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
 
         this.entity.rotation = index === 0 ? PaperTimeline.LIST_ROTATION[0] : PaperTimeline.LIST_ROTATION[1];
 
-        this.dispatchEvent(new CustomEvent('change-rotation', {detail: this.timeline}));
+        this.dispatchEvent(new CustomEvent('change-rotation', {detail: this.entity}));
         this._updateRotationHtml();
     }
 

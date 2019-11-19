@@ -406,7 +406,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
      */
     _pauseTimeslot(evt, msg) {
         // The timeslot is not associate to thi monitor
-        if ( msg.timeslot !== undefined && this.identifier !== msg.timeslot.monitorContainerReference.id) {
+        if ( msg.timeslot !== null && this.identifier !== msg.timeslot.monitorContainerReference.id) {
             return;
         }
 

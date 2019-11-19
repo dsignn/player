@@ -22,7 +22,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "@dsign/library": "github:dsignn/library",
+    "@dsign/library": "github:dsignn/library#master",
     "@fluidnext-polymer/paper-autocomplete": "^3.0.2",
     "@fluidnext-polymer/paper-chip": "fluidnext/paper-chip#develop",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
