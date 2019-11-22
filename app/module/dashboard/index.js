@@ -137,11 +137,7 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
                 paper-button#addButton[disabled] {
                     background-color: transparent;
                 }
-                
-                paper-grid {
-                 background-color: red;
-                }
-                
+                           
                 .button-container {
                     display: flex;
                     flex-direction: column;

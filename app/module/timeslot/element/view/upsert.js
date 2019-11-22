@@ -319,8 +319,8 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
     _selectBindTimeslot(evt) {
 
         let reference = new (require("@dsign/library").storage.entity.EntityReference)();
-        reference.setCollection('monitor');
-        reference.setId(this._monitorService.getEnableMonitor().getId());
+        reference.setCollection('timeslot');
+        reference.setId(evt.detail.value.id);
         reference.name = evt.detail.value.name;
 
         this.push('entity.binds', reference);

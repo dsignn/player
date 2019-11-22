@@ -381,7 +381,6 @@ class Application {
 
         let express = require('express');
         this.api = express();
-        console.log(this.api);
 
         this.api.get('/timeslot', (req, res) => res.send('Hello World!'));
 
@@ -430,7 +429,7 @@ class Application {
         let newMonitorContainer = this.getMonitorContainerEntityHydrator().hydrate(monitorContainerData);
         let newMonitors = newMonitorContainer.getMonitors();
         let index;
-        console.log( monitorContainerData);
+
         let oldMonitors = this.monitorsContainerEntity.getMonitors();
 
         for (let cont = 0; this.monitorsContainerEntity.monitors.length > cont; cont++) {

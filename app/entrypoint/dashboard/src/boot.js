@@ -143,7 +143,8 @@ container.set('MongoDb', new MongoDb(
         config.storage.adapter.mongo.uri,
         config.storage.adapter.mongo.port,
 {
-            useUnifiedTopology: true
+            useUnifiedTopology: true,
+            connectTimeoutMS: 60000,
         }
     )
 );

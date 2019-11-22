@@ -13,13 +13,10 @@ class MongoTimeslotAdapter extends require("@dsign/library").storage.adapter.mon
 
                 switch (property) {
                     case 'tags':
-                        if (Array.isArray(filter[property])) {
-                            filter[property] = filter[property].join('|')
-                        }
-                        returnFilter[property] =  {$regex: filter[property], $options: "$i"};
+                        returnFilter[property] = {$in: filter[property]};
                         break;
                     case 'name':
-                        returnFilter[property] =  {$regex: filter[property], $options: "$i"};
+                        returnFilter[property] = {$regex: filter[property], $options: "$i"};
                         break;
                 }
             }

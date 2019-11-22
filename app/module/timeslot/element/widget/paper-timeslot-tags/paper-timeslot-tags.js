@@ -13,7 +13,13 @@ export class PaperTimeslotTags extends StorageListMixin(LocalizeMixin(ServiceInj
     static get template() {
         return html`
             <template is="dom-repeat" items="[[entities]]" as="timeslot" sort="fromStatus">
-                <paper-timeslot entity="{{timeslot}}" on-play="play" on-resume="resume" on-stop="stop" on-pause="pause" hide-crud remove-crud>
+                <paper-timeslot entity="{{timeslot}}" 
+                    on-play="play" 
+                    on-resume="resume"
+                    on-stop="stop" 
+                    on-pause="pause" 
+                    hide-crud 
+                    remove-crud>
                 </paper-timeslot>
             </template>
         `;
@@ -27,6 +33,13 @@ export class PaperTimeslotTags extends StorageListMixin(LocalizeMixin(ServiceInj
              */
             data : {
                 observer: "_changedData"
+            },
+
+            /**
+             *
+             */
+            _storage : {
+                observer: "_changedStorage"
             },
 
             services : {
@@ -49,9 +62,70 @@ export class PaperTimeslotTags extends StorageListMixin(LocalizeMixin(ServiceInj
         };
     }
 
+    static get observers() {
+        return [
+            // Observer method name, followed by a list of dependencies, in parenthesis
+            'observeList(_storage, filter)'
+        ]
+    }
+
     constructor() {
         super();
         this.resources = lang;
+    }
+
+    /**
+     * @param newValue
+     * @private
+     */
+    _changedStorage(newValue) {
+
+        if (!newValue) {
+            return;
+        }
+
+        // TODO event only from user interface
+    }
+
+    /**
+     * @param newValue
+     * @private
+     */
+    _changedData(newValue) {
+
+        if (!newValue) {
+            return;
+        }
+
+        this.filter = {
+            'tags' : newValue
+        };
+    }
+
+    /**
+     * @param {StorageInterface} storage
+     * @param {Array} filter
+     */
+    observeList(storage, filter) {
+
+        if (!storage || !filter) {
+            return;
+        }
+
+        this._updateList();
+    }
+
+    /**
+     * @private
+     */
+    _updateList() {
+        this._storage.getAll(this.filter)
+            .then((timeslots) => {
+                this.entities = timeslots;
+            })
+            .catch((error) => {
+                console.error(error)
+            })
     }
 
     /**
@@ -71,20 +145,6 @@ export class PaperTimeslotTags extends StorageListMixin(LocalizeMixin(ServiceInj
         return compare
     }
 
-    /**
-     * @param newValue
-     * @private
-     */
-    _changedData(newValue) {
-
-        if (!newValue) {
-            return;
-        }
-
-        this.filter = {
-            'tags' : newValue
-        };
-    }
 
     /**
      * @return {string}

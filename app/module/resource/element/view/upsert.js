@@ -59,7 +59,7 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
              */
             entity: {
                 observer: '_changeEntity',
-                value: {type: "text/html"}
+                value: {type: "text/html", tags: []}
             },
 
             /**
@@ -146,10 +146,12 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
 
         let method = this.getStorageUpsertMethod();
         let name = this.$.name.value;
+        let tags = this.entity.tags;
         let toHydrate =  method === 'update' ? this.entity : undefined;
 
         this.entity = this._resourceHydrator.hydrate(this.$.fileUpload.files[0], toHydrate);
         this.entity.name = name;
+        this.entity.tags = tags;
         this.entity.resourceToImport = this.$.fileUpload.files[0];
 
         this._storage[method](this.entity)

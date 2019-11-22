@@ -26,30 +26,35 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                 @media (max-width: 500px) {
                     paper-timeslot {
                         flex-basis: 100%;
+                         width: 100%;
                     }
                 }
     
                 @media (min-width: 501px) and (max-width: 900px) {
                     paper-timeslot {
                         flex-basis: 50%;
+                        width: 50%;
                     }
                 }
     
                 @media (min-width: 901px) and (max-width: 1200px) {
                     paper-timeslot {
                         flex-basis: 33.3%;
+                         width: 33.3%;
                     }
                 }
     
                 @media (min-width: 1201px) and (max-width: 1500px) {
                     paper-timeslot {
                         flex-basis: 25%;
+                         width: 25%;
                     }
                 }
     
                 @media (min-width: 1501px) and (max-width: 1919px) {
                     paper-timeslot {
                         flex-basis: 20%;
+                         width: 20%;
                     }
                 }
     

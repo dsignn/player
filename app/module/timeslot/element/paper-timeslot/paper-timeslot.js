@@ -147,12 +147,10 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 <div id="right-section">
                     <div class="top">
                         <div id="content">
-                            <div class="dataWrapper">
-                                <div class="nameTimeslot">{{entity.name}}</div>
-                                <div id="status">{{status}}</div>
-                                <div class="flex flex-horizontal-end">{{entity.monitorContainerReference.name}}</div>
-                                <div class="flex flex-horizontal-end">{{currentTime}} / {{entity.duration}} sec</div>
-                            </div>
+                           <div class="nameTimeslot">{{entity.name}}</div>
+                            <div id="status">{{status}}</div>
+                            <div class="flex flex-horizontal-end">{{entity.monitorContainerReference.name}}</div>
+                            <div class="flex flex-horizontal-end">{{currentTime}} / {{entity.duration}} sec</div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
                             <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
