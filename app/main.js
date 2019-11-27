@@ -325,7 +325,7 @@ class Application {
             .enableExtractProperty('polygonPoints')
             .enableExtractProperty('monitors')
             .enableExtractProperty('alwaysOnTop')
-            .enableExtractProperty('defaultTimeslotId');
+            .enableExtractProperty('defaultTimeslotReference');
 
         monitorEntityHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
@@ -337,7 +337,7 @@ class Application {
             .enableHydrateProperty('polygonPoints')
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('alwaysOnTop')
-            .enableHydrateProperty('defaultTimeslotId');
+            .enableHydrateProperty('defaultTimeslotReference');
 
         monitorEntityHydrator.addValueStrategy('width', new NumberStrategy())
             .addValueStrategy('height', new NumberStrategy())

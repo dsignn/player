@@ -52,9 +52,9 @@ class MonitorEntity extends require("@dsign/library").storage.entity.EntityIdent
         this.monitors = [];
 
         /**
-         * @type {string|null}
+         * @type {object}
          */
-        this.defaultTimeslotId = null;
+        this.defaultTimeslotReference = {};
     }
 
     /**

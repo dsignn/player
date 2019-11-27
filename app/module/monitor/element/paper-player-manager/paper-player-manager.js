@@ -95,7 +95,7 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
     _appendPaperPlayer(node, monitor) {
 
         let paperPlayerElement = document.createElement("paper-player");
-        paperPlayerElement.defaultTimeslotId = monitor.defaultTimeslotId ? monitor.defaultTimeslotId : undefined;
+        paperPlayerElement.defaultTimeslotReference = monitor.defaultTimeslotReference ? monitor.defaultTimeslotReference : null;
         paperPlayerElement.identifier = monitor.id;
         paperPlayerElement.setStyles(monitor);
 

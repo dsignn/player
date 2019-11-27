@@ -8,8 +8,11 @@ import '@polymer/paper-item/paper-item';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-toggle-button/paper-toggle-button';
+import '@fluidnext-polymer/paper-input-color/paper-input-color'
+import '@fluidnext-polymer/paper-input-color/icons/paper-input-color-icons'
 import '../../../../elements/paper-input-points/paper-input-points';
 import { flexStyle } from '../../../../style/layout-style';
+import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/language';
 
 /**
@@ -31,7 +34,9 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                     display: flex;
                 }
                 
-                paper-input {
+                paper-input,
+                paper-autocomplete,
+                paper-input-color {
                     padding-left: 6px;
                 }
                 
@@ -41,13 +46,17 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 
                 paper-input[name="height"],
                 paper-input[name="width"] {
+                    width: 70px;
+                }
+             
+                paper-input[name="back"],   
+                paper-input[name="offsetX"],
+                paper-input[name="offsetY"] {
                     width: 80px;
                 }
                 
-                paper-input[name="offsetX"],
-                paper-input[name="offsetY"],
-                paper-input[name="backgroundColor"] {
-                    width: 90px;
+                paper-input-color[name="backgroundColor"] {
+                    width: 120px;
                 }
                 
                 paper-menu-button {
@@ -81,11 +90,29 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 <div class="layout vertical flex-1">
                     <div class="layout horizontal">
                         <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}"></paper-input>
+                        <paper-autocomplete
+                            id="defaultTimeslot"
+                            label="{{localize('default-timeslot')}}"
+                            text-property="name"
+                            value-property="name"
+                            remote-source
+                            on-autocomplete-change="_defaultChanged"
+                            on-autocomplete-selected="_selectDefault"
+                            on-autocomplete-reset-blur="_removeDefault">
+                                <template slot="autocomplete-custom-template">
+                                    ${autocompleteStyle}
+                                    <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                         <div index="[[index]]">
+                                            <div class="service-name">[[item.name]]</div>
+                                        </div>
+                                    </paper-item>
+                                </template>
+                        </paper-autocomplete>
                         <paper-input name="height" label="{{localize('height')}}" type="number" value="{{entity.height}}" required></paper-input>
                         <paper-input name="width" label="{{localize('width')}}" type="number" value="{{entity.width}}"  required></paper-input>
                         <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" value="{{entity.offsetX}}" required></paper-input>
                         <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" value="{{entity.offsetY}}" required></paper-input>
-                        <paper-input name="backgroundColor" label="{{localize('bg-color')}}" type="color" value="{{entity.backgroundColor}}" required></paper-input>
+                        <paper-input-color name="backgroundColor" label="{{localize('bg-color')}}" value="{{entity.backgroundColor}}"></paper-input-color>
                     </div>
                    <div>
                         <paper-input-points position="horizontal" value="{{entity.polygonPoints}}" </paper-input-points>
@@ -122,7 +149,13 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
              */
             services : {
                 value : {
-                    _localizeService: 'Localize'
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        _timeslotStorage: "TimeslotStorage"
+                    },
+                    EntityContainerAggregate: {
+                        _entityReference : "EntityReference"
+                    }
                 }
             },
 
@@ -142,6 +175,14 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 observer: 'changeMonitor'
             },
 
+            _timeslotStorage: {
+                readOnly: true
+            },
+
+            _entityReference: {
+                readOnly: true
+            },
+
             /**
              * @type boolean
              */
@@ -154,6 +195,45 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
     }
 
     /**
+     * @param evt
+     * @private
+     */
+    _defaultChanged(evt) {
+        this._timeslotStorage
+            .getAll({surname: evt.detail.value})
+            .then(
+                (data) => {
+                    evt.detail.target.suggestions(data);
+                }
+            );
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _selectDefault(evt) {
+
+        let entityReference = new this._entityReference.constructor();
+
+        entityReference.setId(evt.detail.value.id);
+        entityReference.setCollection('timeslot');
+        entityReference.name = evt.detail.value.name;
+
+        console.log(entityReference);
+        this.entity.defaultTimeslotReference = entityReference;
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _removeDefault(evt) {
+
+        this.set('entity.defaultTimeslotReference', {});
+    }
+
+    /**
      * @param newValue
      */
     changeMonitor(newValue) {
@@ -162,6 +242,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         }
 
         this.identifier = newValue.id;
+        this.$.defaultTimeslot.value = newValue.defaultTimeslotReference
     }
 
     /**

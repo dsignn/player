@@ -291,6 +291,9 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .addValueStrategy('polygonPoints',  new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)(
                 MonitorConfig.getPointHydrator(container)
             ))
+            .addValueStrategy('defaultTimeslotReference',  new (require("@dsign/library").hydrator.strategy.value.HydratorStrategy)(
+                MonitorConfig.getTimeslotReferenceHydrator(container)
+            ))
             .addValueStrategy('alwaysOnTop', new (require("@dsign/library").hydrator.strategy.value.HybridStrategy)(
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.BOOLEAN_TYPE,
                 require("@dsign/library").hydrator.strategy.value.HybridStrategy.NUMBER_TYPE
@@ -310,7 +313,8 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .enableExtractProperty('polygonPoints')
             .enableExtractProperty('monitors')
             .enableExtractProperty('alwaysOnTop')
-            .enableExtractProperty('defaultTimeslotId');
+            .enableExtractProperty('defaultTimeslotReference');
+
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
@@ -322,7 +326,7 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
             .enableHydrateProperty('polygonPoints')
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('alwaysOnTop')
-            .enableHydrateProperty('defaultTimeslotId');
+            .enableHydrateProperty('defaultTimeslotReference');
 
         return hydrator;
     }
@@ -366,6 +370,29 @@ class MonitorConfig extends require("@dsign/library").container.ContainerAware {
 
         hydrator.enableExtractProperty('x')
             .enableExtractProperty('y');
+
+        return hydrator;
+    }
+
+
+    /**
+     * @param container
+     * @return {PropertyHydrator}
+     * TODO monitor confi is loaded before
+     */
+    static getTimeslotReferenceHydrator(container) {
+
+        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name');
 
         return hydrator;
     }

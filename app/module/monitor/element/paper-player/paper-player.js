@@ -82,9 +82,10 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type string
              */
-            defaultTimeslotId: {
-                type: String,
-                notify : true
+            defaultTimeslotReference: {
+                type: Object,
+                notify : true,
+                value: null
             },
 
             /**
@@ -198,7 +199,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
     static get observers() {
         return [
-            '_changeDefaultTimeslotId(defaultTimeslotId, _timeslotStorage)',
+            '_changeDefaultTimeslot(defaultTimeslotReference, _timeslotStorage)',
         ]
     }
 
@@ -320,6 +321,20 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 }.bind(childrenNodes[cont]),
                 300
             );
+        }
+    }
+
+    /**
+     * @param layer
+     */
+    clearLayer(layer) {
+        if (!this.$[layer]) {
+            return;
+        }
+
+        let childrenNodes = this.$[layer].childNodes;
+        for (let cont = 0; childrenNodes.length > cont; cont--) {
+            childrenNodes[cont].remove();
         }
     }
 
@@ -499,20 +514,23 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
-     * @param newValue
-     * @param oldValue
+     * @param defaultTimeslotReference
+     * @param storage
      * @private
      */
-    _changeDefaultTimeslotId(defaultTimeslotId, storage) {
+    _changeDefaultTimeslot(defaultTimeslotReference, storage) {
 
-        if (!defaultTimeslotId || !storage) {
+        if (!defaultTimeslotReference || !defaultTimeslotReference.id || !storage) {
             return;
+        } else {
+            this.clearLayer('backgrond');
         }
 
-        storage.get(defaultTimeslotId)
+        storage.get(defaultTimeslotReference.id)
             .then((timeslot) => {
-                timeslot.context = 'default';
-                this.startTimeslot(timeslot);
+                // TODO how retrive data?
+                let element = this._createPaperPlayerTimeslot(timeslot, {}, 'backgrond');
+                this.appendTimeslot('backgrond', element);
             });
 
     }
@@ -552,12 +570,10 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         }
         setTimeout(
             () => {
-                this.$.container.style.backgroundColor = newValue === '#ffffff' ? 'transparent' : newValue
+                this.$.container.style.backgroundColor = !!newValue ? newValue : 'transparent';
             },
             500
         );
-        // TODO migliore il color picker per gestire la trasparenza
-
     }
 
     /**

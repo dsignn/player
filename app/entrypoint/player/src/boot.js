@@ -5,6 +5,7 @@ import {Module} from "@dsign/library/src/core/module/Module";
 import {DexieManager} from "@dsign/library/src/storage/adapter/dexie/index";
 import {WebComponent} from "@dsign/library/src/core/webcomponent/WebComponent";
 import {HydratorStrategy, PathStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
+import {MongoDb} from "@dsign/library/src/storage/adapter/mongo";
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 const fs = require('fs');
@@ -98,6 +99,17 @@ container.set('Config', config);
 //container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 
+
+container.set('Timer',
+    function (sm) {
+        const Timer = require('easytimer.js').Timer;
+
+        let timer =  new Timer();
+        timer.start({precision: 'secondTenths'});
+        return timer;
+
+    });
+
 /***********************************************************************************************************************
                                                 APPLICATION SERVICE
  **********************************************************************************************************************/
@@ -115,19 +127,32 @@ for (let cont = 0; modules.length > cont; cont++) {
     modulesHydrate.push(hydratorModule.hydrate(modules[cont]));
 }
 
+container.set('MongoDb', new MongoDb(
+    config.storage.adapter.mongo.name,
+    config.storage.adapter.mongo.uri,
+    config.storage.adapter.mongo.port,
+    {
+        useUnifiedTopology: true,
+        connectTimeoutMS: 60000,
+    }
+    )
+);
+
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     (evt) => {
 
-        let appl = document.createElement('paper-player-manager');
+        container.get('MongoDb')
+            .getEventManager()
+            .on(
+                MongoDb.READY_CONNECTION,
+                (connection) =>  {
+                    let appl = document.createElement('paper-player-manager');
+                    document.body.appendChild(appl);
+                }
+            );
 
-        if (document.body) {
-            document.body.appendChild(appl);
-        } else {
-            window.addEventListener('load', (event) => {
-                document.body.appendChild(appl);
-            });
-        }
+        container.get('MongoDb').connect();
     }
 );
 
