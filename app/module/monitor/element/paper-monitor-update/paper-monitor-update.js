@@ -200,7 +200,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      */
     _defaultChanged(evt) {
         this._timeslotStorage
-            .getAll({surname: evt.detail.value})
+            .getAll({name: evt.detail.value.text})
             .then(
                 (data) => {
                     evt.detail.target.suggestions(data);

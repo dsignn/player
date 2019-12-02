@@ -36,7 +36,7 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
                     width: 100%;
                     background-position: center;
                     background-repeat: no-repeat;
-                    background-size: cover;
+                    background-size: contain;
                 }
     
                 video {

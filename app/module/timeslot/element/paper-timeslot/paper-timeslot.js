@@ -57,7 +57,8 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 
                 
                 #content {
-                    @apply --layout-flex;
+                    display: grid;
+                    width: 100%;
                     padding: 4px;
                     word-break: break-all;
                     overflow: hidden;
