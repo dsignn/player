@@ -135,10 +135,13 @@ export class PaperTimeslotTags extends StorageListMixin(LocalizeMixin(ServiceInj
     fromStatus(ele1, ele2) {
         let compare = -1;
         switch (true) {
-            case ele1.status === "idle" && ele1 !== ele2:
+            case ele1.status === "idle" && ele1 !== ele2 :
                 compare =  1;
                 break;
             case ele1.status === "pause" && ele1 !== ele2 && ele2.status !== "idle":
+                compare =  1;
+                break;
+            case ele1.name < ele2.name :
                 compare =  1;
                 break;
         }

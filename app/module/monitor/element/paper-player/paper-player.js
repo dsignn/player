@@ -319,7 +319,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 function() {
                     this.remove();
                 }.bind(childrenNodes[cont]),
-                300
+                50
             );
         }
     }

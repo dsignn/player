@@ -313,8 +313,7 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
         let element = document.createElement('div');
 
         element.classList.add("image");
-        let url = this.resourceService.getResourcePath(resource);
-        element.style.backgroundImage = `url('${url}')`;
+        element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
 
         let container = this._createResourceDiv();
         container.appendChild(element);
@@ -331,7 +330,7 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
     _createVideo(resource) {
 
         let element = document.createElement('video');
-        element.src = this.resourceService.getResourcePath(resource);
+        element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
         element.autoplay = true;
         element.setAttribute('muted', true); // TODO remove use to debug
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
@@ -442,6 +441,10 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      * @param currentTime
      */
     changeTime(currentTime) {
+        if (!this.shadowRoot) {
+            return;
+        }
+
         let tags = this.shadowRoot.querySelectorAll('video, audio');
         for (let cont = 0; tags.length > cont; cont++) {
             tags[cont].currentTime = currentTime;
@@ -452,6 +455,10 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      *
      */
     pause() {
+        if (!this.shadowRoot) {
+            return;
+        }
+
         let tags = this.shadowRoot.querySelectorAll('video, audio');
         for (let cont = 0; tags.length > cont; cont++) {
             tags[cont].pause();
@@ -462,6 +469,10 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      * @param currentTime
      */
     resume(currentTime) {
+        if (!this.shadowRoot) {
+            return;
+        }
+
         let tags = this.shadowRoot.querySelectorAll('video, audio');
         for (let cont = 0; tags.length > cont; cont++) {
             if (currentTime) {

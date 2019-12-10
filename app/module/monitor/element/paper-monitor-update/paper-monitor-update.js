@@ -39,24 +39,26 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 paper-input-color {
                     padding-left: 6px;
                 }
-                
+                                
                 paper-input[name="name"] {
                     @apply --layout-flex;
+                    min-width: 120px;
                 }
                 
                 paper-input[name="height"],
                 paper-input[name="width"] {
-                    width: 70px;
+                     max-width: 70px;
                 }
              
                 paper-input[name="back"],   
                 paper-input[name="offsetX"],
                 paper-input[name="offsetY"] {
-                    width: 80px;
+                    max-width: 80px;
                 }
                 
-                paper-input-color[name="backgroundColor"] {
-                    width: 120px;
+                paper-input-color[name="backgroundColor"],
+                paper-autocomplete{
+                     max-width: 120px;
                 }
                 
                 paper-menu-button {
