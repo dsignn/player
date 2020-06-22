@@ -2,15 +2,23 @@
     "title": "Admin",
     "name": "admin",
     "icon": "admin:menu",
-    "configEntryPoint": "config.js",
+    "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "admin-index",
-        "path": "index.js"
+        "path": {
+            "directory": "element/admin-index",
+            "nameFile": "admin-index",
+            "extension": "js"
+        }
     },
     "autoloadsWc": [
         {
             "name": "admin-icons",
-            "path": "element/icons/icons.js"
+            "path": {
+                "directory": "element/admin-icons",
+                "nameFile": "admin-icons",
+                "extension": "js"
+            }
         }
     ]
 }

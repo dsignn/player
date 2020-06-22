@@ -5,7 +5,7 @@ import '../../style/player-style';
 /**
  * start dashboard
  */
-import '../../module/dashboard/index';
+import '../../module/dashboard/element/dashboard-index';
 import '../../module/dashboard/element/paper-widget/paper-widget';
 import '../../module/dashboard/element/icons/icons';
 /**
@@ -65,8 +65,8 @@ import '../../module/playlist/element/icons/icons';
 /**
  * start admin
  */
-import '../../module/admin/index'
-import '../../module/admin/element/icons/icons'
+import '../../module/admin/element/admin-index/admin-index'
+import '../../module/admin/element/admin-icons/admin-icons'
 /**
  * end admin
  */

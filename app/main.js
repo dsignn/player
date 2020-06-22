@@ -506,7 +506,7 @@ class Application {
      */
     run() {
         this.createPlayerDashboard();
-        this.createPlayerBrowserWindows();
+  //      this.createPlayerBrowserWindows();
     }
 
     /**

@@ -1,7 +1,9 @@
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
- *
+ * @class WidgetEntity
  */
-class WidgetEntity  extends require("@dsign/library").storage.entity.EntityIdentifier  {
+export class WidgetEntity  extends EntityIdentifier  {
 
     constructor() {
         super();
@@ -32,5 +34,3 @@ class WidgetEntity  extends require("@dsign/library").storage.entity.EntityIdent
         this.data = {};
     }
 }
-
-module.exports = WidgetEntity;

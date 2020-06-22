@@ -5,9 +5,9 @@ import '../../elements/layout/application-layout';
 /**
  * start dashboard
  */
-import '../../module/dashboard/index';
+import '../../module/dashboard/element/dashboard-index/dashboard-index';
 import '../../module/dashboard/element/paper-widget/paper-widget';
-import '../../module/dashboard/element/icons/icons';
+import '../../module/dashboard/element/dashboard-icons/dashboard-icons';
 /**
  * end dashboard
  */
@@ -66,8 +66,8 @@ import '../../module/playlist/element/icons/icons';
 /**
  * start admin
  */
-import '../../module/admin/index'
-import '../../module/admin/element/icons/icons'
+import '../../module/admin/element/admin-index/admin-index'
+import '../../module/admin/element/admin-icons/admin-icons'
 /**
  * end admin
  */

@@ -1,7 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
-import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
-import {StorageListMixin} from "../../elements/mixin/storage/list-mixin";
+import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {StorageListMixin} from "../../../../elements/mixin/storage/list-mixin";
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-grid/paper-grid';
 import '@polymer/iron-flex-layout/iron-flex-layout';
@@ -9,7 +9,7 @@ import '@polymer/paper-button/paper-button';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-input/paper-input';
 import {lang} from './language';
-import {autocompleteStyle} from '../../style/autocomplete-custom-style';
+import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 
 /**
  * @customElement

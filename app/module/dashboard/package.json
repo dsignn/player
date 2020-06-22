@@ -1,0 +1,34 @@
+{
+    "title": "Dashboard",
+    "name": "dashboard",
+    "icon": "dashboard:menu",
+    "entryPoint": {
+        "name": "dashboard-index",
+        "path": {
+            "directory": "element/dashboard-index",
+            "nameFile": "dashboard-index",
+            "extension": "js"
+        }
+    },
+    "configEntryPoint": "repository.js",
+    "autoloads": [
+        {
+            "name": "WidgetEntity",
+            "path": {
+                "directory": "src/storage/entity",
+                "nameFile": "WidgetEntity",
+                "extension": "js"
+            }
+        }
+    ],
+    "autoloadsWs": [
+        {
+            "name": "dashboard-icons",
+            "path": {
+                "directory": "element/dashboard-icons",
+                "nameFile": "dashboard-icons",
+                "extension": "js"
+            }
+        }
+    ]
+}
