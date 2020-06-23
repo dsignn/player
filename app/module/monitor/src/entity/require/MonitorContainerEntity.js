@@ -28,15 +28,15 @@ class MonitorContainerEntity extends require("@dsign/library").storage.entity.En
     getMonitors(options) {
         let monitors = [];
         if (options && typeof options === 'object' && options.nested) {
-           for (let cont = 0; this.monitors.length > cont; cont++) {
+            for (let cont = 0; this.monitors.length > cont; cont++) {
 
-               if (typeof this.monitors[cont].getMonitors === "function") {
-                   let nestedMonitor = this.monitors[cont].getMonitors(options);
-                   if (nestedMonitor.length > 0) {
-                       monitors = monitors.concat(nestedMonitor);
-                   }
-               }
-           }
+                if (typeof this.monitors[cont].getMonitors === "function") {
+                    let nestedMonitor = this.monitors[cont].getMonitors(options);
+                    if (nestedMonitor.length > 0) {
+                        monitors = monitors.concat(nestedMonitor);
+                    }
+                }
+            }
         } else {
             monitors = this.monitors;
         }

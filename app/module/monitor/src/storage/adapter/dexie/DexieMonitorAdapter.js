@@ -1,5 +1,9 @@
+import {DexieAdapter} from "@dsign/library/src/storage/adapter/dexie/DexieAdapter";
 
-class DexieMonitorAdapter extends require("@dsign/library").storage.adapter.dexie.DexieAdapter  {
+/**
+ * @class DexieMonitorAdapter
+ */
+export class DexieMonitorAdapter extends DexieAdapter {
 
     /**
      * @inheritDoc
@@ -25,5 +29,3 @@ class DexieMonitorAdapter extends require("@dsign/library").storage.adapter.dexi
         return collection;
     }
 }
-
-module.exports = DexieMonitorAdapter;

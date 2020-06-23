@@ -1,7 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
-import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
-import {StorageEntityMixin} from "../../../../elements/mixin/storage/entity-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {StorageEntityMixin} from "@dsign/polymer-mixin/storage/entity-mixin";
 import '@polymer/paper-input/paper-input';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-form/iron-form';
@@ -11,9 +11,10 @@ import '@polymer/paper-card/paper-card';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '../paper-monitor-update/paper-monitor-update';
+import {MongoIdGenerator} from '@dsign/library/src/storage/util/MongoIdGenerator';
 import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
-import {lang} from './language/upsert-language';
+import {lang} from './language';
 
 /**
  * @customElement
@@ -269,9 +270,7 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
         obj['polygonPoints'] = this.$.points.value ? this.$.points.value : [];
         let monitor = this._monitorHydrator.hydrate(obj);
 
-        monitor.setId(
-            require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId()
-        );
+        monitor.setId(MongoIdGenerator.statcGenerateId());
 
         // TODO nested monitor
         if (this.$.parentMonitor.value) {

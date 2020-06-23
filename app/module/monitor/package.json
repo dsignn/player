@@ -4,36 +4,95 @@
     "icon": "monitor:menu",
     "entryPoint": {
         "name": "monitor-index",
-        "path": "index.js"
+        "path": {
+            "directory": "element/monitor-index",
+            "nameFile": "monitor-index",
+            "extension": "js"
+        }
     },
-    "configEntryPoint": "config.js",
+    "configEntryPoint": "repository.js",
     "autoloads": [
-        "src/MonitorService.js",
-        "src/storage/entity/MonitorEntity.js",
-        "src/storage/entity/MonitorContainerEntity.js",
-        "src/storage/adapter/dexie/DexieMonitorAdapter.js",
-        "src/storage/adapter/mongo/MongoMonitorAdapter.js"
+        {
+            "name": "MonitorEntity",
+            "path": {
+                "directory": "src",
+                "nameFile": "MonitorService",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MonitorEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MonitorEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MonitorContainerEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MonitorContainerEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "DexieMonitorAdapter",
+            "path": {
+                "directory": "src/storage/adapter/dexie",
+                "nameFile": "DexieMonitorAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoMonitorAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoMonitorAdapter",
+                "extension": "js"
+            }
+        }
     ],
     "autoloadsWs": [
         {
             "name": "monitor-icons",
-            "path": "element/icons/icons.js"
+            "path": {
+                "directory": "element/monitor-icons",
+                "nameFile": "monitor-icons",
+                "extension": "js"
+            }
         },
         {
             "name": "paper-player",
-            "path": "element/paper-player/paper-player.js"
+            "path": {
+                "directory": "element/paper-player",
+                "nameFile": "paper-player",
+                "extension": "js"
+            }
         },
         {
             "name": "paper-player-manager",
-            "path": "element/paper-player-manager/paper-player-manager.js"
+            "path": {
+                "directory": "element/paper-player-manager",
+                "nameFile": "paper-player-manager",
+                "extension": "js"
+            }
         },
         {
             "name": "paper-player-timeslot",
-            "path": "element/paper-player-timeslot/paper-player-timeslot.js"
+            "path": {
+                "directory": "element/paper-player-timeslot",
+                "nameFile": "paper-player-timeslot",
+                "extension": "js"
+            }
         },
         {
             "name": "paper-monitor-viewer",
-            "path": "element/paper-monitor-viewer/paper-monitor-viewer.js"
+            "path": {
+                "directory": "element/paper-monitor-viewer",
+                "nameFile": "paper-monitor-viewer",
+                "extension": "js"
+            }
         }
     ]
 }

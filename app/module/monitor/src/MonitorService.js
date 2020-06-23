@@ -1,7 +1,9 @@
+import {Storage} from "@dsign/library/src/storage/Storage";
+
 /**
- *
+ * @class MonitorService
  */
-class MonitorService {
+export class MonitorService {
 
     /**
      * @return {string}
@@ -59,10 +61,7 @@ class MonitorService {
         /**
          * Update listener
          */
-        this.monitorStorage.getEventManager().on(
-            require("@dsign/library").storage.Storage.BEFORE_UPDATE,
-            this._checkUpdateMonitor.bind(this)
-        );
+        this.monitorStorage.getEventManager().on(Storage.BEFORE_UPDATE, this._checkUpdateMonitor.bind(this));
 
         /**
          * Get current configuration
@@ -150,5 +149,3 @@ class MonitorService {
         return this;
     }
 }
-
-module.exports = MonitorService;

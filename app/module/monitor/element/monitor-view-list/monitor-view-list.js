@@ -1,12 +1,12 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
-import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
-import {StoragePaginationMixin} from "../../../../elements/mixin/storage/pagination-mixin";
-import {StorageCrudMixin} from "../../../../elements/mixin/storage/crud-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {StoragePaginationMixin} from "@dsign/polymer-mixin/storage/pagination-mixin";
+import {StorageCrudMixin} from "@dsign/polymer-mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
-import "../../element/paper-monitor/paper-monitor";
-import {lang} from './language/list-language';
+import "../paper-monitor/paper-monitor";
+import {lang} from './language';
 
 /**
  * @customElement

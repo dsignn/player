@@ -16,8 +16,8 @@ import '../../module/dashboard/element/dashboard-icons/dashboard-icons';
 /**
  * start monitor
  */
-import '../../module/monitor/index';
-import '../../module/monitor/element/icons/icons';
+import '../../module/monitor/element/monitor-index/monitor-index';
+import '../../module/monitor/element/monitor-icons/monitor-icons';
 import '../../module/monitor/element/paper-monitor-viewer/paper-monitor-viewer';
 import '../../module/monitor/element/paper-player/paper-player';
 import '../../module/monitor/element/paper-player-timeslot/paper-player-timeslot';
