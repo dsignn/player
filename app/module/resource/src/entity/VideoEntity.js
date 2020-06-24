@@ -1,10 +1,22 @@
+import {FileEntity} from './FileEntity';
+
 /**
- * @class ImageEntity
+ * @class VideoEntity
  */
-class ImageEntity extends FileEntity {
+export class VideoEntity extends FileEntity {
 
     constructor() {
         super();
+
+        /**
+         * @type {Number|null}
+         */
+        this.duration = null;
+
+        /**
+         * @type {Number|null}
+         */
+        this.fps = null;
 
         /**
          * @type {Object}
@@ -14,7 +26,7 @@ class ImageEntity extends FileEntity {
         Object.defineProperty(
             this,
             "typeLabel",
-            {writable: false, enumerable: true, configurable: true, value: 'image'}
+            {writable: false, enumerable: true, configurable: true, value: 'video'}
         );
     }
 
@@ -32,5 +44,3 @@ class ImageEntity extends FileEntity {
         return this.dimension.height;
     }
 }
-
-module.exports = ImageEntity;

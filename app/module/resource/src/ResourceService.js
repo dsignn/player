@@ -1,16 +1,18 @@
 /**
  * @class
  */
-class ResourceService {
+export class ResourceService {
 
     /**
+     *
      * @param localPath
+     * @param {PathNode} path
      */
-    constructor(localPath) {
+    constructor(localPath, path) {
 
         this.localPath = localPath;
 
-        this.nodePath = require('path');
+        this.nodePath = path;
     }
 
     /**
@@ -35,5 +37,3 @@ class ResourceService {
         return this.nodePath.normalize(`${this.localPath}${resourceEntity.id}${this.nodePath.sep}`);
     }
 }
-
-module.exports = ResourceService;

@@ -1,7 +1,9 @@
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
  * @class FileEntity
  */
-class FileEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class FileEntity extends EntityIdentifier {
 
     constructor() {
         super();
@@ -22,9 +24,9 @@ class FileEntity extends require("@dsign/library").storage.entity.EntityIdentifi
         this.type = null;
 
         /**
-         * @type {Path}
+         * @type {PathInterface}
          */
-        this.path = new (require("@dsign/library").path.Path)();
+        this.path;
 
         /**
          * @type {Array}
@@ -39,5 +41,3 @@ class FileEntity extends require("@dsign/library").storage.entity.EntityIdentifi
         return `${this.path.nameFile}.${this.path.extension}`;
     }
 }
-
-module.exports = FileEntity;

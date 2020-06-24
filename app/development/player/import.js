@@ -30,7 +30,7 @@ import '../../module/monitor/element/paper-player-manager/paper-player-manager';
 /**
  * start resource
  */
-import '../../module/resource/index';
+import '../../module/resource/element/resource-index';
 import '../../module/resource/element/icons/icons';
 import '../../module/resource/element/wc-resource/wc-resource-test';
 /**

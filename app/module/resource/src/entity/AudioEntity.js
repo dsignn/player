@@ -1,7 +1,9 @@
+import {FileEntity} from './FileEntity';
+
 /**
  * @class AudioEntity
  */
-class AudioEntity extends FileEntity {
+export class AudioEntity extends FileEntity {
 
     constructor() {
         super();
@@ -18,5 +20,3 @@ class AudioEntity extends FileEntity {
         );
     }
 }
-
-module.exports = AudioEntity;

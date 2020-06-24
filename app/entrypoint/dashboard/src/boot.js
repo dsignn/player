@@ -92,8 +92,8 @@ container.set('merge', merge);
 const application = new Application();
 application.setBasePath(path.normalize(`${__dirname}${back}`))
     .setModulePath(`${basePath}${path.sep}module`)
-    .setResourcePath(`${homeData}${path.sep}resource${path.sep}`)
-    .setStoragePath(`${homeData}${path.sep}storage${path.sep}`);
+    .setResourcePath(`${homeData}${path.sep}resource`)
+    .setStoragePath(`${homeData}${path.sep}storage`);
 
 let pathHydrator = new PropertyHydrator(new PathNode());
 let moduleHydrator = new PropertyHydrator(new Module());
