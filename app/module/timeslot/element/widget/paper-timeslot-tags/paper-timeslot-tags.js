@@ -1,7 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../../../../../elements/mixin/service/injector-mixin";
-import {LocalizeMixin} from "../../../../../elements/mixin/localize/localize-mixin";
-import {StorageListMixin} from "../../../../../elements/mixin/storage/list-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {StorageListMixin} from "@dsign/polymer-mixin/storage/list-mixin";
 import {lang} from './language';
 import "../../paper-timeslot/paper-timeslot";
 

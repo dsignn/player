@@ -1,7 +1,7 @@
 import {Archive} from '@dsign/library/src/archive/Archive';
 import {Application2 as Application} from '@dsign/library/src/core/Application2';
 import {Module} from '@dsign/library/src/core/module/Module';
-import {Widget} from '@dsign/library/src/core/widget/Widget';
+import {Widget2 as Widget} from '@dsign/library/src/core/widget/Widget2';
 import {WebComponent} from '@dsign/library/src/core/webcomponent/WebComponent';
 import {AutoLoadClass} from '@dsign/library/src/core/autoload/AutoLoadClass';
 import {Listener} from '@dsign/library/src/event/index'
@@ -91,7 +91,7 @@ container.set('merge', merge);
 
 const application = new Application();
 application.setBasePath(path.normalize(`${__dirname}${back}`))
-    .setModulePath(`${basePath}${path.sep}module`)
+    .setModulePath(`${basePath}module`)
     .setResourcePath(`${homeData}${path.sep}resource`)
     .setStoragePath(`${homeData}${path.sep}storage`);
 
@@ -106,9 +106,9 @@ moduleHydrator.addValueStrategy('autoloadsWs', new HydratorStrategy(webComponent
 moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
 moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
 
-let hydratorWidget = new PropertyHydrator(new Widget());
-hydratorWidget.addValueStrategy('src', new PathStrategy());
-hydratorWidget.addValueStrategy('srcData', new PathStrategy());
+let widgetHydrator = new PropertyHydrator(new Widget());
+widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));
+widgetHydrator.addValueStrategy('webComponentData', new HydratorStrategy(webComponentHydrator));
 
 let modules = JSON.parse(fs.readFileSync(`${basePath}${path.sep}config${path.sep}module.json`).toString());
 let modulesHydrate = [];
@@ -120,7 +120,7 @@ for (let cont = 0; modules.length > cont; cont++) {
     if (modules[cont].widgets && Array.isArray(modules[cont].widgets) && modules[cont].widgets.length > 0) {
 
         for (let cont2 = 0; modules[cont].widgets.length > cont2; cont2++) {
-            widgetHydrate.push(hydratorWidget.hydrate(modules[cont].widgets[cont2]));
+            widgetHydrate.push(widgetHydrator.hydrate(modules[cont].widgets[cont2]));
         }
     }
 }
@@ -279,7 +279,7 @@ container.set('Notify', {
                                             ARCHIVE SERVICE
  **********************************************************************************************************************/
 
-let archive = new Archive(`${homeData}archive${path.sep}`);
+let archive = new Archive(`${homeData}${path.sep}archive${path.sep}`);
 //archive.appendDirectory(resourcePath, 'resource');
 archive.setTmpDir(`${homeData}tmp${path.sep}`)
     .setResourceDir(application.getResourcePath())

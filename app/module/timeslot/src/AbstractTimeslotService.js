@@ -1,7 +1,9 @@
+import {EventManager} from "@dsign/library/src/event/index";
+
 /**
- *
+ * @class AbstractTimeslotService
  */
-class AbstractTimeslotService {
+export class AbstractTimeslotService {
 
     /**
      * Name of the "message" send from sender when play timeslot
@@ -62,14 +64,14 @@ class AbstractTimeslotService {
         this.timeslotStorage = timeslotStorage ? timeslotStorage : null;
 
         /**
-         * @type {TimeslotDataInjectorServicePluginManager}
+         * @type {ContainerAggregate}
          */
-        this.dataInjectorManager = dataInjectorManager ? dataInjectorManager : new TimeslotDataInjectorServicePluginManager();
+        this.dataInjectorManager = dataInjectorManager;
 
         /**
          * Event manager
          */
-        this.eventManager = new (require('@dsign/library').event.EventManager)();
+        this.eventManager = new EventManager();
 
         /**
          * Check if timer is inject
@@ -182,5 +184,3 @@ class AbstractTimeslotService {
         return this.eventManager
     }
 }
-
-module.exports = AbstractTimeslotService;

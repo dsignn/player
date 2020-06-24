@@ -1,7 +1,9 @@
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
  * @class TimeslotEntity
  */
-class TimeslotEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class TimeslotEntity extends EntityIdentifier {
 
     /**
      * Constant
@@ -189,5 +191,3 @@ class TimeslotEntity extends require("@dsign/library").storage.entity.EntityIden
         this.currentTime = 0;
     }
 }
-
-module.exports = TimeslotEntity;

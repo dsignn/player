@@ -1,7 +1,9 @@
+import {AbstractTimeslotService} from "./AbstractTimeslotService";
+
 /**
- *
+ * @class TimeslotService
  */
-class TimeslotService extends AbstractTimeslotService {
+export class TimeslotService extends AbstractTimeslotService {
 
     /**
      * @param {Storage} timeslotStorage
@@ -355,5 +357,3 @@ class TimeslotService extends AbstractTimeslotService {
         this.sender.send('proxy', message);
     }
 }
-
-module.exports = TimeslotService;

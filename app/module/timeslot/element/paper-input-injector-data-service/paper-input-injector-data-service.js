@@ -1,5 +1,5 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import '@fluidnext-polymer/paper-chip/paper-chip';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-flex-layout/iron-flex-layout';

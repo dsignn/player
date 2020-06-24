@@ -1,5 +1,9 @@
+import {MongoCollectionAdapter} from '@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter';
 
-class MongoTimeslotAdapter extends require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter  {
+/**
+ * @class MongoTimeslotAdapter
+ */
+export class MongoTimeslotAdapter extends MongoCollectionAdapter {
 
     /**
      * @inheritDoc
@@ -25,5 +29,3 @@ class MongoTimeslotAdapter extends require("@dsign/library").storage.adapter.mon
         return returnFilter;
     }
 }
-
-module.exports = MongoTimeslotAdapter;

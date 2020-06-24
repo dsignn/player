@@ -1,7 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {LocalizeMixin} from "../../../../elements/mixin/localize/localize-mixin";
-import {ServiceInjectorMixin} from "../../../../elements/mixin/service/injector-mixin";
-import {StorageListMixin} from "../../../../elements/mixin/storage/list-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {StorageListMixin} from "@dsign/polymer-mixin/storage/list-mixin";
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-grid/paper-grid';
 import '@polymer/iron-flex-layout/iron-flex-layout';
@@ -286,7 +286,7 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
 
         this.removeDataWidget();
 
-        let element = document.createElement(evt.detail.value.wcData);
+        let element = document.createElement(evt.detail.value.getWebComponentData().getName());
         element.addEventListener('ready-data', this._enableAddButton.bind(this));
         element.addEventListener('unready-data', this._disableAddButton.bind(this));
         element.setAttribute('id', 'dataComponent');

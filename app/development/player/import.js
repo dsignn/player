@@ -41,7 +41,7 @@ import '../../module/resource/element/wc-resource/wc-resource-test';
 /**
  * start timeslot
  */
-import '../../module/timeslot/index';
+import '../../module/timeslot/element/timeslot-index';
 import '../../module/timeslot/element/icons/icons';
 
 import '../../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags';

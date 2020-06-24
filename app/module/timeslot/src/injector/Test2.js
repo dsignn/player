@@ -1,4 +1,9 @@
-class Test2 extends AbstractInjector {
+import {AbstractInjector} from './AbstractInjector';
+
+/**
+ * @class Test2
+ */
+export class Test2 extends AbstractInjector {
 
     constructor() {
         super();
@@ -92,5 +97,3 @@ class Test2 extends AbstractInjector {
         }
     }
 }
-
-module.exports = Test2;

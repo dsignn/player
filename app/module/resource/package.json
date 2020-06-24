@@ -1,0 +1,82 @@
+{
+    "title": "Resource",
+    "name": "resource",
+    "icon": "resource:menu",
+    "configEntryPoint": "repository.js",
+    "entryPoint": {
+        "name": "resource-index",
+        "path": {
+            "directory": "element/resource-index",
+            "nameFile": "resource-index",
+            "extension": "js"
+        }
+    },
+    "autoloads": [
+        {
+            "name": "DexieResourceAdapter",
+            "path": {
+                "directory": "src/storage/adapter/dexie",
+                "nameFile": "DexieResourceAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoResourceAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoResourceAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "ResourceService",
+            "path": {
+                "directory": "src",
+                "nameFile": "ResourceService",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "ImageEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "ImageEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "FileEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "FileEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "ImageEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "ImageEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "VideoEntity",
+                "extension": "js"
+            }
+        }
+    ],
+    "autoloadsWs": [
+        {
+            "name": "resource-icons",
+            "path": {
+                "directory": "element/resource-icons",
+                "nameFile": "resource-icons",
+                "extension": "js"
+            }
+        }
+    ]
+}

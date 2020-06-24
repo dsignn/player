@@ -1,7 +1,7 @@
 /**
- *
+ * @class Injector
  */
-class Injector {
+export class Injector {
 
     constructor() {
 
@@ -30,5 +30,3 @@ class Injector {
         this.name = name;
     }
 }
-
-module.exports = Injector;

@@ -1,7 +1,7 @@
 /**
- *
+ * @class AbstractInjector
  */
-class AbstractInjector {
+export class AbstractInjector {
 
     /**
      * @param {string} value
@@ -87,5 +87,3 @@ class AbstractInjector {
         return data[this.serviceNamespace()];
     }
 }
-
-module.exports = AbstractInjector;

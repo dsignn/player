@@ -5,11 +5,10 @@ const template = html`
 <custom-style id="timeslot-style">
     <style is="custom-style">
     
-   
         :root {
 
             --timeslot-running : #39A33D;
-             --timeslot-pause   : #FAD646;
+            --timeslot-pause   : #FAD646;
             --timeslot-idle   : #F00755;
         }
  

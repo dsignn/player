@@ -1,11 +1,11 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
-import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/iron-pages/iron-pages';
-import './element/view/list'
-import './element/view/upsert'
-import {flexStyle} from '../../style/layout-style';
+import '../timeslot-view-list/timeslot-view-list'
+import '../timeslot-view-upsert/timeslot-view-upsert'
+import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
 /**
  * @customElement
