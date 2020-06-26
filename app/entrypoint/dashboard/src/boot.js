@@ -125,6 +125,13 @@ for (let cont = 0; modules.length > cont; cont++) {
     }
 }
 
+window.addEventListener('DOMContentLoaded', (event) => {
+    if (!window.document.body.getAttribute('application-layout')) {
+        console.log('DOMContentLoaded');
+        loadApplication();
+    }
+});
+
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
@@ -134,8 +141,12 @@ application.getEventManager().on(
             .on(
                 MongoDb.READY_CONNECTION,
                 (connection) =>  {
-                    let appl = document.createElement('application-layout');
-                    document.body.appendChild(appl);
+                    console.log('READY_CONNECTION')
+                    if (document.body && !window.document.body.getAttribute('application-layout')) {
+                        console.log('READY_CONNECTION OKKKKKKKKKKKKKKK')
+                        loadApplication();
+                    }
+
                 }
             );
 
@@ -143,6 +154,14 @@ application.getEventManager().on(
 
     }.bind(container))
 );
+
+/**
+ * LOAD APPLICATION
+ */
+const loadApplication = () => {
+    let wcApplication = window.document.createElement('application-layout');
+    window.document.body.appendChild(wcApplication);
+};
 
 application.setWidgets(widgetHydrate)
     .loadModules(modulesHydrate, container);
@@ -231,7 +250,6 @@ acl.addRole('admin');
 
 acl.addResource('application');
 acl.setRole('guest');
-
 container.set('Acl', acl);
 
 /***********************************************************************************************************************

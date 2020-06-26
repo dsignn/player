@@ -1,12 +1,12 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
-import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
-import './element/view/list'
-import './element/view/upsert'
-import {flexStyle} from '../../style/layout-style';
+import '../playlist-view-list/playlist-view-list'
+import '../playlist-view-upsert/playlist-view-upsert'
+import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
 /**
  * @customElement

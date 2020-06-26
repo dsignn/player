@@ -160,6 +160,7 @@ class Application {
                 nodeIntegration: true,
                 allowRunningInsecureContent: true,
                 experimentalFeatures: true,
+                enableRemoteModule: true
             },
             titleBarStyle: 'hidden',
             autoHideMenuBar: true,
@@ -195,6 +196,7 @@ class Application {
         let browserWindows = new BrowserWindow({
             webPreferences : {
                 nodeIntegration: true,
+                enableRemoteModule: true
             },
             width: parseInt(monitor.width),
             height: parseInt(monitor.height),

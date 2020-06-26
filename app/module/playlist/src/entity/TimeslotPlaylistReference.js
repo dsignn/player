@@ -1,7 +1,9 @@
+import {EntityReference} from "@dsign/library/src/storage/entity/EntityReference";
+
 /**
  *
  */
-class TimeslotPlaylistReference extends require("@dsign/library").storage.entity.EntityReference {
+export class TimeslotPlaylistReference extends EntityReference {
 
     /**
      * @return {number}
@@ -25,5 +27,3 @@ class TimeslotPlaylistReference extends require("@dsign/library").storage.entity
 
     }
 }
-
-module.exports = TimeslotPlaylistReference;

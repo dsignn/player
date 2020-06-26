@@ -1,6 +1,6 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {LocalizeMixin} from "../../elements/mixin/localize/localize-mixin";
-import {ServiceInjectorMixin} from "../../elements/mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-tabs/paper-tabs';
 import {flexStyle} from '../../style/layout-style';

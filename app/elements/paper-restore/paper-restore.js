@@ -1,6 +1,6 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
-import {LocalizeMixin} from "../mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@fluidnext-polymer/paper-input-file/paper-input-file';
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-dialog/paper-dialog';

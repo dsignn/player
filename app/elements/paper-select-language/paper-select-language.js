@@ -4,8 +4,8 @@ import '@polymer/paper-menu-button/paper-menu-button';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-item/paper-item';
 import {lang} from "./language/language.js";
-import {ServiceInjectorMixin} from "../mixin/service/injector-mixin"
-import {LocalizeMixin} from "../mixin/localize/localize-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin"
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 
 /**
  * @customElement

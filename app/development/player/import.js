@@ -56,7 +56,7 @@ import '../../module/timeslot/element/widget/paper-timeslot-monitors/paper-times
 /**
  * start playlist
  */
-import '../../module/playlist/index';
+import '../../module/playlist/element/playlist-index';
 import '../../module/playlist/element/icons/icons';
 /**
  * end playlist

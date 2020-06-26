@@ -1,9 +1,9 @@
 import {Listener} from '@dsign/library/src/event/Listener';
 import {Application}  from '@dsign/library/src/core/Application';
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "../mixin/service/injector-mixin";
-import {LocalizeMixin} from "../mixin/localize/localize-mixin";
-import {AclMixin} from "../mixin/acl/acl-mixin";
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {AclMixin} from "@dsign/polymer-mixin/acl/acl-mixin";
 import '@polymer/app-layout/app-header-layout/app-header-layout';
 import '@polymer/app-layout/app-toolbar/app-toolbar';
 import '@polymer/app-layout/app-header/app-header';
@@ -70,17 +70,24 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     background-color:  #FFFFFF;
                 }
                   
+  
                 #menuContent {
-                    height: 100%;
-                    display: block;
-                }
-                
-                #menuContent > div {
                     position: fixed;
+                    background-color: white;
+                    align-items: center;
                     flex-direction: column;
                     display: flex;
-                    height: 100%;
-                    background-color: white;
+                    width: 64px;
+                }
+                
+                .menu-icon-wrapper {
+                    margin-bottom: 12px;
+                    margin-top: 12px;
+                }
+                
+                
+                #content {
+                    margin-left: 64pX;
                 }
                           
              </style>
@@ -97,19 +104,19 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     </app-toolbar>
                 </app-header>
                 <div class="layout-container layout-horizontal">
-                    <div id="menuContent" class="layout-vertical layout-center-aligned layout-menu">
-                        <div>
-                            <dom-repeat id="menu" items="{{modules}}" as="module">
-                                <template>
-                                    <template is="dom-if" if="{{isAllowed(module.name)}}">
+                    <div id="menuContent">
+                        <dom-repeat id="menu" items="{{modules}}" as="module">
+                            <template>
+                                <template is="dom-if" if="{{isAllowed(module.name)}}">
+                                    <div class="menu-icon-wrapper">
                                         <paper-icon-button id="{{module.name}}" class="menu" icon="{{module.icon}}" on-tap="_tapMenu"></paper-icon-button>
                                         <paper-tooltip for="{{module.name}}" position="right">{{module.title}}</paper-tooltip>
-                                    </template>
+                                    </div>
                                 </template>
-                            </dom-repeat>
-                        </div>
+                            </template>
+                        </dom-repeat>
                     </div>
-                    <div class="layout-vertical layout-flex-auto layout-content">
+                    <div id="content" class="layout-vertical layout-flex-auto layout-content">
                         <iron-pages id="pages" selected="{{section}}" attr-for-selected="name"></iron-pages>
                     </div>
                 </div>
@@ -159,6 +166,29 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
 
     connectedCallback() {
         super.connectedCallback();
+        this.updateHeightMenu();
+        document.body.onresize = (event) => {
+            this.updateHeightMenu();
+        }
+    }
+
+    /**
+     * Update
+     */
+    updateHeightMenu() {
+        this.$.menuContent.style.height = `${this._getMaxHeight()}px`;
+    }
+
+    /**
+     * @returns {number}
+     * @private
+     */
+    _getMaxHeight() {
+        let body = document.body,
+            html = document.documentElement;
+
+        return Math.max( body.scrollHeight, body.offsetHeight,
+            html.clientHeight, html.scrollHeight, html.offsetHeight );
     }
 
     /**

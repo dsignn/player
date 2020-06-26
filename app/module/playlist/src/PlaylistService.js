@@ -1,7 +1,10 @@
+import {AbstractTimeslotService} from "./../../timeslot/src/AbstractTimeslotService";
+import {PlaylistEntity} from "./entity/PlaylistEntity";
+
 /**
- *
+ * @class PlaylistService
  */
-class PlaylistService extends AbstractTimeslotService {
+export class PlaylistService extends AbstractTimeslotService {
 
     /**
      * @param {Storage} timeslotStorage
@@ -438,5 +441,3 @@ class PlaylistService extends AbstractTimeslotService {
         timeslot.context = playlist.context;
     }
 }
-
-module.exports = PlaylistService;

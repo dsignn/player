@@ -1,7 +1,9 @@
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
- *
+ * @class PlaylistEntity
  */
-class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class PlaylistEntity extends EntityIdentifier {
 
     /**
      * Constant
@@ -327,5 +329,3 @@ class PlaylistEntity extends require("@dsign/library").storage.entity.EntityIden
         return currentTime;
     }
 }
-
-module.exports = PlaylistEntity;

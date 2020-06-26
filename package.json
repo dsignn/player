@@ -16,7 +16,7 @@
     "postinstallscriptos:linux:darwin": "cp app/config/config.json.dist app/config/config-development.json && cp app/config/config.json.dist app/config/config-production.json && cp app/config/module.json.dist app/config/module.json && cd app && npm install",
     "postinstallscriptos:win32": "copy app\\config\\config.json.dist app\\config\\config-development.json && copy app\\config\\config.json.dist app\\config\\config-production.json && copy app\\config\\module.json.dist app\\config\\module.json && cd app && npm install",
     "start": "run-script-os",
-    "start:linux:darwin": "cd app && export APP_ENVIRONMENT=development && export ELECTRON_DISABLE_SECURITY_WARNINGS=true && ./node_modules/.bin/electron ./main.js --inspect=5858",
+    "start:linux:darwin": "cd app && export APP_ENVIRONMENT=development && export ELECTRON_DISABLE_SECURITY_WARNINGS=true && ./node_modules/.bin/electron --enable-accelerated-mjpeg-decode --enable-vulkan --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-gpu-rasterization ./main.js --inspect=5858",
     "start:win32": "cd app && set APP_ENVIRONMENT=development&& set ELECTRON_DISABLE_SECURITY_WARNINGS=true && electron .\\node_modules\\.bin\\main.js --inspect=5858",
     "polymer-build": "cd app && ./node_modules/.bin/polymer build",
     "postpolymer-build": "postpolymer-buildscriptos",

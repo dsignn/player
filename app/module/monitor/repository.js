@@ -145,7 +145,7 @@ export class Repository extends ContainerAware {
 
             let dashboardAlwayOnTop =  this.getContainer().get('Config').dashboard &&  this.getContainer().get('Config').dashboard.alwaysOnTop ?
                 this.getContainer().get('Config').dashboard.alwaysOnTop : false;
-            console.log(storage);
+
             this.getContainer().set(
                 'MonitorService',
                 new MonitorService(

@@ -347,7 +347,7 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
     addWidget(evt) {
 
         let widget = new WidgetEntity();
-        widget.wc = this.$.widgetAutocomplete.value.wc;
+        widget.wc = this.$.widgetAutocomplete.value.getWebComponent().getName();
         widget.data = this.shadowRoot.querySelector('#dataComponent').getData();
 
         this._storage
