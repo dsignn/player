@@ -7,6 +7,7 @@ import '../timeslot-view-list/timeslot-view-list'
 import '../timeslot-view-upsert/timeslot-view-upsert'
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
+
 /**
  * @customElement
  * @polymer

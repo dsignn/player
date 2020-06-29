@@ -1,13 +1,15 @@
+import {Time} from "@dsign/library/src/date";
+
 /**
- *
+ * @class TimelineItem
  */
-class TimelineItem {
+export class TimelineItem {
 
     /**
      * @param {Array} timeslots
      * @param {Time} time
      */
-    constructor(timeslots = [], time = new (require("@dsign/library").date.Time)()) {
+    constructor(timeslots = [], time = new Time()) {
 
         /**
          * @type {Array}
@@ -65,5 +67,3 @@ class TimelineItem {
         return this;
     }
 }
-
-module.exports = TimelineItem;

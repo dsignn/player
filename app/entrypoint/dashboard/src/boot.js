@@ -126,7 +126,7 @@ for (let cont = 0; modules.length > cont; cont++) {
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    if (!window.document.body.getAttribute('application-layout')) {
+    if (window.document.body.getElementsByTagName('application-layout').length === 0) {
         console.log('DOMContentLoaded');
         loadApplication();
     }
@@ -142,7 +142,7 @@ application.getEventManager().on(
                 MongoDb.READY_CONNECTION,
                 (connection) =>  {
                     console.log('READY_CONNECTION')
-                    if (document.body && !window.document.body.getAttribute('application-layout')) {
+                    if (document.body && window.document.body.getElementsByTagName('application-layout').length === 0) {
                         console.log('READY_CONNECTION OKKKKKKKKKKKKKKK')
                         loadApplication();
                     }

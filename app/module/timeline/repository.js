@@ -1,24 +1,12 @@
-import {config} from './config';
-import {ContainerAggregate, ContainerAware} from "@dsign/library/src/container/index";
-import {Store} from "@dsign/library/src/storage/adapter/dexie/Store";
+import {config} from '../timeslot/config';
+import {ContainerAware} from "@dsign/library/src/container/index";
 import {Storage} from "@dsign/library/src/storage/Storage";
 import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/MongoDb";
 import {PropertyHydrator} from "@dsign/library/src/hydrator/index";
-import {
-    HybridStrategy,
-    HydratorStrategy,
-    MongoIdStrategy,
-    NumberStrategy
-} from "@dsign/library/src/hydrator/strategy/value/index";
+import {HydratorStrategy, MongoIdStrategy, NumberStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
 import {Time} from "@dsign/library/src/date";
 import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
-import {AbstractInjector} from "./src/injector/AbstractInjector";
-import {Test1} from "./src/injector/Test1";
-import {Test2} from "./src/injector/Test2";
-import {MongoTimeslotAdapter} from "./src/storage/adapter/mongo/MongoTimeslotAdapter";
-import {DexieTimeslotAdapter} from "./src/storage/adapter/dexie/DexieTimeslotAdapter";
-import {Repository as ResourceRepository} from "./../resource/repository";
-import {Repository as TimeslotRepository} from "./../timeslot/repository";
+import {Repository as TimeslotRepository} from "../timeslot/repository";
 
 /**
  * @class Repository
@@ -59,11 +47,21 @@ export class Repository extends ContainerAware {
      *
      */
     init() {
-
+        this.loadConfig();
         this.initAcl();
         this.initEntity();
         this.initHydrator();
         this.initMongoStorage();
+    }
+
+    /**
+     * Merge config
+     */
+    loadConfig() {
+        this.container.set(
+            'config',
+            this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+        );
     }
 
     /**
@@ -99,8 +97,8 @@ export class Repository extends ContainerAware {
             let aclService = this.getContainer().get('Acl');
 
             // TODO add method on service
-            aclService.adapter.acl.addResource('timeline');
-            aclService.adapter.acl.allow('guest', 'timeline');
+            aclService.addResource('timeline');
+            aclService.allow('guest', 'timeline');
         }
     }
 
@@ -237,7 +235,7 @@ export class Repository extends ContainerAware {
      */
     static getTimelineReferenceHydrator(container) {
 
-        let hydrator = new (require("@dsign/library").hydrator.PropertyHydrator)();
+        let hydrator = new PropertyHydrator();
         hydrator.setTemplateObjectHydration(container.get('EntityReference'));
 
         hydrator.enableHydrateProperty('id')

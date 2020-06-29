@@ -2,21 +2,57 @@
     "title": "Timeline",
     "name": "timeline",
     "icon": "timeline:menu",
-    "configEntryPoint": "config.js",
+    "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "timeline-index",
-        "path": "index.js"
+        "path": {
+            "directory": "element/timeline-index",
+            "nameFile": "timeline-index",
+            "extension": "js"
+        }
     },
     "autoloadsWc": [
         {
             "name": "timeline-icons",
-            "path": "element/icons/icons.js"
+            "path": {
+                "directory": "element/timeline-icons",
+                "nameFile": "timeline-icons",
+                "extension": "js"
+            }
         }
     ],
     "autoloads": [
-        "src/TimelineService.js",
-        "src/storage/entity/TimelineEntity.js",
-        "src/storage/entity/embedded/TimelineItem.js",
-        "src/storage/adapter/mongo/MongoTimelineAdapter.js"
+        {
+            "name": "TimelineService",
+            "path": {
+                "directory": "src",
+                "nameFile": "TimelineService",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "TimelineEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "TimelineEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "TimelineItem",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "TimelineItem",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoTimelineAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoTimelineAdapter",
+                "extension": "js"
+            }
+        }
     ]
 }

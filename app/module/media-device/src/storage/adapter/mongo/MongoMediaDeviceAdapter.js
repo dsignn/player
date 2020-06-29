@@ -1,5 +1,9 @@
+import {MongoCollectionAdapter} from '@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter';
 
-class MongoMediaDeviceAdapter extends require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter  {
+/**
+ * @class MongoMediaDeviceAdapter
+ */
+export class MongoMediaDeviceAdapter extends MongoCollectionAdapter {
 
     /**
      * @inheritDoc
@@ -22,5 +26,3 @@ class MongoMediaDeviceAdapter extends require("@dsign/library").storage.adapter.
         return returnFilter;
     }
 }
-
-module.exports = MongoMediaDeviceAdapter;

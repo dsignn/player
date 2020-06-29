@@ -5,7 +5,12 @@ import {DexieMonitorAdapter} from "./src/storage/adapter/dexie/DexieMonitorAdapt
 import {Storage} from "@dsign/library/src/storage/Storage";
 import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/MongoDb";
 import {PropertyHydrator} from "@dsign/library/src/hydrator/PropertyHydrator";
-import {HydratorStrategy, NumberStrategy, MongoIdStrategy, HybridStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
+import {
+    HybridStrategy,
+    HydratorStrategy,
+    MongoIdStrategy,
+    NumberStrategy
+} from "@dsign/library/src/hydrator/strategy/value/index";
 import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
 import {ProxyIpc} from "@dsign/library/src/sender/ProxyIpc";
 import {MonitorEntity} from "./src/entity/MonitorEntity";

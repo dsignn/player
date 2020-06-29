@@ -7,6 +7,7 @@ import '../resource-view-list/resource-view-list'
 import './../resource-view-upsert/resource-view-upsert'
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
+
 /**
  * @customElement
  * @polymer

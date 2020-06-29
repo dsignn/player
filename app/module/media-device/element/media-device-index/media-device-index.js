@@ -4,9 +4,9 @@ import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
-import './element/view/list'
-import './element/view/upsert'
-import {flexStyle} from '../../style/layout-style';
+import '../media-device-view-list/media-device-view-list'
+import '../media-device-view-upsert/media-device-view-upsert'
+import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
 
 /**

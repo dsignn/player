@@ -1,5 +1,5 @@
-
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+
 /**
  * Entry point for the module admin
  *

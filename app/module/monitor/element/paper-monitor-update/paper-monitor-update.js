@@ -11,7 +11,7 @@ import '@polymer/paper-toggle-button/paper-toggle-button';
 import '@fluidnext-polymer/paper-input-color/paper-input-color'
 import '@fluidnext-polymer/paper-input-color/icons/paper-input-color-icons'
 import '../../../../elements/paper-input-points/paper-input-points';
-import { flexStyle } from '../../../../style/layout-style';
+import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/language';
 

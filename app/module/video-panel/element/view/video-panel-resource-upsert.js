@@ -13,8 +13,8 @@ import '../paper-video-panel-resource-item/paper-video-panel-resource-item';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language/video-panel-resource-upsert-language';
-import {Path} from  '@dsign/library/src/path/Path';
-import {MongoIdGenerator} from  '@dsign/library/src/storage/util/MongoIdGenerator';
+import {Path} from '@dsign/library/src/path/Path';
+import {MongoIdGenerator} from '@dsign/library/src/storage/util/MongoIdGenerator';
 
 /**
  * @customElement

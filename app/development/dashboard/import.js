@@ -75,8 +75,8 @@ import '../../module/admin/element/admin-icons/admin-icons'
 /**
  * start media-device
  */
-import '../../module/media-device/index'
-import '../../module/media-device/element/icons/icons'
+import '../../module/media-device/element/media-device-index/media-device-index'
+import '../../module/media-device/element/media-device-icons/media-device-icons'
 /**
  * end media-device
  */
@@ -93,8 +93,8 @@ import '../../module/timer/element/icons/icons'
 /**
  * start timeline
  */
-import '../../module/timeline/index'
-import '../../module/timeline/element/icons/icons'
+import '../../module/timeline/element/timeline-index/timeline-index'
+import '../../module/timeline/element/timeline-icons/timeline-icons'
 /**
  * end timeline
  */

@@ -1,7 +1,10 @@
+import {Time} from "@dsign/library/src/date";
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
  * @class TimelineEntity
  */
-class TimelineEntity  extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class TimelineEntity  extends EntityIdentifier {
 
     /**
      * Constant
@@ -20,12 +23,12 @@ class TimelineEntity  extends require("@dsign/library").storage.entity.EntityIde
         /**
          * @type {Time}
          */
-        this.time = new (require("@dsign/library").date.Time)();
+        this.time = new Time();
 
         /**
          * @type {Time}
          */
-        this.timer = new (require("@dsign/library").date.Time)();
+        this.timer = new Time();
 
         /**
          * @type {Array}
@@ -266,5 +269,3 @@ class TimelineEntity  extends require("@dsign/library").storage.entity.EntityIde
         return index > -1;
     }
 }
-
-module.exports = TimelineEntity;

@@ -8,6 +8,7 @@ import '../playlist-view-list/playlist-view-list'
 import '../playlist-view-upsert/playlist-view-upsert'
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
+
 /**
  * @customElement
  * @polymer

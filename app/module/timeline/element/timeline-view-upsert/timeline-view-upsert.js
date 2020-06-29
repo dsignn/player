@@ -11,8 +11,8 @@ import '@polymer/paper-item/paper-item';
 import '@polymer/paper-ripple/paper-ripple';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
-import './../paper-timeline-item/paper-timeline-item';
-import {lang} from './language/upsert-language';
+import '../paper-timeline-item/paper-timeline-item';
+import {lang} from './language';
 
 /**
  * @customElement

@@ -8,6 +8,7 @@ import '../monitor-view-list/monitor-view-list'
 import '../monitor-view-upsert/monitor-view-upsert'
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
+
 /**
  * @customElement
  * @polymer

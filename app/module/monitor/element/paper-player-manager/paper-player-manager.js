@@ -1,4 +1,4 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 
 /**

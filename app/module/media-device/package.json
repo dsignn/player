@@ -2,20 +2,49 @@
     "title": "Media device",
     "name": "media-device",
     "icon": "media-device:menu",
-    "configEntryPoint": "config.js",
+    "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "media-device-index",
-        "path": "index.js"
+        "path": {
+            "directory": "element/media-device-index",
+            "nameFile": "media-device-index",
+            "extension": "js"
+        }
     },
     "autoloadsWc": [
         {
-            "name": "media-device-icons",
-            "path": "element/icons/icons.js"
+            "name": "monitor-icons",
+            "path": {
+                "directory": "element/media-device-icons",
+                "nameFile": "media-device-icons",
+                "extension": "js"
+            }
         }
     ],
     "autoloads": [
-        "src/storage/entity/MediaDeviceEntity.js",
-        "src/injector/MediaDeviceDataInjector.js",
-        "src/storage/adapter/mongo/MongoMediaDeviceAdapter.js"
+        {
+            "name": "MediaDeviceEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MediaDeviceEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MediaDeviceDataInjector",
+            "path": {
+                "directory": "src/injector",
+                "nameFile": "MediaDeviceDataInjector",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoMediaDeviceAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoMediaDeviceAdapter",
+                "extension": "js"
+            }
+        }
     ]
 }

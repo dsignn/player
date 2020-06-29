@@ -54,7 +54,6 @@ export class Repository extends ContainerAware {
         this.initStorage();
     }
 
-
     /**
      * Merge config
      */

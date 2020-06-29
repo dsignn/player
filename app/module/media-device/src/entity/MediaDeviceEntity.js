@@ -1,7 +1,9 @@
-/*
- *
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
+/**
+ * @class MediaDeviceEntity
  */
-class MediaDeviceEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class MediaDeviceEntity extends EntityIdentifier {
 
     static get TYPE_VIDEO() { return 'video'; };
 
@@ -37,4 +39,4 @@ class MediaDeviceEntity extends require("@dsign/library").storage.entity.EntityI
     }
 }
 
-module.exports = MediaDeviceEntity;
+

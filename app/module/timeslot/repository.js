@@ -1,10 +1,15 @@
 import {config} from './config';
-import {ContainerAware, ContainerAggregate} from "@dsign/library/src/container/index";
+import {ContainerAggregate, ContainerAware} from "@dsign/library/src/container/index";
 import {Store} from "@dsign/library/src/storage/adapter/dexie/Store";
 import {Storage} from "@dsign/library/src/storage/Storage";
 import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/MongoDb";
-import {PropertyHydrator, AggregatePropertyHydrator} from "@dsign/library/src/hydrator/index";
-import {HydratorStrategy, NumberStrategy, MongoIdStrategy, HybridStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
+import {PropertyHydrator} from "@dsign/library/src/hydrator/index";
+import {
+    HybridStrategy,
+    HydratorStrategy,
+    MongoIdStrategy,
+    NumberStrategy
+} from "@dsign/library/src/hydrator/strategy/value/index";
 import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
 import {AbstractInjector} from "./src/injector/AbstractInjector";
 import {Test1} from "./src/injector/Test1";

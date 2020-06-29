@@ -1,13 +1,18 @@
+import {Time} from "@dsign/library/src/date";
+import {AbstractTimeslotService} from "../../timeslot/src/AbstractTimeslotService";
+import {TimeslotEntity} from "../../timeslot/src/entity/TimeslotEntity";
+import {TimelineEntity} from "./entity/TimelineEntity";
+
 /**
- *
+ * @class TimelineService
  */
-class TimelineService extends AbstractTimeslotService {
+export class TimelineService extends AbstractTimeslotService {
 
     /**
      * @param {Storage} timeslotStorage
      * @param {AbstractSender} sender
      * @param {Timer} timer
-     * @param {TimeslotDataInjectorServicePluginManager} dataInjectorManager
+     * @param {ContainerAggregate} dataInjectorManager
      * @param {Storage} timelineStorage
      */
     constructor(timeslotStorage, sender, timer, dataInjectorManager, timelineStorage) {
@@ -40,6 +45,7 @@ class TimelineService extends AbstractTimeslotService {
 
         this._promoteToRunTimeline();
         this._startTimelinePromote();
+
         this._updateRunningTimeline();
         this._scheduleRunningTimeline();
     }
@@ -57,7 +63,7 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      * @return TimelineService
      * @private
      */
@@ -69,7 +75,7 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      * @return boolean
      * @private
      */
@@ -78,8 +84,8 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
-     * @return {Timeline|null}
+     * @param {TimelineEntity} timeline
+     * @return {TimelineEntity|null}
      */
     getRunningTimeline(timeline) {
         let runningTimeline = null;
@@ -154,7 +160,7 @@ class TimelineService extends AbstractTimeslotService {
     _startTimelinePromote() {
         for (let property in this.runningTimelines) {
             if (this.runningTimelines[property].status === TimeslotEntity.RUNNING &&
-                this.runningTimelines[property].timer.compare(new (require("@dsign/library").date.Time)()) === 0) {
+                this.runningTimelines[property].timer.compare(new Time()) === 0) {
 
                 this._checkTimeslotToStart(this.runningTimelines[property]);
             }
@@ -162,7 +168,7 @@ class TimelineService extends AbstractTimeslotService {
     }
 
     /**
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      */
     _checkTimeslotToStart(timeline) {
 
@@ -176,7 +182,7 @@ class TimelineService extends AbstractTimeslotService {
 
     /**
      * @param {string} type (play or resume)
-     * @param {Timeline} timeline
+     * @param {TimelineEntity} timeline
      * @param {TimelineItem} item
      * @param {number} delay
      * @return {Promise}
@@ -411,5 +417,3 @@ class TimelineService extends AbstractTimeslotService {
         timeslot.context = timeline.context;
     }
 }
-
-module.exports = TimelineService;

@@ -3,9 +3,9 @@ import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin"
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
 import {flexStyle} from '../../../../style/layout-style';
-import {lang} from "../../language";
-import "../view/list";
-import "./element/view/upsert";
+import {lang} from "../timeline-view-list/language";
+import "../timeline-view-list/timeline-view-list";
+import "../timeline-view-upsert/timeline-view-upsert";
 
 /**
  * Entry point for the module timeline

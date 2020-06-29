@@ -1,7 +1,9 @@
+import {AbstractInjector} from './../../../timeslot/src/injector/AbstractInjector';
+
 /**
  *
  */
-class MediaDeviceDataInjector extends AbstractInjector {
+export class MediaDeviceDataInjector extends AbstractInjector {
 
     constructor(mediaDeviceStorage) {
         super();
@@ -70,5 +72,3 @@ class MediaDeviceDataInjector extends AbstractInjector {
         return 'mediaDevice';
     }
 }
-
-module.exports = MediaDeviceDataInjector;

@@ -1,4 +1,4 @@
-import {PolymerElement, html} from '@polymer/polymer/polymer-element'
+import {html, PolymerElement} from '@polymer/polymer/polymer-element'
 
 /**
  *

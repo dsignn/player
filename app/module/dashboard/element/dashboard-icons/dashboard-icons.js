@@ -2,7 +2,6 @@ import '@polymer/iron-icon/iron-icon.js';
 import '@polymer/iron-iconset-svg/iron-iconset-svg.js';
 
 import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-import {PaperWidget} from "../paper-widget/paper-widget";
 
 
 const template = html`
