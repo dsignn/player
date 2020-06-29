@@ -1,7 +1,9 @@
+import {DexieCollection} from "@dsign/library/src/storage/adapter/dexie/DexieCollection"
+
 /**
- *
+ * @¢lass DexieTimerCollection
  */
-class DexieTimerCollection extends require('dsign-library').storage.adapter.DexieCollection {
+export class DexieTimerCollection extends DexieCollection {
 
     /**
      * @param {Table} table
@@ -27,5 +29,3 @@ class DexieTimerCollection extends require('dsign-library').storage.adapter.Dexi
         return collection;
     }
 }
-
-module.exports = DexieTimerCollection;

@@ -84,8 +84,8 @@ import '../../module/media-device/element/media-device-icons/media-device-icons'
 /**
  * start timer
  */
-import '../../module/timer/index'
-import '../../module/timer/element/icons/icons'
+import '../../module/timer/element/timer-index/timer-index'
+import '../../module/timer/element/timer-icons/timer-icons'
 /**
  * end timer
  */

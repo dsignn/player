@@ -1,7 +1,10 @@
+import {Time} from "@dsign/library/src/date/Time";
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
  *
  */
-class TimerEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class TimerEntity extends EntityIdentifier {
 
     static get TYPE_COUNTDOWN() { return 'countdown'; }
 
@@ -21,17 +24,17 @@ class TimerEntity extends require("@dsign/library").storage.entity.EntityIdentif
         /**
          * @type {Time}
          */
-        this.startAt = new (require("@dsign/library").date.Time)();
+        this.startAt = new Time();
 
         /**
          * @type {Time}
          */
-        this.endAt = new (require("@dsign/library").date.Time)();
+        this.endAt = new Time();
 
         /**
          * @type {Time}
          */
-        this.timer = new (require("@dsign/library").date.Time)();
+        this.timer = new Time();
 
         /**
          * @type string|Object
@@ -62,5 +65,3 @@ class TimerEntity extends require("@dsign/library").storage.entity.EntityIdentif
         return this;
     }
 }
-
-module.exports = TimerEntity;

@@ -2,10 +2,10 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
-import {flexStyle} from '../../style/layout-style';
+import {flexStyle} from '../../../../style/layout-style';
 import {lang} from "./language";
-import './element/view/list'
-import './element/view/upsert'
+import '../timer-view-list/timer-view-list'
+import '../timer-view-upsert/timer-view-upsert'
 
 /**
  * Entry point for the module timer

@@ -1,7 +1,8 @@
+import {AbstractInjector} from "./../../../timeslot/src/injector/AbstractInjector"
 /**
  *
  */
-class TimerDataInjector extends AbstractInjector {
+export class TimerDataInjector extends AbstractInjector {
 
     constructor(timerStorage, timerService) {
         super();
@@ -79,5 +80,3 @@ class TimerDataInjector extends AbstractInjector {
         return 'timer';
     }
 }
-
-module.exports = TimerDataInjector;

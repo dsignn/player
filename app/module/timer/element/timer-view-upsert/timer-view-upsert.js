@@ -10,7 +10,7 @@ import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-ripple/paper-ripple';
 import {flexStyle} from '../../../../style/layout-style';
-import {lang} from './language/upsert-language';
+import {lang} from './language';
 
 /**
  * @customElement

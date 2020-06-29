@@ -1,7 +1,10 @@
+import {EventManagerAware} from "@dsign/library/src/event/index";
+import {TimerEntity} from "./entity/TimerEntity"
+
 /**
- * @class
+ * @class TimerService
  */
-class TimerService {
+export class TimerService extends EventManagerAware {
     /**
      * Constant
      */
@@ -22,6 +25,8 @@ class TimerService {
      */
     constructor(timerStorage, sender, timer) {
 
+        super();
+
         /**
          * @type {Storage}
          */
@@ -41,11 +46,6 @@ class TimerService {
          * @type {Object}
          */
         this.runningTimer = {};
-
-        /**
-         * Event manager
-         */
-        this.eventManager = new (require('@dsign/library').event.EventManager)();
 
         /**
          * Add schedule listener
@@ -264,5 +264,3 @@ class TimerService {
         this.sender.send('proxy', message);
     }
 }
-
-module.exports = TimerService;

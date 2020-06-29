@@ -2,22 +2,57 @@
     "title": "Timer",
     "name": "timer",
     "icon": "timer:menu",
-    "configEntryPoint": "config.js",
+    "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "timer-index",
-        "path": "index.js"
+        "path": {
+            "directory": "element/timer-index",
+            "nameFile": "timer-index",
+            "extension": "js"
+        }
     },
     "autoloadsWc": [
         {
             "name": "timer-icons",
-            "path": "element/icons/icons.js"
+            "path": {
+                "directory": "element/timer-icons",
+                "nameFile": "timer-icons",
+                "extension": "js"
+            }
         }
     ],
     "autoloads": [
-        "src/TimerService.js",
-        "src/injector/TimerDataInjector.js",
-        "src/storage/entity/TimerEntity.js",
-        "src/storage/entity/embedded/TimelineItem.js",
-        "src/storage/adapter/mongo/MongoTimerAdapter.js"
+        {
+            "name": "TimerService",
+            "path": {
+                "directory": "src",
+                "nameFile": "TimerService",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "TimerDataInjector",
+            "path": {
+                "directory": "src/injector",
+                "nameFile": "TimerDataInjector",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "TimerEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "TimerEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoTimerAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoTimerAdapter",
+                "extension": "js"
+            }
+        }
     ]
 }

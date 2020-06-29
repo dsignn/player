@@ -6,8 +6,7 @@ import {StorageCrudMixin} from "@dsign/polymer-mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import "../paper-timer/paper.timer";
-
-import {lang} from './language/list-language';
+import {lang} from './language';
 
 /**
  * @customElement
