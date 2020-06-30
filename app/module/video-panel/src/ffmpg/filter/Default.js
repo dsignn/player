@@ -1,7 +1,7 @@
 /**
  *
  */
-class Default {
+export class Default {
 
     /**
      * @return {string}
@@ -10,5 +10,3 @@ class Default {
         return 'setpts=PTS-STARTPTS';
     }
 }
-
-module.exports = Default;

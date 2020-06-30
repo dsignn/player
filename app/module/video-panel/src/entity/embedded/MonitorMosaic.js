@@ -1,7 +1,9 @@
+import {MonitorEntity} from "./../../../../monitor/src/entity/MonitorEntity"
+
 /**
  * @class MonitorMosaic
  */
-class MonitorMosaic extends MonitorEntity {
+export class MonitorMosaic extends MonitorEntity {
 
     /**
      *
@@ -136,5 +138,3 @@ class MonitorMosaic extends MonitorEntity {
         return this;
     }
 }
-
-module.exports = MonitorMosaic;

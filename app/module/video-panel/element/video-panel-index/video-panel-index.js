@@ -3,11 +3,11 @@ import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-tabs/paper-tabs';
-import {flexStyle} from '../../style/layout-style';
-import "./element/view/video-panel-list";
-import "./element/view/video-panel-upsert";
-import "./element/view/video-panel-resource-list";
-import "./element/view/video-panel-resource-upsert";
+import {flexStyle} from '../../../../style/layout-style';
+import "./../video-panel-resource-view-upsert/video-panel-resource-view-upsert";
+import "./../video-panel-resource-view-list/video-panel-resource-list";
+import "./../video-panel-view-upsert/video-panel-view-upsert";
+import "./../video-panel-view-list/video-panel-view-list";
 import {lang} from "./language";
 
 /**

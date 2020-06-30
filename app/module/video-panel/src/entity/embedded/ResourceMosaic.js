@@ -1,7 +1,9 @@
+import {FileEntity} from "./../../../../resource/src/entity/FileEntity"
+
 /**
  * @class ResourceMosaic
  */
-class ResourceMosaic extends FileEntity {
+export class ResourceMosaic extends FileEntity {
 
     constructor() {
         super();
@@ -55,5 +57,3 @@ class ResourceMosaic extends FileEntity {
         return this;
     }
 }
-
-module.exports = ResourceMosaic;

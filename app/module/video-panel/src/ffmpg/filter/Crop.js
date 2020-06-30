@@ -1,7 +1,7 @@
 /**
  *
  */
-class Crop {
+export class Crop {
 
     /**
      * @param {Number} width
@@ -39,5 +39,3 @@ class Crop {
         return  `crop=${this.width}:${this.height}:${this.x}:${this.y}`;
     }
 }
-
-module.exports = Crop;

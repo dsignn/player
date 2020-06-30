@@ -1,7 +1,9 @@
+import {VideoPanel} from "./VideoPanel"
+
 /**
  * @class VideoPanelMosaic
  */
-class VideoPanelMosaic extends VideoPanel {
+export class VideoPanelMosaic extends VideoPanel {
 
     /**
      *
@@ -31,5 +33,3 @@ class VideoPanelMosaic extends VideoPanel {
         return this;
     }
 }
-
-module.exports = VideoPanelMosaic;

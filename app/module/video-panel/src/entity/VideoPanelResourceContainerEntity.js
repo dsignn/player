@@ -1,7 +1,9 @@
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
  * @class VideoPanelResourceContainerEntity
  */
-class VideoPanelResourceContainerEntity extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class VideoPanelResourceContainerEntity extends EntityIdentifier {
 
     /**
      *
@@ -51,5 +53,3 @@ class VideoPanelResourceContainerEntity extends require("@dsign/library").storag
         return Object.keys(this.videoPanelResource).length === 0 && this.videoPanelResource.constructor === Object ? false : true;
     }
 }
-
-module.exports = VideoPanelResourceContainerEntity;

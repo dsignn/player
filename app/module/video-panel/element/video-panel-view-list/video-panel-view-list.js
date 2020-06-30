@@ -5,9 +5,8 @@ import {StoragePaginationMixin} from "@dsign/polymer-mixin/storage/pagination-mi
 import {StorageCrudMixin} from "@dsign/polymer-mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
-
-import './../paper-video-panel/paper-video-panel';
-import {lang} from './language/video-panel-resource-list-language';
+import '../paper-video-panel/paper-video-panel';
+import {lang} from './language';
 
 /**
  * @customElement

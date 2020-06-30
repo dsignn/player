@@ -1,7 +1,9 @@
+import {MongoCollectionAdapter} from "@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter"
+
 /**
- *
+ * @class MongoVideoPanelAdapter
  */
-class MongoVideoPanelAdapter extends require("@dsign/library").storage.adapter.mongo.MongoCollectionAdapter  {
+export class MongoVideoPanelAdapter extends MongoCollectionAdapter {
 
     /**
      * @inheritDoc
@@ -24,5 +26,3 @@ class MongoVideoPanelAdapter extends require("@dsign/library").storage.adapter.m
         return returnFilter;
     }
 }
-
-module.exports = MongoVideoPanelAdapter;

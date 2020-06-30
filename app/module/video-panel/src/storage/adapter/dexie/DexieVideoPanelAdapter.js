@@ -1,7 +1,9 @@
+import {DexieAdapter} from "@dsign/library/src/storage/adapter/dexie/DexieAdapter"
+
 /**
- *
+ * @class DexieVideoPanelAdapter
  */
-class DexieVideoPanelAdapter extends require("@dsign/library").storage.adapter.dexie.DexieAdapter {
+export class DexieVideoPanelAdapter extends DexieAdapter {
 
     /**
      * @param {Table} table
@@ -27,5 +29,3 @@ class DexieVideoPanelAdapter extends require("@dsign/library").storage.adapter.d
         return collection;
     }
 }
-
-module.exports = DexieVideoPanelAdapter;

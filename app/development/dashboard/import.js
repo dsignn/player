@@ -102,8 +102,8 @@ import '../../module/timeline/element/timeline-icons/timeline-icons'
 /**
  * start video-panel
  */
-import '../../module/video-panel/index'
-import '../../module/video-panel/element/icons/icons'
+import '../../module/video-panel/element/video-panel-index/video-panel-index'
+import '../../module/video-panel/element/video-panel-icons/video-panel-icons'
 /**
  * end video-panel
  */

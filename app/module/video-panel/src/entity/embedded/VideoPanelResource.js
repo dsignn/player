@@ -1,8 +1,10 @@
+import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+
 /**
  * @class VideoPanelResource
  * TODO to inject into the entity container must be extend the EntityIdentifier
  */
-class VideoPanelResource extends require("@dsign/library").storage.entity.EntityIdentifier {
+export class VideoPanelResource extends EntityIdentifier {
 
     /**
      *
@@ -106,5 +108,3 @@ class VideoPanelResource extends require("@dsign/library").storage.entity.Entity
         return remove;
     }
 }
-
-module.exports = VideoPanelResource;

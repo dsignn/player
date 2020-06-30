@@ -1,6 +1,9 @@
+import {AbstractHydrator} from "@dsign/library/src/hydrator/AbstractHydrator"
 
-
-class VideoPanelToVideoPanelResourceHydrator extends require("@dsign/library").hydrator.AbstractHydrator {
+/**
+ * @class VideoPanelToVideoPanelResourceHydrator
+ */
+export class VideoPanelToVideoPanelResourceHydrator extends AbstractHydrator {
 
     constructor() {
         super();
@@ -52,5 +55,3 @@ class VideoPanelToVideoPanelResourceHydrator extends require("@dsign/library").h
         return object;
     }
 }
-
-module.exports = VideoPanelToVideoPanelResourceHydrator;

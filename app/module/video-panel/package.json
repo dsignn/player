@@ -2,32 +2,137 @@
     "title": "Video panel",
     "name": "video-panel",
     "icon": "video-panel:menu",
-    "configEntryPoint": "config.js",
+    "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "video-panel-index",
-        "path": "index.js"
+        "path": {
+            "directory": "element/video-panel-index",
+            "nameFile": "video-panel-index",
+            "extension": "js"
+        }
     },
     "autoloadsWc": [
         {
             "name": "video-panel-icons",
-            "path": "element/icons/icons.js"
+            "path": {
+                "directory": "element/video-panel-icons",
+                "nameFile": "video-panel-icons",
+                "extension": "js"
+            }
         }
     ],
     "autoloads": [
-        "src/ffmpg/Mosaic.js",
-        "src/ffmpg/filter/Crop.js",
-        "src/ffmpg/filter/Default.js",
-        "src/ffmpg/Mosaic.js",
-        "src/storage/entity/VideoPanelContainerEntity.js",
-        "src/storage/entity/VideoPanelResourceContainerEntity.js",
-        "src/storage/entity/embedded/VideoPanel.js",
-        "src/storage/entity/embedded/VideoPanelResource.js",
-        "src/storage/entity/embedded/MonitorMosaic.js",
-        "src/storage/entity/embedded/ResourceMosaic.js",
-        "src/storage/entity/embedded/VideoPanelMosaic.js",
-        "src/storage/adapter/mongo/MongoVideoPanelAdapter.js",
-        "src/storage/adapter/mongo/MongoVideoPanelResourceAdapter.js",
-        "src/hydrator/VideoPanelToVideoPanelResourceHydrator.js",
-        "src/VideoPanelService.js"
+        {
+            "name": "Mosaic",
+            "path": {
+                "directory": "src/ffmpg",
+                "nameFile": "Mosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "Crop",
+            "path": {
+                "directory": "src/ffmpg/filter",
+                "nameFile": "Crop",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "Crop",
+            "path": {
+                "directory": "src/ffmpg",
+                "nameFile": "Default",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelContainerEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "VideoPanelContainerEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelResourceContainerEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "VideoPanelResourceContainerEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanel",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "VideoPanel",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelResource",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "VideoPanelResource",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MonitorMosaic",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "MonitorMosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "ResourceMosaic",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "ResourceMosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelMosaic",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "VideoPanelMosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoVideoPanelResourceAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoVideoPanelResourceAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoVideoPanelAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoVideoPanelAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelToVideoPanelResourceHydrator",
+            "path": {
+                "directory": "src/hydrator",
+                "nameFile": "VideoPanelToVideoPanelResourceHydrator",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelService",
+            "path": {
+                "directory": "src",
+                "nameFile": "VideoPanelService",
+                "extension": "js"
+            }
+        }
     ]
 }

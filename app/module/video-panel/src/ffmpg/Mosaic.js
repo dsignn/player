@@ -1,7 +1,9 @@
+import {Default} from "./filter/Default"
+
 /**
  * @class Mosaic
  */
-class Mosaic {
+export class Mosaic {
 
     /**
      * @param defaultFilter
@@ -194,5 +196,3 @@ class Mosaic {
         });
     }
 }
-
-module.exports = Mosaic;

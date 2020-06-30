@@ -1,7 +1,10 @@
+import {Crop} from "./ffmpg/filter/Crop";
+import {Mosaic} from "./ffmpg/Mosaic"
+
 /**
  * @class VideoPanelService
  */
-class VideoPanelService {
+export class VideoPanelService {
 
     /**
      *
@@ -384,5 +387,3 @@ class VideoPanelService {
         console.groupEnd();
     }
 }
-
-module.exports = VideoPanelService;
