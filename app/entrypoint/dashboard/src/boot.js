@@ -18,35 +18,7 @@ import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strate
 import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';
-
-let getHomeDir = (env) => {
-
-    if (!env.HOME) {
-        throw 'Dont set home directory in environment object';
-    }
-
-    if (!env.npm_package_name) {
-        throw 'Dont set the name in the package json';
-    }
-
-    let directory;
-    const os = require('os');
-    const path = require('path');
-
-    switch (os.type()) {
-        case 'Linux':
-            directory = `${env.HOME}${path.sep}.config${path.sep}${env.npm_package_name}`;
-            break;
-        case 'Darwin':
-            directory = `${env.HOME}${path.sep}Library${path.sep}Application Support${path.sep}${env.npm_package_name}`;
-            break;
-        case 'Window_NT':
-            directory = `${env.HOME}${path.sep}AppData${path.sep}Local${path.sep}${env.npm_package_name}`;
-            break;
-    }
-
-    return directory;
-}
+import {getHomeDir} from "../../homeDir";
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
@@ -126,9 +98,7 @@ for (let cont = 0; modules.length > cont; cont++) {
 }
 
 window.addEventListener('DOMContentLoaded', (event) => {
-    if (window.document.body.getElementsByTagName('application-layout').length === 0) {
-        loadApplication();
-    }
+    container.get('MongoDb').connect();
 });
 
 application.getEventManager().on(
@@ -140,15 +110,9 @@ application.getEventManager().on(
             .on(
                 MongoDb.READY_CONNECTION,
                 (connection) =>  {
-                    if (document.body && window.document.body.getElementsByTagName('application-layout').length === 0) {
-                        loadApplication();
-                    }
-
+                    loadApplication();
                 }
             );
-
-        container.get('MongoDb').connect();
-
     }.bind(container))
 );
 

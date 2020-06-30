@@ -218,7 +218,7 @@ class Application {
             // TODO delay for the fast load of the player index
             setTimeout(
                 () => {
-                    browserWindows.send('paper-player-config', monitor);
+                    browserWindows.send('paper-player-config', this.getMonitorEntityHydrator().extract(monitor));
                 },
                 2000
             );
@@ -301,10 +301,29 @@ class Application {
      */
     getMonitorContainerEntityHydrator() {
 
-        if (this.monitorHidrator) {
-            return this.monitorHidrator;
+        if (this.monitorContainerEntityHydrator) {
+            return this.monitorContainerEntityHydrator;
         }
 
+        let monitorContainerEntityHydrator = new PropertyHydrator(
+            new MonitorContainerEntity()
+        );
+
+        let strategy = new HydratorStrategy();
+        strategy.setHydrator(this.getMonitorEntityHydrator());
+        monitorContainerEntityHydrator.addValueStrategy('monitors', strategy);
+
+        this.monitorContainerEntityHydrator = monitorContainerEntityHydrator;
+        return this.monitorContainerEntityHydrator;
+    }
+
+    /**
+     * @return {PropertyHydrator}
+     */
+    getMonitorEntityHydrator() {
+        if (this.monitorEntityHydrator) {
+            return this.monitorEntityHydrator;
+        }
 
         let monitorEntityHydrator =  new PropertyHydrator(
             new MonitorEntity()
@@ -346,17 +365,10 @@ class Application {
             .addValueStrategy('offsetX', new NumberStrategy())
             .addValueStrategy('offsetY', new NumberStrategy());
 
-        let monitorContainerEntityHydrator = new PropertyHydrator(
-            new MonitorContainerEntity()
-        );
 
-        strategy = new HydratorStrategy();
-        strategy.setHydrator(monitorEntityHydrator);
-        monitorContainerEntityHydrator.addValueStrategy('monitors', strategy);
+        this.monitorEntityHydrator = monitorEntityHydrator;
 
-        this.monitorHidrator = monitorContainerEntityHydrator;
-
-        return this.monitorHidrator;
+        return this.monitorEntityHydrator;
     }
 
     /**
@@ -463,7 +475,7 @@ class Application {
                         newMonitors[cont].width,
                         newMonitors[cont].height
                     );
-                    newMonitors[cont].browserWindows.send('paper-player-update', newMonitors[cont]);
+                    newMonitors[cont].browserWindows.send('paper-player-update', this.getMonitorEntityHydrator().extract(newMonitors[cont]));
                     this.monitorsContainerEntity.monitors[index] = newMonitors[cont];
                     break;
                 default:
@@ -508,7 +520,7 @@ class Application {
      */
     run() {
         this.createPlayerDashboard();
-  //      this.createPlayerBrowserWindows();
+        this.createPlayerBrowserWindows();
     }
 
     /**
