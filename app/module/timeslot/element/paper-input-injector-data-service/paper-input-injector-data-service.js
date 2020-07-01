@@ -34,7 +34,7 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
                     --iron-icon-width: 16px;
                     color: var(--paper-grey-300);
                     background-color: var(--disabled-text-color);
-                    border-radius: 50% ;
+                    border-radius: 50%;
                     margin-bottom: 3px;
                 }
              

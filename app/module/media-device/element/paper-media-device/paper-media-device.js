@@ -31,7 +31,7 @@ class PaperMediaDevice extends StorageEntityMixin(LocalizeMixin(ServiceInjectorM
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
+                    
                 }
                 
                 #fastAction {

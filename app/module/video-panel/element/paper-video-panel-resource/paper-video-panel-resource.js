@@ -32,7 +32,6 @@ class PaperVideoPanelResource extends StorageEntityMixin(LocalizeMixin(ServiceIn
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
                 }
                 
                 #right-section {
@@ -57,7 +56,7 @@ class PaperVideoPanelResource extends StorageEntityMixin(LocalizeMixin(ServiceIn
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
+                    
                 }
                 
                 #fastAction {

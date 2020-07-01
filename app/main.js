@@ -164,7 +164,7 @@ class Application {
             },
             titleBarStyle: 'hidden',
             autoHideMenuBar: true,
-            icon: path.join(__dirname, 'style/icon/logo.png'),
+            icon: path.join(__dirname, 'images/ms-icon-310x310.png'),
             title: `Dsign dashboard`,
             width: 600,
             height: 800,

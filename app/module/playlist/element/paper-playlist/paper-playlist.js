@@ -29,7 +29,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
+                    
                 }
                 
                 #fastAction {
@@ -107,7 +107,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 }
     
                 .crud paper-icon-button {
-                    background-color: #0b8043 ;
+                    background-color: #0b8043;
                 }
                 
                 paper-slider {

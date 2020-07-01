@@ -7,36 +7,18 @@ const template = html`
     
     
         :root {
-            /**
-            --dark-primary-color:       #E64A19;
-            --default-primary-color:    #FF5722;
-            --light-primary-color:      #FFCCBC;
+            --dark-primary-color:       #61ad97;
+            --default-primary-color:    #009688;
+            --light-primary-color:      #B2DFDB;
             --text-primary-color:       #FFFFFF;
-            --accent-color:             #4CAF50;
-            --primary-background-color: #FFCCBC;
+            --accent-color:             #FF5252;
+            --primary-background-color: #FFFFFF;
             --primary-text-color:       #212121;
             --secondary-text-color:     #757575;
             --disabled-text-color:      #BDBDBD;
             --divider-color:            #BDBDBD;
-    
-            --drawer-menu-color:           #ffffff;
-            --drawer-border-color:         1px solid #ccc;
-            --drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
-    
-            --paper-menu-background-color: #fff;
-            --menu-link-color:             #111111;
-            */
-               
-            --dark-primary-color:       #512DA8;
-            --default-primary-color:    #673AB7;
-            --light-primary-color:      #D1C4E9;
-            --text-primary-color:       #FFFFFF;
-            --accent-color:             #CDDC39;
-            --primary-background-color: #D1C4E9;
-            --primary-text-color:       #212121;
-            --secondary-text-color:     #757575;
-            --disabled-text-color:      #BDBDBD;
-            --divider-color:            #BDBDBD;
+
+            --app-primary-color:  #009688;
 
 
             /* Components */
@@ -162,7 +144,7 @@ const template = html`
                 cursor: help;
             }
             
-            --application-paper-card-left-content: {
+            : {
                 background-image: url("../../style/icon/placeholder.jpg");
             }
             

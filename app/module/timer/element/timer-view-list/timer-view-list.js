@@ -156,7 +156,7 @@ class TimerViewList extends  StoragePaginationMixin(StorageCrudMixin(LocalizeMix
             .catch((err) => {
                     console.error(err)
                 }
-            )   ;
+            );
     }
 
     /**

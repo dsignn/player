@@ -33,7 +33,6 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
                 }
                 
                 #fastAction {

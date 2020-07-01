@@ -7,7 +7,7 @@ import '@polymer/paper-item/paper-item';
 import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-toggle-button/paper-toggle-button';
 import '@polymer/paper-menu-button/paper-menu-button';
-import {lang} from './language/language';
+import {lang} from './language';
 
 /**
  * @customElement
@@ -31,7 +31,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
+                    background-image: url("./../../module/monitor/element/paper-monitor/img/cover.png");
                 }
                 
                 #fastAction {

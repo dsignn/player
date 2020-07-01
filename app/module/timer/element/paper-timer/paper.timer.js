@@ -32,7 +32,6 @@ class PaperTimer extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(P
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
                 }
                 
                 #right-section {
@@ -57,7 +56,7 @@ class PaperTimer extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(P
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    @apply --application-paper-card-left-content;
+                    
                 }
                 
                 #fastAction {
