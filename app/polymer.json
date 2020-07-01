@@ -9,6 +9,7 @@
   "sources": [
     "lib/**/*.js",
     "elements/**",
+    "images/**",
     "style/**",
     "entrypoint/**",
     "module/**",
