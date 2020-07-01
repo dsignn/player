@@ -12,6 +12,7 @@ import {ResourceService} from "./src/ResourceService";
 import {FileEntity} from "./src/entity/FileEntity";
 import {AudioEntity} from "./src/entity/AudioEntity";
 import {VideoEntity} from "./src/entity/VideoEntity";
+import {ImageEntity} from "./src/entity/ImageEntity";
 import {MongoResourceAdapter} from "./src/storage/adapter/mongo/MongoResourceAdapter";
 import {DexieResourceAdapter} from "./src/storage/adapter/dexie/DexieResourceAdapter";
 
