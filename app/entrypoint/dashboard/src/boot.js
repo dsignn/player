@@ -1,11 +1,11 @@
 import {Archive} from '@dsign/library/src/archive/Archive';
-import {Application2 as Application} from '@dsign/library/src/core/Application2';
+import {Application} from '@dsign/library/src/core/Application';
 import {Module} from '@dsign/library/src/core/module/Module';
-import {Widget2 as Widget} from '@dsign/library/src/core/widget/Widget2';
+import {Widget} from '@dsign/library/src/core/widget/Widget';
 import {WebComponent} from '@dsign/library/src/core/webcomponent/WebComponent';
 import {AutoLoadClass} from '@dsign/library/src/core/autoload/AutoLoadClass';
 import {Listener} from '@dsign/library/src/event/index'
-import {Container, ContainerAggregate} from  '@dsign/library/src/container/index';
+import {Container, ContainerAggregate} from '@dsign/library/src/container/index';
 import {Localize} from '@dsign/library/src/localize/Localize';
 import {PathNode} from '@dsign/library/src/path/PathNode';
 import {Acl} from '@dsign/library/src/permission/acl/Acl';
@@ -13,8 +13,8 @@ import {JsAclAdapter} from '@dsign/library/src/permission/acl/adapter/js-acl/JsA
 import {Storage} from '@dsign/library/src/storage/Storage';
 import {EntityIdentifier, EntityReference} from '@dsign/library/src/storage/entity/index';
 import {EntityNestedReference} from '@dsign/library/src/storage/entity/EntityNestedReference';
-import {PropertyHydrator, AbstractHydrator} from '@dsign/library/src/hydrator/index';
-import {HydratorStrategy, PathStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
+import {AbstractHydrator, PropertyHydrator} from '@dsign/library/src/hydrator/index';
+import {HydratorStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';

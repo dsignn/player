@@ -2,6 +2,7 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input';
 import '@polymer/paper-button/paper-button';
 import '@fluidnext-polymer/paper-chip/paper-chips';
+
 /**
  * @customElement
  * @polymer

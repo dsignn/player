@@ -1,5 +1,5 @@
 import {Listener} from '@dsign/library/src/event/Listener';
-import {Application}  from '@dsign/library/src/core/Application';
+import {Application} from '@dsign/library/src/core/Application';
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
@@ -18,7 +18,7 @@ import '../paper-backup/paper-backup';
 import '../paper-restore/paper-restore';
 import '../paper-always-on-top/paper-always-on-top';
 import '../paper-gpu-setting/paper-gpu-setting';
-import { flexStyle } from '../../style/layout-style';
+import {flexStyle} from '../../style/layout-style';
 import {lang} from './language/language.js';
 
 /**

@@ -6,12 +6,12 @@
   "repository": "git@github.com:dsignn/player.git",
   "license": "BSD-3-Clause",
   "devDependencies": {
-    "@babel/core": "^7.10.3",
+    "@babel/core": "^7.10.4",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.10.3",
-    "@babel/preset-env": "^7.10.3",
-    "@babel/register": "^7.10.3",
-    "@babel/runtime": "^7.10.3",
+    "@babel/plugin-transform-runtime": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/register": "^7.10.4",
+    "@babel/runtime": "^7.10.4",
     "@types/source-map": "^0.5.7",
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
@@ -19,7 +19,7 @@
     "electron": "^9.0.5",
     "electron-builder": "^22.7.0",
     "polymer-cli": "^1.9.9",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.6"
   },
   "dependencies": {
     "@dsign/library": "github:dsignn/library#master",
