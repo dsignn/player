@@ -99,10 +99,10 @@
     },
     "win": {
       "legalTrademarks": "Dsign",
-      "asar": false
+      "asar": true
     },
     "linux": {
-      "asar": false
+      "asar": true
     }
   },
   "keywords": [
