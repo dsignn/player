@@ -16,7 +16,7 @@
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
-    "electron": "^9.0.5",
+    "electron": "^10.0.1",
     "electron-builder": "^22.7.0",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.9.6"
@@ -82,6 +82,7 @@
       "index.html",
       "main.js",
       "icon.png",
+      "images/**/*",
       "config/**/*",
       "style/**/*",
       "module/**/*",
@@ -98,10 +99,10 @@
     },
     "win": {
       "legalTrademarks": "Dsign",
-      "asar": true
+      "asar": false
     },
     "linux": {
-      "asar": true
+      "asar": false
     }
   },
   "keywords": [

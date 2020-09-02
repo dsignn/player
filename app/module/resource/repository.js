@@ -418,7 +418,7 @@ export class Repository extends ContainerAware {
      */
     static getResourceHydrator(container) {
 
-        let hydrator = new AggregatePropertyHydrator('type');
+        let hydrator = new AggregatePropertyHydrator(['type']);
 
         hydrator.addHydratorMap(
             Repository.getImageEntityHydrator(container),

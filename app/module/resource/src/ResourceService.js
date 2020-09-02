@@ -11,8 +11,6 @@ export class ResourceService {
     constructor(localPath, path) {
 
         this.localPath = localPath;
-
-        this.nodePath = path;
     }
 
     /**
@@ -27,13 +25,13 @@ export class ResourceService {
      */
     getResourcePath(resourceEntity) {
 
-        return this.nodePath.normalize(`${this.localPath}${resourceEntity.id}${this.nodePath.sep}${resourceEntity.computeName()}`);
+        return require('path').normalize(`${this.getResourceDirectory(resourceEntity)}${require('path').sep}${resourceEntity.computeName()}`);
     }
 
     /**
      * @param resourceEntity
      */
     getResourceDirectory(resourceEntity) {
-        return this.nodePath.normalize(`${this.localPath}${resourceEntity.id}${this.nodePath.sep}`);
+        return  require('path').normalize(`${this.localPath}${require('path').sep}${resourceEntity.id}`);
     }
 }

@@ -18,18 +18,19 @@ import {HydratorStrategy} from '@dsign/library/src/hydrator/strategy/value/index
 import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';
-import {getHomeDir} from "../../homeDir";
+import {Utils} from '@dsign/library/src/core/Utils';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
-process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
+
 const fs = require('fs');
 const path = require('path');
 // when is compile generate the __dirname is different
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 
 const basePath = path.normalize(`${__dirname}${back}`);
-const homeData = getHomeDir(process.env);
 const packageJson =  JSON.parse(fs.readFileSync(`${basePath}${path.sep}package.json`).toString());
+process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
+const homeData = Utils.getHomeDir(process.env);
 const config =  JSON.parse(
     fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
 );
@@ -97,9 +98,9 @@ for (let cont = 0; modules.length > cont; cont++) {
     }
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    container.get('MongoDb').connect();
-});
+/**
+ *
+ */
 
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
@@ -110,9 +111,18 @@ application.getEventManager().on(
             .on(
                 MongoDb.READY_CONNECTION,
                 (connection) =>  {
+                    console.log(window.document);
                     loadApplication();
                 }
             );
+
+        if (window.document.readyState === "complete" || window.document.readyState === "loaded") {
+            container.get('MongoDb').connect();
+        } else {
+            window.addEventListener('DOMContentLoaded', (event) => {
+                container.get('MongoDb').connect();
+            });
+        }
     }.bind(container))
 );
 

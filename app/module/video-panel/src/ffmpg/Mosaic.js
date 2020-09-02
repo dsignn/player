@@ -17,7 +17,7 @@ export class Mosaic {
         this._basePanel = {};
 
         /**
-         * @type {Path}
+         * @type {PathInterface}
          */
         this._destination = {};
 
@@ -52,7 +52,7 @@ export class Mosaic {
     }
 
     /**
-     * @param {Path} path
+     * @param {PathInterface} path
      * @return {Mosaic}
      */
     setDestination(path) {

@@ -10,22 +10,21 @@ import {mergeDeep} from "@dsign/library/src/object/Utils";
 import {PathNode} from "@dsign/library/src/path/PathNode";
 import {AutoLoadClass} from "@dsign/library/src/core/autoload/AutoLoadClass";
 import {Widget} from "@dsign/library/src/core/widget/Widget";
-import {getHomeDir} from "../../homeDir";
+import {Utils} from '@dsign/library/src/core/Utils';
 import {Acl} from "@dsign/library/src/permission/acl/Acl";
 import {JsAclAdapter} from "@dsign/library/src/permission/acl/adapter/js-acl/JsAclAdapter";
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
-process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
+
 const fs = require('fs');
 const path = require('path');
 // when is compile generate the __dirname is different
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
 
 const basePath = path.normalize(`${__dirname}${back}`);
-const homeData = getHomeDir(process.env);
 const packageJson =  JSON.parse(fs.readFileSync(`${basePath}${path.sep}package.json`).toString());
-
-
+process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
+const homeData = Utils.getHomeDir(process.env);
 
 /**
  * IMPORTANT add absolute node module path for web component script

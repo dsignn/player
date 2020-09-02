@@ -64,7 +64,7 @@ export class VideoPanelService {
 
     /**
      * @param {VideoPanelResource} videoPanelResource
-     * @param {Path} locationPath
+     * @param {PathInterface} locationPath
      * @return {Promise}
      */
     async generateResource(videoPanelResource, locationPath) {

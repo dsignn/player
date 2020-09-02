@@ -146,6 +146,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             },
 
             services : {
+                notify: true,
                 value : {
                     application:  "Application",
                     _aclService: 'Acl',
@@ -195,6 +196,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      * @param newValue
      */
     changeApplicationService(newValue) {
+        console.log('TONI', newValue);
         if (!newValue) {
             return;
         }

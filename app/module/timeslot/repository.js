@@ -10,10 +10,13 @@ import {
     MongoIdStrategy,
     NumberStrategy
 } from "@dsign/library/src/hydrator/strategy/value/index";
+
+import {IpcWrapper} from "@dsign/library/src/sender/IpcWrapper";
 import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
 import {AbstractInjector} from "./src/injector/AbstractInjector";
 import {Test1} from "./src/injector/Test1";
 import {Test2} from "./src/injector/Test2";
+import {TimeslotEntity} from "./src/entity/TimeslotEntity"
 import {MongoTimeslotAdapter} from "./src/storage/adapter/mongo/MongoTimeslotAdapter";
 import {DexieTimeslotAdapter} from "./src/storage/adapter/dexie/DexieTimeslotAdapter";
 import {Repository as ResourceRepository} from "./../resource/repository";

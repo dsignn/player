@@ -31,8 +31,7 @@
       "name": "es6bundle",
       "js": {
         "compile": "es2018",
-        "minify": false,
-        "transformModulesToAmd": true
+        "minify": false
       },
       "css": {
         "minify": false

@@ -13,7 +13,7 @@ import '../paper-video-panel-resource-item/paper-video-panel-resource-item';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language';
-import {Path} from '@dsign/library/src/path/Path';
+import {PathNode} from '@dsign/library/src/path/PathNode';
 import {MongoIdGenerator} from '@dsign/library/src/storage/util/MongoIdGenerator';
 
 /**
@@ -337,7 +337,7 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
      */
     createVideoPanelResource(evt) {
 
-        let path = new Path();
+        let path = new PathNode();
         path.setExtension('mp4');
         // TODO change name dyslexia
         path.setNameFile(MongoIdGenerator.statcGenerateId());
