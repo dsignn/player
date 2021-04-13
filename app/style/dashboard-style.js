@@ -7,18 +7,20 @@ const template = html`
     
     
         :root {
+ 
             --dark-primary-color:       #61ad97;
-            --default-primary-color:    #009688;
+            --default-primary-color:    #015b63;
             --light-primary-color:      #B2DFDB;
             --text-primary-color:       #FFFFFF;
-            --accent-color:             #FF5252;
+            --accent-color:             #f0b80e;
             --primary-background-color: #FFFFFF;
             --primary-text-color:       #212121;
             --secondary-text-color:     #757575;
             --disabled-text-color:      #BDBDBD;
             --divider-color:            #BDBDBD;
 
-            --app-primary-color:  #009688;
+            --app-primary-color:  #015b63;
+
 
 
             /* Components */

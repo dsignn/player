@@ -8,7 +8,7 @@
   "devDependencies": {
     "@dsign/player-cli": "github:dsignn/player-cli",
     "dexie": "^2.0.4",
-    "run-script-os": "^1.0.7"
+    "run-script-os": "^1.1.5"
   },
   "scripts": {
     "postinstall": "npm run postinstallscriptos",
