@@ -25,11 +25,6 @@
         - run:
             name: Build polymer
             command: npm run polymer-build
-
-        # Install rsync
-        - run:
-            name: Rsync install
-            command: sudo apt-get install rsync
         
         # Install wine
         - run:
@@ -44,7 +39,7 @@
         # Build sideline for all platform
         - run:
             name: Build and Pubblish
-            command: sudo make electron-build-all
+            command: sudo npm run dist
 
 
   workflows:

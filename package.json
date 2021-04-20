@@ -7,6 +7,7 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@dsign/player-cli": "github:dsignn/player-cli",
+    "electron-builder": "^22.10.5",
     "dexie": "^2.0.4",
     "run-script-os": "^1.1.5"
   },
@@ -27,10 +28,47 @@
     "start-pre-build:linux:darwin": "cd app && ./node_modules/.bin/electron ./../build/es6bundle/main.js --inspect=5858",
     "start-pre-build:win32": "cd app && .\\node_modules\\.bin\\electron .\\..\\build\\es6bundle\\main.js --inspect=5858",
     "test": "cd app && ./node_modules/.bin/polymer test -l chrome",
-    "dist": "cd app && ./node_modules/.bin/electron-builder --project ../build/es6bundle -c.extraMetadata.main=main.js -wl --x64",
+    "dist": "electron-builder -c.extraMetadata.main=main.js -lw",
     "clear-all": "run-script-os",
     "clear-all:linux:darwin": "rm -rf app/node_modules && rm -rf build && rm -rf releases",
     "clear-all:win32": "rmdir /Q /S  app\\node_modules && rmdir /Q /S build && rmdir /Q /S releases"
+  },
+  "build": {
+    "appId": "dsign.player",
+    "asar": false,
+    "npmRebuild": false,
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
+    },
+    "directories": {
+      "output": "releases",
+      "app": "build/es6bundle"
+    },
+    "win": {
+      "legalTrademarks": "Dsign",
+      "icon": "./app/images/logo.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "linux": {
+      "icon": "./app/images/safari-pinned-tab.svg",
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "armv7l"
+          ]
+        }
+      ]
+    }
   },
   "keywords": [
     "polymer 3",

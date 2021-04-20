@@ -16,8 +16,7 @@
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
-    "electron": "^13.0.0-beta.14",
-    "electron-builder": "^22.10.5",
+    "electron": "12.0.4",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.9.9"
   },
@@ -74,36 +73,6 @@
     "mongodb": "^3.6.6",
     "paper-collapse-item": "^4.0.5",
     "web-animations-js": "^2.3.1"
-  },
-  "build": {
-    "appId": "dsign.player",
-    "npmRebuild": false,
-    "files": [
-      "index.html",
-      "main.js",
-      "icon.png",
-      "images/**/*",
-      "config/**/*",
-      "style/**/*",
-      "module/**/*",
-      "entrypoint/**/*",
-      "elements/**/*",
-      "manifest.json",
-      {
-        "from": "../lib",
-        "to": "../lib"
-      }
-    ],
-    "directories": {
-      "output": "../../releases"
-    },
-    "win": {
-      "legalTrademarks": "Dsign",
-      "asar": true
-    },
-    "linux": {
-      "asar": true
-    }
   },
   "keywords": [
     "polymer 3",
