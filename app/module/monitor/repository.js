@@ -128,6 +128,7 @@ export class Repository extends ContainerAware {
                 new MonitorService(
                     storage,
                     this.getContainer().get('SenderContainerAggregate').get(Repository.MONITOR_SENDER_SERVICE),
+                    this.getContainer().get('ReceiverContainerAggregate').get(Repository.MONITOR_RECEIVER_SERVICE),
                     dashboardAlwayOnTop
                 )
             )
@@ -156,6 +157,7 @@ export class Repository extends ContainerAware {
                 new MonitorService(
                     storage,
                     this.getContainer().get('SenderContainerAggregate').get(Repository.MONITOR_SENDER_SERVICE),
+                    this.getContainer().get('ReceiverContainerAggregate').get(Repository.MONITOR_RECEIVER_SERVICE),
                     dashboardAlwayOnTop
                 )
             )

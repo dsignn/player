@@ -1,6 +1,7 @@
 import {Container, ContainerAggregate} from '@dsign/library/src/container/index';
 import {Application} from "@dsign/library/src/core/Application";
 import {Module} from "@dsign/library/src/core/module/Module";
+import {Listener} from '@dsign/library/src/event/index'
 import {Storage} from '@dsign/library/src/storage/Storage';
 import {EntityIdentifier, EntityNestedReference, EntityReference} from '@dsign/library/src/storage/entity/index';
 import {WebComponent} from "@dsign/library/src/core/webcomponent/WebComponent";
@@ -96,33 +97,15 @@ for (let cont = 0; modules.length > cont; cont++) {
     }
 }
 
-window.addEventListener('DOMContentLoaded', (event) => {
-    if (window.document.body.getElementsByTagName('paper-player-manager').length === 0) {
-        loadApplication();
-    }
-});
-/*
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
 
-        container.get('MongoDb')
-            .getEventManager()
-            .on(
-                MongoDb.READY_CONNECTION,
-                (connection) =>  {
-                    if (document.body && window.document.body.getElementsByTagName('paper-player-manager').length === 0) {
-                        loadApplication();
-                    }
-
-                }
-            );
-
-        container.get('MongoDb').connect();
+        loadApplication();
 
     }.bind(container))
 );
-*/
+
 application.setWidgets(widgetHydrate)
     .loadModules(modulesHydrate, container);
 

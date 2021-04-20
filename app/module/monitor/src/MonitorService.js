@@ -28,10 +28,11 @@ export class MonitorService {
     /**
      * @param {Storage} monitorStorage
      * @param {AbstractSender} sender
+     * @param receiver
      * @param {boolean} alwaysOnTopDashboard
      * @param {string} resourcePath
      */
-    constructor(monitorStorage, sender, alwaysOnTopDashboard, resourcePath) {
+    constructor(monitorStorage, sender, receiver, alwaysOnTopDashboard, resourcePath) {
 
         /**
          * @type {Storage}
@@ -42,6 +43,21 @@ export class MonitorService {
          * @type {AbstractSender}
          */
         this.sender = sender;
+
+
+        /**
+         * @type Ipc
+         */
+        this.receiver = receiver;
+
+        /**
+         *
+         */
+        this.receiver.on('monitors', (event, data) => {
+            this.screen = data;
+        });
+
+        this.sender.send('monitors', {'mock': 'mock'});
 
         /**
          * @type {MonitorContainerEntity}
@@ -80,6 +96,9 @@ export class MonitorService {
                 }
                 this.enableMonitor = enableMonitors[0];
             });
+
+        const { app, BrowserWindow, screen } = require('electron');
+        this.screen = screen;
 
     }
 
@@ -129,7 +148,7 @@ export class MonitorService {
      * @return {Electron.Display[]}
      */
     getPhysicalMonitor() {
-        return require('electron').remote.screen.getAllDisplays();
+        return this.screen
     }
 
     /**

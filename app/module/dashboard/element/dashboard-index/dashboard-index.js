@@ -8,6 +8,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-button/paper-button';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-input/paper-input';
+import './../paper-widget/paper-widget';
 import {lang} from './language';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 

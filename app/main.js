@@ -1,8 +1,8 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, screen} = require('electron');
 const fs = require('fs');
 const url = require('url');
-const path = require('path');
+const path = require('path')
 const MonitorContainerEntity = require('./module/monitor/src/entity/require/MonitorContainerEntity');
 const MonitorEntity = require('./module/monitor/src/entity/require/MonitorEntity');
 const PropertyHydrator = require('@dsign/library').hydrator.PropertyHydrator;
@@ -54,15 +54,24 @@ class Application {
          */
         this.monitorsContainerEntity = new MonitorContainerEntity();
 
-        /**
-         * @type {Object}
-         */
-        this.config = JSON.parse(
-            fs.readFileSync(
-                this._getPathConfig(),
-                {'encoding': 'UTF8'}
-            )
-        );
+        try {
+            /**
+             * @type {Object}
+             */
+            this.config = JSON.parse(
+                fs.readFileSync(
+                    this._getPathConfig(),
+                    {'encoding': 'UTF8'}
+                )
+            );
+        } catch (e) {
+            console.warn('Load file config');
+            this.config = {};
+        }
+
+        app.whenReady().then(() => {
+            this.displays = screen.getAllDisplays()
+        });
 
         this._loadMonitorsConfig();
         this._startScript();
@@ -102,7 +111,12 @@ class Application {
             return;
         }
 
-        let monitorsData = JSON.parse(fs.readFileSync(Application.PATH_MONITOR_FILE_CONFIG, {'encoding': 'UTF8'}));
+        let monitorsData = null;
+        try {
+            monitorsData = JSON.parse(fs.readFileSync(Application.PATH_MONITOR_FILE_CONFIG, {'encoding': 'UTF8'}));
+        } catch (e) {
+            console.warn('Load monitor data');
+        }
 
         if (monitorsData && monitorsData.monitorConfig) {
             this.monitorsContainerEntity = this.getMonitorContainerEntityHydrator().hydrate(monitorsData.monitorConfig);
@@ -159,9 +173,7 @@ class Application {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
-                allowRunningInsecureContent: true,
                 experimentalFeatures: true,
-                enableRemoteModule: true
             },
             titleBarStyle: 'hidden',
             autoHideMenuBar: true,
@@ -584,6 +596,7 @@ app.on('activate', () => {
  */
 ipcMain.on('proxy', (event, message) => {
 
+    console.warn('MESSAGE', message);
     if (!message.event || !message.data)  {
         let stringData = message.data !== null && typeof message.data === 'object' ? JSON.stringify(message.data) : 'not object';
         console.error(`Wrong message for proxy event ${message.event}: ${stringData}`);
@@ -605,6 +618,10 @@ ipcMain.on('proxy', (event, message) => {
             application.dashboard.setAlwaysOnTop(message.data.checked);
             application.saveConfig();
             break;
+        case 'monitors':
+            console.log(application.displays);
+            event.reply('monitors', application.displays);
+
         default:
             application.broadcastMessage(message.event, message.data);
     }

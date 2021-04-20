@@ -157,7 +157,14 @@ class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             return;
         }
 
-        this.set('physicalMonitors', monitorService.getPhysicalMonitor());
+        // TODO make refactor
+        setTimeout(
+            () => {
+                this.set('physicalMonitors', monitorService.getPhysicalMonitor());
+            },
+            1000
+        )
+
     }
 }
 window.customElements.define('monitor-index', MonitorIndex);
