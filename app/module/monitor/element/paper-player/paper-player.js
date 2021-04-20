@@ -388,6 +388,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
          */
         let timeslot =  this._hydrateTimeslot(msg.timeslot);
         let element = this._createPaperPlayerTimeslot(timeslot, msg.data, msg.context);
+        console.log(element)
         this.appendTimeslot(timeslot.context, element);
         this.clearLayerButNotLast(timeslot);
     }

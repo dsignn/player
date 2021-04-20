@@ -158,6 +158,7 @@ class Application {
         this.dashboard = new BrowserWindow({
             webPreferences: {
                 nodeIntegration: true,
+                contextIsolation: false,
                 allowRunningInsecureContent: true,
                 experimentalFeatures: true,
                 enableRemoteModule: true
@@ -196,6 +197,7 @@ class Application {
         let browserWindows = new BrowserWindow({
             webPreferences : {
                 nodeIntegration: true,
+                contextIsolation: false,
                 enableRemoteModule: true
             },
             width: parseInt(monitor.width),
