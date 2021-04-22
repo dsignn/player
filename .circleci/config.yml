@@ -1,55 +1,55 @@
-  # Javascript Node CircleCI 2.0 configuration
-  #
-  # Check https://circleci.com/docs/2.0/language-javascript/ for more details
-  #
+# Javascript Node CircleCI 2.0 configuration
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  deploy:
+    resource_class: large
+    docker:
+      # specify the version you desire here
+      - image: circleci/node:11.8.0-stretch-browsers
+
+    working_directory: ~/repo
+
+    steps:
+      # Checkout project
+      - checkout
+
+      # Install wine32
+      - run:
+          name: Install wine32 to publish
+          command: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32
+
+      # Install rsync
+      - run:
+          name: Rsync install
+          command: sudo apt-get install rsync
+
+      # Set Up Project
+      - run:
+          name: Npm install
+          command: npm install
+
+      # Install Snap (delete without snap)
+      - run:
+          name: Build polymer
+          command: npm run polymer-build
+
+
+      # Build sideline for all platform
+      - run:
+          name: Build and Pubblish
+          command: sudo npm run dist
+
+
+workflows:
   version: 2
-  jobs:
-    deploy:
-      resource_class: large
-      docker:
-        # specify the version you desire here
-        - image: circleci/node:11.8.0-stretch-browsers
-
-      working_directory: ~/repo
-
-      steps:
-        # Checkout project
-        - checkout
-
-        # Install wine32
-        - run:
-            name: Install wine32 to publish
-            command: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32
-
-              # Install rsync
-              - run:
-                  name: Rsync install
-                  command: sudo apt-get install rsync
-
-        # Set Up Project
-        - run:
-            name: Npm install
-            command: npm install
-
-        # Install Snap (delete without snap)
-        - run:
-            name: Build polymer
-            command: npm run polymer-build
-
-        
-        # Build sideline for all platform
-        - run:
-            name: Build and Pubblish
-            command: sudo npm run dist
-
-
-  workflows:
-    version: 2
-    continuous-delivery-workflow:
-      jobs:
-        - deploy:
-            filters:
-              branches:
-                ignore: /.*/
-              tags:
-                only: /.*/
+  continuous-delivery-workflow:
+    jobs:
+      - deploy:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
