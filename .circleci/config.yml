@@ -25,7 +25,12 @@
         - run:
             name: Build polymer
             command: npm run polymer-build
-        
+
+        # Install rsync
+        - run:
+            name: Rsync install
+            command: sudo apt-get install rsync
+
         # Install wine
         - run:
             name: wine install
