@@ -16,6 +16,16 @@
         # Checkout project
         - checkout
 
+        # Install wine32
+        - run:
+            name: Install wine32 to publish
+            command: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32
+
+              # Install rsync
+              - run:
+                  name: Rsync install
+                  command: sudo apt-get install rsync
+
         # Set Up Project
         - run:
             name: Npm install
@@ -26,20 +36,6 @@
             name: Build polymer
             command: npm run polymer-build
 
-        # Install rsync
-        - run:
-            name: Rsync install
-            command: sudo apt-get install rsync
-
-        # Install wine
-        - run:
-            name: wine install
-            command: sudo apt-get install wine
-        
-        # Install wine32
-        - run:
-            name: Install wine32 to publish
-            command: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32
         
         # Build sideline for all platform
         - run:
