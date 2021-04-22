@@ -28,7 +28,7 @@
     "start-pre-build:linux:darwin": "cd app && ./node_modules/.bin/electron ./../build/es6bundle/main.js --inspect=5858",
     "start-pre-build:win32": "cd app && .\\node_modules\\.bin\\electron .\\..\\build\\es6bundle\\main.js --inspect=5858",
     "test": "cd app && ./node_modules/.bin/polymer test -l chrome",
-    "dist": "electron-builder -c.extraMetadata.main=main.js -lw",
+    "dist": "electron-builder -c.extraMetadata.main=main.js -lw -p onTag",
     "clear-all": "run-script-os",
     "clear-all:linux:darwin": "rm -rf app/node_modules && rm -rf build && rm -rf releases",
     "clear-all:win32": "rmdir /Q /S  app\\node_modules && rmdir /Q /S build && rmdir /Q /S releases"
@@ -39,10 +39,12 @@
     "npmRebuild": false,
     "publish": {
       "provider": "github",
-      "releaseType": "release"
+      "releaseType": "release",
+      "vPrefixedTagName": false
     },
     "directories": {
       "output": "releases",
+
       "app": "build/es6bundle"
     },
     "win": {
