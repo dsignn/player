@@ -478,7 +478,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWc": [
+        "autoloadsWs": [
             {
                 "name": "timeline-icons",
                 "path": {
@@ -536,7 +536,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWc": [
+        "autoloadsWs": [
             {
                 "name": "media-device-icons",
                 "path": {
@@ -586,7 +586,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWc": [
+        "autoloadsWs": [
             {
                 "name": "timer-icons",
                 "path": {
@@ -644,7 +644,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWc": [
+        "autoloadsWs": [
             {
                 "name": "video-panel-icons",
                 "path": {

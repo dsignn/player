@@ -106,6 +106,13 @@ application.getEventManager().on(
     }.bind(container))
 );
 
+
+window.addEventListener('DOMContentLoaded', (event) => {
+    if (window.document.body.getElementsByTagName('paper-player-manager').length === 0) {
+        loadApplication();
+    }
+});
+
 application.setWidgets(widgetHydrate)
     .loadModules(modulesHydrate, container);
 
@@ -188,7 +195,10 @@ container.set('Timer',
  */
 const loadApplication = () => {
     let wcApplication = window.document.createElement('paper-player-manager');
-    window.document.body.appendChild(wcApplication);
+    if (window.document.body && !window.document.body.querySelector('paper-player-manager')) {
+        window.document.body.appendChild(wcApplication);
+    }
+
 };
 
 
