@@ -473,6 +473,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _update(evt) {
         this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 
     /**
@@ -481,6 +482,7 @@ class PaperTimeline extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 }
 window.customElements.define('paper-timeline', PaperTimeline);

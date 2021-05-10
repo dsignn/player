@@ -490,6 +490,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _update(evt) {
         this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 
     /**
@@ -498,6 +499,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 }
 

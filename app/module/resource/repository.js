@@ -354,7 +354,7 @@ export class Repository extends ContainerAware {
         let zip = new this.zip(this.getContainer().get('ResourceService').getResourcePath(resourceEntity));
         zip.extractAllTo(this.getContainer().get('ResourceService').getResourceDirectory(resourceEntity), true);
 
-        let packageJson = `${this.getContainer().get('ResourceService').getResourceDirectory(resourceEntity)}package.json`;
+        let packageJson = `${this.getContainer().get('ResourceService').getResourceDirectory(resourceEntity)}${this.path.sep}package.json`;
         if (this.fs.existsSync(packageJson)) {
             let wcConfig = JSON.parse(this.fs.readFileSync(packageJson).toString());
 
@@ -367,9 +367,10 @@ export class Repository extends ContainerAware {
             resourceEntity.path.extension = wcConfig.main.split('.').pop();
             resourceEntity.type = 'application/javascript';
             resourceEntity.wcName = wcConfig.name;
+            console.log('RESOURCE', resourceEntity)
 
         } else {
-            console.warn('Package.json not found in archive');
+            console.warn(`${packageJson} not found in archive`);
         }
     }
 

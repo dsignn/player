@@ -132,10 +132,8 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
                                 <template is="dom-repeat" items="[[entity.videoPanelResource.videoPanelResources]]" as="videoPanelResource">
                                    <paper-video-panel-resource-item video-panel-resource="{{videoPanelResource}}"></paper-video-panel-resource-item>
                                 </template>
-                            <paper-progress id="resourceProgress" hidden$="{{progressResource}}" indeterminate class="slow"></paper-progress>
+                                <paper-progress id="resourceProgress" hidden$="{{progressResource}}" indeterminate class="slow"></paper-progress>
                             </div>
-                        
-                    
                         <div>
                             <div class="flex flex-horizontal-end" style="margin-top: 20px;">
                                 <paper-button id="todo" on-tap="createVideoPanelResource">{{localize('create-resource')}}</paper-button>
@@ -172,6 +170,12 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
                 value: 'save'
             },
 
+            progressResource: {
+                type: Boolean,
+                notify: true,
+                value: true
+            },
+
             hideResourceSection: {
                 type: Boolean,
                 notify: true,
@@ -186,6 +190,7 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
                     StorageContainerAggregate : {
                         _storage : "VideoPanelResourceStorage",
                         _videoPanelStorage : "VideoPanelStorage",
+                        _resourceStorage : "ResourceStorage",
                     },
                     EntityContainerAggregate: {
                         _entityNestedReference : "EntityNestedReference",
@@ -211,6 +216,14 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
              * @type StorageInterface
              */
             _videoPanelStorage: {
+                type: Object,
+                readOnly: true
+            },
+
+            /**
+             * @type StorageInterface
+             */
+            _resourceStorage: {
                 type: Object,
                 readOnly: true
             },
@@ -342,12 +355,58 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
         // TODO change name dyslexia
         path.setNameFile(MongoIdGenerator.statcGenerateId());
         // TODO refactor sep
-        path.setDirectory(`${this._application.getStoragePath()}tmp` );
+        path.setDirectory(`${this._application.getStoragePath()}/../tmp` );
 
+        this.progressResource = false;
         this._videoPanelService.generateResource(
             this.entity.videoPanelResource,
             path
-        );
+        ).then((data) => {
+            console.log('OK MOSAIC', data);
+            console.log('FFMPG result', data);
+
+            this.__generateResource(data);
+            this.progressResource = true;
+        }).catch((error) => {
+            console.error('ERROR MOSAIC', error);
+            this.progressResource = true;
+        });
+    }
+
+    /**
+     * @param ffmpegCommand
+     * @private
+     */
+    __generateResource(ffmpegCommand) {
+
+        if (!this.entity.resourceReference) {
+            console.error('Refence not found');
+            return;
+        }
+
+        let method = 'save'; this.entity.resourceReference.id ? 'save' : 'update';
+        let resource = {};
+        resource.name = this.entity.resourceReference.name;
+        resource.resourceToImport = {};
+        resource.resourceToImport.path = ffmpegCommand._currentOutput.target;
+        resource.type = "video/mp4";
+        if (this.entity.resourceReference.id) {
+            resource = 'update';
+            data.id = this.entity.resourceReference.id;
+        }
+
+        this._resourceStorage[method](resource).then(
+            (data) => {
+                console.log('RESOURCE', method, data);
+                this.entity.resourceReference.id = data.id;
+                    this._storage.update(this.entity).then(
+                        (entity) => {
+                            console.log('ENTITY', entity);
+                            this.entity = entity;
+                        }
+                    )
+            }
+        )
     }
 
     /**
@@ -406,7 +465,7 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
      */
     _resetVideoPanel(evt) {
         this.hideResourceSection = true;
-        this.entity.setVideoPanel({});
+        this.entity.setVideoPanelResource({});
     }
 }
 window.customElements.define('video-panel-resource-view-upsert', VideoPanelResourceViewUpsert);

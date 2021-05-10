@@ -178,7 +178,8 @@ export class VideoPanelService {
                         case (currentMonitor.getRemainingWidth() >= childVideoPanelMosaic.getRemainingWidth() && currentResource.getRemainingWidth() >= childVideoPanelMosaic.getRemainingWidth()):
                             crop = new Crop(
                                 childVideoPanelMosaic.getRemainingWidth(),
-                                currentResource.dimension.height,
+                            //    currentResource.dimension.height,
+                                childVideoPanelMosaic.height,
                                 currentResource.computedWidth,
                                 0
                             );
@@ -205,7 +206,8 @@ export class VideoPanelService {
                         case currentResource.getRemainingWidth() === currentMonitor.getRemainingWidth():
                             crop = new Crop(
                                 currentResource.getRemainingWidth(),
-                                currentResource.dimension.height,
+                       //         currentResource.dimension.height,
+                                childVideoPanelMosaic.height,
                                 currentResource.computedWidth,
                                 0
                             );
@@ -233,7 +235,8 @@ export class VideoPanelService {
                         case currentResource.getRemainingWidth() > currentMonitor.getRemainingWidth():
                             crop = new Crop(
                                 currentMonitor.getRemainingWidth(),
-                                currentResource.dimension.height,
+                             //   currentResource.dimension.height,
+                                childVideoPanelMosaic.height,
                                 currentResource.computedWidth,
                                 0
                             );
@@ -261,7 +264,8 @@ export class VideoPanelService {
                         case currentResource.getRemainingWidth() <= currentMonitor.getRemainingWidth():
                             crop = new Crop(
                                 currentResource.getRemainingWidth(),
-                                currentResource.dimension.height,
+                          //      currentResource.dimension.height,
+                                childVideoPanelMosaic.height,
                                 currentResource.computedWidth,
                                 0
                             );

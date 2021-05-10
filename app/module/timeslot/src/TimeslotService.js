@@ -351,9 +351,9 @@ export class TimeslotService extends AbstractTimeslotService {
         };
 
         if(data) {
-            message.data.data = {};
+            message.data.data = data;
         }
-
+        console.log('TIMESLOT SEND',message);
         this.sender.send('proxy', message);
     }
 }

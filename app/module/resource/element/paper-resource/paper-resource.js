@@ -116,7 +116,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                         </template>
                     </div>
                     <div id="crud">
-                        <paper-menu-button ignore-select horizontal-align="right">
+                        <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                             <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                             <paper-listbox slot="dropdown-content" multi>
                                 <paper-item on-click="_update">{{localize('modify')}}</paper-item>
@@ -324,6 +324,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _update(evt) {
         this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 
     /**
@@ -332,6 +333,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      */
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 }
 window.customElements.define('paper-resource', PaperResource);
