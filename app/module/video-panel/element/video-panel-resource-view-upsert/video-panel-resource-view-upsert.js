@@ -391,8 +391,8 @@ class VideoPanelResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(Serv
         resource.resourceToImport.path = ffmpegCommand._currentOutput.target;
         resource.type = "video/mp4";
         if (this.entity.resourceReference.id) {
-            resource = 'update';
-            data.id = this.entity.resourceReference.id;
+            method = 'update';
+            resource.id = this.entity.resourceReference.id;
         }
 
         this._resourceStorage[method](resource).then(
