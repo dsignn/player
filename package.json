@@ -7,8 +7,8 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@dsign/player-cli": "github:dsignn/player-cli",
-    "electron-builder": "^22.10.5",
     "dexie": "^2.0.4",
+    "electron-builder": "^22.14.5",
     "run-script-os": "^1.1.5"
   },
   "scripts": {

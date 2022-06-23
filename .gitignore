@@ -4,6 +4,7 @@ app/node_modules
 build
 releases
 docker
+.history
 
 # Node
 package-lock.json

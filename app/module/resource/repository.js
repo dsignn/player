@@ -280,7 +280,7 @@ export class Repository extends ContainerAware {
 
             let fileDirectory = `${this.getContainer().get('Application').getResourcePath()}${this.path.sep}${resourceEntity.id}`;
             if (!this.fs.existsSync(fileDirectory)) {
-                this.fs.mkdirSync(fileDirectory);
+                this.fs.mkdirSync(fileDirectory, { recursive: true });
             }
 
             let fileName = `${fileDirectory}${this.path.sep}${resourceEntity.id}.${resourceEntity.resourceToImport.path.split('.').pop()}`;
