@@ -34,7 +34,11 @@ export class Repository extends ContainerAware {
         let aclService = this.getContainer().get('Acl');
 
         // TODO add method on service
+       // aclService.addResource('admin');
+       // aclService.allow('admin', 'admin');
+
         aclService.addResource('admin');
-        aclService.allow('admin', 'admin');
+        aclService.allow('guest', 'admin');
+        // guest
     }
 }

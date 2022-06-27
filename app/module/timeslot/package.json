@@ -77,7 +77,7 @@
             }
         }
     ],
-    "autoloadsWs": [
+    "autoloadsWc": [
         {
             "name": "timeslot-icons",
             "path": {

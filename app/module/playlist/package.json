@@ -52,7 +52,7 @@
                 }
             }
         ],
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "playlist-icons",
                 "path": {

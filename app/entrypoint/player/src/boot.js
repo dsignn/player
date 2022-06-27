@@ -74,7 +74,7 @@ webComponentHydrator.addValueStrategy('path',  new HydratorStrategy(pathHydrator
 let autoLoadClassHydrator = new PropertyHydrator(new AutoLoadClass());
 autoLoadClassHydrator.addValueStrategy('path',new HydratorStrategy(pathHydrator));
 
-moduleHydrator.addValueStrategy('autoloadsWs', new HydratorStrategy(webComponentHydrator));
+moduleHydrator.addValueStrategy('autoloadsWc', new HydratorStrategy(webComponentHydrator));
 moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
 moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
 
@@ -177,16 +177,12 @@ container.set('Config', config);
  **********************************************************************************************************************/
 //container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
-
-
 container.set('Timer',
     function (sm) {
         const Timer = require('easytimer.js').Timer;
-
         let timer =  new Timer();
         timer.start({precision: 'secondTenths'});
         return timer;
-
     });
 
 

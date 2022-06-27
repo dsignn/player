@@ -32,14 +32,14 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
              ${flexStyle}
              <style>
           
-                 app-toolbar {
+                app-toolbar {
                     @apply --app-toolbar;
-                 }
+                }
                  
-                 app-drawer .avatar-image {
+                app-drawer .avatar-image {
                     height: 256px;
                     padding: 0 8px;
-                 }
+                }
                 
                 app-drawer .avatar-image iron-icon {
                     --iron-icon-width : 240px;
@@ -69,7 +69,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 .layout-menu {
                     background-color:  #FFFFFF;
                 }
-                  
   
                 #menuContent {
                     position: fixed;
@@ -81,15 +80,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 }
                 
                 .menu-icon-wrapper {
-                    margin-bottom: 12px;
-                    margin-top: 12px;
+                    padding: 12px;
                 }
-                
                 
                 #content {
                     margin-left: 64pX;
-                }
-                          
+                }            
              </style>
              <app-header-layout>
                 <app-header slot="header" fixed condenses effects="waterfall">
@@ -136,7 +132,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'monitor'
+                value : 'admin',
+                observer: 'changeSection'
             },
 
             modules: {
@@ -196,7 +193,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      * @param newValue
      */
     changeApplicationService(newValue) {
-        console.log('TONI', newValue);
         if (!newValue) {
             return;
         }
@@ -209,6 +205,11 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 new Listener(this.loadModules.bind(this))
             );
         }
+
+        newValue.getEventManager().on(
+            Application.IMPORT_MODULE,
+            new Listener(this.importModule.bind(this))
+        );
     }
 
     /**
@@ -216,6 +217,13 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      */
     loadModules(evt) {
         this.modules = evt.data;
+    }
+
+    /**
+     * @param evt
+     */
+    importModule(evt) {
+        console.log('ho importato un modulo');
     }
 
     /**
@@ -249,6 +257,34 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             let elem = document.createElement(this.modules[cont].getEntryPoint().getName());
             elem.name = this.modules[cont].getName();
             this.$.pages.appendChild(elem);
+        }
+    }
+
+    /**
+     * @param {string} value 
+     */
+    changeSection(value) {
+        let nodes = this.shadowRoot.querySelector('#menuContent').querySelectorAll('div');
+        nodes.forEach(element => {
+            element.style.backgroundColor = 'white';
+            let paperIconBtn = element.querySelector('paper-icon-button');
+            paperIconBtn.style.color = '#015b63';
+        });
+
+        let paperIconBtn = this.shadowRoot.querySelector('#' + value);
+        if (paperIconBtn)  {
+            paperIconBtn.style.color = 'white';
+            paperIconBtn.parentElement.style.backgroundColor = '#015b63';
+        } else {
+            setTimeout(
+                function() {
+                    let paperIconBtn = this.shadowRoot.querySelector('#' + value);
+
+                    paperIconBtn.style.color = 'white';
+                    paperIconBtn.parentElement.style.backgroundColor = '#015b63';
+                }.bind(this),
+                500
+            );
         }
     }
 }

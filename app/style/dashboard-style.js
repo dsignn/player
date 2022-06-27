@@ -111,13 +111,7 @@ const template = html`
                 background-color: var(--default-primary-color);
                 color: var(--text-primary-color);
             }
-            
-             --app-toolbar: {
-                background: var(--default-primary-color);
-                background-color: var(--default-primary-color);
-                color: var(--text-primary-color);
-            }
-            
+                        
             --paper-icon-button-action: {
                 color: var(--text-primary-color);
                 background-color: var(--accent-color);
@@ -128,7 +122,6 @@ const template = html`
             }
             
             --paper-icon-button-menu: {
-      
                 color: var(--default-primary-color);
             }
             

@@ -69,7 +69,7 @@
             }
         }
     ],
-    "autoloadsWs": [
+    "autoloadsWc": [
         {
             "name": "resource-icons",
             "path": {

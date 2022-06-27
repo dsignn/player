@@ -75,7 +75,7 @@ webComponentHydrator.addValueStrategy('path',  new HydratorStrategy(pathHydrator
 let autoLoadClassHydrator = new PropertyHydrator(new AutoLoadClass());
 autoLoadClassHydrator.addValueStrategy('path',new HydratorStrategy(pathHydrator));
 
-moduleHydrator.addValueStrategy('autoloadsWs', new HydratorStrategy(webComponentHydrator));
+moduleHydrator.addValueStrategy('autoloadsWc', new HydratorStrategy(webComponentHydrator));
 moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
 moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
 
@@ -83,10 +83,11 @@ let widgetHydrator = new PropertyHydrator(new Widget());
 widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));
 widgetHydrator.addValueStrategy('webComponentData', new HydratorStrategy(webComponentHydrator));
 
+moduleHydrator.addValueStrategy('widgets', new HydratorStrategy(widgetHydrator));
+
 let modules = JSON.parse(fs.readFileSync(`${basePath}${path.sep}config${path.sep}module.json`).toString());
 let modulesHydrate = [];
 let widgetHydrate = [];
-
 
 for (let cont = 0; modules.length > cont; cont++) {
     modulesHydrate.push(moduleHydrator.hydrate(modules[cont]));
@@ -97,6 +98,8 @@ for (let cont = 0; modules.length > cont; cont++) {
         }
     }
 }
+
+application.setModuleHydrator(moduleHydrator);
 
 /**
  *

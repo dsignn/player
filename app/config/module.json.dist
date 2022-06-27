@@ -46,7 +46,7 @@
                 }
             }
         ],
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "dashboard-icons",
                 "path": {
@@ -120,7 +120,7 @@
                 }
             }
         ],
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "monitor-icons",
                 "path": {
@@ -234,7 +234,7 @@
                 }
             }
         ],
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "resource-icons",
                 "path": {
@@ -332,7 +332,7 @@
                 }
             }
         ],
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "timeslot-icons",
                 "path": {
@@ -454,7 +454,7 @@
                 }
             }
         ],
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "playlist-icons",
                 "path": {
@@ -478,7 +478,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "timeline-icons",
                 "path": {
@@ -536,7 +536,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "media-device-icons",
                 "path": {
@@ -586,7 +586,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "timer-icons",
                 "path": {
@@ -644,7 +644,7 @@
                 "extension": "js"
             }
         },
-        "autoloadsWs": [
+        "autoloadsWc": [
             {
                 "name": "video-panel-icons",
                 "path": {

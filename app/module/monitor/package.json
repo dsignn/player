@@ -53,7 +53,7 @@
             }
         }
     ],
-    "autoloadsWs": [
+    "autoloadsWc": [
         {
             "name": "monitor-icons",
             "path": {
