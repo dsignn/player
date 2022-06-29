@@ -224,6 +224,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      */
     importModule(evt) {
         console.log('ho importato un modulo');
+
+        let elem = document.createElement(evt.data.getEntryPoint().getName());
+        elem.name = evt.data.getName();
+        this.$.pages.appendChild(elem);
+        this.$.menu.render();
+        this.changeSection(this.section);
     }
 
     /**
