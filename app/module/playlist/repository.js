@@ -17,12 +17,6 @@ import {DexiePlaylistAdapter} from "./src/storage/adapter/dexie/DexiePlaylistAda
 import {PlaylistService} from "./src/PlaylistService";
 import {PlaylistEntity} from "./src/entity/PlaylistEntity";
 import {TimeslotPlaylistReference} from "./src/entity/TimeslotPlaylistReference";
-//import {Test1} from "./src/injector/Test1";
-//import {Test2} from "./src/injector/Test2";
-//import {MongoTimeslotAdapter} from "./src/storage/adapter/mongo/MongoTimeslotAdapter";
-//import {DexieTimeslotAdapter} from "./src/storage/adapter/dexie/DexieTimeslotAdapter";
-//import {Repository as ResourceRepository} from "./../resource/repository";
-//import {Repository as MonitorRepository} from "./../monitor/repository";
 
 /**
  * @class Repository

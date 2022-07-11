@@ -21,7 +21,7 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             
             paper-tabs {
                 margin-bottom: 8px;
-                max-width: 450px;
+                max-width: 250px;
             }
 
             .row {

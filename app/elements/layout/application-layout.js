@@ -132,7 +132,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'admin',
+                value : 'ice-hockey',
                 observer: 'changeSection'
             },
 

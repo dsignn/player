@@ -1,0 +1,27 @@
+{
+    "title": "Ice hocker",
+    "name": "ice-hockey",
+    "icon": "ice-hockey:menu",
+    "configEntryPoint": "repository.js",
+    "entryPoint": {
+        "name": "ice-hockey-index",
+        "path": {
+            "directory": "element/ice-hockey-index",
+            "nameFile": "ice-hockey-index",
+            "extension": "js"
+        },
+        "autoloads": [
+        
+        ],
+        "autoloadsWc": [
+            {
+                "name": "ice-hockey-icons",
+                "path": {
+                    "directory": "element/ice-hockey-icons",
+                    "nameFile": "ice-hockey-icons",
+                    "extension": "js"
+                }
+            }
+        ]
+    }
+}
