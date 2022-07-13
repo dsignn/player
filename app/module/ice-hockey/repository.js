@@ -1,10 +1,14 @@
 import { ContainerAware } from "@dsign/library/src/container/index";
 import { config } from './config';
-import { IceHockeyEntity } from "./src/entity/IceHockeyEntity";
+import { IceHockeyMatchEntity } from "./src/entity/IceHockeyMatchEntity";
 import { MongoDb } from "@dsign/library/src/storage/adapter/mongo/MongoDb";
 import { MongoIceHockeyAdapter } from "./src/storage/adapter/mongo/MongoIceHockeyAdapter";
 import { PropertyHydrator } from "@dsign/library/src/hydrator/index";
 import { Storage } from "@dsign/library/src/storage/Storage";
+import { MapProprertyStrategy } from "@dsign/library/src/hydrator/strategy/proprerty";
+import { HydratorStrategy, MongoIdStrategy } from "@dsign/library/src/hydrator/strategy/value";
+import { GenericTeam } from "@dsign/library/src/sport/team/GenericTeam";
+import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
 
 /**
  * @class Repository
@@ -41,7 +45,7 @@ export class Repository extends ContainerAware {
             .get('EntityContainerAggregate')
             .set(
                 this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].entityService, 
-                new IceHockeyEntity()
+                new IceHockeyMatchEntity()
             );    
     }
 
@@ -87,7 +91,7 @@ export class Repository extends ContainerAware {
     }
 
     /**
-     *
+     * Init
      */
     initAcl() {
         if (this.getContainer().has('Acl')) {
@@ -102,7 +106,7 @@ export class Repository extends ContainerAware {
     }
 
     /**
-     *
+     * Init
      */
     initHydrator() {
         this.getContainer()
@@ -113,13 +117,52 @@ export class Repository extends ContainerAware {
             );
     }
 
+    /**
+     * @return PropertyHydrator
+     */
     static getIceHockeyMatchHydrator(container) {
         
+        let teamHydratorStrategy = new HydratorStrategy();
+        teamHydratorStrategy.setHydrator(Repository.getIceHockeyTeamHydrator(container));
+
+        let periodHydratorStrategy = new HydratorStrategy();
+        periodHydratorStrategy.setHydrator(Repository.getIceHockeyPeriosHydrator(container));
+
+
         let hydrator = new PropertyHydrator(
             container.get('EntityContainerAggregate').get(
                 container.get('Config').modules['ice-hockey']['ice-hockey-match'].entityService
             )
         );
+
+        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
+            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
+
+        hydrator.addValueStrategy('id', new MongoIdStrategy())
+            .addValueStrategy('_id', new MongoIdStrategy())
+            .addValueStrategy('homeTeam', teamHydratorStrategy)
+            .addValueStrategy('guestTeam', teamHydratorStrategy)
+            .addValueStrategy('periods', periodHydratorStrategy)
+
+        return hydrator;
+    }
+
+    /**
+     * @return PropertyHydrator
+     */
+    static getIceHockeyTeamHydrator(container) {
+
+        let hydrator = new PropertyHydrator(new GenericTeam());
+
+        return hydrator;
+    }
+
+       /**
+     * @return PropertyHydrator
+     */
+    static getIceHockeyPeriosHydrator(container) {
+
+        let hydrator = new PropertyHydrator(new GenericPeriod());
 
         return hydrator;
     }

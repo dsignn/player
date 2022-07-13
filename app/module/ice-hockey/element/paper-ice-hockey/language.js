@@ -1,20 +1,12 @@
 export const lang = {
   "it": {
-    "general": "Generale",
-    "scoreboard" : "Scoreboard",
-    "list-ice-hockey-match": "Lista partite di hockey",
-    "insert-ice-hockey-match": "Inserisci partita di hockey",
-    "update-ice-hockey-match": "Aggiorna partita di hockey",
-    "notify-update": "Squadra modificata",
-    "notify-save": "Squadra salvata"
+    "modify": "Modifica",
+    "delete" : "Elimina",
+    "preview-resource": "Preview della risorsa"
   },
   "en": {
-    "general": "General",
-    "scoreboard" : "Scoreboard",
-    "list-ice-hockey-match": "todo",
-    "insert-ice-hockey-match": "todo",
-    "update-ice-hockey-match": "todo",
-    "notify-update": "Team updated",
-    "notify-save": "Team saved"
+    "modify": "Modify",
+    "delete" : "Delete",
+    "preview-resource": "Resource preview "
   }
 };

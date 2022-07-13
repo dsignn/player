@@ -98,8 +98,6 @@ class PaperIceHockey extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMix
                 <div id="leftSection"></div>
                 <div id="fastAction">
                     <div class="action">
-                        <paper-icon-button id="previewButton" icon="resource:preview" on-tap="_openPreview"></paper-icon-button>
-                        <paper-tooltip for="previewButton" position="right">{{localize('preview-resource')}}</paper-tooltip>
                     </div>
                 </div>
                 <div id="rightSection">
@@ -117,12 +115,6 @@ class PaperIceHockey extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMix
                     </div>
                 </div>
             </paper-card>
-            <paper-dialog id="previewDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" on-iron-overlay-closed="_closePreview">
-                <div class="title">Preview</div>
-                <paper-dialog-scrollable>
-                   <div id="contentPreview"></div>
-                </paper-dialog-scrollable>
-            </paper-dialog>
         `
     }
 
@@ -139,7 +131,7 @@ class PaperIceHockey extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMix
              * @type FileEntity
              */
             entity: {
-                observer: '_entityChanged'
+          //      observer: '_entityChanged'
             },
 
             /**
@@ -178,6 +170,24 @@ class PaperIceHockey extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMix
                 readOnly: true
             }
         }
+    }
+
+        /**
+     * @param evt
+     * @private
+     */
+    _update(evt) {
+        this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
+        this.$.crudButton.close();
+    }
+    
+    /**
+     * @param evt
+     * @private
+     */
+    _delete(evt) {
+        this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 }
 window.customElements.define('paper-ice-hockey', PaperIceHockey);

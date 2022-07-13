@@ -5,6 +5,8 @@ import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import {lang} from './language';
 import { StorageEntityMixin } from '@dsign/polymer-mixin/storage/entity-mixin';
+import { GenericPeriod } from '@dsign/library/src/sport/match/GenericPeriod';
+import "../ice-hockey-add-player/ice-hockey-add-player";
 
 /**
  * @customElement
@@ -15,6 +17,29 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
     static get template() {
         return html`
             <style>
+                .column-wrapper {
+                    @apply --layout-horizontal;
+                } 
+
+                .justify-b {
+                    justify-content: space-between;
+                }
+
+                .team {
+                    flex-basis: 50%;
+                }
+
+                .team:first-child {
+                    padding-right: 6px;
+                }
+
+                paper-icon-button.circle {
+                    @apply --paper-icon-button-action;
+                    --paper-icon-button-disabled : {        
+                        background-color: #c9c9c9 !important;
+                    }
+                }
+
                 #list {
                     padding-top: var(--padding-top-view-list);
                     @apply --layout-horizontal;
@@ -25,6 +50,10 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                     paper-monitor {
                         flex-basis: 100%;
                     }
+                }
+
+                #period {
+                    width: 100%;
                 }
     
                 @media (min-width: 501px) and (max-width: 900px) {
@@ -63,13 +92,39 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                 <form method="post">
                     <div id="container">
                         <paper-input id="name" name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
+                        <div>
+                            <div class="column-wrapper">
+                                <paper-input id="period" name="period" label="{{localize('period')}}" on-value-changed="_changePeriod" ></paper-input>
+                                <paper-icon-button id="paperIconPeriod" icon="plus" class="circle" on-tap="addPeriod" disabled></paper-icon-button>
+                            </div>
+                            <paper-chips id="chips" text-property="name" items="{{entity.periods}}"></paper-chips>
+                        </div>
+                        <div class="column-wrapper">
+                            <div class="team">
+                                <div class="column-wrapper justify-b">
+                                    <paper-input label="{{localize('name-home-team')}}" value="{{entity.homeTeam.name}}"></paper-input>
+                                    <paper-icon-button icon="plus" class="circle"></paper-icon-button>
+                                </div>
+                            </div>
+                            <div class="team">
+                                <div class="column-wrapper justify-b">
+                                    <paper-input label="{{localize('name-guest-team')}}" value="{{entity.guestTeam.name}}"></paper-input>
+                                    <paper-icon-button icon="plus" class="circle"></paper-icon-button>
+                                </div>
+                            </div>
+                        </div>
                         <div class="layout-horizontal layout-end-justified">
                             <paper-button on-tap="submitIceHockeyButton">{{localize('save')}}</paper-button>
                         </div>
                     </div>
                 </form>
-            </iron-form> 
-            `;
+            </iron-form>
+            <paper-dialog id="playerDialog" with-backdrop auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
+                <div class="container">
+                    <paper-input label="{{localize('firstname-player')}}"></paper-input>
+                    <paper-input label="{{localize('lastname-player')}}"></paper-input>
+                </div>
+            </paper-dialog>`;
     }
 
     constructor() {
@@ -111,16 +166,26 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
         };
     }
 
-    static get observers() {
-        return [
-            'observerPaginationEntities(page, itemPerPage, _storage)'
-        ]
-    }
-
     ready() {
         super.ready();
         this.$.formIceHockey.addEventListener('iron-form-presubmit', this.submitIceHockey.bind(this));
     }
+
+    connectedCallback() {
+        super.connectedCallback();
+      
+        if(!document.getElementById('iceHockerPlayerDialog')) {
+            let ele = document.createElement('paper-dialog');
+            ele.setAttribute('id', 'iceHockerPlayerDialog');
+            ele.setAttribute('with-backdrop', '');
+            
+            let g = document.createElement('ice-hockey-add-player');
+            ele.appendChild(g);
+            
+            document.body.appendChild(ele);
+            console.log('sti cazzi');
+        }
+      }
 
     /**
      * @param {CustomEvent} evt
@@ -129,6 +194,25 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
     _showUpdateView(evt) {
         this.entitySelected = evt.detail;
         this.selected = 2;
+    }
+
+    computePeriod(item) {
+        return item.name;
+    }
+
+    _changePeriod(evt) {
+        let value = true;
+        if (evt.target.value) {
+            value = false;
+        }
+        this.$.paperIconPeriod.disabled = value;
+    }
+
+    addPeriod(evt) {
+        let period = new GenericPeriod(this.$.period.value);
+        this.$.chips.add(period);
+     //   this.entity.periods.push(period);
+        this.$.period.value = null;
     }
 
     /**

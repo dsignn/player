@@ -114,7 +114,6 @@ application.getEventManager().on(
             .on(
                 MongoDb.READY_CONNECTION,
                 (connection) =>  {
-                    console.log(window.document);
                     loadApplication();
                 }
             );

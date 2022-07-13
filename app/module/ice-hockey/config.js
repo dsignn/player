@@ -15,7 +15,7 @@ export const config = {
                         }
                     }
                 }, 
-                "entityService": "IceHockeyEntity",
+                "entityService": "IceHockeyMatchEntity",
                 "acl": {
                     "resource": 'ice-hockey'
                 },
