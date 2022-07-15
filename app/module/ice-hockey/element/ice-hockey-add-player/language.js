@@ -1,10 +1,20 @@
 export const lang = {
   "it": {
-    "header": "Lista monitor",
-    "notify-delete": "Monitor eliminato"
+    "player": "Giocatore",
+    "firstname": "Nome",
+    "lastname": "Cognome",
+    "role": "Ruolo",
+    "shirtNumber": "Numero di maglietta",
+    "add": "Aggiungi",
+    "update": "Aggiorna"
   },
   "en": {
-    "header": "List monitor",
-    "notify-delete": "Monitor deleted"
+    "player": "Player",
+    "firstname": "First name",
+    "lastname": "last name",
+    "role": "Role",
+    "shirtNumber": "Shirt number",
+    "add": "Add",
+    "update": "Update"
   }
 };

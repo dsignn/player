@@ -10,7 +10,7 @@ import {lang} from './language';
  * @customElement
  * @polymer
  */
-class IceHockeyAddPlayer extends StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
+class IceHockeyAddPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -20,9 +20,18 @@ class IceHockeyAddPlayer extends StoragePaginationMixin(StorageCrudMixin(Localiz
                     @apply --layout-horizontal;
                     @apply --layout-wrap;
                 }
+
+                paper-card {
+                    padding: 20px 0;
+                }
             </style>
-            <paper-card>
-                <paper-input label="dddddddddddd"></paper-input>
+            <paper-card elevation="0">
+                <div>{{localize('player')}}</div>
+                <paper-input label="{{localize('firstname')}}"></paper-input>
+                <paper-input label="{{localize('lastname')}}"></paper-input>
+                <paper-input label="{{localize('role')}}"></paper-input>
+                <paper-input label="{{localize('shirtNumber')}}"></paper-input>
+                <div><paper-button>{{localize(stringBtn)}}</paper-button><div>
             </paper-card>
         `;
     }
@@ -38,17 +47,23 @@ class IceHockeyAddPlayer extends StoragePaginationMixin(StorageCrudMixin(Localiz
             /**
              * @type number
              */
-            selected: {
-                type: Number,
+            player: {
                 notify: true,
-                value: 0
+                value: {}
             },
 
             /**
              * @type MonitorEntity
              */
-            entitySelected: {
+            typeTeam: {
+                type: String,
                 notify: true
+            },
+
+            stringBtn: {
+                type: String,
+                notify: true,
+                value: 'add'
             },
 
             /**
@@ -63,7 +78,10 @@ class IceHockeyAddPlayer extends StoragePaginationMixin(StorageCrudMixin(Localiz
                     }
                 }
             }
+
         };
     }
+
+    
 }
 window.customElements.define('ice-hockey-add-player', IceHockeyAddPlayer);

@@ -103,13 +103,13 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-home-team')}}" value="{{entity.homeTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="plus" class="circle"></paper-icon-button>
+                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayer" type="home"></paper-icon-button>
                                 </div>
                             </div>
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-guest-team')}}" value="{{entity.guestTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="plus" class="circle"></paper-icon-button>
+                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayer" type="guest"></paper-icon-button>
                                 </div>
                             </div>
                         </div>
@@ -179,11 +179,10 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
             ele.setAttribute('id', 'iceHockerPlayerDialog');
             ele.setAttribute('with-backdrop', '');
             
-            let g = document.createElement('ice-hockey-add-player');
-            ele.appendChild(g);
+            let addPlayer = document.createElement('ice-hockey-add-player');
+            ele.appendChild(addPlayer);
             
             document.body.appendChild(ele);
-            console.log('sti cazzi');
         }
       }
 
@@ -208,6 +207,12 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
         this.$.paperIconPeriod.disabled = value;
     }
 
+    addPlayer(evt) {
+       
+        let ele = document.getElementById('iceHockerPlayerDialog');
+        ele.open();
+    }
+
     addPeriod(evt) {
         let period = new GenericPeriod(this.$.period.value);
         this.$.chips.add(period);
@@ -221,7 +226,6 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
     }
-
 
     /**
      * @param evt
