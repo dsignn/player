@@ -7,7 +7,8 @@ export const lang = {
     "period": "Periodo",
     "name-home-team": "Nome squadra di casa",
     "name-guest-team": "Nome squadra ospite",
-    "add-period": "Aggiungi periodo"
+    "add-period": "Aggiungi periodo",
+    "list-player": "Lista giocatori"
   },
   "en": {
     "header": "List monitor",
@@ -17,6 +18,7 @@ export const lang = {
     "period": "Period",
     "name-home-team": "Name home team",
     "name-guest-team": "Name guest team",
-    "add-period": "Add period"
+    "add-period": "Add period",
+    "list-player": "List player"
   }
 };

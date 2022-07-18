@@ -1,12 +1,15 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
-import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixin";
+import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
-import {lang} from './language';
+import { lang } from './language';
 import { StorageEntityMixin } from '@dsign/polymer-mixin/storage/entity-mixin';
 import { GenericPeriod } from '@dsign/library/src/sport/match/GenericPeriod';
 import "../ice-hockey-add-player/ice-hockey-add-player";
+import "../paper-ice-hockey-player/paper-ice-hockey-player";
+import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
+
 
 /**
  * @customElement
@@ -38,6 +41,21 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                     --paper-icon-button-disabled : {        
                         background-color: #c9c9c9 !important;
                     }
+                }
+
+                .players {
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+
+                .header-players {
+                    font-size: 20px;
+                    padding: 10px 0;
+                }
+
+                paper-ice-hockey-player {
+                    width: 33.33%;
+                    max-height: 70px;
                 }
 
                 #list {
@@ -103,13 +121,29 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-home-team')}}" value="{{entity.homeTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayer" type="home"></paper-icon-button>
+                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayerBtn" type="home"></paper-icon-button>
+                                </div>
+                                <div class="header-players">{{localize('list-player')}}</div>
+                                <div class="players">
+                                    <dom-repeat id="homeRepeat" items="{{entity.homeTeam.players}}" as="player">
+                                        <template>
+                                            <paper-ice-hockey-player player="{{player}}" on-delete="deletePlayer" on-update="updatePlayerBtn" type="home"></paper-ice-hockey-player>
+                                        </template>
+                                    </dom-repeat>
                                 </div>
                             </div>
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-guest-team')}}" value="{{entity.guestTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayer" type="guest"></paper-icon-button>
+                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayerBtn" type="guest"></paper-icon-button>
+                                </div>
+                                <div class="header-players">{{localize('list-player')}}</div>
+                                <div class="players">    
+                                    <dom-repeat id="guestRepeat" items="{{entity.guestTeam.players}}" as="player" >
+                                        <template>
+                                            <paper-ice-hockey-player player="{{player}}" on-delete="deletePlayer" on-update="updatePlayerBtn" type="guest"></paper-ice-hockey-player>
+                                        </template>
+                                    </dom-repeat>
                                 </div>
                             </div>
                         </div>
@@ -118,13 +152,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                         </div>
                     </div>
                 </form>
-            </iron-form>
-            <paper-dialog id="playerDialog" with-backdrop auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
-                <div class="container">
-                    <paper-input label="{{localize('firstname-player')}}"></paper-input>
-                    <paper-input label="{{localize('lastname-player')}}"></paper-input>
-                </div>
-            </paper-dialog>`;
+            </iron-form>`;
     }
 
     constructor() {
@@ -132,7 +160,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
         this.resources = lang;
     }
 
-    static get properties () {
+    static get properties() {
         return {
 
             /**
@@ -151,12 +179,16 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                 notify: true
             },
 
+            idDialog: { 
+                type: String,
+            },
+
             /**
              * @type object
              */
-            services : {
-                value : {
-                    _notify : "Notify",
+            services: {
+                value: {
+                    _notify: "Notify",
                     _localizeService: 'Localize',
                     "StorageContainerAggregate": {
                         _storage: "IceHockeyMatchStorage"
@@ -173,18 +205,103 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
 
     connectedCallback() {
         super.connectedCallback();
+
+        let ele = document.createElement('paper-dialog');
+        this.idDialog = this.__randomString();
+        ele.setAttribute('id', this.idDialog);
+        ele.setAttribute('with-backdrop', '');
+
+        let addPlayer = document.createElement('ice-hockey-add-player');
+        ele.appendChild(addPlayer);
+
+        addPlayer.addEventListener('add', this.addPlayer.bind(this));
+        addPlayer.addEventListener('update', this.updatePlayer.bind(this));
+
+        document.body.appendChild(ele);
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    addPlayer(evt) {
       
-        if(!document.getElementById('iceHockerPlayerDialog')) {
-            let ele = document.createElement('paper-dialog');
-            ele.setAttribute('id', 'iceHockerPlayerDialog');
-            ele.setAttribute('with-backdrop', '');
-            
-            let addPlayer = document.createElement('ice-hockey-add-player');
-            ele.appendChild(addPlayer);
-            
-            document.body.appendChild(ele);
+        if (evt.detail.team === 'home') {
+
+            this.push('entity.homeTeam.players', evt.detail.player);
+        } else {
+            this.push('entity.guestTeam.players', evt.detail.player);
         }
-      }
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    updatePlayer(evt) {
+        let ele = document.getElementById(this.idDialog);
+        ele.close();
+
+        let team = 'homeTeam';
+        if (evt.target.typeTeam != 'home') {
+            team = 'guestTeam';
+        } 
+
+        let index = this.entity[team].players.findIndex((element) => {
+            return element.getId() === evt.detail.player.getId();
+        });
+        console.log('update player',index, evt);
+
+        this.splice('entity.' + team + '.players', index, 1, evt.detail.player );
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    addPlayerBtn(evt) {
+        let ele = document.getElementById(this.idDialog);
+        ele.querySelector('ice-hockey-add-player').typeTeam = evt.target.getAttribute('type');
+        ele.querySelector('ice-hockey-add-player').player = new IceHockeyPlayerEntity();
+        ele.open();
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    updatePlayerBtn(evt) {
+        let ele = document.getElementById(this.idDialog);
+        ele.querySelector('ice-hockey-add-player').typeTeam = evt.target.getAttribute('type');
+        ele.querySelector('ice-hockey-add-player').player = evt.detail;
+        ele.open();
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    deletePlayer(evt) {
+    
+        let eleId = 'guestRepeat';
+        if (evt.target.getAttribute('type') === 'home') {
+            eleId = 'homeRepeat';
+        }
+        
+        let index = this.$[eleId].items.findIndex((ele) => {
+            return ele.id === evt.detail.id;
+        });
+
+     
+        if (evt.target.getAttribute('type') === 'home') {
+            this.splice('entity.homeTeam.players', index, 1);
+        } else {
+            this.splice('entity.guestTeam.players', index, 1);
+        }
+    }
+
+    /**
+     * 
+     * @returns {string}
+     */
+    __randomString() {
+        return Math.random().toString(16).substr(2, 8);
+    }
 
     /**
      * @param {CustomEvent} evt
@@ -207,16 +324,10 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
         this.$.paperIconPeriod.disabled = value;
     }
 
-    addPlayer(evt) {
-       
-        let ele = document.getElementById('iceHockerPlayerDialog');
-        ele.open();
-    }
-
     addPeriod(evt) {
         let period = new GenericPeriod(this.$.period.value);
         this.$.chips.add(period);
-     //   this.entity.periods.push(period);
+        //   this.entity.periods.push(period);
         this.$.period.value = null;
     }
 
@@ -246,9 +357,10 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                     this.entity = this._storage.getHydrator().hydrate({});
                     this.$.formIceHockey.reset();
                 }
-                
+
                 this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
             });
     }
 }
+
 window.customElements.define('ice-hockey-view-upsert', IceHockeyViewUpsert);

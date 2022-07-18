@@ -1,9 +1,9 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
-import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
-import {StoragePaginationMixin} from "@dsign/polymer-mixin/storage/pagination-mixin";
-import {StorageCrudMixin} from "@dsign/polymer-mixin/storage/crud-mixin";
-import {lang} from './language';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixin";
+import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
+import { lang } from './language';
+import { MongoIdGenerator } from '@dsign/library/src/storage/util/MongoIdGenerator';
+import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
 
 
 /**
@@ -27,11 +27,11 @@ class IceHockeyAddPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
             </style>
             <paper-card elevation="0">
                 <div>{{localize('player')}}</div>
-                <paper-input label="{{localize('firstname')}}"></paper-input>
-                <paper-input label="{{localize('lastname')}}"></paper-input>
-                <paper-input label="{{localize('role')}}"></paper-input>
-                <paper-input label="{{localize('shirtNumber')}}"></paper-input>
-                <div><paper-button>{{localize(stringBtn)}}</paper-button><div>
+                <paper-input label="{{localize('firstName')}}" value="{{player.firstName}}"></paper-input>
+                <paper-input label="{{localize('lastName')}}" value="{{player.lastName}}"></paper-input>
+                <paper-input label="{{localize('role')}}" value="{{player.role}}"></paper-input>
+                <paper-input label="{{localize('shirtNumber')}}" value="{{player.shirtNumber}}"></paper-input>
+                <div><paper-button on-tap="submit">{{localize(stringBtn)}}</paper-button><div>
             </paper-card>
         `;
     }
@@ -49,7 +49,8 @@ class IceHockeyAddPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
              */
             player: {
                 notify: true,
-                value: {}
+                value: new IceHockeyPlayerEntity(),
+                observer: 'playerChange'
             },
 
             /**
@@ -57,7 +58,8 @@ class IceHockeyAddPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
              */
             typeTeam: {
                 type: String,
-                notify: true
+                notify: true,
+                value: 'test'
             },
 
             stringBtn: {
@@ -82,6 +84,52 @@ class IceHockeyAddPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         };
     }
 
+    /**
+     * @param {object} value 
+     */
+    playerChange(value) {
+        if (value.id) {
+            this.stringBtn = 'update';
+        } else {
+            this.stringBtn = 'add';
+        }
+    }
     
+    /**
+     * 
+     * @param {Event} evt 
+     */
+    submit(evt) {
+        let event = 'add'
+        if (this.player.id) {
+            event = 'update'
+        } else {
+            this.player.setId(MongoIdGenerator.statcGenerateId());
+        }
+
+        this.dispatchEvent(new CustomEvent(event, {detail: {player: this._clonePlayer(this.player), team: this.typeTeam}}));
+
+        if (!event != 'update') {
+            this.player = new IceHockeyPlayerEntity();
+        }
+    }
+
+    /**
+     * 
+     * @param {IceHockeyPlayerEntity} player 
+     * @returns {IceHockeyPlayerEntity}
+     */
+    _clonePlayer(player) {
+        let clone = new IceHockeyPlayerEntity();
+        clone.id = player.id;
+        clone.firstName = player.firstName;
+        clone.lastName = player.lastName;
+        clone.role = player.role;
+        clone.shirtName = player.shirtName;
+
+        return clone;
+    }
 }
+
 window.customElements.define('ice-hockey-add-player', IceHockeyAddPlayer);
+;

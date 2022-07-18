@@ -1,17 +1,17 @@
 export const lang = {
   "it": {
     "player": "Giocatore",
-    "firstname": "Nome",
-    "lastname": "Cognome",
+    "firstName": "Nome",
+    "lastName": "Cognome",
     "role": "Ruolo",
     "shirtNumber": "Numero di maglietta",
     "add": "Aggiungi",
-    "update": "Aggiorna"
+    "update": "Modifica"
   },
   "en": {
     "player": "Player",
-    "firstname": "First name",
-    "lastname": "last name",
+    "firstName": "First name",
+    "lastName": "last name",
     "role": "Role",
     "shirtNumber": "Shirt number",
     "add": "Add",
