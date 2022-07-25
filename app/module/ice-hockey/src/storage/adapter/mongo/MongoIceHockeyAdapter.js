@@ -9,6 +9,19 @@ export class MongoIceHockeyAdapter extends MongoCollectionAdapter {
      * @inheritDoc
      */
     filter(filter) {
-        return filter;
+        let returnFilter = {};
+        if (filter !== null && typeof filter === 'object') {
+
+            for (let property in filter) {
+
+                switch (property) {
+                    case 'name':
+                        returnFilter[property] =  {$regex: filter[property], $options: "$i"};
+                        break;
+                }
+            }
+        }
+
+        return returnFilter;
     }
 }
