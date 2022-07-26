@@ -6,6 +6,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
 import '../ice-hockey-view-list/ice-hockey-view-list';
 import '../ice-hockey-view-upsert/ice-hockey-view-upsert';
+import '../ice-hockey-scoreboard/ice-hockey-scoreboard';
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
 
@@ -34,6 +35,12 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                 
                 .topology {
                     position: relative;
+                }
+                paper-autocomplete {
+                    --autocomplete-wrapper: {
+                        position: absolute;
+                        min-width:250px;
+                    }
                 }
             </style>
             <paper-tabs selected="{{selectedTab}}" tabindex="0">
@@ -73,7 +80,33 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                     </iron-pages>          
                 </div>
                 <div>
-                    scoreboard  
+                    <paper-autocomplete
+                        id="defaultTimeslot"
+                        label="{{localize('choose-match')}}"
+                        text-property="name"
+                        value-property="name"
+                        remote-source
+                        on-autocomplete-change="_searchChanged"
+                        on-autocomplete-selected="_selectMatch">
+                            <template slot="autocomplete-custom-template">
+                                <style>
+                                    :host {
+                                        display: block;
+                                    }
+
+                                    paper-item {
+                                        padding: 0 2px;
+                                    }
+
+                                </style>
+                                <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                    <div index="[[index]]">
+                                        <div class="service-name">[[item.name]]</div>
+                                    </div>
+                                </paper-item>
+                            </template>
+                    </paper-autocomplete>
+                    <ice-hockey-scoreboard match="{{match}}"></ice-hockey-scoreboard>  
                 </div>
             </iron-pages>
         `;
@@ -92,7 +125,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
              */
             selectedTab: {
                 type: Number,
-                value: 0
+                value: 1
             },
 
             /**
@@ -103,12 +136,19 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                 value: 0
             },
 
+            match: {
+
+            },
+
             /**
              * @type object
              */
             services : {
                 value : {
-                    _localizeService: 'Localize'
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        _iceHockeyMatchStorage: "IceHockeyMatchStorage"
+                    },
                 }
             }
         };
@@ -126,6 +166,28 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
      */
     displayListView(evt) {
         this.selected = 0;
+    }
+
+    /**
+     * @param {Event} evt
+     * @private
+     */
+    _searchChanged(evt) {
+        this._iceHockeyMatchStorage
+            .getAll({name: evt.detail.value.text})
+            .then(
+                (data) => {
+                    evt.detail.target.suggestions(data);
+                }
+            );
+    }
+
+    /**
+     * @param {Event} evt
+     * @private
+     */
+    _selectMatch(evt) {
+       this.match = evt.detail.value;
     }
 }
 

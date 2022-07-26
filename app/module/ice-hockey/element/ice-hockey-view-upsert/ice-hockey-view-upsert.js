@@ -248,8 +248,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
         let index = this.entity[team].players.findIndex((element) => {
             return element.getId() === evt.detail.player.getId();
         });
-        console.log('update player',index, evt);
-
+     
         this.splice('entity.' + team + '.players', index, 1, evt.detail.player );
     }
 

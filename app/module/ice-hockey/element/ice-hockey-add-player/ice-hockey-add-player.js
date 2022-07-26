@@ -125,7 +125,7 @@ class IceHockeyAddPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         clone.firstName = player.firstName;
         clone.lastName = player.lastName;
         clone.role = player.role;
-        clone.shirtName = player.shirtName;
+        clone.shirtNumber = player.shirtNumber;
 
         return clone;
     }

@@ -1,6 +1,6 @@
 {
-    "title": "Resource",
-    "name": "resource",
+    "title": "Ice hockey",
+    "name": "ic",
     "icon": "resource:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {

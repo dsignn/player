@@ -20,17 +20,19 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
     static get template() {
         return html`
             <style >
+                :host {
+                    display: block;
+                    background: red;
+                }
+
                 paper-card {
                     @apply --layout-horizontal;
                     @apply --application-paper-card;
-                    margin-right: 4px;
-                    margin-bottom: 4px;
                     height: 60px;
                 }
                 
                 #leftSection {
                     width: 80px;
-                    min-height: 120px;
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
@@ -53,11 +55,22 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 }
                          
                 #content {
+                    display: flex;
                     @apply --layout-flex;
                     padding: 4px;
                     word-break: break-all;
                     overflow: hidden;
-                }     
+                    font-size: 20px;
+                }  
+                
+                #content .space:nth-child(2),
+                #content .space:nth-child(3) {
+                    margin-left: 6px;
+                }
+
+                .number {
+                    width:50px;
+                }
                 
                 .name {
                     overflow: hidden;
@@ -65,7 +78,7 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 }
                     
             </style>
-            <paper-card>
+            <paper-card id="card">
                 <div id="leftSection"></div>
                 <div id="fastAction">
                     <div class="action">
@@ -73,8 +86,9 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 </div>
                 <div id="rightSection">
                     <div id="content">
-                        <div class="name">{{player.firstName}}</div>
-                        <div class="name">{{player.lastName}}</div>
+                        <div class="number">{{player.shirtNumber}}</div>
+                        <div id="nane" class="name">{{player.firstName}}</div>
+                        <div id="surnane" class="name">{{player.lastName}}</div>
                     </div>
                     <div id="crud">
                         <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
@@ -102,8 +116,7 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
             /**
              * @type FileEntity
              */
-            player: {
-            },
+            player: { },
 
             /**
              * @type true
@@ -123,6 +136,11 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                         "_storage":"ResourceStorage"
                     }
                 }
+            },
+
+            direction: {
+                observer: 'changeDirection',
+                value: 'horizontal'
             },
 
             /**
@@ -159,6 +177,26 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', {detail: this.player}));
         this.$.crudButton.close();
+    }
+
+    changeDirection(value) {
+
+        if (value === 'vertical') {
+            leftSection
+        }
+        switch(true) {
+            case value === 'vertical':
+                break;
+            case value === 'horizontal':
+                this.$.leftSection.style.display = 'none';
+                this.$.content.style.flexDirection = 'row';
+                this.$.content.style.alignItems = 'center';
+                this.$.nane.classList.add("space");
+                this.$.surnane.classList.add("space");
+                this.$.card.style.height = '40px';
+                this.$.crudButton.style.padding= '0';
+                break;
+        }
     }
 }
 window.customElements.define('paper-ice-hockey-player', PaperIceHockeyPlayer);
