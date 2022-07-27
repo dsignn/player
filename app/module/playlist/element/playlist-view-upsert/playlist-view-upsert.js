@@ -203,6 +203,11 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchTimeslot(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._timeslotStorage || !evt.detail.value) {
+            return;
+        }
+        
         // TODO filter fot monitor id
         this._timeslotStorage.getAll({name : evt.detail.value.text})
             .then((timeslots) => {
@@ -253,6 +258,11 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchBindPlaylist(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._storage || !evt.detail.value) {
+            return;
+        }
+
         this._storage.getAll({name : evt.detail.value.text})
             .then((filter) => {
 

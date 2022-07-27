@@ -74,7 +74,6 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 
                 .name {
                     overflow: hidden;
-                    height: 20px;
                 }
                     
             </style>
@@ -91,11 +90,13 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                         <div id="surnane" class="name">{{player.lastName}}</div>
                     </div>
                     <div id="crud">
+                        <paper-icon-button id="pointTooltip" icon="ice-hockey:disk" on-tap="_point"></paper-icon-button>
+                        <paper-tooltip for="pointTooltip" position="left">{{localize('set-point')}}</paper-tooltip>
                         <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                             <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                             <paper-listbox slot="dropdown-content" multi>
-                                <paper-item on-click="_update">{{localize('modify')}}</paper-item>
-                                <paper-item  on-click="_delete">{{localize('delete')}}</paper-item>
+                                <paper-item on-tap="_update">{{localize('modify')}}</paper-item>
+                                <paper-item  on-tap="_delete">{{localize('delete')}}</paper-item>
                             </paper-listbox>
                         </paper-menu-button>
                     </div>
@@ -103,7 +104,7 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
             </paper-card>
         `
     }
-    PaperIceHockeyPlayer
+    
     constructor() {
         super();
         this.resources = lang;
@@ -177,6 +178,14 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', {detail: this.player}));
         this.$.crudButton.close();
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _point(evt) {
+        this.dispatchEvent(new CustomEvent('point', {detail: this.player}));
     }
 
     changeDirection(value) {

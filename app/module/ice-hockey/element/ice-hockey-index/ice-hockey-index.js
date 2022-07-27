@@ -173,6 +173,10 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
      * @private
      */
     _searchChanged(evt) {
+        if (!evt.detail.value) {
+            return;
+        }
+
         this._iceHockeyMatchStorage
             .getAll({name: evt.detail.value.text})
             .then(

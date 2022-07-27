@@ -12,16 +12,16 @@
         },
         "autoloads": [
         
-        ],
-        "autoloadsWc": [
-            {
-                "name": "ice-hockey-icons",
-                "path": {
-                    "directory": "element/ice-hockey-icons",
-                    "nameFile": "ice-hockey-icons",
-                    "extension": "js"
-                }
-            }
         ]
-    }
+    },
+    "autoloadsWc": [
+        {
+            "name": "ice-hockey-icons",
+            "path": {
+                "directory": "element/ice-hockey-icons",
+                "nameFile": "ice-hockey-icons",
+                "extension": "js"
+            }
+        }
+    ]
 }

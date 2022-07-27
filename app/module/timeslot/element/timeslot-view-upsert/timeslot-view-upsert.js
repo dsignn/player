@@ -256,6 +256,10 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchMonitor(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._monitorService || !evt.detail.value) {
+            return;
+        }
 
         let enableMonitor = this._monitorService.getEnableMonitor();
         let monitors = enableMonitor.id ? enableMonitor.getMonitors({nested: true}) : [];
@@ -286,6 +290,10 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchResource(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._resourceStorage || !evt.detail.value) {
+            return;
+        }
 
         this._resourceStorage.getAll({name : evt.detail.value.text})
             .then((resources) => {
@@ -338,7 +346,11 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchBindTimeslot(evt) {
-
+        // TODO cotroll papar autocomplete
+        if (!this._storage || !evt.detail.value) {
+            return;
+        }
+            
         this._storage.getAll({name : evt.detail.value.text})
             .then((resources) => {
 

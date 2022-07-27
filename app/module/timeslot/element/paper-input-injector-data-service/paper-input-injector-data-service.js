@@ -209,6 +209,10 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
      * @private
      */
     _serviceSearch(evt) {
+        // TODO cotroll papar autocomplete
+        if (!evt.detail.value) {
+            return;
+        }
 
         let suggestions = [];
         for (let property in this._injectorServices.services) {
@@ -233,6 +237,10 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
      * @private
      */
     _searchValue(evt) {
+        // TODO cotroll papar autocomplete
+        if (!evt.detail.value) {
+            return;
+        }
 
         this.$.serviceInput.value.getServiceData(evt.detail.value.text)
             .then((data) => {

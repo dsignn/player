@@ -10,6 +10,7 @@ import { HydratorStrategy, MongoIdStrategy } from "@dsign/library/src/hydrator/s
 import { GenericTeam } from "@dsign/library/src/sport/team/GenericTeam";
 import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
 import { IceHockeyPlayerEntity } from "./src/entity/IceHockeyPlayerEntity";
+import { IceHockeyScore } from "./src/entity/embedded/IceHockeyScore";
 
 /**
  * @class Repository
@@ -49,7 +50,6 @@ export class Repository extends ContainerAware {
                 new IceHockeyMatchEntity()
             );
     }
-
 
     /**
      *
@@ -129,6 +129,9 @@ export class Repository extends ContainerAware {
         let periodHydratorStrategy = new HydratorStrategy();
         periodHydratorStrategy.setHydrator(Repository.getIceHockeyPeriosHydrator(container));
 
+        let scoreHydratorStrategy = new HydratorStrategy();
+        scoreHydratorStrategy.setHydrator(Repository.getIceHockeyScoreHydrator(container));
+
         let hydrator = new PropertyHydrator(
             container.get('EntityContainerAggregate').get(
                 container.get('Config').modules['ice-hockey']['ice-hockey-match'].entityService
@@ -141,8 +144,11 @@ export class Repository extends ContainerAware {
         hydrator.addValueStrategy('id', new MongoIdStrategy())
             .addValueStrategy('_id', new MongoIdStrategy())
             .addValueStrategy('homeTeam', teamHydratorStrategy)
+            .addValueStrategy('homeScores', scoreHydratorStrategy)
             .addValueStrategy('guestTeam', teamHydratorStrategy)
+            .addValueStrategy('guestScores', scoreHydratorStrategy)
             .addValueStrategy('periods', periodHydratorStrategy)
+            .addValueStrategy('currentPeriod', periodHydratorStrategy)
 
         return hydrator;
     }
@@ -179,6 +185,17 @@ export class Repository extends ContainerAware {
     static getIceHockeyPlayerHydrator(container) {
 
         let hydrator = new PropertyHydrator(new IceHockeyPlayerEntity());
+
+        return hydrator;
+    }
+
+
+    /**
+     * @return PropertyHydrator
+     */
+    static getIceHockeyScoreHydrator(container) {
+
+        let hydrator = new PropertyHydrator(new IceHockeyScore());
 
         return hydrator;
     }

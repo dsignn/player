@@ -265,7 +265,12 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
      * @param evt
      * @private
      */
-    _searchWidget(evt) {
+    _searchWidget(evt) {      
+        // TODO cotroll papar autocomplete
+        if (!this._application || !evt.detail.value) {
+            return;
+        }
+
         let widgets = this._application.getWidgets();
 
         let filter = widgets.filter(
