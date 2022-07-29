@@ -106,7 +106,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                                 </paper-item>
                             </template>
                     </paper-autocomplete>
-                    <ice-hockey-scoreboard match="{{match}}"></ice-hockey-scoreboard>  
+                    <ice-hockey-scoreboard match="{{scoreboardMatch}}"></ice-hockey-scoreboard>  
                 </div>
             </iron-pages>
         `;
@@ -136,8 +136,8 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                 value: 0
             },
 
-            match: {
-
+            scoreboardMatch: {
+                observer: 'changeMatch'
             },
 
             /**
@@ -168,6 +168,15 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
         this.selected = 0;
     }
 
+    changeMatch(match) {
+        let ele = this.shadowRoot.querySelector('ice-hockey-scoreboard');
+        if (match.getId()) {
+            ele.style.display = 'block';
+        } else {
+            ele.style.display = 'none';
+        }
+    }
+
     /**
      * @param {Event} evt
      * @private
@@ -191,7 +200,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
      * @private
      */
     _selectMatch(evt) {
-       this.match = evt.detail.value;
+       this.scoreboardMatch = evt.detail.value;
     }
 }
 

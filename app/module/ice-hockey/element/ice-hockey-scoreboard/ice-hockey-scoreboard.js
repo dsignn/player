@@ -15,6 +15,7 @@ import "../ice-hockey-add-player/ice-hockey-add-player";
 import "../ice-hockey-add-score/ice-hockey-add-score";
 import {lang} from './language';
 import { IceHockeyMatchEntity } from '../../src/entity/IceHockeyMatchEntity';
+import { IceHockeyScore } from '../../src/entity/embedded/IceHockeyScore';
 
 /**
  * @customElement
@@ -35,13 +36,14 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
 
                 .j-center {
                     justify-content: center;
+                    align-item: center;
                 }
 
                 .content-wrapper {
-                    font-size:24px;
+                    font-size: 24px;
                     width: 100%;
+                    padding: 8px 0;
                 }
-
                 paper-listbox {
                     border-bottom-left-radius: 2px;
                     border-bottom-right-radius: 2px;
@@ -59,7 +61,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                 }
 
                 .score {
-                    padding-left: 6px;
+                    padding-left: 8px;
+                    padding-right: 8px;
                 }
 
                 .title-name {
@@ -75,18 +78,31 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     padding: 0 4px;
                 }
 
-                paper-item {
-                   
+                
+                paper-icon-button.circle {
+                    @apply --paper-icon-button-action;
+                    padding: 0;
+                    height: 24px;
+                    width: 24px;
+                    line-height: 20px;
+                    --paper-icon-button-disabled : {        
+                        background-color: #c9c9c9 !important;
+                    }
                 }
+
             </style>
             <div class="column j-between">
                 <div class="column content-wrapper j-center">
                     <div class="title-name">{{match.homeTeam.name}}</div>
                     <div class="score">{{homePoint}}</div>
+                    <paper-icon-button id="plusScoreHome" icon="plus" class="circle" type="home" role="button" on-tap="addGenericPoint"></paper-icon-button>
+                    <paper-tooltip for="plusScoreHome" position="right">{{localize('set-point')}}</paper-tooltip>
                 </div>
                 <div class="column content-wrapper j-center">
                     <div class="title-name">{{match.guestTeam.name}}</div>
                     <div class="score">{{guestPoint}}</div>
+                    <paper-icon-button id="plusScoreGuest" icon="plus" class="circle" type="guest" role="button"  on-tap="addGenericPoint"></paper-icon-button>
+                    <paper-tooltip for="plusScoreGuest" position="right">{{localize('set-point')}}</paper-tooltip>
                 </div>
             </div>
             <div class="column">
@@ -329,7 +345,27 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
 
         this._storage.update(this.match)
             .then((data) => {
-                console.log('AGGIORNATO', data);
+                // LOG
+            }).catch((error) => {
+                console.error(error);
+            });
+    }
+
+    /**
+     * @param {*} evt 
+     */
+    addGenericPoint(evt) {
+        if (evt.target.getAttribute('type') === 'home') {
+            this.match.homeScores.push(new IceHockeyScore);
+            this.homePoint = this.match.getHomeScores().length;
+        } else {
+            this.match.guestScores.push(new IceHockeyScore);
+            this.guestPoint = this.match.getGuestScores().length;
+        }
+
+        this._storage.update(this.match)
+            .then((data) => {
+                // LOG
             }).catch((error) => {
                 console.error(error);
             });
