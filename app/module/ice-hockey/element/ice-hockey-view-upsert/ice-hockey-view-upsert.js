@@ -121,7 +121,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-home-team')}}" value="{{entity.homeTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayerBtn" type="home"></paper-icon-button>
+                                    <paper-icon-button icon="ice-hockey:add-user" class="circle" on-tap="addPlayerBtn" type="home"></paper-icon-button>
                                 </div>
                                 <div class="header-players">{{localize('list-player')}}</div>
                                 <div class="players">
@@ -135,7 +135,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-guest-team')}}" value="{{entity.guestTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="plus" class="circle" on-tap="addPlayerBtn" type="guest"></paper-icon-button>
+                                    <paper-icon-button icon="ice-hockey:add-user" class="circle" on-tap="addPlayerBtn" type="guest"></paper-icon-button>
                                 </div>
                                 <div class="header-players">{{localize('list-player')}}</div>
                                 <div class="players">    
