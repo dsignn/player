@@ -42,6 +42,10 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                         min-width:250px;
                     }
                 }
+
+                ice-hockey-scoreboard {
+                    display:none;
+                }
             </style>
             <paper-tabs selected="{{selectedTab}}" tabindex="0">
                 <paper-tab>{{localize('general')}}</paper-tab>
@@ -106,7 +110,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                                 </paper-item>
                             </template>
                     </paper-autocomplete>
-                    <ice-hockey-scoreboard match="{{scoreboardMatch}}"></ice-hockey-scoreboard>  
+                    <ice-hockey-scoreboard></ice-hockey-scoreboard>  
                 </div>
             </iron-pages>
         `;
@@ -136,10 +140,6 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                 value: 0
             },
 
-            scoreboardMatch: {
-                observer: 'changeMatch'
-            },
-
             /**
              * @type object
              */
@@ -149,6 +149,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                     StorageContainerAggregate: {
                         _iceHockeyMatchStorage: "IceHockeyMatchStorage"
                     },
+                    scoreboardService: 'IceHockeyScoreboardService'
                 }
             }
         };
@@ -166,15 +167,6 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
      */
     displayListView(evt) {
         this.selected = 0;
-    }
-
-    changeMatch(match) {
-        let ele = this.shadowRoot.querySelector('ice-hockey-scoreboard');
-        if (match.getId()) {
-            ele.style.display = 'block';
-        } else {
-            ele.style.display = 'none';
-        }
     }
 
     /**
@@ -200,7 +192,13 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
      * @private
      */
     _selectMatch(evt) {
-       this.scoreboardMatch = evt.detail.value;
+        this.scoreboardService.setMatch(evt.detail.value);
+        let ele = this.shadowRoot.querySelector('ice-hockey-scoreboard');
+        if (evt.detail.value.getId()) {
+            ele.style.display = 'block';
+        } else {
+            ele.style.display = 'none';
+        }
     }
 }
 

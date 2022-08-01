@@ -17,6 +17,7 @@ import {lang} from './language';
 import { IceHockeyMatchEntity } from '../../src/entity/IceHockeyMatchEntity';
 import { IceHockeyScore } from '../../src/entity/embedded/IceHockeyScore';
 import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
+import { IceHockeyScoreboardService } from '../../src/IceHockeyScoreboardService';
 
 /**
  * @customElement
@@ -225,10 +226,14 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     _localizeService: 'Localize',
                     "StorageContainerAggregate": {
                         _storage: "IceHockeyMatchStorage"
-                    }
+                    },
+                    scoreboardService: 'IceHockeyScoreboardService'
                 }
-            }
-         
+            },
+
+            scoreboardService: {
+                observer: 'scoreboardServiceChange'
+            }      
         }
     }
 
@@ -260,7 +265,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
     }
 
     matchChange(match) {
-        if (!match) {
+       
+        if (!match || !match.id) {
             this.homePoint = null;
             this.guestPoint = null;
         } else {
@@ -280,8 +286,6 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
     }
 
     computeScore(score) {
-        console.log('test');
-
         var player = undefined;
         if (score.playerReference && score.playerReference.id) {
 
@@ -319,12 +323,22 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         
         this.match.getCurrentPeriod().name = evt.detail.item.period;
 
-        this._storage.update(this.match)
+        this.scoreboardService.updateMatchScoreboard(this.match)
             .then((data) => {
                 console.log('AGGIORNATO', data);
             }).catch((error) => {
                 console.error(error);
             });
+    }
+
+    scoreboardServiceChange(service) {
+        if (!service) {
+            return;
+        }
+
+        service.getEventManager().on(IceHockeyScoreboardService.CHANGE_SCOREBOARD_MATCH, (evt) => {
+            this.match = evt.data;
+        });
     }
 
     /**
@@ -351,15 +365,25 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         
         this.push(`match.${team}.players`, evt.detail.player);
 
-        this._storage.update(this.match)
-        .then((data) => {
-            this._notifyScore(type);
-            console.log('Aggiungo giocatore', this.match[team].players.length)
-        }).catch((error) => {
-            console.error(error);
-        });
+        this.scoreboardService.updateMatchScoreboard(this.match)
+            .then((data) => {
+                this._notifyScore(type);
+                console.log('Aggiungo giocatore', this.match[team].players.length)
+            }).catch((error) => {
+                console.error(error);
+            });
     }
 
+    /**
+     * @param {Event} evt 
+     */
+    addPlayerBtn(evt) {
+        let ele = document.getElementById(this.idPlayerDialog);
+        ele.querySelector('ice-hockey-add-player').typeTeam = evt.target.getAttribute('type');
+        ele.querySelector('ice-hockey-add-player').player = new IceHockeyPlayerEntity();
+        ele.open();
+    }
+    
     /**
      * @param {Event} evt 
      */
@@ -379,22 +403,12 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         this.splice(`match.${team}.players`, index, 1, evt.detail.player );
 
         // TODO move to service
-        this._storage.update(this.match)
+        this.scoreboardService.updateMatchScoreboard(this.match)
             .then((data) => {
                 console.log('AGGIORNATO', data);
             }).catch((error) => {
                 console.error(error);
             });
-    }
-
-    /**
-     * @param {Event} evt 
-     */
-    addPlayerBtn(evt) {
-        let ele = document.getElementById(this.idPlayerDialog);
-        ele.querySelector('ice-hockey-add-player').typeTeam = evt.target.getAttribute('type');
-        ele.querySelector('ice-hockey-add-player').player = new IceHockeyPlayerEntity();
-        ele.open();
     }
 
     /**
@@ -435,18 +449,18 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         let ele = document.getElementById(this.idScoreDialog);
         ele.close();
        
-        var team = evt.target.typeTeam;
-        if (evt.target.typeTeam === 'home') {
-            this.match.homeScores.push(evt.detail.score);
-            this.homePoint = this.match.getHomeScores().length;
-        } else {
-            this.match.guestScores.push(evt.detail.score);
-            this.guestPoint = this.match.getGuestScores().length;
-        }
+        var type = evt.target.typeTeam;
+        let team = 'homeScores';
 
-        this._storage.update(this.match)
+        if (type !== 'home') {
+            let team = 'guestScores';            
+        } 
+        
+        this.match[team].push(evt.detail.score);
+
+        this.scoreboardService.updateMatchScoreboard(this.match)
             .then((data) => {
-                this._notifyScore(team);
+                this._notifyScore(type);
             }).catch((error) => {
                 console.error(error);
             });
@@ -456,18 +470,19 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
      * @param {*} evt 
      */
     addGenericScore(evt) {
-        var team = evt.target.getAttribute('type');
-        if (team === 'home') {
-            this.match.homeScores.push(new IceHockeyScore);
-            this.homePoint = this.match.getHomeScores().length;
-        } else {
-            this.match.guestScores.push(new IceHockeyScore);
-            this.guestPoint = this.match.getGuestScores().length;
-        }
+       
+        var type = evt.target.getAttribute('type');
+        let team = 'homeScores';
+       
+        if (type !== 'home') {
+            team = 'guestScores';
+        } 
+        
+        this.match[team].push(new IceHockeyScore);
 
-        this._storage.update(this.match)
+        this.scoreboardService.updateMatchScoreboard(this.match)
             .then((data) => {
-              this._notifyScore(team);
+              this._notifyScore(type);
             }).catch((error) => {
                 console.error(error);
             });
@@ -485,7 +500,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         }
 
         this.splice(`match.${team}`, evt.target.parentElement.index, 1);     
-        this._storage.update(this.match)
+        
+        this.scoreboardService.updateMatchScoreboard(this.match)
             .then((data) => {
                 this._notifyScore(type);
                 console.log('fatto', this.match[team].length)

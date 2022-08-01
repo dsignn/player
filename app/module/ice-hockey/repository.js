@@ -11,6 +11,7 @@ import { GenericTeam } from "@dsign/library/src/sport/team/GenericTeam";
 import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
 import { IceHockeyPlayerEntity } from "./src/entity/IceHockeyPlayerEntity";
 import { IceHockeyScore } from "./src/entity/embedded/IceHockeyScore";
+import { IceHockeyScoreboardService } from "./src/IceHockeyScoreboardService";
 
 /**
  * @class Repository
@@ -26,6 +27,7 @@ export class Repository extends ContainerAware {
         this.initEntity();
         this.initHydrator()
         this.initMongoMatchStorage();
+        this.initScoreboardService();
         this.initAcl();
     }
 
@@ -116,6 +118,36 @@ export class Repository extends ContainerAware {
                 this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service'],
                 Repository.getIceHockeyMatchHydrator(this.getContainer())
             );
+    }
+
+    /**
+     * Init
+     */
+    initScoreboardService() {
+
+        let loadIceHockeyScoreboardService = () => {
+            const service = new IceHockeyScoreboardService(
+                this.getContainer()
+                    .get('StorageContainerAggregate')
+                    .get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'])
+            );
+        
+            this.getContainer().set(
+                this.getContainer().get('Config').modules['ice-hockey']['scoreboard-service'],
+                service
+            );
+        };
+
+        var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
+        
+        if (this.getContainer().get(connectorServiceName).isConnected()) {
+            loadIceHockeyScoreboardService();
+        } else {
+            this.getContainer().get(connectorServiceName).getEventManager().on(
+                MongoDb.READY_CONNECTION,
+                loadIceHockeyScoreboardService
+            );
+        }
     }
 
     /**
