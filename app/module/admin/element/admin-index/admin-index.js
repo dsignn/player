@@ -67,7 +67,7 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 <div>
                     <dom-repeat id="modules" items="{{modules}}" as="module" sort="sortModule">
                         <template>
-                            <paper-module module="{{module}}" direction="horizontal"></paper-module>
+                            <paper-module module="{{module}}" direction="horizontal" on-delete="deleteModule"></paper-module>
                         </template>
                     </dom-repeat>
                 <div>        
@@ -130,6 +130,13 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
      */
     importModule(evt) {
         this._application.importModule(this.$.fileUpload.files[0].path, container);
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    deleteModule(evt) {
+        console.log('DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
     }
 
     /**
