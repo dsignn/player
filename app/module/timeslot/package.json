@@ -1,6 +1,7 @@
 {
     "title": "Timeslot",
     "name": "timeslot",
+    "core": true,
     "icon": "timeslot:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {

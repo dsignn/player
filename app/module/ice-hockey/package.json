@@ -1,6 +1,7 @@
 {
     "title": "Ice hocker",
     "name": "ice-hockey",
+    "core": false,
     "icon": "ice-hockey:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {

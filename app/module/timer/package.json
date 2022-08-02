@@ -1,6 +1,7 @@
 {
     "title": "Timer",
     "name": "timer",
+    "core": false,
     "icon": "timer:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {

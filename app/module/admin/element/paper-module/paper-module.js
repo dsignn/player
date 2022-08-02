@@ -1,7 +1,6 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
-import {StorageEntityMixin} from "@dsign/polymer-mixin/storage/entity-mixin";
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-dialog/paper-dialog';
@@ -15,7 +14,7 @@ import {lang} from './language';
  * @customElement
  * @polymer
  */
-class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
+class PaperModule extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -29,7 +28,7 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                     @apply --application-paper-card;
                     height: 60px;
 
-                    @apply ---paper-ice-hockey-player;
+                    @apply ---paper-module;
                 }
                 
                 #leftSection {
@@ -75,6 +74,7 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 
                 .name {
                     overflow: hidden;
+                    flex: 1;
                 }
                     
             </style>
@@ -86,17 +86,11 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 </div>
                 <div id="rightSection">
                     <div id="content">
-                        <div class="number">{{player.shirtNumber}}</div>
-                        <div id="nane" class="name">{{player.firstName}}</div>
-                        <div id="surnane" class="name">{{player.lastName}}</div>
-                    </div>
+                        <div class="name">{{module.title}}</div>
                     <div id="crud">
-                        <paper-icon-button id="pointTooltip" icon="ice-hockey:disk" on-tap="_point"></paper-icon-button>
-                        <paper-tooltip for="pointTooltip" position="left">{{localize('set-point')}}</paper-tooltip>
                         <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                             <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                             <paper-listbox slot="dropdown-content" multi>
-                                <paper-item on-tap="_update">{{localize('modify')}}</paper-item>
                                 <paper-item  on-tap="_delete">{{localize('delete')}}</paper-item>
                             </paper-listbox>
                         </paper-menu-button>
@@ -118,7 +112,9 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
             /**
              * @type FileEntity
              */
-            player: { },
+            module: { 
+                observer: 'changeModule',
+            },
 
             /**
              * @type true
@@ -162,50 +158,40 @@ class PaperIceHockeyPlayer extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
             }
         }
     }
-
-        /**
-     * @param evt
-     * @private
-     */
-    _update(evt) {
-        this.dispatchEvent(new CustomEvent('update', {detail: this.player}));
-        this.$.crudButton.close();
-    }
     
     /**
      * @param evt
      * @private
      */
     _delete(evt) {
-        this.dispatchEvent(new CustomEvent('delete', {detail: this.player}));
+        this.dispatchEvent(new CustomEvent('delete', {detail: this.module}));
         this.$.crudButton.close();
     }
 
     /**
      * @param evt
-     * @private
      */
-    _point(evt) {
-        this.dispatchEvent(new CustomEvent('point', {detail: this.player}));
+    changeModule(module) {
+        if (!module || module.core === false) {
+            this.$.crudButton.style.display = 'inline-block';
+        } else {
+            this.$.crudButton.style.display = 'none';
+        }
     }
 
     changeDirection(value) {
 
         switch(true) {
             case value === 'vertical':
-                this.$.pointTooltip.style.display = 'none';
+               
                 break;
             case value === 'horizontal':
-                this.$.pointTooltip.style.display = 'inline-block';
                 this.$.leftSection.style.display = 'none';
                 this.$.content.style.flexDirection = 'row';
                 this.$.content.style.alignItems = 'center';
-                this.$.nane.classList.add("space");
-                this.$.surnane.classList.add("space");
-                this.$.card.style.height = '40px';
                 this.$.crudButton.style.padding= '0';
                 break;
         }
     }
 }
-window.customElements.define('paper-ice-hockey-player', PaperIceHockeyPlayer);
+window.customElements.define('paper-module', PaperModule);

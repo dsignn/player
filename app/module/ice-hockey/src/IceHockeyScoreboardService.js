@@ -63,4 +63,12 @@ import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
         
         console.log('UPDATE', evt);
     }
+
+    /**
+     * 
+     * @returns 
+     */
+    getStorage() {
+        return this.storage;
+    }
  }

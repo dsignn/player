@@ -54,8 +54,12 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                 }
 
                 paper-ice-hockey-player {
-                    width: 33.33%;
-                    max-height: 70px;
+                    width: 32.5%;
+                    margin-bottom: 6px;
+                    margin-right: 6px;
+                    ---paper-ice-hockey-player: {
+                        height: 120px;
+                    }
                 }
 
                 #list {

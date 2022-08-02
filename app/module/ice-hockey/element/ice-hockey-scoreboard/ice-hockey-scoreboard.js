@@ -157,7 +157,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                                 on-delete="deletePlayer" 
                                 on-update="updatePlayerBtn" 
                                 on-point="scorePlayerBtn"
-                                type="home">
+                                type="home"
+                                direction="horizontal">
                             </paper-ice-hockey-player>
                         </template>
                     </dom-repeat>
@@ -179,7 +180,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                                 on-delete="deletePlayer" 
                                 on-update="updatePlayerBtn" 
                                 on-point="scorePlayerBtn"
-                                type="guest">
+                                type="guest"
+                                direction="horizontal">
                             </paper-ice-hockey-player>
                         </template>
                     </dom-repeat>

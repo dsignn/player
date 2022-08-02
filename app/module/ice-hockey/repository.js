@@ -12,6 +12,9 @@ import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
 import { IceHockeyPlayerEntity } from "./src/entity/IceHockeyPlayerEntity";
 import { IceHockeyScore } from "./src/entity/embedded/IceHockeyScore";
 import { IceHockeyScoreboardService } from "./src/IceHockeyScoreboardService";
+import { ScoreboardDataInjector } from "./src/injector/ScoreboardDataInjector";
+import {Repository as TimeslotRepository} from "../timeslot/repository";
+
 
 /**
  * @class Repository
@@ -136,10 +139,20 @@ export class Repository extends ContainerAware {
                 this.getContainer().get('Config').modules['ice-hockey']['scoreboard-service'],
                 service
             );
+
+            this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE)
+            .set(
+                'ScoreboardDataInjector',
+                new ScoreboardDataInjector(service)
+            );
         };
 
         var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
         
+        if (!this.getContainer().get('MongoDb')) {
+            return;
+        }
+
         if (this.getContainer().get(connectorServiceName).isConnected()) {
             loadIceHockeyScoreboardService();
         } else {
