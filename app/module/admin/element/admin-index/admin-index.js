@@ -7,6 +7,8 @@ import '@polymer/paper-input/paper-input';
 import '@fluidnext-polymer/paper-input-file/paper-input-file';
 import "../paper-module/paper-module";
 import { lang } from './language';
+import { Application } from '@dsign/library/src/core/Application';
+import { Listener } from '@dsign/library/src/event';
 
 /**
  * Entry point for the module admin
@@ -136,7 +138,7 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
      * @param {Event} evt 
      */
     deleteModule(evt) {
-        console.log('DELETEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
+        this._application.deleteModule(evt.target.module);
     }
 
     /**
@@ -148,6 +150,24 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         }
 
         this.modules = application.getModules();
+
+        application.getEventManager().on(
+            Application.IMPORT_MODULE,
+            new Listener(this._updateModule.bind(this))
+        );
+
+        application.getEventManager().on(
+            Application.DELETE_MODULE,
+            new Listener(this._updateModule.bind(this))
+        );
+    }
+
+    /**
+     * @param evt
+     */
+    _updateModule(evt) {
+        this.modules = this._application.getModules();
+        this.$.modules.render();
     }
 
     sortModule(item1, item2) {

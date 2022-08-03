@@ -208,7 +208,13 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
 
         newValue.getEventManager().on(
             Application.IMPORT_MODULE,
-            new Listener(this.importModule.bind(this))
+            new Listener(this.importModuleEvt.bind(this))
+        );
+
+
+        newValue.getEventManager().on(
+            Application.DELETE_MODULE,
+            new Listener(this.deleteModuleEvt.bind(this))
         );
     }
 
@@ -222,14 +228,17 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
     /**
      * @param evt
      */
-    importModule(evt) {
-        console.log('ho importato un modulo');
-
+     importModuleEvt(evt) {
         let elem = document.createElement(evt.data.getEntryPoint().getName());
         elem.name = evt.data.getName();
         this.$.pages.appendChild(elem);
         this.$.menu.render();
         this.changeSection(this.section);
+    }
+
+    deleteModuleEvt(evt) {
+        this.modules = this.application.getModules();
+        this.$.menu.render();
     }
 
     /**

@@ -1,4 +1,3 @@
-import { TimerDataInjector } from "../../../timer/src/injector/TimerDataInjector";
 import { AbstractInjector } from "../../../timeslot/src/injector/AbstractInjector";
 import { IceHockeyScoreboardService } from "../IceHockeyScoreboardService";
 
