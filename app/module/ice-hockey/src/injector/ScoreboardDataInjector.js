@@ -12,6 +12,8 @@ import { IceHockeyScoreboardService } from "../IceHockeyScoreboardService";
     constructor(iceHockeyScoreboardService) {
         super();
 
+        this.hasData = false;
+
         /**
          * @type {iceHockeyScoreboardService}
          */
@@ -33,12 +35,10 @@ import { IceHockeyScoreboardService } from "../IceHockeyScoreboardService";
      * @param {Object} data
      * @return Promise
      */
-       getTimeslotData(data) {
+    getTimeslotData(data) {
         return new Promise((resolve, reject) => {
 
-            let obj = {};
-            obj[this.serviceNamespace] = this.iceHockeyScoreboardService.getMatch();
-            resolve(obj);
+            resolve(this.iceHockeyScoreboardService.getMatch());
         });
     }
 

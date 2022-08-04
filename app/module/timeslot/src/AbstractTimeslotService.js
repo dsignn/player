@@ -69,6 +69,11 @@ export class AbstractTimeslotService {
         this.dataInjectorManager = dataInjectorManager;
 
         /**
+         * @type {Boolean}
+         */
+        this.hasData = true;
+
+        /**
          * Event manager
          */
         this.eventManager = new EventManager();

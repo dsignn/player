@@ -36,6 +36,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
                 .topology {
                     position: relative;
                 }
+                
                 paper-autocomplete {
                     --autocomplete-wrapper: {
                         position: absolute;
