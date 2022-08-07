@@ -1,6 +1,7 @@
 import { EventManagerAware } from "@dsign/library/commonjs/event/EventManagerAware";
 import { Storage } from "@dsign/library/commonjs/storage/Storage";
 import { EventManager } from "@dsign/library/src/event";
+import { AbstractSender } from "@dsign/library/src/sender";
 import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
 
 /**
@@ -8,26 +9,37 @@ import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
  */
  export class IceHockeyScoreboardService extends EventManagerAware {
 
+    static get DATA()  { return 'data-scoreboard'; }
+
     /**
      * @return {string}
      */
     static get CHANGE_SCOREBOARD_MATCH() { return 'change-scoreboard-match'; }
 
     /**
-     * @param {StorageInterface} storage 
+     * @param {StorageInterface} storage
+     * @param {AbstractSender} sender
      */
-    constructor(storage) {
-
+    constructor(storage, sender) {
         super();
-
-        this.storage = storage;
 
         this.match = null;
 
         /**
+         * @type EventManagerAwareInterface
+         */
+        this.sender = sender;
+
+        /**
+         * @type StorageInterface
+         */
+        this.storage = storage;
+        
+        /**
          * Events
          */
-        this.storage.getEventManager().on(Storage.POST_UPDATE, this._updateListener);
+        this.storage.getEventManager().on(Storage.POST_UPDATE, this._updateListener.bind(this));
+       
     }
 
     /**
@@ -61,7 +73,20 @@ import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
 
     _updateListener(evt) {
         
-        console.log('UPDATE', evt);
+        if (this.match === null || (this.match.id !== evt.data.id)) {
+            return;
+        }
+       
+
+        let message = {
+            event : IceHockeyScoreboardService.DATA,
+            data : {
+                match : this.match
+            }
+        };
+
+        console.log('send ice match', message);
+        this.sender.send('proxy', message);
     }
 
     /**

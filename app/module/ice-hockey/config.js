@@ -23,7 +23,8 @@ export const config = {
                     "name-storage-service": "IceHockeyMatchStorageHydrator",
                 }
             },
-            "scoreboard-service": "IceHockeyScoreboardService"
+            "scoreboard-service": "IceHockeyScoreboardService",
+            "senderService": "IceHockeySender"
         }
     }
 }

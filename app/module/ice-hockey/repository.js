@@ -28,7 +28,8 @@ export class Repository extends ContainerAware {
 
         this.initConfig();
         this.initEntity();
-        this.initHydrator()
+        this.initHydrator();
+        this.initIceHockeySender();
         this.initMongoMatchStorage();
         this.initScoreboardService();
         this.initAcl();
@@ -132,7 +133,10 @@ export class Repository extends ContainerAware {
             const service = new IceHockeyScoreboardService(
                 this.getContainer()
                     .get('StorageContainerAggregate')
-                    .get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'])
+                    .get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service']),
+                this.getContainer()
+                    .get('SenderContainerAggregate')
+                    .get(this.getContainer().get('Config').modules['ice-hockey'].senderService)
             );
         
             this.getContainer().set(
@@ -141,10 +145,7 @@ export class Repository extends ContainerAware {
             );
 
             this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE)
-            .set(
-                'ScoreboardDataInjector',
-                new ScoreboardDataInjector(service)
-            );
+                .set('ScoreboardDataInjector', new ScoreboardDataInjector(service));
         };
 
         var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
@@ -161,6 +162,18 @@ export class Repository extends ContainerAware {
                 loadIceHockeyScoreboardService
             );
         }
+    }
+
+    /**
+     *
+     */
+    initIceHockeySender() {
+        this.getContainer()
+            .get('SenderContainerAggregate')
+            .set(this.getContainer().get(
+                'Config').modules['ice-hockey'].senderService,
+                 require('electron').ipcRenderer
+            );
     }
 
     /**

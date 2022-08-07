@@ -20,7 +20,7 @@ import {TimeslotEntity} from "./src/entity/TimeslotEntity"
 import {MongoTimeslotAdapter} from "./src/storage/adapter/mongo/MongoTimeslotAdapter";
 import {DexieTimeslotAdapter} from "./src/storage/adapter/dexie/DexieTimeslotAdapter";
 import {Repository as ResourceRepository} from "./../resource/repository";
-import {Repository as MonitorRepository} from "./../monitor/repository";
+import {Repository as MonitorRepository} from "../monitor/repository";
 
 /**
  * @class Repository
