@@ -14,6 +14,7 @@ import { IceHockeyScore } from "./src/entity/embedded/IceHockeyScore";
 import { IceHockeyScoreboardService } from "./src/IceHockeyScoreboardService";
 import { ScoreboardDataInjector } from "./src/injector/ScoreboardDataInjector";
 import {Repository as TimeslotRepository} from "../timeslot/repository";
+import { Time } from "@dsign/library/src/date/Time";
 
 
 /**
@@ -190,6 +191,9 @@ export class Repository extends ContainerAware {
         let scoreHydratorStrategy = new HydratorStrategy();
         scoreHydratorStrategy.setHydrator(Repository.getIceHockeyScoreHydrator(container));
 
+        let timeHydratorStrategy = new HydratorStrategy();
+        timeHydratorStrategy.setHydrator(Repository.getTimeHydrator(container));
+
         let hydrator = new PropertyHydrator(
             container.get('EntityContainerAggregate').get(
                 container.get('Config').modules['ice-hockey']['ice-hockey-match'].entityService
@@ -207,6 +211,7 @@ export class Repository extends ContainerAware {
             .addValueStrategy('guestScores', scoreHydratorStrategy)
             .addValueStrategy('periods', periodHydratorStrategy)
             .addValueStrategy('currentPeriod', periodHydratorStrategy)
+            .addValueStrategy('time', timeHydratorStrategy)
 
         return hydrator;
     }
@@ -243,6 +248,16 @@ export class Repository extends ContainerAware {
     static getIceHockeyPlayerHydrator(container) {
 
         let hydrator = new PropertyHydrator(new IceHockeyPlayerEntity());
+
+        return hydrator;
+    }
+
+    /**
+     * @return PropertyHydrator
+     */
+    static getTimeHydrator(container) {
+
+        let hydrator = new PropertyHydrator(new Time());
 
         return hydrator;
     }

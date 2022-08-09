@@ -2,6 +2,7 @@ import { EntityIdentifier } from "@dsign/library/src/storage/entity/EntityIdenti
 import { IceHockeyMatch } from "@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch";
 import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
 import { GenericTeam } from "@dsign/library/src/sport/team/GenericTeam";
+import { Time } from "@dsign/library/src/date/Time";
 
 /**
 * @class IceHockeyMatchEntity
@@ -33,6 +34,8 @@ class IceHockeyMatchEntity extends EntityIdentifier {
          * @var Array<ScoreInterface>
          */
         this.guestScores = [];
+
+        this.time = new Time();
     }
  };
 

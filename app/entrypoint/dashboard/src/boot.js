@@ -19,6 +19,7 @@ import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
 import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
+import {ChronoService} from './../../../src/ChronoService';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 
@@ -306,6 +307,11 @@ container.set('Timer',
     });
 
 
+container.set('ChronoService',
+    function(sm) {
+        return new ChronoService(sm.get('Timer'))
+    });
+    
 
 
 /**

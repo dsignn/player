@@ -22,6 +22,10 @@ const template = html`
             <g id="gpu"><path d="M2,7V8.5H3V17H4.5V7C3.7,7 2.8,7 2,7M6,7V7L6,16H7V17H14V16H22V7H6M17.5,9C18.88,9 20,10.12 20,11.5C20,12.88 18.88,14 17.5,14C16.12,14 15,12.88 15,11.5C15,10.12 16.12,9 17.5,9Z"></path></g>
             <g id="plus"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></g>
             <g id="minus"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></g>
+            <g id="play"><path d="M8 5v14l11-7z"></path></g>
+            <g id="pause"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"></path></g>
+            <g id="stop"><path d="M6 6h12v12H6z"></path></g>
+            <g id="resume"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></g>
         </defs>
     </svg>
 </iron-iconset-svg>`;
@@ -36,4 +40,3 @@ setTimeout(
     },
     1000
 );
-
