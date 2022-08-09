@@ -3,6 +3,7 @@ import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin"
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import {Time} from "@dsign/library/src/date/Time";
 import { ChronoService } from '../../src/ChronoService';
+import {lang} from './language';
 
 export class PaperChrono extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
@@ -64,9 +65,13 @@ export class PaperChrono extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
             </div>
             <div class="container-action">
                 <paper-icon-button id="pbtmPlay" class="circle" icon="play" on-tap="_play"></paper-icon-button>
+                <paper-tooltip for="pbtmPlay" position="bottom">{{localize('play')}}</paper-tooltip>
                 <paper-icon-button id="pbtmResume" class="circle" icon="resume" on-tap="_resume"></paper-icon-button>
+                <paper-tooltip for="pbtmResume" position="bottom">{{localize('resume')}}</paper-tooltip>
                 <paper-icon-button id="pbtmPause" class="circle" icon="pause" on-tap="_pause"></paper-icon-button>
+                <paper-tooltip for="pbtmPause" position="bottom">{{localize('pause')}}</paper-tooltip>
                 <paper-icon-button id="pbtmStop" class="circle" icon="stop" on-tap="_stop"></paper-icon-button>
+                <paper-tooltip for="pbtmStop" position="bottom">{{localize('stop')}}</paper-tooltip>
             </div>
 
         `
@@ -112,6 +117,11 @@ export class PaperChrono extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
             }
 
         }
+    }
+    
+    constructor() {
+        super();
+        this.resources = lang;
     }
 
     /**
@@ -160,9 +170,10 @@ export class PaperChrono extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @param {Event} evt 
      */
     _proxyEvt(evt) {
-        console.log('gggggggggggggggg', evt)
-        if (true) {
-
+        if (!!this.time && evt.data.id == this.time.id) {
+            this._computeStatus();
+            this._computeData();
+            this.dispatchEvent(new CustomEvent( evt.name, {detail:  evt.data}));
         }
     }
 
@@ -176,7 +187,7 @@ export class PaperChrono extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
 
             this._computeStatus();
             this._computeData();
-            this.dispatchEvent('update-chrono', this.time);
+            this.dispatchEvent(new CustomEvent( evt.name, {detail:  evt.data}));
         }
     }
 

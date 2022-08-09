@@ -85,7 +85,6 @@ import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
             }
         };
 
-        console.log('send ice match', message);
         this.sender.send('proxy', message);
     }
 

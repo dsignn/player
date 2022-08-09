@@ -234,7 +234,7 @@ export class ChronoService extends EventManagerAware {
          
         this._removeRunningTimer(time);
         time.status = ChronoService.STATUS_IDLE;
-        time.resetTimer();
+        time.reset();
         this.eventManager.emit(ChronoService.STOP, time);
     }
 }

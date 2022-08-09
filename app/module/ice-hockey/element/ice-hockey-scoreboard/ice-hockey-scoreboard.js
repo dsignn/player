@@ -165,7 +165,12 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     </dom-repeat>
                 </div>  
                 <div class="info">
-                    <paper-chrono id="chrono" time="{{match.time}}" on-update-chrono="{{updateScoreEvt}}"></paper-chrono>
+                    <paper-chrono id="chrono" time="{{match.time}}" 
+                        on-data="updateScoreEvt" 
+                        on-play-timer="updateScoreEvt"
+                        on-pause-timer="updateScoreEvt"
+                        on-resume-timer="updateScoreEvt"
+                        on-stop-timer="updateScoreEvt"></paper-chrono>
                     <paper-listbox id="listPeriods" on-iron-items-changed="changePeriod" on-iron-select="changePeriod">
                         <dom-repeat id="periods" items="{{match.periods}}" as="period">
                             <template>
@@ -276,8 +281,6 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         if (!newMatch || !newMatch.id) {
             this.homePoint = null;
             this.guestPoint = null;
-
-            console.log('JJJJJJJJJJJJ', newMatch);
         } else {
             this.homePoint = newMatch.getHomeScores().length;
             this.guestPoint = newMatch.getGuestScores().length;
