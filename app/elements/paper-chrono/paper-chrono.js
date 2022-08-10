@@ -225,22 +225,18 @@ export class PaperChrono extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
     }
 
     _play(evt) {    
-        console.log('_play', evt);
         this.play();
     }
 
     _pause(evt) {
-        console.log('_pause', evt);
         this.pause();
     }
 
     _stop(evt) {
-        console.log('_stop', evt);
         this.stop();
     }
 
     _resume(evt) {
-        console.log('_resume', evt);
         this.resume();
     }
 

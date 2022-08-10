@@ -49,6 +49,9 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                 }
 
                 .header-players {
+                   
+                    display: flex;
+                    align-items: center;
                     font-size: 20px;
                     padding: 10px 0;
                 }
@@ -125,9 +128,11 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-home-team')}}" value="{{entity.homeTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="ice-hockey:add-user" class="circle" on-tap="addPlayerBtn" type="home"></paper-icon-button>
                                 </div>
-                                <div class="header-players">{{localize('list-player')}}</div>
+                                <div class="header-players">
+                                    {{localize('list-player')}}
+                                    <paper-button on-tap="addPlayerBtn" type="home">{{localize('add-player')}}</paper-button>
+                                </div>
                                 <div class="players">
                                     <dom-repeat id="homeRepeat" items="{{entity.homeTeam.players}}" as="player">
                                         <template>
@@ -139,9 +144,11 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-guest-team')}}" value="{{entity.guestTeam.name}}"></paper-input>
-                                    <paper-icon-button icon="ice-hockey:add-user" class="circle" on-tap="addPlayerBtn" type="guest"></paper-icon-button>
                                 </div>
-                                <div class="header-players">{{localize('list-player')}}</div>
+                                <div class="header-players">
+                                    {{localize('list-player')}}
+                                    <paper-button on-tap="addPlayerBtn" type="guest">{{localize('add-player')}}</paper-button>
+                                </div>
                                 <div class="players">    
                                     <dom-repeat id="guestRepeat" items="{{entity.guestTeam.players}}" as="player" >
                                         <template>

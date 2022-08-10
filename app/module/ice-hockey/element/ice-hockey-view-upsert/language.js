@@ -8,7 +8,8 @@ export const lang = {
     "name-home-team": "Nome squadra di casa",
     "name-guest-team": "Nome squadra ospite",
     "add-period": "Aggiungi periodo",
-    "list-player": "Lista giocatori"
+    "list-player": "Lista giocatori",
+    "add-player": "Aggiungi giocatore"
   },
   "en": {
     "header": "List monitor",

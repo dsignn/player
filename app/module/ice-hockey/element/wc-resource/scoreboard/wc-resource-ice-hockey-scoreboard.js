@@ -15,6 +15,28 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
                 height: 100%;
             }
 
+            .row {
+                display: flex;
+                flex-direction: row;
+            }
+
+            .column {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .half {
+                width: 50%;
+            }
+
+            .a-c {
+                align-items: center;
+            }
+
+            .j-c {
+                justify-content: center;
+            }
+
             .match {
                 padding: 0;
                 height: 100%;
@@ -29,10 +51,20 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
 
         </style>
         <div id="scoreboard" class="match hidden">
-            <div>{{scoreboard.homeTeam.name}}</div>
-            <div>{{homeScore}}</div>
-            <div>{{guestScore}}</div>
-            <div>{{scoreboard.guestTeam.name}}</div> 
+            <div class="row j-c">
+                {{scoreboard.time.hours}}:{{scoreboard.time.minutes}}:{{scoreboard.time.seconds}}
+            </div>
+            <div class="row">   
+                <div class="column half a-c">
+                    <div>{{homeScore}}</div>
+                    <div>{{scoreboard.homeTeam.name}}</div>
+                </div>
+                <div class="column half a-c">
+                    <div>{{guestScore}}</div> 
+                    <div>{{scoreboard.guestTeam.name}}</div>
+                </div>
+            </div>
+         
         </div>
         `;
     }
