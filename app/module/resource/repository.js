@@ -209,7 +209,9 @@ export class Repository extends ContainerAware {
 
             storage.getEventManager()
                 .on(Storage.BEFORE_UPDATE, this.onBeforeUpdate.bind(this))
+                .on(Storage.POST_UPDATE, this.onPostUpsert.bind(this))
                 .on(Storage.BEFORE_SAVE, this.onBeforeSave.bind(this))
+                .on(Storage.POST_SAVE, this.onPostUpsert.bind(this))
                 .on(Storage.POST_REMOVE, this.onPostRemove.bind(this));
 
             this.getContainer().get('StorageContainerAggregate').set(
@@ -248,9 +250,15 @@ export class Repository extends ContainerAware {
         if (evt.data.resourceToImport) {
             this._clearDirectory(evt.data);
         }
+
         this._checkFileResource(evt.data);
     }
 
+    onPostUpsert(evt) {
+        if (evt.data.resourceToImport) {
+            delete evt.data.resourceToImport;
+        }
+    }
 
     /**
      * @param evt

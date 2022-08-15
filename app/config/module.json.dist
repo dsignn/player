@@ -1,47 +1,25 @@
 [
     {
-        "title": "Admin",
-        "name": "admin",
-        "icon": "admin:menu",
-        "configEntryPoint": "repository.js",
-        "entryPoint": {
-            "name": "admin-index",
-            "path": {
-                "directory": "element/admin-index",
-                "nameFile": "admin-index",
-                "extension": "js"
-            }
-        },
-        "autoloadsWc": [
-            {
-                "name": "admin-icons",
-                "path": {
-                    "directory": "element/admin-icons",
-                    "nameFile": "admin-icons",
-                    "extension": "js"
-                }
-            }
-        ]
-    },
-    {
-        "title": "Dashboard",
-        "name": "dashboard",
+        "id": null,
         "icon": "dashboard:menu",
+        "name": "dashboard",
         "entryPoint": {
             "name": "dashboard-index",
             "path": {
-                "directory": "element/dashboard-index",
                 "nameFile": "dashboard-index",
+                "directory": "element/dashboard-index",
                 "extension": "js"
             }
         },
         "configEntryPoint": "repository.js",
+        "core": true,
+        "label": "",
         "autoloads": [
             {
                 "name": "WidgetEntity",
                 "path": {
-                    "directory": "src/storage/entity",
                     "nameFile": "WidgetEntity",
+                    "directory": "src/storage/entity",
                     "extension": "js"
                 }
             }
@@ -50,72 +28,76 @@
             {
                 "name": "dashboard-icons",
                 "path": {
-                    "directory": "element/dashboard-icons",
                     "nameFile": "dashboard-icons",
+                    "directory": "element/dashboard-icons",
                     "extension": "js"
                 }
             }
-        ]
+        ],
+        "widgets": [],
+        "title": "Dashboard"
     },
     {
-        "title": "Monitor",
-        "name": "monitor",
+        "id": null,
         "icon": "monitor:menu",
+        "name": "monitor",
         "entryPoint": {
             "name": "monitor-index",
             "path": {
-                "directory": "element/monitor-index",
                 "nameFile": "monitor-index",
+                "directory": "element/monitor-index",
                 "extension": "js"
             }
         },
         "configEntryPoint": "repository.js",
+        "core": true,
+        "label": "",
         "autoloads": [
             {
                 "name": "MonitorService",
                 "path": {
-                    "directory": "src",
                     "nameFile": "MonitorService",
+                    "directory": "src",
                     "extension": "js"
                 }
             },
             {
                 "name": "MonitorEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "MonitorEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "MonitorContainerEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "MonitorContainerEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "DexieMonitorAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/dexie",
                     "nameFile": "DexieMonitorAdapter",
+                    "directory": "src/storage/adapter/dexie",
                     "extension": "js"
                 }
             },
             {
                 "name": "DexieMonitorAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/dexie",
                     "nameFile": "DexieMonitorAdapter",
+                    "directory": "src/storage/adapter/dexie",
                     "extension": "js"
                 }
             },
             {
                 "name": "MongoMonitorAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/mongo",
                     "nameFile": "MongoMonitorAdapter",
+                    "directory": "src/storage/adapter/mongo",
                     "extension": "js"
                 }
             }
@@ -124,112 +106,116 @@
             {
                 "name": "monitor-icons",
                 "path": {
-                    "directory": "element/monitor-icons",
                     "nameFile": "monitor-icons",
+                    "directory": "element/monitor-icons",
                     "extension": "js"
                 }
             },
             {
                 "name": "paper-player",
                 "path": {
-                    "directory": "element/paper-player",
                     "nameFile": "paper-player",
+                    "directory": "element/paper-player",
                     "extension": "js"
                 }
             },
             {
                 "name": "paper-player-manager",
                 "path": {
-                    "directory": "element/paper-player-manager",
                     "nameFile": "paper-player-manager",
+                    "directory": "element/paper-player-manager",
                     "extension": "js"
                 }
             },
             {
                 "name": "paper-player-timeslot",
                 "path": {
-                    "directory": "element/paper-player-timeslot",
                     "nameFile": "paper-player-timeslot",
+                    "directory": "element/paper-player-timeslot",
                     "extension": "js"
                 }
             },
             {
                 "name": "paper-monitor-viewer",
                 "path": {
-                    "directory": "element/paper-monitor-viewer",
                     "nameFile": "paper-monitor-viewer",
+                    "directory": "element/paper-monitor-viewer",
                     "extension": "js"
                 }
             }
-        ]
+        ],
+        "widgets": [],
+        "title": "Monitor"
     },
     {
-        "title": "Resource",
-        "name": "resource",
+        "id": null,
         "icon": "resource:menu",
-        "configEntryPoint": "repository.js",
+        "name": "resource",
         "entryPoint": {
             "name": "resource-index",
             "path": {
-                "directory": "element/resource-index",
                 "nameFile": "resource-index",
+                "directory": "element/resource-index",
                 "extension": "js"
             }
         },
+        "configEntryPoint": "repository.js",
+        "core": true,
+        "label": "",
         "autoloads": [
             {
                 "name": "DexieResourceAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/dexie",
                     "nameFile": "DexieResourceAdapter",
+                    "directory": "src/storage/adapter/dexie",
                     "extension": "js"
                 }
             },
             {
                 "name": "MongoResourceAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/mongo",
                     "nameFile": "MongoResourceAdapter",
+                    "directory": "src/storage/adapter/mongo",
                     "extension": "js"
                 }
             },
             {
                 "name": "ResourceService",
                 "path": {
-                    "directory": "src",
                     "nameFile": "ResourceService",
+                    "directory": "src",
                     "extension": "js"
                 }
             },
             {
                 "name": "FileEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "FileEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "AudioEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "AudioEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "ImageEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "ImageEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "VideoEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "VideoEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             }
@@ -238,96 +224,108 @@
             {
                 "name": "resource-icons",
                 "path": {
-                    "directory": "element/resource-icons",
                     "nameFile": "resource-icons",
+                    "directory": "element/resource-icons",
+                    "extension": "js"
+                }
+            },
+            {
+                "name": "paper-icon-resource-upsert",
+                "path": {
+                    "directory": "element/paper-icon-resource-upsert",
+                    "nameFile": "paper-icon-resource-upsert",
                     "extension": "js"
                 }
             }
-        ]
+        ],
+        "widgets": [],
+        "title": "Resource"
     },
     {
-        "title": "Timeslot",
-        "name": "timeslot",
+        "id": null,
         "icon": "timeslot:menu",
-        "configEntryPoint": "repository.js",
+        "name": "timeslot",
         "entryPoint": {
             "name": "timeslot-index",
             "path": {
-                "directory": "element/timeslot-index",
                 "nameFile": "timeslot-index",
+                "directory": "element/timeslot-index",
                 "extension": "js"
             }
         },
+        "configEntryPoint": "repository.js",
+        "core": true,
+        "label": "",
         "autoloads": [
             {
                 "name": "AbstractInjector",
                 "path": {
-                    "directory": "src/injector",
                     "nameFile": "AbstractInjector",
+                    "directory": "src/injector",
                     "extension": "js"
                 }
             },
             {
                 "name": "AbstractTimeslotService",
                 "path": {
-                    "directory": "src",
                     "nameFile": "AbstractTimeslotService",
+                    "directory": "src",
                     "extension": "js"
                 }
             },
             {
                 "name": "TimeslotService",
                 "path": {
-                    "directory": "src",
                     "nameFile": "TimeslotService",
+                    "directory": "src",
                     "extension": "js"
                 }
             },
             {
                 "name": "TimeslotEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "TimeslotEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "Injector",
                 "path": {
-                    "directory": "src/entity/embedded",
                     "nameFile": "Injector",
+                    "directory": "src/entity/embedded",
                     "extension": "js"
                 }
             },
             {
                 "name": "DexieTimeslotAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/dexie",
                     "nameFile": "DexieTimeslotAdapter",
+                    "directory": "src/storage/adapter/dexie",
                     "extension": "js"
                 }
             },
             {
                 "name": "MongoTimeslotAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/mongo",
                     "nameFile": "MongoTimeslotAdapter",
+                    "directory": "src/storage/adapter/mongo",
                     "extension": "js"
                 }
             },
             {
                 "name": "Test1",
                 "path": {
-                    "directory": "src/injector",
                     "nameFile": "Test1",
+                    "directory": "src/injector",
                     "extension": "js"
                 }
             },
             {
                 "name": "Test2",
                 "path": {
-                    "directory": "src/injector",
                     "nameFile": "Test2",
+                    "directory": "src/injector",
                     "extension": "js"
                 }
             }
@@ -336,16 +334,16 @@
             {
                 "name": "timeslot-icons",
                 "path": {
-                    "directory": "element/timeslot-icons",
                     "nameFile": "timeslot-icons",
+                    "directory": "element/timeslot-icons",
                     "extension": "js"
                 }
             },
             {
                 "name": "timeslot-style",
                 "path": {
-                    "directory": "element/timeslot-style",
                     "nameFile": "timeslot-style",
+                    "directory": "element/timeslot-style",
                     "extension": "js"
                 }
             }
@@ -354,102 +352,105 @@
             {
                 "name": "Timeslot tags",
                 "description": "Widget to view tagged timeslot",
-                "property": "tags",
                 "label": "tags",
+                "property": "tags",
                 "require": true,
-                 "webComponent" : {
-                       "name": "paper-timeslot-tags",
-                       "path": {
-                           "directory": "timeslot/element/widget/paper-timeslot-tags",
-                           "nameFile": "paper-timeslot-tags",
-                           "extension": "js"
-                       }
-                 },
-                 "webComponentData" : {
-                     "name": "paper-timeslot-tags-data",
-                     "path": {
-                         "directory": "timeslot/element/widget/paper-timeslot-tags-data",
-                         "nameFile": "paper-timeslot-tags-data",
-                         "extension": "js"
-                     }
-                 }
+                "webComponent": {
+                    "name": "paper-timeslot-tags",
+                    "path": {
+                        "nameFile": "paper-timeslot-tags",
+                        "directory": "timeslot/element/widget/paper-timeslot-tags",
+                        "extension": "js"
+                    }
+                },
+                "webComponentData": {
+                    "name": "paper-timeslot-tags-data",
+                    "path": {
+                        "nameFile": "paper-timeslot-tags-data",
+                        "directory": "timeslot/element/widget/paper-timeslot-tags-data",
+                        "extension": "js"
+                    }
+                }
             },
             {
                 "name": "Timeslot monitors",
                 "description": "Widget to view the timeslots assiate to the montors",
-                "property": "monitors",
                 "label": "monitors",
+                "property": "monitors",
                 "require": true,
-                "webComponent" : {
-                     "name": "paper-timeslot-tags",
-                     "path": {
-                          "directory": "timeslot/element/widget/paper-timeslot-monitors",
-                          "nameFile": "paper-timeslot-monitors",
-                          "extension": "js"
-                     }
+                "webComponent": {
+                    "name": "paper-timeslot-tags",
+                    "path": {
+                        "nameFile": "paper-timeslot-monitors",
+                        "directory": "timeslot/element/widget/paper-timeslot-monitors",
+                        "extension": "js"
+                    }
                 },
-                "webComponentData" : {
-                     "name": "paper-timeslot-tags-data",
-                     "path": {
-                         "directory": "timeslot/element/widget/paper-timeslot-monitors-data",
-                         "nameFile": "paper-timeslot-monitors-data",
-                         "extension": "js"
-                     }
+                "webComponentData": {
+                    "name": "paper-timeslot-tags-data",
+                    "path": {
+                        "nameFile": "paper-timeslot-monitors-data",
+                        "directory": "timeslot/element/widget/paper-timeslot-monitors-data",
+                        "extension": "js"
+                    }
                 }
             }
-        ]
+        ],
+        "title": "Timeslot"
     },
     {
-        "title": "Playlist",
-        "name": "playlist",
+        "id": null,
         "icon": "playlist:menu",
-        "configEntryPoint": "repository.js",
+        "name": "playlist",
         "entryPoint": {
             "name": "playlist-index",
             "path": {
-                "directory": "element/playlist-index",
                 "nameFile": "playlist-index",
+                "directory": "element/playlist-index",
                 "extension": "js"
             }
         },
+        "configEntryPoint": "repository.js",
+        "core": false,
+        "label": "",
         "autoloads": [
             {
                 "name": "PlaylistService",
                 "path": {
-                    "directory": "src",
                     "nameFile": "PlaylistService",
+                    "directory": "src",
                     "extension": "js"
                 }
             },
             {
                 "name": "PlaylistEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "PlaylistEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "TimeslotPlaylistReference",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "TimeslotPlaylistReference",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "DexiePlaylistAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/dexie",
                     "nameFile": "DexiePlaylistAdapter",
+                    "directory": "src/storage/adapter/dexie",
                     "extension": "js"
                 }
             },
             {
                 "name": "MongoPlaylistAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/mongo",
                     "nameFile": "MongoPlaylistAdapter",
+                    "directory": "src/storage/adapter/mongo",
                     "extension": "js"
                 }
             }
@@ -458,315 +459,135 @@
             {
                 "name": "playlist-icons",
                 "path": {
-                    "directory": "element/playlist-icons",
                     "nameFile": "playlist-icons",
-                    "extension": "js"
-                }
-            }
-        ]
-    },
-    {
-        "title": "Timeline",
-        "name": "timeline",
-        "icon": "timeline:menu",
-        "configEntryPoint": "repository.js",
-        "entryPoint": {
-            "name": "timeline-index",
-            "path": {
-                "directory": "element/timeline-index",
-                "nameFile": "timeline-index",
-                "extension": "js"
-            }
-        },
-        "autoloadsWc": [
-            {
-                "name": "timeline-icons",
-                "path": {
-                    "directory": "element/timeline-icons",
-                    "nameFile": "timeline-icons",
+                    "directory": "element/playlist-icons",
                     "extension": "js"
                 }
             }
         ],
-        "autoloads": [
-            {
-                "name": "TimelineService",
-                "path": {
-                    "directory": "src",
-                    "nameFile": "TimelineService",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "TimelineEntity",
-                "path": {
-                    "directory": "src/entity",
-                    "nameFile": "TimelineEntity",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "TimelineItem",
-                "path": {
-                    "directory": "src/entity/embedded",
-                    "nameFile": "TimelineItem",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "MongoTimelineAdapter",
-                "path": {
-                    "directory": "src/storage/adapter/mongo",
-                    "nameFile": "MongoTimelineAdapter",
-                    "extension": "js"
-                }
-            }
-        ]
+        "widgets": [],
+        "title": "Playlist"
     },
     {
-        "title": "Media device",
-        "name": "media-device",
-        "icon": "media-device:menu",
-        "configEntryPoint": "repository.js",
+        "id": null,
+        "icon": "ice-hockey:menu",
+        "name": "ice-hockey",
         "entryPoint": {
-            "name": "media-device-index",
+            "name": "ice-hockey-index",
             "path": {
-                "directory": "element/media-device-index",
-                "nameFile": "media-device-index",
+                "nameFile": "ice-hockey-index",
+                "directory": "element/ice-hockey-index",
                 "extension": "js"
-            }
+            },
+            "autoloads": []
         },
+        "configEntryPoint": "repository.js",
+        "core": false,
+        "label": "",
+        "autoloads": [],
         "autoloadsWc": [
             {
-                "name": "media-device-icons",
+                "name": "ice-hockey-icons",
                 "path": {
-                    "directory": "element/media-device-icons",
-                    "nameFile": "media-device-icons",
+                    "nameFile": "ice-hockey-icons",
+                    "directory": "element/ice-hockey-icons",
                     "extension": "js"
                 }
             }
         ],
-        "autoloads": [
-            {
-                "name": "MediaDeviceEntity",
-                "path": {
-                    "directory": "src/entity",
-                    "nameFile": "MediaDeviceEntity",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "MediaDeviceDataInjector",
-                "path": {
-                    "directory": "src/injector",
-                    "nameFile": "MediaDeviceDataInjector",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "MongoMediaDeviceAdapter",
-                "path": {
-                    "directory": "src/storage/adapter/mongo",
-                    "nameFile": "MongoMediaDeviceAdapter",
-                    "extension": "js"
-                }
-            }
-        ]
+        "widgets": [],
+        "title": "Ice hocker"
     },
     {
-        "title": "Timer",
-        "name": "timer",
+        "id": null,
         "icon": "timer:menu",
-        "configEntryPoint": "repository.js",
+        "name": "timer",
         "entryPoint": {
             "name": "timer-index",
             "path": {
-                "directory": "element/timer-index",
                 "nameFile": "timer-index",
+                "directory": "element/timer-index",
                 "extension": "js"
             }
         },
-        "autoloadsWc": [
-            {
-                "name": "timer-icons",
-                "path": {
-                    "directory": "element/timer-icons",
-                    "nameFile": "timer-icons",
-                    "extension": "js"
-                }
-            }
-        ],
+        "configEntryPoint": "repository.js",
+        "core": false,
+        "label": "",
         "autoloads": [
             {
                 "name": "TimerService",
                 "path": {
-                    "directory": "src",
                     "nameFile": "TimerService",
+                    "directory": "src",
                     "extension": "js"
                 }
             },
             {
                 "name": "TimerDataInjector",
                 "path": {
-                    "directory": "src/injector",
                     "nameFile": "TimerDataInjector",
+                    "directory": "src/injector",
                     "extension": "js"
                 }
             },
             {
                 "name": "TimerEntity",
                 "path": {
-                    "directory": "src/entity",
                     "nameFile": "TimerEntity",
+                    "directory": "src/entity",
                     "extension": "js"
                 }
             },
             {
                 "name": "MongoTimerAdapter",
                 "path": {
-                    "directory": "src/storage/adapter/mongo",
                     "nameFile": "MongoTimerAdapter",
-                    "extension": "js"
-                }
-            }
-        ]
-    },
-    {
-        "title": "Video panel",
-        "name": "video-panel",
-        "icon": "video-panel:menu",
-        "configEntryPoint": "repository.js",
-        "entryPoint": {
-            "name": "video-panel-index",
-            "path": {
-                "directory": "element/video-panel-index",
-                "nameFile": "video-panel-index",
-                "extension": "js"
-            }
-        },
-        "autoloadsWc": [
-            {
-                "name": "video-panel-icons",
-                "path": {
-                    "directory": "element/video-panel-icons",
-                    "nameFile": "video-panel-icons",
+                    "directory": "src/storage/adapter/mongo",
                     "extension": "js"
                 }
             }
         ],
-        "autoloads": [
+        "autoloadsWc": [
             {
-                "name": "Mosaic",
+                "name": "timer-icons",
                 "path": {
-                    "directory": "src/ffmpg",
-                    "nameFile": "Mosaic",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "Crop",
-                "path": {
-                    "directory": "src/ffmpg/filter",
-                    "nameFile": "Crop",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "Default",
-                "path": {
-                    "directory": "src/ffmpg/filter",
-                    "nameFile": "Default",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanelContainerEntity",
-                "path": {
-                    "directory": "src/entity",
-                    "nameFile": "VideoPanelContainerEntity",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanelResourceContainerEntity",
-                "path": {
-                    "directory": "src/entity",
-                    "nameFile": "VideoPanelResourceContainerEntity",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanel",
-                "path": {
-                    "directory": "src/entity/embedded",
-                    "nameFile": "VideoPanel",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanelResource",
-                "path": {
-                    "directory": "src/entity/embedded",
-                    "nameFile": "VideoPanelResource",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "MonitorMosaic",
-                "path": {
-                    "directory": "src/entity/embedded",
-                    "nameFile": "MonitorMosaic",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "ResourceMosaic",
-                "path": {
-                    "directory": "src/entity/embedded",
-                    "nameFile": "ResourceMosaic",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanelMosaic",
-                "path": {
-                    "directory": "src/entity/embedded",
-                    "nameFile": "VideoPanelMosaic",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "MongoVideoPanelAdapter",
-                "path": {
-                    "directory": "src/storage/adapter/mongo",
-                    "nameFile": "MongoVideoPanelAdapter",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "MongoVideoPanelResourceAdapter",
-                "path": {
-                    "directory": "src/storage/adapter/mongo",
-                    "nameFile": "MongoVideoPanelResourceAdapter",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanelToVideoPanelResourceHydrator",
-                "path": {
-                    "directory": "src/hydrator",
-                    "nameFile": "VideoPanelToVideoPanelResourceHydrator",
-                    "extension": "js"
-                }
-            },
-            {
-                "name": "VideoPanelService",
-                "path": {
-                    "directory": "src",
-                    "nameFile": "VideoPanelService",
+                    "nameFile": "timer-icons",
+                    "directory": "element/timer-icons",
                     "extension": "js"
                 }
             }
-        ]
+        ],
+        "widgets": [
+        ],
+        "title": "Timer"
+    },
+    {
+        "id": null,
+        "icon": "admin:menu",
+        "name": "admin",
+        "entryPoint": {
+            "name": "admin-index",
+            "path": {
+                "nameFile": "admin-index",
+                "directory": "element/admin-index",
+                "extension": "js"
+            }
+        },
+        "configEntryPoint": "repository.js",
+        "core": true,
+        "label": "",
+        "autoloads": [],
+        "autoloadsWc": [
+            {
+                "name": "admin-icons",
+                "path": {
+                    "nameFile": "admin-icons",
+                    "directory": "element/admin-icons",
+                    "extension": "js"
+                }
+            }
+        ],
+        "widgets": [],
+        "title": "Admin"
     }
 ]

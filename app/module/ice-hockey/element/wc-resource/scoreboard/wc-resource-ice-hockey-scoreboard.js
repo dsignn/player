@@ -1,10 +1,11 @@
 import { IceHockeyMatch } from '@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch';
-import {html, PolymerElement} from '@polymer/polymer/polymer-element'
+import {html, PolymerElement} from '@polymer/polymer/polymer-element';
+import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 
 /**
  *
  */
-class WcResourceIceHockeyScoreboard extends PolymerElement {
+class WcResourceIceHockeyScoreboard extends ServiceInjectorMixin(PolymerElement) {
 
     static get template() {
         return html`
@@ -49,6 +50,14 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
                 display: none;
             }
 
+            .logo {
+                height: 200px;
+                width: 200px;
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: contain;
+            }
+
         </style>
         <div id="scoreboard" class="match hidden">
             <div class="row j-c">
@@ -57,10 +66,12 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
             <div class="row">   
                 <div class="column half a-c">
                     <div>{{homeScore}}</div>
+                    <div class="logo" id="logoHome"></div>
                     <div>{{scoreboard.homeTeam.name}}</div>
                 </div>
                 <div class="column half a-c">
                     <div>{{guestScore}}</div> 
+                    <div class="logo" id="logoGuest"></div>
                     <div>{{scoreboard.guestTeam.name}}</div>
                 </div>
             </div>
@@ -74,7 +85,6 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
             scoreboard: {
                 type: Object,
                 notify: true,
-                observer: '_iceHockeyMatchChanged',
                 value: new IceHockeyMatch()
             },
 
@@ -87,7 +97,19 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
                 type: Number,
                 notify: true,
             },
+
+            services: {
+                value: {
+                    _resourceService: "ResourceService"
+                }
+            },
         };
+    }
+
+    static get observers() {
+        return [
+            'observerIceHockeyMatchChanged(_resourceService, scoreboard)'
+        ]
     }
 
     ready() {
@@ -99,14 +121,16 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
     /**
      * @param newValue
      */
-     _iceHockeyMatchChanged(newValue) {
-        if (!newValue) {
+     observerIceHockeyMatchChanged(_resourceService, scoreboard) {
+        if (!_resourceService || !scoreboard) {
             return;
         }
 
-        this.homeScore = newValue.homeScores.length;
-        this.guestScore = newValue.guestScores.length;
+        this.homeScore = scoreboard.homeScores.length;
+        this.guestScore = scoreboard.guestScores.length;
         this.$.scoreboard.classList.remove('hidden');
+        this.loadHomeLogo(scoreboard.homeTeam.logo);
+        this.loadGuestLogo(scoreboard.guestTeam.logo);
     }
 
     /**
@@ -116,6 +140,16 @@ class WcResourceIceHockeyScoreboard extends PolymerElement {
      */
     _updateTimer(evt, data) {
         this.scoreboard = data.match;
+    }
+
+    loadHomeLogo(resource) {
+        let logo = this._resourceService.getResourcePath(resource);
+        this.$.logoHome.style.backgroundImage = `url("${logo}")`;
+    }
+
+    loadGuestLogo(resource) {
+        let logo = this._resourceService.getResourcePath(resource);
+        this.$.logoGuest.style.backgroundImage = `url("${logo}")`;
     }
 
     /**

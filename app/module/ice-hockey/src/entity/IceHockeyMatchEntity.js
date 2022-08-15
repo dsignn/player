@@ -1,8 +1,8 @@
 import { EntityIdentifier } from "@dsign/library/src/storage/entity/EntityIdentifier";
 import { IceHockeyMatch } from "@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch";
 import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
-import { GenericTeam } from "@dsign/library/src/sport/team/GenericTeam";
 import { Time } from "@dsign/library/src/date/Time";
+import { IceHockeyTeam } from "./embedded/IceHockeyTeam";
 
 /**
 * @class IceHockeyMatchEntity
@@ -21,7 +21,7 @@ class IceHockeyMatchEntity extends EntityIdentifier {
         /**
          * @var TeamInteface
          */
-        this.homeTeam = new GenericTeam();
+        this.homeTeam = new IceHockeyTeam();
         /**
          * @var Array<ScoreInterface>
          */
@@ -29,7 +29,7 @@ class IceHockeyMatchEntity extends EntityIdentifier {
         /**
          * @var TeamInteface
          */
-        this.guestTeam = new GenericTeam();
+        this.guestTeam = new IceHockeyTeam();
         /**
          * @var Array<ScoreInterface>
          */

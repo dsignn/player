@@ -76,8 +76,11 @@ import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
         if (this.match === null || (this.match.id !== evt.data.id)) {
             return;
         }
-       
 
+        evt.data.time = this.match.time;
+        this.setMatch(evt.data);
+       
+        //this
         let message = {
             event : IceHockeyScoreboardService.DATA,
             data : {

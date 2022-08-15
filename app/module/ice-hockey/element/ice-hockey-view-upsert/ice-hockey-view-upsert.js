@@ -128,6 +128,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-home-team')}}" value="{{entity.homeTeam.name}}"></paper-input>
+                                    <paper-icon-resource-upsert ref="{{entity.homeTeam.logo}}" position="left" on-update-resource="submitIceHockey"></paper-icon-resource-upsert>
                                 </div>
                                 <div class="header-players">
                                     {{localize('list-player')}}
@@ -144,6 +145,7 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                             <div class="team">
                                 <div class="column-wrapper justify-b">
                                     <paper-input label="{{localize('name-guest-team')}}" value="{{entity.guestTeam.name}}"></paper-input>
+                                    <paper-icon-resource-upsert ref="{{entity.guestTeam.logo}}" position="left" on-update-resource="submitIceHockey"></paper-icon-resource-upsert>
                                 </div>
                                 <div class="header-players">
                                     {{localize('list-player')}}
@@ -205,7 +207,13 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                         _storage: "IceHockeyMatchStorage"
                     }
                 }
+            },
+
+            _localizeService: {
+                readOnly: true,
+                observer: 'localizeChange'
             }
+        
         };
     }
 
@@ -229,6 +237,16 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
         addPlayer.addEventListener('update', this.updatePlayer.bind(this));
 
         document.body.appendChild(ele);
+
+       
+    }
+
+    localizeChange(service) {
+        let resources = this.shadowRoot.querySelectorAll('paper-icon-resource-upsert');
+        resources.forEach(element => {
+            element.name = this.localize('score-logo');
+            element.tags = [this.localize('score-tag')];
+        });
     }
 
     /**

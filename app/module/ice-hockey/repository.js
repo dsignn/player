@@ -7,13 +7,13 @@ import { PropertyHydrator } from "@dsign/library/src/hydrator/index";
 import { Storage } from "@dsign/library/src/storage/Storage";
 import { MapProprertyStrategy } from "@dsign/library/src/hydrator/strategy/proprerty";
 import { HydratorStrategy, MongoIdStrategy } from "@dsign/library/src/hydrator/strategy/value";
-import { GenericTeam } from "@dsign/library/src/sport/team/GenericTeam";
-import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
+import { IceHockeyTeam } from "./src/entity/embedded/IceHockeyTeam";
 import { IceHockeyPlayerEntity } from "./src/entity/IceHockeyPlayerEntity";
 import { IceHockeyScore } from "./src/entity/embedded/IceHockeyScore";
 import { IceHockeyScoreboardService } from "./src/IceHockeyScoreboardService";
 import { ScoreboardDataInjector } from "./src/injector/ScoreboardDataInjector";
 import {Repository as TimeslotRepository} from "../timeslot/repository";
+import {Repository as ResourceRepository} from "../resource/repository";
 import { Time } from "@dsign/library/src/date/Time";
 
 
@@ -225,9 +225,13 @@ export class Repository extends ContainerAware {
         let playerHydratorStrategy = new HydratorStrategy();
         playerHydratorStrategy.setHydrator(Repository.getIceHockeyPlayerHydrator(container));
 
-        let hydrator = new PropertyHydrator(new GenericTeam());
+        let resoyrceHydratorStrategy = new HydratorStrategy();
+        resoyrceHydratorStrategy.setHydrator(container.get('HydratorContainerAggregate').get(ResourceRepository.RESOURCE_HYDRATOR_SERVICE));
 
-        hydrator .addValueStrategy('players', playerHydratorStrategy)
+        let hydrator = new PropertyHydrator(new IceHockeyTeam());
+
+        hydrator.addValueStrategy('players', playerHydratorStrategy);
+        hydrator.addValueStrategy('logo', resoyrceHydratorStrategy);
 
         return hydrator;
     }
@@ -237,7 +241,7 @@ export class Repository extends ContainerAware {
     */
     static getIceHockeyPeriosHydrator(container) {
 
-        let hydrator = new PropertyHydrator(new GenericPeriod());
+        let hydrator = new PropertyHydrator(new IceHockeyTeam());
 
         return hydrator;
     }

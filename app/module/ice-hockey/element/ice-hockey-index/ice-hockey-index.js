@@ -130,7 +130,7 @@ class IceHockeyIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement))
              */
             selectedTab: {
                 type: Number,
-                value: 1
+                value: 0
             },
 
             /**
