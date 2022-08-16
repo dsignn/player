@@ -22,6 +22,10 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                     @apply --layout-horizontal;
                     @apply --layout-wrap;
                 }
+
+                #empty {
+                    display: block;
+                }
                 
                 @media (max-width: 500px) {
                     paper-resource {
@@ -60,7 +64,8 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                 }
             </style>
             <slot name="header"></slot>
-                <div id="list">
+            <div id="empty">{{localize('empty-resource')}}</div>
+            <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="resource">
                     <paper-resource entity="{{resource}}" on-delete="_deleteEntity" on-update="_showUpdateView"></paper-resource>
                 </template>
@@ -132,6 +137,25 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
      */
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
+        this._updateList();
+    }
+
+       /**
+     * @private
+     */
+    _updateList() {
+        if (Array.isArray(this.entities) && this.entities.length == 0) {
+            this.$.empty.style.display = 'block';
+        } else {
+            this.$.empty.style.display = 'none';
+        }
+    }
+
+    /**
+     * @param {Array} entities 
+     */
+    _changedEntities(entities) {
+        this._updateList();
     }
 }
 window.customElements.define('resource-view-list', ResourceViewList);

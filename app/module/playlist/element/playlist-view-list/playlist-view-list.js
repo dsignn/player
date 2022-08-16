@@ -58,8 +58,13 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
                         flex-basis: 16.6%;
                     }
                 }
+
+                #empty {
+                    display: block;
+                }
             </style>
             <slot name="header"></slot>
+            <div id="empty">{{localize('empty-playlist')}}</div>
             <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="playlist">
                     <paper-playlist entity="{{playlist}}" 
@@ -104,6 +109,14 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
             },
 
             /**
+             * @type Array
+             */
+            entities: {
+                notify: true,
+                observer: "_changedEntities"
+            },
+
+            /**
              * @type object
              */
             services : {
@@ -139,13 +152,13 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      */
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
+        this._updateList();
     }
 
     /**
      * @param evt
      */
     play(evt) {
-        console.log('play');
         this._playlistService.play(evt.detail);
     }
 
@@ -153,7 +166,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     resume(evt) {
-        console.log('resume');
         this._playlistService.resume(evt.detail);
     }
 
@@ -161,7 +173,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     stop(evt) {
-        console.log('stop');
         this._playlistService.stop(evt.detail);
     }
 
@@ -169,7 +180,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     pause(evt) {
-        console.log('pause');
         this._playlistService.pause(evt.detail);
     }
 
@@ -179,6 +189,24 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      */
     _updateTime(evt) {
         this._playlistService.changeTime(evt.detail.playlist, evt.detail.time);
+    }
+
+    /**
+     * @param {Array} entities 
+     */
+    _changedEntities(entities) {
+        this._updateList();
+    }
+
+    /**
+     * @private
+     */
+    _updateList() {
+        if (Array.isArray(this.entities) && this.entities.length == 0) {
+            this.$.empty.style.display = 'block';
+        } else {
+            this.$.empty.style.display = 'none';
+        }
     }
 }
 window.customElements.define('playlist-view-list', PlaylistViewList);

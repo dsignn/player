@@ -22,6 +22,10 @@ class IceHockeyViewList extends StoragePaginationMixin(StorageCrudMixin(Localize
                     @apply --layout-horizontal;
                     @apply --layout-wrap;
                 }
+
+                #empty {
+                    display: block;
+                }
                 
                 @media (max-width: 500px) {
                     paper-ice-hockey {
@@ -60,6 +64,7 @@ class IceHockeyViewList extends StoragePaginationMixin(StorageCrudMixin(Localize
                 }
             </style>
             <slot name="header"></slot>
+            <div id="empty">{{localize('empty-monitor')}}</div>
             <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="match">
                     <paper-ice-hockey entity="{{match}}" on-delete="_deleteEntity" on-update="_showUpdateView"></ paper-ice-hockey>
@@ -93,6 +98,14 @@ class IceHockeyViewList extends StoragePaginationMixin(StorageCrudMixin(Localize
                 notify: true
             },
 
+            /**
+             * @type Array
+             */
+            entities: {
+                notify: true,
+                observer: "_changedEntities"
+            },
+        
             /**
              * @type object
              */
@@ -128,6 +141,24 @@ class IceHockeyViewList extends StoragePaginationMixin(StorageCrudMixin(Localize
      */
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
+    }
+
+    /**
+     * @private
+     */
+    _updateList() {
+        if (Array.isArray(this.entities) && this.entities.length == 0) {
+            this.$.empty.style.display = 'block';
+        } else {
+            this.$.empty.style.display = 'none';
+        }
+    }
+
+    /**
+     * @param {Array} entities 
+     */
+    _changedEntities(entities) {
+        this._updateList();
     }
 }
 window.customElements.define('ice-hockey-view-list', IceHockeyViewList);
