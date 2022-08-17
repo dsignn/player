@@ -212,7 +212,6 @@ class IceHockeyViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInject
                 readOnly: true,
                 observer: 'localizeChange'
             }
-        
         };
     }
 

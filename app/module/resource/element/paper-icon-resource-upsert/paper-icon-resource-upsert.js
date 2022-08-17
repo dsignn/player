@@ -133,8 +133,8 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
         let method = this.ref.id ? 'update' : 'save';
 
         this.ref = this._storage.getHydrator().hydrate(this.$.file.files[0]);
-        this.ref.name = this.name;
-        this.ref.tags = this.tags;
+        this.ref.name = this.name ? this.name : '';
+        this.ref.tags = this.tags ;
         this.ref.resourceToImport = this.$.file.files[0];
      
         this._storage[method](this.ref)

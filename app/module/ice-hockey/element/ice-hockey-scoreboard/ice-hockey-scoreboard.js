@@ -277,12 +277,21 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
 
             scoreboardService: {
                 observer: 'scoreboardServiceChange'
-            }      
+            } ,
+            
+            _localizeService: {
+                readOnly: true,
+                observer: 'localizeChange'
+            }
         }
     }
 
-    test(evt) {
-        console.log('tessssssssssssssssssssssssssssssssssssss');
+    localizeChange(service) {
+        let resources = this.shadowRoot.querySelectorAll('paper-icon-resource-upsert');
+        resources.forEach(element => {
+            element.name = this.localize('score-logo');
+            element.tags = [this.localize('score-tag')];
+        });
     }
 
     connectedCallback() {

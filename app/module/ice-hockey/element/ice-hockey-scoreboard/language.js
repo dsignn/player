@@ -6,7 +6,9 @@ export const lang = {
     "set-point": "Aggiungi punto",
     "anonimus": "Anonimo",
     "add-player":  "Aggiungi giocatore",
-    "team-name": "Nome squadra"
+    "team-name": "Nome squadra",
+    "score-logo": "logo hockey sul ghiaccio",
+    "score-tag": "logo",
   },
   "en": {
     "modify": "Modify",
@@ -15,6 +17,8 @@ export const lang = {
     "set-point": "Set point",
     "anonimus": "Anonimus",
     "add-player":  "Add player",
-    "team-name": "Team name"
+    "team-name": "Team name",
+    "score-logo": "logo ice hockey",
+    "score-tag": "logo",
   }
 };
