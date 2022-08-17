@@ -5,7 +5,8 @@ export const lang = {
     "preview-resource": "Preview della risorsa",
     "set-point": "Aggiungi punto",
     "anonimus": "Anonimo",
-    "add-player":  "Aggiungi giocatore"
+    "add-player":  "Aggiungi giocatore",
+    "team-name": "Nome squadra"
   },
   "en": {
     "modify": "Modify",
@@ -13,6 +14,7 @@ export const lang = {
     "preview-resource": "Resource preview",
     "set-point": "Set point",
     "anonimus": "Anonimus",
-    "add-player":  "Add player"
+    "add-player":  "Add player",
+    "team-name": "Team name"
   }
 };

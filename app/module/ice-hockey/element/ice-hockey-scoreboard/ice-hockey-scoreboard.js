@@ -33,6 +33,10 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     @apply --layout-horizontal;
                 }
 
+                .row {
+                    @apply --layout-vertical;
+                }
+
                 .j-between {
                     justify-content: space-between;
                 }
@@ -94,22 +98,50 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                 paper-icon-button.circle {
                     @apply --paper-icon-button-action;
                     padding: 0;
-                    height: 24px;
-                    width: 24px;
+                    height: 30px;
+                    width: 30px;
                     line-height: 20px;
                     --paper-icon-button-disabled : {        
                         background-color: #c9c9c9 !important;
                     }
                 }
 
+                .team-data {
+                    padding: 0 10px;
+                    flex: 1;
+                }
+
+                .action-team {
+                    display: flex;
+                    justify-content: end;
+                }
+
+                .action-team.guest { 
+                    justify-content: start;
+                }
+
                 paper-menu-button {
                     padding: 0;
+                    font-size: 80px;
+                    width: 120px;
+                    text-align: center;
                 }
 
             </style>
             <div class="column j-between">
                 <div class="column content-wrapper j-center">
-                    <div class="title-name">{{match.homeTeam.name}}</div>
+                    <paper-icon-resource-upsert ref="{{match.homeTeam.logo}}" position="left" on-update-resource="updateScoreEvt"></paper-icon-resource-upsert>
+                    <div class="row team-data">
+                        <div style="width: 100%;">
+                            <paper-input value="{{match.homeTeam.name}}" label="{{localize('team-name')}}" on-value-changed="updateScoreEvt"> </paper-input>
+                        </div>
+                        <div class="action-team"> 
+                            <paper-icon-button id="plusScoreHome" icon="plus" class="circle" type="home" role="button" on-tap="addGenericScore"></paper-icon-button>
+                            <paper-tooltip for="plusScoreHome" position="bottom">{{localize('set-point')}}</paper-tooltip>
+                            <paper-icon-button id="plusPlayerHome" icon="ice-hockey:add-user" class="circle" type="home" on-tap="addPlayerBtn"></paper-icon-button>
+                            <paper-tooltip for="plusPlayerHome" position="bottom">{{localize('add-player')}}</paper-tooltip>
+                        </div>
+                    </div>         
                     <paper-menu-button>
                         <div class="score" slot="dropdown-trigger">{{homePoint}}</div>
                         <paper-listbox slot="dropdown-content">
@@ -123,13 +155,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                             </dom-repeat>
                         </paper-listbox>
                     </paper-menu-button>    
-                    <paper-icon-button id="plusScoreHome" icon="plus" class="circle" type="home" role="button" on-tap="addGenericScore"></paper-icon-button>
-                    <paper-tooltip for="plusScoreHome" position="right">{{localize('set-point')}}</paper-tooltip>
-                    <paper-icon-button id="plusPlayerHome" icon="ice-hockey:add-user" class="circle" type="home" on-tap="addPlayerBtn"></paper-icon-button>
-                    <paper-tooltip for="plusPlayerHome" position="right">{{localize('add-player')}}</paper-tooltip>
                 </div>
                 <div class="column content-wrapper j-center">
-                    <div class="title-name">{{match.guestTeam.name}}</div>
                     <paper-menu-button>
                         <div class="score" slot="dropdown-trigger">{{guestPoint}}</div>
                         <paper-listbox slot="dropdown-content">
@@ -143,10 +170,18 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                             </dom-repeat>
                         </paper-listbox>
                     </paper-menu-button>    
-                    <paper-icon-button id="plusScoreGuest" icon="plus" class="circle" type="guest" role="button"  on-tap="addGenericScore"></paper-icon-button>
-                    <paper-tooltip for="plusScoreGuest" position="right">{{localize('set-point')}}</paper-tooltip>
-                    <paper-icon-button id="plusPlayerGuest" icon="ice-hockey:add-user" class="circle" type="guest" on-tap="addPlayerBtn"></paper-icon-button>
-                    <paper-tooltip for="plusPlayerGuest" position="right">{{localize('add-player')}}</paper-tooltip>
+                    <div class="row team-data">
+                        <div style="width: 100%;">
+                            <paper-input value="{{match.guestTeam.name}}" label="{{localize('team-name')}}" on-value-changed="updateScoreEvt"> </paper-input>
+                        </div>
+                        <div class="action-team guest"> 
+                            <paper-icon-button id="plusScoreGuest" icon="plus" class="circle" type="guest" role="button"  on-tap="addGenericScore"></paper-icon-button>
+                            <paper-tooltip for="plusScoreGuest" position="bottom">{{localize('set-point')}}</paper-tooltip>
+                            <paper-icon-button id="plusPlayerGuest" icon="ice-hockey:add-user" class="circle" type="guest" on-tap="addPlayerBtn"></paper-icon-button>
+                            <paper-tooltip for="plusPlayerGuest" position="bottom">{{localize('add-player')}}</paper-tooltip>
+                        </div>
+                    </div>   
+                    <paper-icon-resource-upsert ref="{{match.guestTeam.logo}}" position="left" on-update-resource="updateScoreEvt"></paper-icon-resource-upsert>
                 </div>
             </div>
             <div class="column">
@@ -244,6 +279,10 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                 observer: 'scoreboardServiceChange'
             }      
         }
+    }
+
+    test(evt) {
+        console.log('tessssssssssssssssssssssssssssssssssssss');
     }
 
     connectedCallback() {

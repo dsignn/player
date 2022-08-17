@@ -132,11 +132,11 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
         let method = this.ref.id ? 'update' : 'save';
 
-        this.ref = this._storage.getHydrator().hydrate(this.$.file.files[0], this.ref);
+        this.ref = this._storage.getHydrator().hydrate(this.$.file.files[0]);
         this.ref.name = this.name;
         this.ref.tags = this.tags;
         this.ref.resourceToImport = this.$.file.files[0];
-
+     
         this._storage[method](this.ref)
             .then((data) => {
                 this.dispatchEvent(new CustomEvent('update-resource', {detail: data}));
@@ -149,12 +149,12 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
      */
      observerRef(_resoruceService, ref)  {
 
+        let image = 'none'
         if (!_resoruceService ||  !(ref instanceof FileEntity)) {
-            return;
-        }
-
-        this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(ref)}?cache=${Date.now()}")`;
-        console.log('fffffffff', ref instanceof FileEntity , `url("${this._resoruceService.getResourcePath(ref)}")`);
+            this.$.container.style.backgroundImage = 'none';
+        } else {
+            this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(ref)}?cache=${Date.now()}")`;
+        }       
     }
 }
 window.customElements.define('paper-icon-resource-upsert', PaperIconResourceUpsert);

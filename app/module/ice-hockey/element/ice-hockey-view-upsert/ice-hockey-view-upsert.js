@@ -10,7 +10,6 @@ import "../ice-hockey-add-player/ice-hockey-add-player";
 import "../paper-ice-hockey-player/paper-ice-hockey-player";
 import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
 
-
 /**
  * @customElement
  * @polymer
