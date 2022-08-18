@@ -107,7 +107,7 @@ export class Repository extends ContainerAware {
             let aclService = this.getContainer().get('Acl');
 
             let resource = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].acl.resource;
-            // TODO add method on service
+         
             aclService.addResource(resource);
             aclService.allow('guest', resource);
         }

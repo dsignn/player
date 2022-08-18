@@ -118,7 +118,7 @@ export class Repository extends ContainerAware {
      *
      */
     init() {
-        this.loadConfig();
+        this.initConfig();
         this.initAcl();
         this.initEntity();
         this.initHydrator();
@@ -129,10 +129,10 @@ export class Repository extends ContainerAware {
     /**
      * Merge config
      */
-    loadConfig() {
+     initConfig() {
         this.container.set(
-            'config',
-            this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+            'Config',
+            this.getContainer().get('merge').merge(config, this.getContainer().get('Config'))
         );
     }
 
