@@ -3,6 +3,7 @@ import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin"
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
+import '@polymer/paper-spinner/paper-spinner';
 import {lang} from './language/language';
 
 export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
@@ -26,11 +27,27 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                         }
                     }
                 }
-  
-            </style>
 
-            <paper-icon-button id="paperBackup" icon="backup" title="{{label}}" on-tap="backup"></paper-icon-button>
-            <paper-tooltip id="paperTooltip" for="paperBackup" position="left">{{localize('run-backup')}}</paper-tooltip>
+                paper-spinner {
+                    margin-top: 6px;
+                    --paper-spinner-color: var(--accent-color);
+                    --paper-spinner-layer-1-color: var(--accent-color);
+                    --paper-spinner-layer-2-color: var(--accent-color);
+                    --paper-spinner-layer-3-color: var(--accent-color);
+                    --paper-spinner-layer-4-color: var(--accent-color);
+                }
+  
+                .spinner-container {
+                    display: flex;
+                    flex-direction: row;
+                    height: 100%;
+                }
+            </style>
+            <div class="spinner-container">
+                <paper-spinner id="spinner"></paper-spinner>
+                <paper-icon-button id="paperBackup" icon="backup" title="{{label}}" on-tap="backup"></paper-icon-button>
+                <paper-tooltip id="paperTooltip" for="paperBackup" position="left">{{localize('run-backup')}}</paper-tooltip>
+            </div>
         `
     }
 
@@ -81,8 +98,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _close(evt) {
-        console.log('CLOSEEEEEEEEEEEEEEEEE', evt);
-        this._stoptHtmlBackup();
+        this._working(false);
     }
 
     /**
@@ -90,32 +106,27 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _progress(evt) {
-        console.log('PROGRESSSSSSSSSSS', evt);
+        console.log('Archive progress', evt);
+    }
+
+    _working(isWorking) {
+        if (isWorking) {
+            this.$.paperBackup.style.display = 'none';
+            this.$.spinner.active = true;
+            this.$.spinner.style.display = 'block';
+        } else {
+            this.$.spinner.style.display = 'none';
+            this.$.spinner.active = false;
+            this.$.paperBackup.style.display = 'block';
+        }
     }
 
     /**
      * @param {CustomEvent} evt
      */
     backup(evt) {
-
-        this._startHtmlBackup();
+        this._working(true);
         this._archive.archive();
-    }
-
-    /**
-     * @private
-     */
-    _startHtmlBackup() {
-        this.$.paperBackup.disabled = true;
-        this.$.paperTooltip.innerHTML = this.localize('in-progress');
-    }
-
-    /**
-     * @private
-     */
-    _stoptHtmlBackup() {
-        this.$.paperBackup.disabled = false;
-        this.$.paperTooltip.innerHTML = this.localize('run-backup');
     }
 }
 
