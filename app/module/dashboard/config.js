@@ -4,13 +4,24 @@
  export const config = {
 
     "modules": {
-        "dashboard" : {
-            "storage": {
-                "adapter": {
-                    "mongo": {
-                        "collection": "dashboard"
+        "dashboard": {
+            "dashboard" : {
+                "storage": {
+                    "name-service": "IceHockeyMatchStorage",
+                    "adapter": {
+                        "localStorage": {
+                            "collection": "widget",
+                            "namespace": "dsign"
+                        }
                     }
-                }
+                },
+                "acl": {
+                    "resource": 'dashboard'
+                },
+                "hydrator": {
+                    "name-storage-service": "DashboardEntityHydrator",
+                },
+                "entityService": "WidgetEntity",
             }
         }
     }

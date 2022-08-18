@@ -81,6 +81,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _close(evt) {
+        console.log('CLOSEEEEEEEEEEEEEEEEE', evt);
         this._stoptHtmlBackup();
     }
 
@@ -89,7 +90,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _progress(evt) {
-        // TODO
+        console.log('PROGRESSSSSSSSSSS', evt);
     }
 
     /**

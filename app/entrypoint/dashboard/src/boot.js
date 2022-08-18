@@ -270,8 +270,11 @@ container.set('Notify', {
 /***********************************************************************************************************************
                                             ARCHIVE SERVICE
  **********************************************************************************************************************/
+                                
+let archivePath = `${homeData}${path.sep}archive${path.sep}`;                 
+fs.mkdirSync(archivePath, { recursive: true });                                            
 
-let archive = new Archive(`${homeData}${path.sep}archive${path.sep}`);
+let archive = new Archive(archivePath);
 //archive.appendDirectory(resourcePath, 'resource');
 archive.setTmpDir(`${homeData}tmp${path.sep}`)
     .setResourceDir(application.getResourcePath())
