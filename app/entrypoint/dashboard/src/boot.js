@@ -271,8 +271,8 @@ container.set('Notify', {
                                             ARCHIVE SERVICE
  **********************************************************************************************************************/
                                 
-let archivePath = `${homeData}${path.sep}archive`;    
-let archivePathTmp = `${homeData}${path.sep}archive${path.sep}tmp`;                 
+let archivePath = `${homeData}${path.sep}archive${path.sep}`;    
+let archivePathTmp = `${homeData}${path.sep}archive${path.sep}tmp${path.sep}`;                 
 fs.mkdirSync(archivePath, { recursive: true });                                            
 fs.mkdirSync(archivePathTmp, { recursive: true });                                            
 
@@ -281,7 +281,8 @@ let archive = new Archive(archivePath);
 //archive.appendDirectory(resourcePath, 'resource');
 archive.setTmpDir(archivePathTmp)
     .setResourceDir(application.getResourcePath())
-    .setStorageContainer(container.get('StorageContainerAggregate'));
+    .setStorageContainer(container.get('StorageContainerAggregate'))
+    .appendDirectory(application.getResourcePath(), 'resource');
 
 container.set('Archive', archive);
 

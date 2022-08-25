@@ -106,7 +106,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _progress(evt) {
-        console.log('Archive progress', evt);
+     //   console.log('Archive progress', evt);
     }
 
     _working(isWorking) {
