@@ -122,7 +122,8 @@ export class Repository extends ContainerAware {
         this.initAcl();
         this.initEntity();
         this.initHydrator();
-        this.initMongoStorage();
+        //this.initMongoStorage();
+        this.initDexieStorage();
         this.initService();
     }
 
@@ -457,11 +458,14 @@ export class Repository extends ContainerAware {
         pathHydratorStrategy.setHydrator(Repository.getPathHydrator(container));
 
         hydrator.addValueStrategy('path', pathHydratorStrategy)
-            .addValueStrategy('id', new MongoIdStrategy())
-            .addValueStrategy('_id', new MongoIdStrategy());
+            //.addValueStrategy('id', new MongoIdStrategy())
+            //.addValueStrategy('_id', new MongoIdStrategy())
+            
 
-        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
+        hydrator
+            //.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
+            //.addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
+            .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('_id')

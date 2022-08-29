@@ -82,10 +82,6 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
     static get properties () {
         return {
 
-            itemPerPage: {
-                value: 20
-            },
-
             /**
              * @type number
              */
@@ -100,6 +96,14 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
              */
             entitySelected: {
                 notify: true
+            },
+
+            /**
+             * @type Array
+             */
+            entities: {
+                notify: true,
+                observer: "_changedEntities"
             },
 
             /**

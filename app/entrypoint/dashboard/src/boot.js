@@ -111,23 +111,34 @@ application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
 
-        container.get('DexieManager').generateSchema();
-        container.get('DexieManager').open();
+        var loadMongo = false;
+        var loadDexie = false;
 
-        container.get('MongoDb')
-            .getEventManager()
-            .on(
-                MongoDb.READY_CONNECTION,
-                (connection) =>  {
+        // IMPORTANT you have to wait for all the services to load
+        container.get('DexieManager').on("ready", () => {
+                loadDexie = true;
+                if (loadDexie === true && loadMongo === true) {
                     loadApplication();
                 }
-            );
+            
+            });
+
+        container.get('MongoDb').getEventManager().on(MongoDb.READY_CONNECTION, (connection) =>  {
+                loadMongo = true;
+                if (loadDexie === true && loadMongo === true) {
+                    loadApplication();
+                }
+            });
 
         if (window.document.readyState === "complete" || window.document.readyState === "loaded") {
+            container.get('DexieManager').generateSchema();
+            container.get('DexieManager').open();
             container.get('MongoDb').connect();
         } else {
             window.addEventListener('DOMContentLoaded', (event) => {
                 container.get('MongoDb').connect();
+                container.get('DexieManager').generateSchema();
+                container.get('DexieManager').open();
             });
         }
     }.bind(container))
