@@ -80,7 +80,8 @@ export class Repository extends ContainerAware {
         this.initSender();
         this.initReceiver();
         this.initHydrator();
-        this.initMongoStorage();
+       // this.initMongoStorage();
+        this.initDexieStorage();
     }
 
     /**
@@ -99,6 +100,7 @@ export class Repository extends ContainerAware {
     initDexieStorage() {
 
         const dexieManager = this.getContainer().get('DexieManager');
+        
 
         /**
          * Add schema
@@ -261,12 +263,16 @@ export class Repository extends ContainerAware {
         let strategy = new HydratorStrategy();
         strategy.setHydrator(Repository.getMonitorEntityHydrator(container));
 
-        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
+        // COMMENT to run without mongo
+        hydrator
+            //.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
+            //.addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
+            .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
+            
 
-        hydrator.addValueStrategy('id', new MongoIdStrategy())
-            .addValueStrategy('_id', new MongoIdStrategy())
-            .addValueStrategy('monitors', strategy)
+        //hydrator.addValueStrategy('id', new MongoIdStrategy())
+        //    .addValueStrategy('_id', new MongoIdStrategy())
+        hydrator.addValueStrategy('monitors', strategy)
             .addValueStrategy('enable', new HybridStrategy(HybridStrategy.BOOLEAN_TYPE, HybridStrategy.NUMBER_TYPE));
 
         hydrator.enableExtractProperty('id')

@@ -16,6 +16,7 @@ import {EntityNestedReference} from '@dsign/library/src/storage/entity/EntityNes
 import {AbstractHydrator, PropertyHydrator} from '@dsign/library/src/hydrator/index';
 import {HydratorStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
+import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManager';
 import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
@@ -109,6 +110,9 @@ application.setModuleHydrator(moduleHydrator);
 application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
+
+        container.get('DexieManager').generateSchema();
+        container.get('DexieManager').open();
 
         container.get('MongoDb')
             .getEventManager()
@@ -230,7 +234,7 @@ container.set('Acl', acl);
                                             DEXIE MANAGER SERVICE
  **********************************************************************************************************************/
 
-// container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
+container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 /***********************************************************************************************************************
                                            MONGODB

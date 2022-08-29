@@ -11,6 +11,7 @@ import {mergeDeep} from "@dsign/library/src/object/Utils";
 import {PathNode} from "@dsign/library/src/path/PathNode";
 import {AutoLoadClass} from "@dsign/library/src/core/autoload/AutoLoadClass";
 import {Widget} from "@dsign/library/src/core/widget/Widget";
+import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManager';
 import {Utils} from '@dsign/library/src/core/Utils';
 import {Acl} from "@dsign/library/src/permission/acl/Acl";
 import {JsAclAdapter} from "@dsign/library/src/permission/acl/adapter/js-acl/JsAclAdapter";
@@ -175,7 +176,7 @@ container.set('Config', config);
 /***********************************************************************************************************************
  DEXIE MANAGER SERVICE
  **********************************************************************************************************************/
-//container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
+container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
 
 container.set('Timer',
     function (sm) {
