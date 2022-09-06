@@ -175,7 +175,7 @@ export class Repository extends ContainerAware {
 
         const dexieManager = this.getContainer().get('DexieManager');
 
-        let store = new Store(Repository.COLLECTION, [ "++id", "type", "size", "name", "*tags"]);
+        let store = new Store(Repository.COLLECTION, [ "++id", "type", "size", "name", "*tags", "[name+type]" ]);
         dexieManager.addStore(store);
 
         dexieManager.on("ready", () => {

@@ -17,10 +17,16 @@ export class DexieResourceAdapter extends DexieAdapter {
 
                 switch (property) {
                     case 'tags':
-                        collection = this.manager.table(this.getNameCollection()).where(property).equals(filter[property]);
+                        collection = this.manager.table(this.getNameCollection()).where(property).anyOf(filter[property]);
                         break;
                     case 'name':
                         collection = this.manager.table(this.getNameCollection()).where(property).startsWithIgnoreCase(filter[property]);
+                        break;
+                    case 'type':
+                        collection = this.manager.table(this.getNameCollection()).where(property).equals(filter[property]);
+                        break;
+                    case 'size':          
+                        collection = this.manager.table(this.getNameCollection()).where(property).belowOrEqual(typeof filter[property] == 'string' ? Number(filter[property]) : filter[property]);
                         break;
                 }
             }
