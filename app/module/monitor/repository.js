@@ -101,11 +101,18 @@ export class Repository extends ContainerAware {
 
         const dexieManager = this.getContainer().get('DexieManager');
         
-
         /**
          * Add schema
          */
-        let store = new Store(Repository.COLLECTION, ["++id", "name", "enable"]);
+        let store = new Store(
+            Repository.COLLECTION, 
+            [
+                "++id", 
+                "name", 
+                "enable"
+            ]
+        );
+
         dexieManager.addStore(store);
 
         /**

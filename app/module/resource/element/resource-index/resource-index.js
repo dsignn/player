@@ -109,7 +109,6 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
     }
 
     _filterChange(evt) {
-        console.log('CAMBIO');
         this.$.viewList.filter = JSON.parse(JSON.stringify(evt.detail));
     }
 

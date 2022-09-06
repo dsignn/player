@@ -108,8 +108,17 @@ export class Repository extends ContainerAware {
 
         let store = new Store(
             Repository.COLLECTION,
-            ["++id", "name", "status", "duration", "monitorContainerReference.id", "[monitorContainerReference.parentId+name]", "[resources.id]","*tags", "rotation"]
-
+            [
+                "++id", 
+                "name", 
+                "status", 
+                "duration", 
+                "monitorContainerReference.id", 
+                "resources.id",
+                "*tags", 
+                "rotation",
+                "[monitorContainerReference.parentId+name]", 
+            ]
         );
 
         dexieManager.addStore(store);

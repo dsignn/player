@@ -5,7 +5,8 @@ export const lang = {
     "update-monitor" : "Modifica monitor",
     "back" : "Torna indietro",
     "monitor-data": "Dati monitor",
-    "current-topology": "Configurazione corrente"
+    "current-topology": "Configurazione corrente",
+    "name": "Nome",
   },
   "en": {
     "list-monitor": "List monitor",
@@ -13,6 +14,7 @@ export const lang = {
     "update-monitor" : "Update monitor",
     "back" : "Back",
     "monitor-data": "Monitor data",
-    "current-topology": "Local topology"
+    "current-topology": "Local topology",
+    "name": "Name",
   }
 };

@@ -132,7 +132,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'resource',
+                value : 'timeslot',
                 observer: 'changeSection'
             },
 
