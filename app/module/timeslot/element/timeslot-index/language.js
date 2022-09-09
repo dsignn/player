@@ -3,12 +3,14 @@ export const lang = {
     "list-timeslot": "Lista timeslot",
     "insert-timeslot" : "Inserisci timeslot",
     "update-timeslot" : "Modifica timeslot",
-    "back" : "Indietro"
+    "back" : "Indietro",
+    "name": "Nome"
   },
   "en": {
     "list-timeslot": "List timeslot",
     "insert-timeslot" : "Insert timeslot",
     "update-timeslot" : "Update timeslot",
-    "back" : "Back"
+    "back" : "Back",
+    "name": "Name"
   }
 };

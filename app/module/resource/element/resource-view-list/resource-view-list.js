@@ -25,6 +25,8 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
 
                 #empty {
                     display: block;
+                    padding: 16px 0;
+                    font-size: 20px;
                 }
                 
                 @media (max-width: 500px) {

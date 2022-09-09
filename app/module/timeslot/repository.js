@@ -86,7 +86,8 @@ export class Repository extends ContainerAware {
         this.initTimeslotReceiver();
         this.initEntity();
         this.initHydrator();
-        this.initMongoStorage();
+        // this.initMongoStorage();
+        this.initDexieStorage();
     }
 
     /**
@@ -273,12 +274,14 @@ export class Repository extends ContainerAware {
         let injectorDataStrategy = new HydratorStrategy();
         injectorDataStrategy.setHydrator(Repository.getInjectorHydrator(container));
 
-        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
+        hydrator
+            //.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
+            //.addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
+            .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));;
 
         hydrator.addValueStrategy('resources', resourceStrategy)
-            .addValueStrategy('id', new MongoIdStrategy())
-            .addValueStrategy('_id', new MongoIdStrategy())
+            //.addValueStrategy('id', new MongoIdStrategy())
+            //.addValueStrategy('_id', new MongoIdStrategy())
             .addValueStrategy('monitorContainerReference', monitorStrategy)
             .addValueStrategy('binds', bindTimeslotStrategy)
             .addValueStrategy('currentTime', new NumberStrategy())

@@ -79,7 +79,8 @@ export class Repository extends ContainerAware {
         this.initAcl();
         this.initEntity();
         this.initHydrator();
-        this.initMongoStorage();
+        //this.initMongoStorage();
+        this.initDexieStorage();
     }
 
     /**
@@ -102,7 +103,14 @@ export class Repository extends ContainerAware {
         /**
          * Add schema
          */
-        let store = new Store(Repository.COLLECTION, ["++id", "name", "status"]);
+        let store = new Store(
+            Repository.COLLECTION, 
+            [
+                "++id", 
+                "name", 
+                "status"
+            ]);
+
         dexieManager.addStore(store);
 
         /**
@@ -213,11 +221,14 @@ export class Repository extends ContainerAware {
         let playlistStrategy = new HydratorStrategy();
         playlistStrategy.setHydrator(Repository.getPlaylistReferenceHydrator(container));
 
-        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
+        hydrator
+            //.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
+           // .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
+            .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
 
-        hydrator.addValueStrategy('id', new MongoIdStrategy())
-            .addValueStrategy('_id', new MongoIdStrategy())
+        hydrator
+            //.addValueStrategy('id', new MongoIdStrategy())
+            //.addValueStrategy('_id', new MongoIdStrategy())
             .addValueStrategy('timeslots', timeslotStrategy)
             .addValueStrategy('binds', playlistStrategy)
             .addValueStrategy('enableAudio', new HybridStrategy(HybridStrategy.BOOLEAN_TYPE, HybridStrategy.NUMBER_TYPE));

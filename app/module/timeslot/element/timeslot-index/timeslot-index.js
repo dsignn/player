@@ -5,6 +5,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/iron-pages/iron-pages';
 import '../timeslot-view-list/timeslot-view-list'
 import '../timeslot-view-upsert/timeslot-view-upsert'
+import './../../../../elements/paper-filter-storage/paper-filter-storage'
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
 
@@ -21,12 +22,38 @@ class TimeslotIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                 paper-icon-button.circle {
                     @apply --paper-icon-button-action;
                 }
+
+                paper-filter-storage {
+                    flex: 1;
+                    --paper-filter-storage : {
+                        padding: 0 8px;
+                        align-items: center;
+                        display: flex;
+                        min-height: 70px;
+                        width: -webkit-fill-available;
+                        margin-right: 8px;
+
+                    }
+                }
+
+                .filter-container {
+                    display: flex;
+                    padding-bottom: 6px;
+                }
+
+                .filter-container > * { 
+                    padding-right: 6px;
+                }
             </style>
             <iron-pages id="index" selected="{{selected}}">
                 <div id="list"> 
-                    <timeslot-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                    <timeslot-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                          <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <div class="layout-flex">{{localize('list-timeslot')}}</div>
+                            <paper-filter-storage on-value-changed="_filterChange" >
+                                <div slot="filters" class="filter-container">
+                                    <paper-input name="name" label="{{localize('name')}}"></paper-input>
+                                </div>
+                            </paper-filter-storage>
                             <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
                             <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-timeslot')}}</paper-tooltip>
                          </div>
@@ -80,6 +107,11 @@ class TimeslotIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
             }
         };
     }
+
+    _filterChange(evt) {
+        this.$.viewList.filter = JSON.parse(JSON.stringify(evt.detail));
+    }
+
 
     /**
      * @param evt

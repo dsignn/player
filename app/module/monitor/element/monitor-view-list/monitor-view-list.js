@@ -25,6 +25,8 @@ class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMi
 
                 #empty {
                     display: block;
+                    padding: 16px 0;
+                    font-size: 20px;
                 }
                 
                 @media (max-width: 500px) {
