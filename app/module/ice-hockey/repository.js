@@ -4,6 +4,7 @@ import { IceHockeyMatchEntity } from "./src/entity/IceHockeyMatchEntity";
 import { MongoDb } from "@dsign/library/src/storage/adapter/mongo/MongoDb";
 import { MongoIceHockeyAdapter } from "./src/storage/adapter/mongo/MongoIceHockeyAdapter";
 import { PropertyHydrator } from "@dsign/library/src/hydrator/index";
+import { Store } from "@dsign/library/src/storage/adapter/dexie/Store";
 import { Storage } from "@dsign/library/src/storage/Storage";
 import { MapProprertyStrategy } from "@dsign/library/src/hydrator/strategy/proprerty";
 import { HydratorStrategy, MongoIdStrategy } from "@dsign/library/src/hydrator/strategy/value";
@@ -31,7 +32,8 @@ export class Repository extends ContainerAware {
         this.initEntity();
         this.initHydrator();
         this.initIceHockeySender();
-        this.initMongoMatchStorage();
+        this.initDexieStorage();
+        //this.initMongoMatchStorage();
         this.initScoreboardService();
         this.initAcl();
     }
@@ -61,6 +63,41 @@ export class Repository extends ContainerAware {
     /**
      *
      */
+    initDexieStorage() {
+
+        var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
+        var collection =    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.dexie.collection;
+        const dexieManager = this.getContainer().get(connectorServiceName);
+
+        let store = new Store(
+            collection,
+            [
+                "++id", 
+                "name"
+            ]
+        );
+
+        dexieManager.addStore(store);
+
+        dexieManager.on("ready", () => {
+
+            let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
+            hydrator.addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
+
+            const adapter = new DexieTimeslotAdapter(dexieManager, collection);
+            const storage = new Storage(adapter);
+            storage.setHydrator(hydrator);
+
+            this.getContainer().get('StorageContainerAggregate').set(
+                this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'],
+                storage
+            );
+        });
+    }
+
+    /**
+     *
+     */
     initMongoMatchStorage() {
 
         var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
@@ -74,9 +111,13 @@ export class Repository extends ContainerAware {
 
             const storage = new Storage(adapter);
 
-            storage.setHydrator(
-                this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service'])
-            );
+            let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
+            hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
+                .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
+                .addValueStrategy('id', new MongoIdStrategy())
+                .addValueStrategy('_id', new MongoIdStrategy());
+
+            storage.setHydrator(hydrator);
 
             this.getContainer().get('StorageContainerAggregate').set(
                 this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'],
@@ -148,20 +189,16 @@ export class Repository extends ContainerAware {
                 .set('ScoreboardDataInjector', new ScoreboardDataInjector(service));
         };
 
-        var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
-        
-        if (!this.getContainer().get('MongoDb')) {
+        var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
+        const dexieManager = this.getContainer().get(connectorServiceName);
+      
+        if (!dexieManager) {
             return;
         }
 
-        if (this.getContainer().get(connectorServiceName).isConnected()) {
+        dexieManager.on("ready", () => {
             loadIceHockeyScoreboardService();
-        } else {
-            this.getContainer().get(connectorServiceName).getEventManager().on(
-                MongoDb.READY_CONNECTION,
-                loadIceHockeyScoreboardService
-            );
-        }
+        });
     }
 
     /**
@@ -199,18 +236,33 @@ export class Repository extends ContainerAware {
             )
         );
 
-        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
-
-        hydrator.addValueStrategy('id', new MongoIdStrategy())
-            .addValueStrategy('_id', new MongoIdStrategy())
-            .addValueStrategy('homeTeam', teamHydratorStrategy)
+        hydrator.addValueStrategy('homeTeam', teamHydratorStrategy)
             .addValueStrategy('homeScores', scoreHydratorStrategy)
             .addValueStrategy('guestTeam', teamHydratorStrategy)
             .addValueStrategy('guestScores', scoreHydratorStrategy)
             .addValueStrategy('periods', periodHydratorStrategy)
             .addValueStrategy('currentPeriod', periodHydratorStrategy)
-            .addValueStrategy('time', timeHydratorStrategy)
+            .addValueStrategy('time', timeHydratorStrategy);
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('_id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('homeTeam')
+            .enableHydrateProperty('homeScores')
+            .enableHydrateProperty('guestTeam')
+            .enableHydrateProperty('guestScores')
+            .enableHydrateProperty('time')
+            .enableHydrateProperty('periods');
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('_id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('homeTeam')
+            .enableExtractProperty('homeScores')
+            .enableExtractProperty('guestTeam')
+            .enableExtractProperty('guestScores')
+            .enableExtractProperty('time')
+            .enableExtractProperty('periods');    
 
         return hydrator;
     }

@@ -277,7 +277,7 @@ export class Repository extends ContainerAware {
         hydrator
             //.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
             //.addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));;
+            .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
 
         hydrator.addValueStrategy('resources', resourceStrategy)
             //.addValueStrategy('id', new MongoIdStrategy())

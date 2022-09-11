@@ -12,7 +12,11 @@ export const config = {
                         "mongo": {
                             "collection": "ice-hockey-match",
                             "connection-service": "MongoDb"
-                        }
+                        },
+                        "dexie": {
+                            "collection": "ice-hockey-match",
+                            "connection-service": "DexieManager"
+                        },
                     }
                 }, 
                 "entityService": "IceHockeyMatchEntity",
