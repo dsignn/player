@@ -8,7 +8,7 @@
   "devDependencies": {
     "@dsign/player-cli": "github:dsignn/player-cli",
     "dexie": "^2.0.4",
-    "electron-builder": "^22.14.13",
+    "electron-builder": "^23.3.3",
     "run-script-os": "^1.1.5"
   },
   "scripts": {
@@ -28,14 +28,16 @@
     "start-pre-build:linux:darwin": "cd app && ./node_modules/.bin/electron ./../build/es6bundle/main.js --inspect=5858",
     "start-pre-build:win32": "cd app && .\\node_modules\\.bin\\electron .\\..\\build\\es6bundle\\main.js --inspect=5858",
     "test": "cd app && ./node_modules/.bin/polymer test -l chrome",
-    "dist": "electron-builder -c.extraMetadata.main=main.js -lw -p always",
+    "dist": "electron-builder -c.extraMetadata.main=main.js -w -p always",
     "clear-all": "run-script-os",
     "clear-all:linux:darwin": "rm -rf app/node_modules && rm -rf build && rm -rf releases",
     "clear-all:win32": "rmdir /Q /S  app\\node_modules && rmdir /Q /S build && rmdir /Q /S releases"
   },
   "build": {
     "appId": "dsign.player",
+    "productName": "Dsign player",
     "asar": false,
+    "electronVersion": "20.1.3",
     "npmRebuild": false,
     "publish": {
       "provider": "github",
@@ -67,7 +69,6 @@
           "target": "AppImage",
           "arch": [
             "x64",
-            "ia32",
             "armv7l"
           ]
         }
