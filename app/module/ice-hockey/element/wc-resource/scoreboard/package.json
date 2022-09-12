@@ -5,6 +5,8 @@
   "main": "wc-resource-ice-hockey-scoreboard.js",
   "dependencies": {
     "@polymer/polymer": "^3.3.0",
-    "polymer": "^0.5.0"
+    "polymer": "^0.5.0",
+    "@dsign/library": "github:dsignn/library#master",
+    "@dsign/polymer-mixin": "github:dsignn/polymer-mixin#master"
   }
 }

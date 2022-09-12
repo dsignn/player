@@ -1,4 +1,4 @@
-import { EntityReference } from "@dsign/library/commonjs/storage/entity/EntityReference";
+import { EntityReference } from "@dsign/library/src/storage/entity/EntityReference";
 import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
 import { AbstractScore } from "@dsign/library/src/sport/score/AbstractScore";
 

@@ -1,6 +1,5 @@
-import { EventManagerAware } from "@dsign/library/commonjs/event/EventManagerAware";
-import { Storage } from "@dsign/library/commonjs/storage/Storage";
-import { EventManager } from "@dsign/library/src/event";
+import { Storage } from "@dsign/library/src/storage/index";
+import { EventManagerAware } from "@dsign/library/src/event/index";
 import { AbstractSender } from "@dsign/library/src/sender";
 import { IceHockeyMatchEntity } from "./entity/IceHockeyMatchEntity";
 

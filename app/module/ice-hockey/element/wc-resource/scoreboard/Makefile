@@ -6,4 +6,4 @@ help:
 ## zip:			Generate zip wc
 zip:
 	rm wc-resource-ice-hockey-scoreboard.zip; \
-	zip wc-resource-ice-hockey-scoreboard.zip wc-resource-ice-hockey-scoreboard.js package.json;
+	zip -r wc-resource-ice-hockey-scoreboard.zip wc-resource-ice-hockey-scoreboard.js package.json node_modules
