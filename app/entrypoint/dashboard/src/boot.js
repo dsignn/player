@@ -111,7 +111,7 @@ application.getEventManager().on(
     Application.BOOTSTRAP_MODULE,
     new Listener( function(modules) {
 
-        var loadMongo = false;
+        var loadMongo = true;
         var loadDexie = false;
 
         // IMPORTANT you have to wait for all the services to load
@@ -133,10 +133,10 @@ application.getEventManager().on(
         if (window.document.readyState === "complete" || window.document.readyState === "loaded") {
             container.get('DexieManager').generateSchema();
             container.get('DexieManager').open();
-            container.get('MongoDb').connect();
+            //container.get('MongoDb').connect();
         } else {
             window.addEventListener('DOMContentLoaded', (event) => {
-                container.get('MongoDb').connect();
+                //container.get('MongoDb').connect();
                 container.get('DexieManager').generateSchema();
                 container.get('DexieManager').open();
             });

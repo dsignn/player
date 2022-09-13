@@ -137,8 +137,6 @@ class Application {
                     dockerCompose.stdout.on('data',(data) => {
                         console.log("start docker compose: ",data.toString('utf8'));
                     });
-                } else {
-                    console.warn('Star mongo service');
                 }
         }
     }
@@ -186,7 +184,7 @@ class Application {
             useContentWidth: true
         });
 
-        if (this.environment === 'development') {
+        if (this.environment === 'development' || true) {
             this.dashboard.webContents.openDevTools({detached: true});
         }
 
@@ -234,11 +232,11 @@ class Application {
                 () => {
                     browserWindows.send('paper-player-config', this.getMonitorEntityHydrator().extract(monitor));
                 },
-                2000
+                6000
             );
         });
 
-        if (this.environment === 'development') {
+        if (this.environment === 'development' || true) {
             browserWindows.webContents.openDevTools({detached: true});
         }
 

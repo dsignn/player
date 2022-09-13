@@ -83,7 +83,9 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
         this.monitor = this._monitorEntityHydrator.hydrate(msg);
         // TODO implements better solution
         let paperPlayer = document.querySelector('paper-player');
-        paperPlayer.remove();
+        if (paperPlayer) {
+            paperPlayer.remove();
+        }
         this._appendPaperPlayer(document.body, this.monitor);
     }
 
