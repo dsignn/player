@@ -201,6 +201,10 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _defaultChanged(evt) {
+        if (!this._timeslotStorage) {
+            return;
+        }
+
         this._timeslotStorage
             .getAll({name: evt.detail.value.text})
             .then(

@@ -99,8 +99,12 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
              */
             services: {
                 value: {
+                    config: "Config",
                     _application: "Application",
-                    _localizeService: 'Localize'
+                    _localizeService: 'Localize',
+                    StorageContainerAggregate: {
+                        "_configStorage":"ConfigStorage"
+                    }
                 }
             },
 
@@ -167,7 +171,15 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
      */
     _updateModule(evt) {
         this.modules = this._application.getModules();
-        this.$.modules.render();
+        this.config.module = this._application.getModules();
+        this._configStorage.update(this.config)
+            .then((data) => {
+                console.log('T sUCA llll');
+                this.$.modules.render();
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }
 
     sortModule(item1, item2) {

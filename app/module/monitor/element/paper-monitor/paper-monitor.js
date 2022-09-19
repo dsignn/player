@@ -2,6 +2,7 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import {StorageEntityMixin} from "@dsign/polymer-mixin/storage/entity-mixin";
+import {MonitorService} from "../../src/MonitorService";
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-listbox/paper-listbox';
@@ -101,6 +102,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
             services : {
                 value : {
                     _localizeService: 'Localize',
+                    _monitorService: "MonitorService",
                     "StorageContainerAggregate": {
                         "_storage":"MonitorStorage"
                     }
@@ -120,6 +122,16 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
              */
             autoUpdateEntity: {
                 value: true
+            },
+
+
+            /**
+             * @type MonitorService
+             */
+            _monitorService: {
+                type: Object,
+                readOnly: true,
+                observer: "changeMonitorService"
             }
         }
     }
@@ -149,6 +161,16 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
     _toggleEnableMonitor(evt) {
         let event = evt.target.checked ? 'enable-monitor' : 'disable-monitor';
         this.dispatchEvent(new CustomEvent(event, {detail: this.entity}));
+    }
+
+    changeMonitorService(service) {
+        service.getEventManager().on(MonitorService.LOAD_MONITOR, (data) => {
+            this.$.paperToggleEnable.disabled = true;
+        });
+
+        service.getEventManager().on(MonitorService.LOADING_MONITOR_FINISH, (data) => {
+            this.$.paperToggleEnable.disabled = false;
+        });
     }
 }
 window.customElements.define('paper-monitor', PaperMonitor);
