@@ -17,6 +17,9 @@ const FileSystemAdapter = require('@dsign/library').storage.adapter.fileSystem.F
 const Storage = require('@dsign/library').storage.Storage;
 const Utils = require('@dsign/library').core.Utils;
 const Enviroment = process.env.APP_ENVIRONMENT ? process.env.APP_ENVIRONMENT.trim() : 'production';
+
+// WORKAROUND !!!!
+process.env['npm_package_name'] = process.env['npm_package_name'] ? process.env['npm_package_name'] : 'dsign-player';
 const homeData = Utils.getHomeDir(process.env);
 
 /**
@@ -85,7 +88,12 @@ class Application {
 
         app.whenReady().then(() => {
             this.displays = screen.getAllDisplays();
+            this.loadShortcut();
         });
+
+        this.dashboardDevToolsOpen = false;
+
+        this.playerDevToolsOpen = false;
     }
 
     /**
@@ -167,10 +175,6 @@ class Application {
             useContentWidth: true
         });
 
-        if (this.environment === 'development' && false) {
-            this.dashboard.webContents.openDevTools({detached: true});
-        }
-
         this.dashboard.loadFile(`${__dirname}${path.sep}${this._getDashboardEntryPoint()}`);
 
         /**
@@ -203,7 +207,6 @@ class Application {
             transparent: true,
             enableLargerThanScreen: true,
             hasShadow: false,
-            // icon: path.join(__dirname, 'css/log/icon256x256.png'),
             title :  `Dsign Screen [${monitor.name.toUpperCase()}]`
 
         });
@@ -226,10 +229,6 @@ class Application {
                 6000
             );
         });
-
-        if (this.environment === 'development' && false) {
-            browserWindows.webContents.openDevTools({detached: true});
-        }
 
         browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);
 
@@ -294,6 +293,23 @@ class Application {
         configHydrator.addValueStrategy('enableMonitor', new HydratorStrategy(Application.getMonitorContainerEntityHydrator()));
 
         return configHydrator;
+    }
+
+    loadShortcut() {
+        globalShortcut.register('Alt+Control+1', () => {
+            this.dashboard.webContents.openDevTools({detached: true});
+        });
+
+        globalShortcut.register('Alt+Control+2', () => {
+
+            let monitors = this.monitorsContainerEntity.getMonitors();
+            for (let cont = 0; monitors.length > cont; cont++) {
+
+                if (monitors[cont].browserWindows) {
+                    monitors[cont].browserWindows.webContents.openDevTools({detached: true});
+                }
+            }
+        })
     }
 
     /**
