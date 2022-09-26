@@ -15,10 +15,10 @@ import "../ice-hockey-add-player/ice-hockey-add-player";
 import "../ice-hockey-add-score/ice-hockey-add-score";
 import '../../../../elements/paper-chrono/paper-chrono';
 import {lang} from './language';
-import { IceHockeyMatchEntity } from '../../src/entity/IceHockeyMatchEntity';
-import { IceHockeyScore } from '../../src/entity/embedded/IceHockeyScore';
-import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
-import { IceHockeyScoreboardService } from '../../src/IceHockeyScoreboardService';
+import { IceHockeyMatchEntity } from '../ice-hockey-list-player/src/entity/IceHockeyMatchEntity';
+import { IceHockeyScore } from '../ice-hockey-list-player/src/entity/embedded/IceHockeyScore';
+import { IceHockeyPlayerEntity } from '../ice-hockey-list-player/src/entity/IceHockeyPlayerEntity';
+import { IceHockeyScoreboardService } from '../ice-hockey-list-player/src/IceHockeyScoreboardService';
 
 /**
  * @customElement
@@ -287,9 +287,13 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
     }
 
     localizeChange(service) {
+        this._injectMetadataLogos();
+    }
+
+    _injectMetadataLogos() {
         let resources = this.shadowRoot.querySelectorAll('paper-icon-resource-upsert');
         resources.forEach(element => {
-            element.name = this.localize('score-logo');
+            element.name = `${this.localize('score-logo')} susus${this.match.name ?  ' ' + this.match.name : ''}`;
             element.tags = [this.localize('score-tag')];
         });
     }
@@ -321,6 +325,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         document.body.appendChild(ele);
     }
 
+
     matchChange(newMatch, oldMatch) {
        
         // TODO pensaci
@@ -335,7 +340,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
             this._syncPeriod(oldMatch);
         }
 
-        
+        this._injectMetadataLogos();
     }
 
     _syncPeriod(match) {

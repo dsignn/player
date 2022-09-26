@@ -131,16 +131,18 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
     _inputChange(evt) {
 
         let method = this.ref.id ? 'update' : 'save';
+        let toHydrate =  method === 'update' ? this.ref : undefined;
 
-        this.ref = this._storage.getHydrator().hydrate(this.$.file.files[0]);
+        this.ref = this._storage.getHydrator().hydrate(this.$.file.files[0], toHydrate);
         this.ref.name = this.name ? this.name : '';
         this.ref.tags = this.tags ;
         this.ref.resourceToImport = this.$.file.files[0];
      
         this._storage[method](this.ref)
             .then((data) => {
+                this.ref = data;
                 this.dispatchEvent(new CustomEvent('update-resource', {detail: data}));
-                this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(data)}?cache=${Date.now()}")`;
+                this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(data)}?cache=${Date.now()})`;
             });
     }
 
@@ -150,7 +152,7 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
      observerRef(_resoruceService, ref)  {
 
         let image = 'none'
-        if (!_resoruceService ||  !(ref instanceof FileEntity)) {
+        if (!_resoruceService ||  !(ref instanceof FileEntity) || !ref.path.getPath()) {
             this.$.container.style.backgroundImage = 'none';
         } else {
             this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(ref)}?cache=${Date.now()}")`;

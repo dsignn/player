@@ -196,7 +196,9 @@ export class Repository extends ContainerAware {
 
             storage.getEventManager()
                 .on(Storage.BEFORE_UPDATE, this.onBeforeUpdate.bind(this))
+                .on(Storage.POST_UPDATE, this.onPostUpsert.bind(this))
                 .on(Storage.BEFORE_SAVE, this.onBeforeSave.bind(this))
+                .on(Storage.POST_SAVE, this.onPostUpsert.bind(this))
                 .on(Storage.POST_REMOVE, this.onPostRemove.bind(this));
 
             this.getContainer().get('StorageContainerAggregate').set(
@@ -266,6 +268,7 @@ export class Repository extends ContainerAware {
     }
 
     onPostUpsert(evt) {
+        
         if (evt.data.resourceToImport) {
             delete evt.data.resourceToImport;
         }
@@ -304,10 +307,11 @@ export class Repository extends ContainerAware {
 
             let fileName = `${fileDirectory}${this.path.sep}${resourceEntity.id}.${resourceEntity.resourceToImport.path.split('.').pop()}`;
             this.fs.copyFileSync(resourceEntity.resourceToImport.path, fileName);
-
+            
             resourceEntity.path = new PathNode();
             resourceEntity.path.nameFile = resourceEntity.id;
             resourceEntity.path.extension = resourceEntity.resourceToImport.path.split('.').pop();
+            resourceEntity.checksum = this._computeChecksum(fileName);
 
             switch (resourceEntity.type) {
                 case 'video/mp4':
@@ -321,6 +325,19 @@ export class Repository extends ContainerAware {
                     break;
             }
         }
+    }
+
+    /**
+     * @param {string} fileName 
+     * @returns 
+     */
+    _computeChecksum(fileName) {
+        let fileBuffer = this.fs.readFileSync(fileName);
+        const crypto = require('crypto');
+        let hashSum = crypto.createHash('sha256');
+        hashSum.update(fileBuffer);
+
+       return hashSum.digest('hex');
     }
 
     /**
@@ -483,7 +500,8 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('size')
             .enableHydrateProperty('type')
             .enableHydrateProperty('path')
-            .enableHydrateProperty('tags');
+            .enableHydrateProperty('tags')
+            .enableHydrateProperty('checksum');
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('_id')
@@ -491,7 +509,8 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('size')
             .enableExtractProperty('type')
             .enableExtractProperty('path')
-            .enableExtractProperty('tags');
+            .enableExtractProperty('tags')
+            .enableExtractProperty('checksum');
 
         return hydrator;
     }

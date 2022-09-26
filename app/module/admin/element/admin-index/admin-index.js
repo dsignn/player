@@ -174,7 +174,6 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         this.config.module = this._application.getModules();
         this._configStorage.update(this.config)
             .then((data) => {
-                console.log('T sUCA llll');
                 this.$.modules.render();
             })
             .catch((err) => {

@@ -1,14 +1,16 @@
-import { IceHockeyMatch } from '@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch';
-import {html, PolymerElement} from '@polymer/polymer/polymer-element';
-import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+(async () => {
+    const nodeMopdulesPath = require('path').normalize(__dirname + '../../../node_modules');
+    const { IceHockeyMatch } = await import(require('path').normalize(nodeMopdulesPath + '/' + '@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch.js'));
+    const { html, PolymerElement } = await import(require('path').normalize(nodeMopdulesPath + '/' + '@polymer/polymer/polymer-element.js'));
+    const { ServiceInjectorMixin } = await import(require('path').normalize(nodeMopdulesPath + '/' + '@dsign/polymer-mixin/service/injector-mixin.js'));
 
-/**
- *
- */
-class WcResourceIceHockeyScoreboard extends ServiceInjectorMixin(PolymerElement) {
+    /**
+    *
+    */
+    class WcResourceIceHockeyScoreboard extends ServiceInjectorMixin(PolymerElement) {
 
-    static get template() {
-        return html`
+        static get template() {
+            return html`
         <style>
 
             :host {
@@ -78,84 +80,90 @@ class WcResourceIceHockeyScoreboard extends ServiceInjectorMixin(PolymerElement)
          
         </div>
         `;
-    }
-
-    static get properties() {
-        return {
-            scoreboard: {
-                type: Object,
-                notify: true,
-                value: new IceHockeyMatch()
-            },
-
-            homeScore: {
-                type: Number,
-                notify: true,
-            },
-
-            guestScore: {
-                type: Number,
-                notify: true,
-            },
-
-            services: {
-                value: {
-                    _resourceService: "ResourceService"
-                }
-            },
-        };
-    }
-
-    static get observers() {
-        return [
-            'observerIceHockeyMatchChanged(_resourceService, scoreboard)'
-        ]
-    }
-
-    ready() {
-        super.ready();
-
-        require('electron').ipcRenderer.on('data-scoreboard', this._updateTimer.bind(this))
-    }
-
-    /**
-     * @param newValue
-     */
-     observerIceHockeyMatchChanged(_resourceService, scoreboard) {
-        if (!_resourceService || !scoreboard) {
-            return;
         }
 
-        this.homeScore = scoreboard.homeScores.length;
-        this.guestScore = scoreboard.guestScores.length;
-        this.$.scoreboard.classList.remove('hidden');
-        this.loadHomeLogo(scoreboard.homeTeam.logo);
-        this.loadGuestLogo(scoreboard.guestTeam.logo);
+        static get properties() {
+            return {
+                scoreboard: {
+                    type: Object,
+                    notify: true,
+                    value: new IceHockeyMatch()
+                },
+
+                homeScore: {
+                    type: Number,
+                    notify: true,
+                },
+
+                guestScore: {
+                    type: Number,
+                    notify: true,
+                },
+
+                services: {
+                    value: {
+                        _resourceService: "ResourceService"
+                    }
+                },
+            };
+        }
+
+        static get observers() {
+            return [
+                'observerIceHockeyMatchChanged(_resourceService, scoreboard)'
+            ]
+        }
+
+        ready() {
+            super.ready();
+
+            require('electron').ipcRenderer.on('data-scoreboard', this._updateTimer.bind(this))
+        }
+
+        /**
+         * @param newValue
+        */
+        observerIceHockeyMatchChanged(_resourceService, scoreboard) {
+            if (!_resourceService || !scoreboard) {
+                return;
+            }
+
+            this.homeScore = scoreboard.homeScores.length;
+            this.guestScore = scoreboard.guestScores.length;
+            this.$.scoreboard.classList.remove('hidden');
+            this.loadHomeLogo(scoreboard.homeTeam.logo);
+            this.loadGuestLogo(scoreboard.guestTeam.logo);
+        }
+
+        /**
+         * 
+         * @param {*} evt 
+         * @param {Object} data 
+         */
+        _updateTimer(evt, data) {
+            this.scoreboard = data.match;
+        }
+
+        loadHomeLogo(resource) {
+            let logo = this._resourceService.getResourcePath(resource);
+            this.$.logoHome.style.backgroundImage = `url("${logo}")`;
+        }
+
+        loadGuestLogo(resource) {
+            let logo = this._resourceService.getResourcePath(resource);
+            this.$.logoGuest.style.backgroundImage = `url("${logo}")`;
+        }
+
+        /**
+         *
+         */
+        createMockData() { }
     }
 
-    /**
-     * 
-     * @param {*} evt 
-     * @param {Object} data 
-     */
-    _updateTimer(evt, data) {
-        this.scoreboard = data.match;
-    }
+    window.customElements.define('wc-resource-ice-hockey-scoreboard', WcResourceIceHockeyScoreboard);
 
-    loadHomeLogo(resource) {
-        let logo = this._resourceService.getResourcePath(resource);
-        this.$.logoHome.style.backgroundImage = `url("${logo}")`;
-    }
+})();
 
-    loadGuestLogo(resource) {
-        let logo = this._resourceService.getResourcePath(resource);
-        this.$.logoGuest.style.backgroundImage = `url("${logo}")`;
-    }
 
-    /**
-     *
-     */
-    createMockData() { }
-}
 
-window.customElements.define('wc-resource-ice-hockey-scoreboard', WcResourceIceHockeyScoreboard);
+

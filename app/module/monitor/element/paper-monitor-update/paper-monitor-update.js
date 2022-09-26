@@ -225,8 +225,6 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         entityReference.setId(evt.detail.value.id);
         entityReference.setCollection('timeslot');
         entityReference.name = evt.detail.value.name;
-
-        console.log(entityReference);
         this.entity.defaultTimeslotReference = entityReference;
     }
 
