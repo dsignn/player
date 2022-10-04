@@ -171,5 +171,4 @@
         }
     }
     window.customElements.define('ice-hockey-view-list', IceHockeyViewList);
-
 })()

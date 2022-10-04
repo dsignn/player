@@ -1,7 +1,3 @@
-
-//import '../ice-hockey-view-upsert/ice-hockey-view-upsert';
-//import '../ice-hockey-scoreboard/ice-hockey-scoreboard';
-
 (async () => {
     const { html, PolymerElement } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@polymer/polymer/polymer-element.js`));
@@ -17,7 +13,9 @@
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-tabs/paper-tabs.js`));
 
     await import('./../ice-hockey-view-list/ice-hockey-view-list.js');
-
+    await import('./../ice-hockey-view-upsert/ice-hockey-view-upsert.js');
+    await import('./../ice-hockey-scoreboard/ice-hockey-scoreboard.js');
+    
     /**
      * @customElement
      * @polymer
