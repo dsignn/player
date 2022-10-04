@@ -1,20 +1,34 @@
-import { EntityReference } from "@dsign/library/commonjs/storage/entity/EntityReference";
-import { GenericPeriod } from "@dsign/library/src/sport/match/GenericPeriod";
-import { AbstractScore } from "@dsign/library/src/sport/score/AbstractScore";
+const IceHockeyScore = (async () => {
 
-/**
-* @class IceHockeyScore
-*/
-class IceHockeyScore extends AbstractScore {
-    constructor() {
-        super();
-  
-        this.period = new GenericPeriod();
+    const { EntityReference } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/entity/EntityReference.js`));
+    const { GenericPeriod } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/match/GenericPeriod.js`));
+    const { AbstractScore } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/score/AbstractScore.js`));
+   
+    /**
+    * @class IceHockeyScore
+    */
+    class IceHockeyScore extends AbstractScore {
+        constructor() {
+            super();
+      
+            this.period = new GenericPeriod();
+    
+            this.time = null;
+    
+            this.playerReference = new EntityReference();
+        }
+    };
 
-        this.time = null;
+    return {IceHockeyScore: IceHockeyScore}
 
-        this.playerReference = new EntityReference();
-    }
-};
+})();
 
-export {IceHockeyScore};
+export default IceHockeyScore;
+export const then = IceHockeyScore.then.bind(IceHockeyScore);
+
+
+
+

@@ -111,7 +111,10 @@ async function boot() {
     application.setBasePath(path.normalize(`${__dirname}${back}`))
         .setModulePath(`${basePath}module`)
         .setResourcePath(`${homeData}${path.sep}resource`)
-        .setStoragePath(`${homeData}${path.sep}storage`);
+        .setStoragePath(`${homeData}${path.sep}storage`)
+        .setAdditionalModulePath(`${homeData}${path.sep}module`)
+        .setNodeModulePath(path.normalize(`${basePath}${path.sep}node_modules`));
+
 
     let moduleHydrator = getModuleHydrator();
     let modulesHydrate = [];

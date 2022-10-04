@@ -3,8 +3,8 @@ import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixi
 import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
 import { lang } from './language';
 import { MongoIdGenerator } from '@dsign/library/src/storage/util/MongoIdGenerator';
-import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
-import { IceHockeyScore } from '../../src/entity/embedded/IceHockeyScore';
+import { IceHockeyPlayerEntity } from '../ice-hockey-list-player/src/entity/IceHockeyPlayerEntity';
+import { IceHockeyScore } from '../ice-hockey-list-player/src/entity/embedded/IceHockeyScore';
 
 
 /**

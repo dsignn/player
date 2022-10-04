@@ -1,27 +1,39 @@
-import {MongoCollectionAdapter} from '@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter';
+const MongoCollectionAdapter = (async () => {
 
-/**
- * @class MongoIceHockeyAdapter
- */
-export class MongoIceHockeyAdapter extends MongoCollectionAdapter {
+    const { MongoCollectionAdapter } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter.js`));
 
     /**
-     * @inheritDoc
+     * @class MongoIceHockeyAdapter
      */
-    filter(filter) {
-        let returnFilter = {};
-        if (filter !== null && typeof filter === 'object') {
+    class MongoIceHockeyAdapter extends MongoCollectionAdapter {
 
-            for (let property in filter) {
-
-                switch (property) {
-                    case 'name':
-                        returnFilter[property] =  {$regex: filter[property], $options: "$i"};
-                        break;
+        /**
+         * @inheritDoc
+         */
+        filter(filter) {
+            let returnFilter = {};
+            if (filter !== null && typeof filter === 'object') {
+    
+                for (let property in filter) {
+    
+                    switch (property) {
+                        case 'name':
+                            returnFilter[property] =  {$regex: filter[property], $options: "$i"};
+                            break;
+                    }
                 }
             }
+    
+            return returnFilter;
         }
-
-        return returnFilter;
     }
-}
+
+    return {MongoIceHockeyAdapter: MongoIceHockeyAdapter};
+})();
+
+export default MongoCollectionAdapter;
+export const then = MongoCollectionAdapter.then.bind(MongoCollectionAdapter);
+    
+
+

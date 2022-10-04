@@ -13,11 +13,12 @@ import '@polymer/paper-menu-button/paper-menu-button';
 import "../paper-ice-hockey-player/paper-ice-hockey-player";
 import "../ice-hockey-add-player/ice-hockey-add-player";
 import "../ice-hockey-add-score/ice-hockey-add-score";
+import '../../../../elements/paper-chrono/paper-chrono';
 import {lang} from './language';
-import { IceHockeyMatchEntity } from '../../src/entity/IceHockeyMatchEntity';
-import { IceHockeyScore } from '../../src/entity/embedded/IceHockeyScore';
-import { IceHockeyPlayerEntity } from '../../src/entity/IceHockeyPlayerEntity';
-import { IceHockeyScoreboardService } from '../../src/IceHockeyScoreboardService';
+import { IceHockeyMatchEntity } from '../ice-hockey-list-player/src/entity/IceHockeyMatchEntity';
+import { IceHockeyScore } from '../ice-hockey-list-player/src/entity/embedded/IceHockeyScore';
+import { IceHockeyPlayerEntity } from '../ice-hockey-list-player/src/entity/IceHockeyPlayerEntity';
+import { IceHockeyScoreboardService } from '../ice-hockey-list-player/src/IceHockeyScoreboardService';
 
 /**
  * @customElement
@@ -30,6 +31,10 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
             <style >
                 .column {
                     @apply --layout-horizontal;
+                }
+
+                .row {
+                    @apply --layout-vertical;
                 }
 
                 .j-between {
@@ -93,22 +98,50 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                 paper-icon-button.circle {
                     @apply --paper-icon-button-action;
                     padding: 0;
-                    height: 24px;
-                    width: 24px;
+                    height: 30px;
+                    width: 30px;
                     line-height: 20px;
                     --paper-icon-button-disabled : {        
                         background-color: #c9c9c9 !important;
                     }
                 }
 
+                .team-data {
+                    padding: 0 10px;
+                    flex: 1;
+                }
+
+                .action-team {
+                    display: flex;
+                    justify-content: end;
+                }
+
+                .action-team.guest { 
+                    justify-content: start;
+                }
+
                 paper-menu-button {
                     padding: 0;
+                    font-size: 80px;
+                    width: 120px;
+                    text-align: center;
                 }
 
             </style>
             <div class="column j-between">
                 <div class="column content-wrapper j-center">
-                    <div class="title-name">{{match.homeTeam.name}}</div>
+                    <paper-icon-resource-upsert ref="{{match.homeTeam.logo}}" position="left" on-update-resource="updateScoreEvt"></paper-icon-resource-upsert>
+                    <div class="row team-data">
+                        <div style="width: 100%;">
+                            <paper-input value="{{match.homeTeam.name}}" label="{{localize('team-name')}}" on-value-changed="updateScoreEvt"> </paper-input>
+                        </div>
+                        <div class="action-team"> 
+                            <paper-icon-button id="plusScoreHome" icon="plus" class="circle" type="home" role="button" on-tap="addGenericScore"></paper-icon-button>
+                            <paper-tooltip for="plusScoreHome" position="bottom">{{localize('set-point')}}</paper-tooltip>
+                            <paper-icon-button id="plusPlayerHome" icon="ice-hockey:add-user" class="circle" type="home" on-tap="addPlayerBtn"></paper-icon-button>
+                            <paper-tooltip for="plusPlayerHome" position="bottom">{{localize('add-player')}}</paper-tooltip>
+                        </div>
+                    </div>         
                     <paper-menu-button>
                         <div class="score" slot="dropdown-trigger">{{homePoint}}</div>
                         <paper-listbox slot="dropdown-content">
@@ -122,13 +155,8 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                             </dom-repeat>
                         </paper-listbox>
                     </paper-menu-button>    
-                    <paper-icon-button id="plusScoreHome" icon="plus" class="circle" type="home" role="button" on-tap="addGenericScore"></paper-icon-button>
-                    <paper-tooltip for="plusScoreHome" position="right">{{localize('set-point')}}</paper-tooltip>
-                    <paper-icon-button id="plusPlayerHome" icon="ice-hockey:add-user" class="circle" type="home" on-tap="addPlayerBtn"></paper-icon-button>
-                    <paper-tooltip for="plusPlayerHome" position="right">{{localize('add-player')}}</paper-tooltip>
                 </div>
                 <div class="column content-wrapper j-center">
-                    <div class="title-name">{{match.guestTeam.name}}</div>
                     <paper-menu-button>
                         <div class="score" slot="dropdown-trigger">{{guestPoint}}</div>
                         <paper-listbox slot="dropdown-content">
@@ -142,10 +170,18 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                             </dom-repeat>
                         </paper-listbox>
                     </paper-menu-button>    
-                    <paper-icon-button id="plusScoreGuest" icon="plus" class="circle" type="guest" role="button"  on-tap="addGenericScore"></paper-icon-button>
-                    <paper-tooltip for="plusScoreGuest" position="right">{{localize('set-point')}}</paper-tooltip>
-                    <paper-icon-button id="plusPlayerGuest" icon="ice-hockey:add-user" class="circle" type="guest" on-tap="addPlayerBtn"></paper-icon-button>
-                    <paper-tooltip for="plusPlayerGuest" position="right">{{localize('add-player')}}</paper-tooltip>
+                    <div class="row team-data">
+                        <div style="width: 100%;">
+                            <paper-input value="{{match.guestTeam.name}}" label="{{localize('team-name')}}" on-value-changed="updateScoreEvt"> </paper-input>
+                        </div>
+                        <div class="action-team guest"> 
+                            <paper-icon-button id="plusScoreGuest" icon="plus" class="circle" type="guest" role="button"  on-tap="addGenericScore"></paper-icon-button>
+                            <paper-tooltip for="plusScoreGuest" position="bottom">{{localize('set-point')}}</paper-tooltip>
+                            <paper-icon-button id="plusPlayerGuest" icon="ice-hockey:add-user" class="circle" type="guest" on-tap="addPlayerBtn"></paper-icon-button>
+                            <paper-tooltip for="plusPlayerGuest" position="bottom">{{localize('add-player')}}</paper-tooltip>
+                        </div>
+                    </div>   
+                    <paper-icon-resource-upsert ref="{{match.guestTeam.logo}}" position="left" on-update-resource="updateScoreEvt"></paper-icon-resource-upsert>
                 </div>
             </div>
             <div class="column">
@@ -164,6 +200,12 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     </dom-repeat>
                 </div>  
                 <div class="info">
+                    <paper-chrono id="chrono" time="{{match.time}}" 
+                        on-data="updateScoreEvt" 
+                        on-play-timer="updateScoreEvt"
+                        on-pause-timer="updateScoreEvt"
+                        on-resume-timer="updateScoreEvt"
+                        on-stop-timer="updateScoreEvt"></paper-chrono>
                     <paper-listbox id="listPeriods" on-iron-items-changed="changePeriod" on-iron-select="changePeriod">
                         <dom-repeat id="periods" items="{{match.periods}}" as="period">
                             <template>
@@ -235,8 +277,25 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
 
             scoreboardService: {
                 observer: 'scoreboardServiceChange'
-            }      
+            } ,
+            
+            _localizeService: {
+                readOnly: true,
+                observer: 'localizeChange'
+            }
         }
+    }
+
+    localizeChange(service) {
+        this._injectMetadataLogos();
+    }
+
+    _injectMetadataLogos() {
+        let resources = this.shadowRoot.querySelectorAll('paper-icon-resource-upsert');
+        resources.forEach(element => {
+            element.name = `${this.localize('score-logo')} susus${this.match.name ?  ' ' + this.match.name : ''}`;
+            element.tags = [this.localize('score-tag')];
+        });
     }
 
     connectedCallback() {
@@ -266,16 +325,22 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         document.body.appendChild(ele);
     }
 
-    matchChange(match) {
+
+    matchChange(newMatch, oldMatch) {
        
-        if (!match || !match.id) {
+        // TODO pensaci
+        newMatch.time.id = 'iceHockeyTime';
+
+        if (!newMatch || !newMatch.id) {
             this.homePoint = null;
             this.guestPoint = null;
         } else {
-            this.homePoint = match.getHomeScores().length;
-            this.guestPoint = match.getGuestScores().length;
-            this._syncPeriod(match);
+            this.homePoint = newMatch.getHomeScores().length;
+            this.guestPoint = newMatch.getGuestScores().length;
+            this._syncPeriod(oldMatch);
         }
+
+        this._injectMetadataLogos();
     }
 
     _syncPeriod(match) {
@@ -324,13 +389,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         }
         
         this.match.getCurrentPeriod().name = evt.detail.item.period;
-
-        this.scoreboardService.updateMatchScoreboard(this.match)
-            .then((data) => {
-                console.log('AGGIORNATO', data);
-            }).catch((error) => {
-                console.error(error);
-            });
+        this._updateScoreboard();
     }
 
     scoreboardServiceChange(service) {
@@ -341,6 +400,13 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         service.getEventManager().on(IceHockeyScoreboardService.CHANGE_SCOREBOARD_MATCH, (evt) => {
             this.match = evt.data;
         });
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    updateScoreEvt(evt) {
+        this._updateScoreboard();
     }
 
     /**
@@ -366,14 +432,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         } 
         
         this.push(`match.${team}.players`, evt.detail.player);
-
-        this.scoreboardService.updateMatchScoreboard(this.match)
-            .then((data) => {
-                this._notifyScore(type);
-                console.log('Aggiungo giocatore', this.match[team].players.length)
-            }).catch((error) => {
-                console.error(error);
-            });
+        this._updateScoreboard(type);
     }
 
     /**
@@ -403,14 +462,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         });
      
         this.splice(`match.${team}.players`, index, 1, evt.detail.player );
-
-        // TODO move to service
-        this.scoreboardService.updateMatchScoreboard(this.match)
-            .then((data) => {
-                console.log('AGGIORNATO', data);
-            }).catch((error) => {
-                console.error(error);
-            });
+        this._updateScoreboard();
     }
 
     /**
@@ -459,13 +511,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         } 
         
         this.match[team].push(evt.detail.score);
-
-        this.scoreboardService.updateMatchScoreboard(this.match)
-            .then((data) => {
-                this._notifyScore(type);
-            }).catch((error) => {
-                console.error(error);
-            });
+        this._updateScoreboard();
     }
 
     /**
@@ -481,13 +527,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         } 
         
         this.match[team].push(new IceHockeyScore);
-
-        this.scoreboardService.updateMatchScoreboard(this.match)
-            .then((data) => {
-              this._notifyScore(type);
-            }).catch((error) => {
-                console.error(error);
-            });
+        this._updateScoreboard(type);
     }
 
     /**
@@ -502,14 +542,7 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
         }
 
         this.splice(`match.${team}`, evt.target.parentElement.index, 1);     
-        
-        this.scoreboardService.updateMatchScoreboard(this.match)
-            .then((data) => {
-                this._notifyScore(type);
-                console.log('fatto', this.match[team].length)
-            }).catch((error) => {
-                console.error(error);
-            });
+        this._updateScoreboard(type);
     }
 
     /**
@@ -528,6 +561,17 @@ class IceHockeyScoreboard extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
             this.guestPoint = this.match.getGuestScores().length;
             this.$.guestRepeatScore.render();
         }
+    }
+
+    /**
+     */
+    _updateScoreboard(type) {
+        this.scoreboardService.updateMatchScoreboard(this.match)
+            .then((data) => {
+                this._notifyScore(type);
+            }).catch((error) => {
+                console.error(error);
+            });
     }
 }
 window.customElements.define('ice-hockey-scoreboard', IceHockeyScoreboard);

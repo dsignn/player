@@ -1,0 +1,34 @@
+{
+    "title": "Hello word module",
+    "name": "hello-word",
+    "icon": "hello-wordl:menu",
+    "configEntryPoint": "repository.js",
+    "entryPoint": {
+        "name": "hello-word-index",
+        "path": {
+            "directory": "element/hello-word-index",
+            "nameFile": "hello-word-index",
+            "extension": "js"
+        }
+    },
+    "autoloadsWc": [
+        {
+            "name": "hello-word-icons",
+            "path": {
+                "directory": "element/hello-word-icons",
+                "nameFile": "hello-word-icons",
+                "extension": "js"
+            }
+        }
+    ],
+    "autoloads": [
+        {
+            "name": "HelloWordEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "HelloWordEntity",
+                "extension": "js"
+            }
+        }
+    ]
+}

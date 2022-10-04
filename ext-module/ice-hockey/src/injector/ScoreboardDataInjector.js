@@ -1,77 +1,85 @@
-import { TimerDataInjector } from "../../../timer/src/injector/TimerDataInjector";
-import { AbstractInjector } from "../../../timeslot/src/injector/AbstractInjector";
-import { IceHockeyScoreboardService } from "../IceHockeyScoreboardService";
+const ScoreboardDataInjector = (async () => {
 
-/**
- *
- */
- export class ScoreboardDataInjector extends AbstractInjector {
+    const { AbstractInjector } = await import(
+        `${container.get('Application').getBasePath()}module/timeslot/src/injector/AbstractInjector.js`);
 
     /**
-     * @param {IceHockeyScoreboardService} iceHockeyScoreboardService 
-     */
-    constructor(iceHockeyScoreboardService) {
-        super();
+    *
+    */
+    class ScoreboardDataInjector extends AbstractInjector {
 
         /**
-         * @type {iceHockeyScoreboardService}
+         * @param {IceHockeyScoreboardService} iceHockeyScoreboardService 
          */
-        this.iceHockeyScoreboardService = iceHockeyScoreboardService;
+        constructor(iceHockeyScoreboardService) {
+            super();
+
+            this.hasData = false;
+
+            /**
+             * @type {iceHockeyScoreboardService}
+             */
+            this.iceHockeyScoreboardService = iceHockeyScoreboardService;
+        }
+
+
+        /**
+         * @param {string} value
+         * @return Promise
+         */
+        getServiceData(value) {
+            return new Promise((resolve) => {
+                resolve([this.iceHockeyScoreboardService.getMatch()]);
+            });
+        }
+
+        /**
+       * @param {Object} data
+       * @return Promise
+       */
+        getTimeslotData(data) {
+            return new Promise((resolve, reject) => {
+
+                resolve(this.iceHockeyScoreboardService.getMatch());
+            });
+        }
+
+        /**
+         * @param {Timer} timer
+         */
+        extractTimeslot(match) {
+            return { 'id': match.id };
+        }
+
+        /**
+         *  @return string
+         */
+        get serviceLabel() {
+            return 'Scoreboard data';
+        }
+
+        /**
+         *  @return string
+         */
+        get serviceName() {
+            return ScoreboardDataInjector.name;
+        }
+
+        /**
+         *  @return string
+         */
+        get serviceDescription() {
+            return 'Scoreboard metadata';
+        }
+
+        get serviceNamespace() {
+            return 'scoreboard';
+        }
     }
 
+    return {ScoreboardDataInjector: ScoreboardDataInjector};
+})();
 
-    /**
-     * @param {string} value
-     * @return Promise
-     */
-    getServiceData(value) {
-        return new Promise((resolve) => {
-            resolve([this.iceHockeyScoreboardService.getMatch()]);
-        });
-    }
+export default ScoreboardDataInjector;
+export const then = ScoreboardDataInjector.then.bind(ScoreboardDataInjector);
 
-      /**
-     * @param {Object} data
-     * @return Promise
-     */
-       getTimeslotData(data) {
-        return new Promise((resolve, reject) => {
-
-            let obj = {};
-            obj[this.serviceNamespace] = this.iceHockeyScoreboardService.getMatch();
-            resolve(obj);
-        });
-    }
-
-    /**
-     * @param {Timer} timer
-     */
-    extractTimeslot(match) {
-        return {'id' : match.id};
-    }
-
-    /**
-     *  @return string
-     */
-    get serviceLabel() {
-        return 'Scoreboard data';
-    }
-
-    /**
-     *  @return string
-     */
-    get serviceName() {
-        return ScoreboardDataInjector.name;
-    }
-
-    /**
-     *  @return string
-     */
-    get serviceDescription() {
-        return 'Scoreboard metadata';
-    }
-
-    get serviceNamespace () {
-        return 'scoreboard';
-    }
- }

@@ -75,12 +75,10 @@ export class MonitorService extends EventManagerAware {
         });
 
         this.receiver.on('loading-player-windows', (event, data) => {
-            console.log('SERVICE', 'loading-player-windows');
             this.eventManager.emit(MonitorService.LOAD_MONITOR, {});
         });
 
         this.receiver.on('loading-player-windows-finish', (event, data) => {
-            console.log('SERVICE', 'loading-player-windows-finish');
             this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
         });
 

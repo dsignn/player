@@ -111,7 +111,11 @@ async function boot() {
     application.setBasePath(path.normalize(`${__dirname}${back}`))
         .setModulePath(`${basePath}module`)
         .setResourcePath(`${homeData}${path.sep}resource`)
-        .setStoragePath(`${homeData}${path.sep}storage`);
+        .setStoragePath(`${homeData}${path.sep}storage`)
+        .setAdditionalModulePath(`${homeData}${path.sep}modules`)
+        .setNodeModulePath(path.normalize(`${basePath}${path.sep}node_modules`));
+
+    fs.mkdirSync(application.getAdditionalModulePath(), { recursive: true });   
 
     let moduleHydrator = getModuleHydrator();
 
