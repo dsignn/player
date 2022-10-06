@@ -111,7 +111,7 @@ async function boot() {
         .setModulePath(`${basePath}module`)
         .setResourcePath(`${homeData}${path.sep}resource`)
         .setStoragePath(`${homeData}${path.sep}storage`)
-        .setAdditionalModulePath(`${homeData}${path.sep}module`)
+        .setAdditionalModulePath(`${homeData}${path.sep}modules`)
         .setNodeModulePath(path.normalize(`${basePath}${path.sep}node_modules`));
 
 
