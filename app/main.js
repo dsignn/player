@@ -17,10 +17,7 @@ const FileSystemAdapter = require('@dsign/library').storage.adapter.fileSystem.F
 const Storage = require('@dsign/library').storage.Storage;
 const Utils = require('@dsign/library').core.Utils;
 const Enviroment = process.env.APP_ENVIRONMENT ? process.env.APP_ENVIRONMENT.trim() : 'production';
-
-// WORKAROUND !!!!
-process.env['npm_package_name'] = process.env['npm_package_name'] ? process.env['npm_package_name'] : 'dsign-player';
-const homeData = Utils.getHomeDir(process.env);
+const homeData = Utils.getHomeDir(process.env, process.env.APP_ENVIRONMENT == 'development' ? 'dsign-player-development' : 'dsign-player');
 
 /**
  * @returns {StorageInterface}

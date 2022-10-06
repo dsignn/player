@@ -29,11 +29,9 @@ const fs = require('fs');
 const path = require('path');
 // when is compile generate the __dirname is different
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
-
+const homeData = Utils.getHomeDir(process.env, process.env.APP_ENVIRONMENT == 'development' ? 'dsign-player-development' : 'dsign-player');
 const basePath = path.normalize(`${__dirname}${back}`);
-const packageJson =  JSON.parse(fs.readFileSync(`${basePath}${path.sep}package.json`).toString());
-process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
-const homeData = Utils.getHomeDir(process.env);
+
 
 var config =  JSON.parse(
     fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
@@ -108,7 +106,7 @@ async function boot() {
      **********************************************************************************************************************/
 
     const application = new Application();
-    application.setBasePath(path.normalize(`${__dirname}${back}`))
+    application.setBasePath(basePath)
         .setModulePath(`${basePath}module`)
         .setResourcePath(`${homeData}${path.sep}resource`)
         .setStoragePath(`${homeData}${path.sep}storage`)
