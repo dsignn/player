@@ -1,7 +1,7 @@
 {
     "title": "Hello word module",
     "name": "hello-word",
-    "icon": "hello-wordl:menu",
+    "icon": "hello-word:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "hello-word-index",

@@ -135,7 +135,7 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
      * @param {Event} evt 
      */
     importModule(evt) {
-        this._application.importModule(this.$.fileUpload.files[0].path, container);
+        this._application.addModule(this.$.fileUpload.files[0].path, container);
     }
 
     /**
@@ -182,7 +182,7 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
     }
 
     sortModule(item1, item2) {
-        return item1.core > item2.core ? -1 : 1;
+        return this._application.isCore(item1) ? -1 : 1;
     }
 }
 window.customElements.define("admin-index", AdminIndex);

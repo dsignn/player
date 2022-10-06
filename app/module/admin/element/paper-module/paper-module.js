@@ -91,7 +91,7 @@ class PaperModule extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                         <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                             <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                             <paper-listbox slot="dropdown-content" multi>
-                                <paper-item  on-tap="_delete">{{localize('delete')}}</paper-item>
+                                <paper-item on-tap="_delete">{{localize('delete')}}</paper-item>
                             </paper-listbox>
                         </paper-menu-button>
                     </div>
@@ -112,9 +112,7 @@ class PaperModule extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             /**
              * @type FileEntity
              */
-            module: { 
-                observer: 'changeModule',
-            },
+            module: { },
 
             /**
              * @type true
@@ -130,6 +128,7 @@ class PaperModule extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 value : {
                     _localizeService: 'Localize',
                     _resourceService : "ResourceService",
+                    _application: "Application",
                     StorageContainerAggregate: {
                         "_storage":"ResourceStorage"
                     }
@@ -158,6 +157,13 @@ class PaperModule extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             }
         }
     }
+
+    static get observers() {
+        return [
+          // Observer method name, followed by a list of dependencies, in parenthesis
+          'changeModule(_application, module)'
+        ]
+      }
     
     /**
      * @param evt
@@ -171,8 +177,13 @@ class PaperModule extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
     /**
      * @param evt
      */
-    changeModule(module) {
-        if (!module || module.core === false) {
+    changeModule(application, module) {
+
+        if (!application || !module) {
+            return;
+        }
+       
+        if (!this._application.isCore(module)) {
             this.$.crudButton.style.display = 'inline-block';
         } else {
             this.$.crudButton.style.display = 'none';
