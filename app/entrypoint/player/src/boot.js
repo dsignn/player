@@ -27,10 +27,11 @@ const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/..
 const homeData = Utils.getHomeDir(process.env, process.env.APP_ENVIRONMENT == 'development' ? 'dsign-player-development' : 'dsign-player');
 const basePath = path.normalize(`${__dirname}${back}`);
 
-
 var config = JSON.parse(
     fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
 );
+
+config = Array.isArray(config) ? config[0] : config;
 
 /**
  * @returns {HydratorInterface}
