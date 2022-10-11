@@ -620,6 +620,11 @@ ipcMain.on('proxy', (event, message) => {
             break;
         case 'monitors':
             event.reply('monitors', application.displays);
+            break;
+        case 'relaunch':
+            app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+            app.exit(0); 
+            break;
 
         default:
             application.broadcastMessage(message.event, message.data);

@@ -92,9 +92,11 @@ export async function Repository() {
             );
     
             dexieManager.addStore(store);
-    
-            dexieManager.on("ready", () => {
-    
+
+            /**
+             * create schema
+             */
+            var generateSchema = () => {
                 let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
                 hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
     
@@ -106,7 +108,26 @@ export async function Repository() {
                     this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'],
                     storage
                 );
-            });
+            }
+
+            if(dexieManager.isOpen()) {
+                let version = dexieManager.upgradeSchema();
+                this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
+                this.getContainer().get('StorageContainerAggregate')
+                    .get('ConfigStorage')
+                    .update(this.getContainer().get('Config'))
+                    .then((data) => {
+                        this.getContainer().get('SenderContainerAggregate')
+                            .get('Ipc')
+                            .send('proxy', {event:'relaunch', data: {}}
+                        );
+                    });
+            } else {
+                dexieManager.on("ready", (data) => {
+                    console.log('TO OPNE', data);
+                    generateSchema();
+                });
+            }
         }
     
         /**
@@ -210,9 +231,13 @@ export async function Repository() {
                 return;
             }
     
-            dexieManager.on("ready", () => {
+            if(dexieManager.isOpen()) {
                 loadIceHockeyScoreboardService();
-            });
+            } else {
+                dexieManager.on("ready", () => {
+                    loadIceHockeyScoreboardService();
+                });
+            }
         }
     
         /**

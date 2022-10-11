@@ -145,14 +145,23 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             services : {
                 notify: true,
                 value : {
+                    _config: "Config",
                     application:  "Application",
                     _aclService: 'Acl',
-                    _localizeService: 'Localize'
+                    _localizeService: 'Localize',
+                    _dexieManager : 'DexieManager',
+                    StorageContainerAggregate : {
+                        _configStorage :"ConfigStorage"
+                    }
                 }
             },
 
             application :  {
                 observer: 'changeApplicationService'
+            },
+
+            _configStorage: {
+                readOnly: true
             }
         }
     }

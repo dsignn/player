@@ -2,6 +2,8 @@
  * Monitor repository
  */
 import {ContainerAware} from "@dsign/library/src/container/ContainerAware.js";
+import { FileSystemAdapter } from "@dsign/library/commonjs/storage/adapter/file-system/FileSystemAdapter";
+import {Storage} from "@dsign/library/src/storage/Storage";
 import {config} from './config';
 
 /**
@@ -21,9 +23,9 @@ export class Repository extends ContainerAware {
      * Merge config
      */
     loadConfig() {
-        this.container.set(
-            'config',
-            this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+        this.getContainer().set(
+            'Config',
+            this.getContainer().get('merge').merge(this.getContainer().get('Config'), config)
         );
     }
 
@@ -31,14 +33,12 @@ export class Repository extends ContainerAware {
      * Acl
      */
     initAcl() {
+
         let aclService = this.getContainer().get('Acl');
+        let resource = this.getContainer().get('Config').modules['admin']['config'].acl.resource;
 
-        // TODO add method on service
-       // aclService.addResource('admin');
-       // aclService.allow('admin', 'admin');
-
-        aclService.addResource('admin');
-        aclService.allow('guest', 'admin');
+        aclService.addResource(resource);
+        aclService.allow('guest', resource);
         // guest
     }
 }

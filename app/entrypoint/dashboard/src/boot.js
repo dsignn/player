@@ -147,6 +147,11 @@ async function boot() {
                 
                 });
 
+
+            container.get('DexieManager').on("versionchange",  (event) => {
+                    console.log('suca', event);
+                });
+
             container.get('MongoDb').getEventManager().on(MongoDb.READY_CONNECTION, (connection) =>  {
                     loadMongo = true;
                     if (loadDexie === true && loadMongo === true) {
@@ -156,13 +161,21 @@ async function boot() {
 
             if (window.document.readyState === "complete" || window.document.readyState === "loaded") {
                 container.get('DexieManager').generateSchema();
-                container.get('DexieManager').open();
-                //container.get('MongoDb').connect();
+                container.get('DexieManager').open().then((data) => {
+        
+                }).catch((error) => {
+                    console.error(error);
+                });
             } else {
                 window.addEventListener('DOMContentLoaded', (event) => {
                     //container.get('MongoDb').connect();
                     container.get('DexieManager').generateSchema();
-                    container.get('DexieManager').open();
+                    container.get('DexieManager').open().then((data) => {
+            
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+        
                 });
             }
         }.bind(container))
@@ -276,8 +289,9 @@ async function boot() {
     /***********************************************************************************************************************
                                                 DEXIE MANAGER SERVICE
     **********************************************************************************************************************/
-
-    container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
+    const DexieManagerService = new DexieManager(config.storage.adapter.dexie.nameDb);
+    DexieManagerService.setVersion(config.storage.adapter.dexie.version);
+    container.set('DexieManager', DexieManagerService);
 
     /***********************************************************************************************************************
                                              MONGODB
