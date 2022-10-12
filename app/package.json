@@ -24,7 +24,7 @@
   "dependencies": {
     "@dsign/library": "github:dsignn/library#master",
     "@dsign/polymer-mixin": "github:dsignn/polymer-mixin#master",
-    "@fluidnext-polymer/paper-autocomplete": "git+https://github.com/fluidnext/paper-autocomplete.git#3.2.2",
+    "@fluidnext-polymer/paper-autocomplete": "git+https://github.com/fluidnext/paper-autocomplete.git#3.3.2",
     "@fluidnext-polymer/paper-chip": "github:fluidnext/paper-chip#develop",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
     "@fluidnext-polymer/paper-input-color": "^3.1.0",
