@@ -292,7 +292,13 @@ class Application {
         return configHydrator;
     }
 
+    static relaunch() {
+        app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+        app.exit(0); 
+    }
+
     loadShortcut() {
+        
         globalShortcut.register('Alt+Control+1', () => {
             this.dashboard.webContents.openDevTools({detached: true});
         });
@@ -306,7 +312,11 @@ class Application {
                     monitors[cont].browserWindows.webContents.openDevTools({detached: true});
                 }
             }
-        })
+        });
+
+        globalShortcut.register('Alt+Control+3', () => {
+            Application.relaunch();
+        });
     }
 
     /**
@@ -554,6 +564,7 @@ class Application {
     }
 }
 
+
 const storage = loadStorageService();
 let options = {
     env: Enviroment
@@ -563,12 +574,30 @@ let options = {
  */
 const application = new Application(options, storage);
 
-/**
- * Electron ready
- */
-app.on('ready', () => {
-    application.run();
-});
+const gotTheLock = app.requestSingleInstanceLock()
+    
+if (!gotTheLock) {
+     console.warn('Try to start second instance');
+     app.quit()
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (application.dashboard.BrowserWindow) {
+            if (application.dashboard.BrowserWindow.isMinimized()) {
+                application.dashboard.BrowserWindow.restore();  
+            } 
+            application.dashboard.BrowserWindow.focus()
+        }
+    })
+    /**
+     * Electron ready
+     */
+    app.on('ready', () => {
+        application.run();
+    });
+}
+    
+
 
 /**
  * Electron close all windows
@@ -622,8 +651,7 @@ ipcMain.on('proxy', (event, message) => {
             event.reply('monitors', application.displays);
             break;
         case 'relaunch':
-            app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
-            app.exit(0); 
+            Application.relaunch();
             break;
 
         default:
