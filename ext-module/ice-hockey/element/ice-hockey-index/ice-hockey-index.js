@@ -5,6 +5,7 @@
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/service/injector-mixin.js`));
     const { LocalizeMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/localize/localize-mixin.js`));
+    const { IceHockeyScoreboardService } =  await import('./../../src/IceHockeyScoreboardService.js');
     const { lang } = await import('./language.js');
     const { flexStyle } = await import(`${container.get('Application').getBasePath()}style/layout-style.js`);
     
@@ -116,6 +117,7 @@
                                         </div>
                                     </paper-item>
                                 </template>
+                                <paper-icon-button slot="suffix" on-tap="clearInput" icon="clear" alt="clear" title="clear"></paper-icon-button>
                         </paper-autocomplete>
                         <ice-hockey-scoreboard></ice-hockey-scoreboard>  
                     </div>
@@ -158,8 +160,32 @@
                         },
                         scoreboardService: 'IceHockeyScoreboardService'
                     }
+                },
+
+                scoreboardService: {
+                    readOnly: true,
+                    observer: 'scoreboardServiceChange'
                 }
             };
+        }
+
+        scoreboardServiceChange(service) {
+            if (!service) {
+                return;
+            }
+
+            service.getEventManager().on(IceHockeyScoreboardService.CLEAR_SCOREBOARD_MATCH, (evt) => {
+                let ele = this.shadowRoot.querySelector('ice-hockey-scoreboard');
+                ele.style.display = 'none';
+            });
+        }
+
+        /**
+         * @param evt
+         */
+        clearInput(evt) {
+            this.scoreboardService.clearMatch();
+            this.$.defaultTimeslot.clear();
         }
 
         /**

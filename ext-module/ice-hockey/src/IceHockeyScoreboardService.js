@@ -20,6 +20,11 @@ const IceHockeyScoreboardService = (async () => {
         static get CHANGE_SCOREBOARD_MATCH() { return 'change-scoreboard-match'; }
 
         /**
+         * @return {string}
+         */
+         static get CLEAR_SCOREBOARD_MATCH() { return 'clear-scoreboard-match'; }
+
+        /**
          * @param {StorageInterface} storage
          * @param {AbstractSender} sender
          */
@@ -60,6 +65,15 @@ const IceHockeyScoreboardService = (async () => {
          */
         getMatch() {
             return this.match;
+        }
+
+        /**
+         * @returns {IceHockeyMatchEntity} 
+         */
+        clearMatch() {
+            this.match = null;
+            this.getEventManager().emit(IceHockeyScoreboardService.CLEAR_SCOREBOARD_MATCH);
+            return this;
         }
 
         /**

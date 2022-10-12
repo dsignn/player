@@ -331,6 +331,9 @@
 
 
         matchChange(newMatch, oldMatch) {
+            if (!newMatch) {
+                return;
+            }
         
             // TODO pensaci
             newMatch.time.id = 'iceHockeyTime';
@@ -403,6 +406,10 @@
 
             service.getEventManager().on(IceHockeyScoreboardService.CHANGE_SCOREBOARD_MATCH, (evt) => {
                 this.match = evt.data;
+            });
+
+            service.getEventManager().on(IceHockeyScoreboardService.CLEAR_SCOREBOARD_MATCH, (evt) => {
+                this.match = null;
             });
         }
 

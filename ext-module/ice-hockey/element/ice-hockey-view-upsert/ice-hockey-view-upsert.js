@@ -73,6 +73,10 @@
                         }
                     }
 
+                    .btn-player {
+                        font-size: 13px;
+                    }
+
                     #list {
                         padding-top: var(--padding-top-view-list);
                         @apply --layout-horizontal;
@@ -140,7 +144,7 @@
                                     </div>
                                     <div class="header-players">
                                         {{localize('list-player')}}
-                                        <paper-button on-tap="addPlayerBtn" type="home">{{localize('add-player')}}</paper-button>
+                                        <paper-button on-tap="addPlayerBtn" type="home" class="btn-player">{{localize('add-player')}}</paper-button>
                                     </div>
                                     <div class="players">
                                         <dom-repeat id="homeRepeat" items="{{entity.homeTeam.players}}" as="player">
@@ -157,7 +161,7 @@
                                     </div>
                                     <div class="header-players">
                                         {{localize('list-player')}}
-                                        <paper-button on-tap="addPlayerBtn" type="guest">{{localize('add-player')}}</paper-button>
+                                        <paper-button on-tap="addPlayerBtn" type="guest" class="btn-player">{{localize('add-player')}}</paper-button>
                                     </div>
                                     <div class="players">    
                                         <dom-repeat id="guestRepeat" items="{{entity.guestTeam.players}}" as="player" >
