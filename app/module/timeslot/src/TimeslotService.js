@@ -305,7 +305,7 @@ export class TimeslotService extends AbstractTimeslotService {
     /**
      * @private
      */
-    _updateRunningTimslot() {
+     _updateRunningTimslot() {
 
         for (let property in this.runningTimeslots) {
 
@@ -313,9 +313,12 @@ export class TimeslotService extends AbstractTimeslotService {
                 this.runningTimeslots[property].currentTime = parseFloat(this.runningTimeslots[property].getCurrentTime() + 0.1).toFixed(1);
             }
 
+            this.getEventManager().emit(TimeslotService.CHANGE_TIME, this.runningTimeslots[property]);
+            /*
             this.timeslotStorage.update(this.runningTimeslots[property])
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
+                */
         }
     }
 

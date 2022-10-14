@@ -2,6 +2,7 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import {StorageEntityMixin} from "@dsign/polymer-mixin/storage/entity-mixin";
+import {TimeslotService} from './../../src/TimeslotService.js';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/paper-slider/paper-slider';
@@ -276,8 +277,15 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     _localizeService: 'Localize',
                     StorageContainerAggregate: {
                         _storage: "TimeslotStorage"
-                    }
+                    },
+                    timeslotService: 'TimeslotService'
                 }
+            },
+
+            timeslotService: {
+                readOnly: true,
+                observer: 'timeslotServiceChanged'
+
             }
         }
     }
@@ -298,6 +306,29 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         this.root.querySelector('paper-tooltip[for="rotationIcon"]').innerText = this.localize(
             PaperTimeslot.LIST_ROTATION_LABEL_ICON[this.entity.rotation]
         );
+    }
+
+    timeslotServiceChanged(service) {
+
+        if (!service) {
+            return;
+        }
+
+        service.getEventManager().on(
+            TimeslotService.CHANGE_TIME,
+            (data) => {
+
+                if (this.entity.getId() === data.data.getId()) {
+                    this.entity.currentTime = data.data.currentTime;
+                    this.currentTime = data.data.currentTime;
+                    
+                    if (!this.excludeSlider) {
+                        this.$.slider.value = this.currentTime;
+                    }
+                    this.notifyPath('currentTime')
+                }
+            });
+
     }
 
     /**

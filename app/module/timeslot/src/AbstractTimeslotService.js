@@ -41,6 +41,13 @@ export class AbstractTimeslotService {
     static get CHANGE_TIME() { return 'change-time-timeslot'; }
 
     /**
+     * Name of the "message" send from sender when resume timeslot
+     *
+     * @return {string}
+     */
+    static get UPDATE_TIME() { return 'update-time-timeslot'; }
+
+    /**
      * @param {Storage} timeslotStorage
      * @param {sender} sender
      * @param {Timer} timer
