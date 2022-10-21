@@ -92,7 +92,24 @@ export class ChronoService extends EventManagerAware {
         /**
      * @private
      */
-    _scheduleRunningTimer() {
+    _scheduleRunningTimer() {  
+        for (let property in this.runningTimer) {
+
+            if (this.runningTimer[property].status === ChronoService.STATUS_TO_RUN) {
+                continue;
+            }
+
+            switch (true) {
+                case this.runningTimer[property].type === ChronoService.TYPE_COUNTDOWN &&
+                    this.runningTimer[property].getHours() == 0 &&
+                    this.runningTimer[property].getMinutes() == 0 &&
+                    this.runningTimer[property].getSeconds() == 0:
+                        this.stop(this.runningTimer[property]);
+                        break;
+            }
+        }
+        /*
+        TODO FERMARE i timer
         for (let property in this.runningTimer) {
 
             if (this.runningTimer[property].status === ChronoService.STATUS_TO_RUN) {
@@ -110,6 +127,7 @@ export class ChronoService extends EventManagerAware {
                     break;
             }
         }
+        */
     }
 
 
@@ -236,5 +254,19 @@ export class ChronoService extends EventManagerAware {
         time.status = ChronoService.STATUS_IDLE;
         time.reset();
         this.eventManager.emit(ChronoService.STOP, time);
+    }
+
+        /**
+     * @param {Time} time 
+     */
+    async jump(time) {
+        /** @var Time currentTime */
+        let currentTime = this.runningTimer[time.id];
+
+        if(currentTime) {
+            currentTime.hours = time.getHours();
+            currentTime.minutes =  time.getMinutes();
+            currentTime.seconds =  time.getSeconds();
+        }
     }
 }
