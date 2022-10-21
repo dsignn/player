@@ -13,7 +13,7 @@
     },
     "autoloadsWc": [
         {
-            "name": "monitor-icons",
+            "name": "media-device-icons",
             "path": {
                 "directory": "element/media-device-icons",
                 "nameFile": "media-device-icons",

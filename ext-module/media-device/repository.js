@@ -30,17 +30,6 @@ export async function Repository() {
      * @class Repository
      */
     return class Repository extends ContainerAware {
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get MEDIA_DEVICE_ENTITY_SERVICE() { return 'MediaDeviceEntity'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get MEDIA_DEVICE_HYDRATOR_SERVICE() { return 'MediaDeviceEntityHydrator'; };
 
         /**
          * @return {string}
@@ -55,27 +44,22 @@ export async function Repository() {
         static get COLLECTION() { return 'media-device'; };
 
 
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get MEDIA_DEVICE_CHROME_API_HYDRATOR_SERVICE() { return 'MediaDeviceEntityChromeApiHydrator'; };
-
         init() {
-            this.loadConfig();
+
+            this.initConfig();
             this.initAcl();
             this.initEntity();
             this.initHydrator();
-            this.initMongoStorage();
+            this.initDexieStorage();
         }
 
         /**
          * Merge config
          */
-        loadConfig() {
+         initConfig() {
             this.container.set(
-                'config',
-                this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+                'Config',
+                this.getContainer().get('merge').merge(this.getContainer().get('Config'), config)
             );
         }
 
@@ -86,7 +70,9 @@ export async function Repository() {
         initEntity() {
             this.getContainer()
                 .get('EntityContainerAggregate')
-                .set(Repository.MEDIA_DEVICE_ENTITY_SERVICE, new MediaDeviceEntity());
+                .set(
+                    this.getContainer().get('Config').modules['media-device']['media-device'].entityService,
+                    new MediaDeviceEntity());
         }
 
         /**
@@ -97,9 +83,10 @@ export async function Repository() {
             if (this.getContainer().has('Acl')) {
 
                 let aclService = this.getContainer().get('Acl');
+                let resource = this.getContainer().get('Config').modules['media-device']['media-device'].acl.resource;
 
-                aclService.addResource('media-device');
-                aclService.allow('guest', 'media-device');
+                aclService.addResource(resource);
+                aclService.allow('guest', resource);
             }
         }
 
@@ -109,14 +96,69 @@ export async function Repository() {
         initHydrator() {
 
             this.getContainer().get('HydratorContainerAggregate').set(
-                Repository.MEDIA_DEVICE_HYDRATOR_SERVICE,
-                Repository.getMediaDeviceHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['name-storage-service'],
+                Repository.getMediaDeviceHydrator(this.getContainer())
             );
 
             this.getContainer().get('HydratorContainerAggregate').set(
-                Repository.MEDIA_DEVICE_CHROME_API_HYDRATOR_SERVICE,
-                Repository.getMediaDeviceChromeApiHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['chrome-api-storage-service'],
+                Repository.getMediaDeviceChromeApiHydrator(this.getContainer())
             );
+        }
+
+        /**
+         * 
+         */
+        initDexieStorage() {
+    
+            var connectorServiceName = this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.dexie['connection-service'];
+            var collection =    this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.dexie.collection;
+            const dexieManager = this.getContainer().get(connectorServiceName);
+    
+            let store = new Store(
+                collection,
+                [
+                    "++id", 
+                    "name"
+                ]
+            );
+    
+            dexieManager.addStore(store);
+
+            /**
+             * create schema
+             */
+            var generateSchema = () => {
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['name-storage-service']);
+                hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
+    
+                const adapter = new DexieTimeslotAdapter(dexieManager, collection);
+                const storage = new Storage(adapter);
+                storage.setHydrator(hydrator);
+    
+                this.getContainer().get('StorageContainerAggregate').set(
+                    this.getContainer().get('Config').modules['media-device']['media-device'].storage['name-service'],
+                    storage
+                );
+            }
+
+            if(dexieManager.isOpen()) {
+                let version = dexieManager.upgradeSchema();
+                this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
+                this.getContainer().get('StorageContainerAggregate')
+                    .get('ConfigStorage')
+                    .update(this.getContainer().get('Config'))
+                    .then((data) => {
+                        this.getContainer().get('SenderContainerAggregate')
+                            .get('Ipc')
+                            .send('proxy', {event:'relaunch', data: {}}
+                        );
+                    });
+            } else {
+                dexieManager.on("ready", (data) => {
+                    generateSchema();
+                });
+            }
         }
 
         /**
@@ -124,15 +166,24 @@ export async function Repository() {
          */
         initMongoStorage() {
 
+            var connectorServiceName = this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.mongo['connection-service'];
+
             let loadStorage = () => {
 
-                const adapter = new MongoMediaDeviceAdapter(this.getContainer().get('MongoDb'), Repository.COLLECTION);
+                const adapter = new MongoMediaDeviceAdapter(
+                    this.getContainer().get(connectorServiceName),
+                    this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.mongo.collection
+                );
+
                 const storage = new Storage(adapter);
 
-                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.MEDIA_DEVICE_HYDRATOR_SERVICE));
+                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
+                    this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['name-storage-service'],
+         
+                ));
 
                 this.getContainer().get('StorageContainerAggregate').set(
-                    Repository.STORAGE_SERVICE,
+                    this.getContainer().get('Config').modules['media-device']['media-device'].storage['name-service'],
                     storage
                 );
 
@@ -144,15 +195,14 @@ export async function Repository() {
             };
 
 
-            if (!this.getContainer().get('MongoDb')) {
+            if (!this.getContainer().get(connectorServiceName)) {
                 return;
             }
-
-
-            if (this.getContainer().get('MongoDb').isConnected()) {
+    
+            if (this.getContainer().get(connectorServiceName).isConnected()) {
                 loadStorage();
             } else {
-                this.getContainer().get('MongoDb').getEventManager().on(
+                this.getContainer().get(connectorServiceName).getEventManager().on(
                     MongoDb.READY_CONNECTION,
                     loadStorage
                 );
@@ -166,7 +216,11 @@ export async function Repository() {
          */
         static getMediaDeviceHydrator(container) {
 
-            let hydrator = new PropertyHydrator(container.get('MediaDeviceEntity'));
+            let hydrator = new PropertyHydrator(
+                container.get('EntityContainerAggregate').get(
+                    container.get('Config').modules['media-device']['media-device'].entityService
+                )
+            );
 
             hydrator
                 //.addPropertyStrategy('id', new MapPropertyStrategy('id', '_id'))

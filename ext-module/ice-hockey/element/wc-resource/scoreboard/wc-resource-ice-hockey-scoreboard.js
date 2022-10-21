@@ -1,13 +1,14 @@
 (async () => {
-    const { IceHockeyMatch } = await import(require('path').normalize(
-        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch.js`));
     const { html, PolymerElement } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@polymer/polymer/polymer-element.js`));
     const { ServiceInjectorMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/service/injector-mixin.js`));
+    const { IceHockeyMatch } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch.js`));
+         
     /**
-    *
-    */
+     *
+     */
     class WcResourceIceHockeyScoreboard extends ServiceInjectorMixin(PolymerElement) {
 
         static get template() {
