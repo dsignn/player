@@ -140,6 +140,12 @@ export async function Repository() {
                     this.getContainer().get('Config').modules['media-device']['media-device'].storage['name-service'],
                     storage
                 );
+
+                this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE)
+                    .set(
+                        'MediaDeviceDataInjector',
+                        new MediaDeviceDataInjector(storage)
+                    );
             }
 
             if(dexieManager.isOpen()) {
