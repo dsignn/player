@@ -20,8 +20,8 @@ export async function Repository() {
          */
         initConfig() {
             this.getContainer().set(
-                'Config',
-                this.getContainer().get('merge').merge(this.getContainer().get('Config'), config)
+                'ModuleConfig',
+                this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
             );
         }
 
@@ -41,7 +41,7 @@ export async function Repository() {
             if (this.getContainer().has('Acl')) {
 
                 let aclService = this.getContainer().get('Acl');
-                let resource = this.getContainer().get('Config').modules['hello-word']['hello-word'].acl.resource;
+                let resource = this.getContainer().get('ModuleConfig')['hello-word']['hello-word'].acl.resource;
             
                 aclService.addResource(resource);
                 aclService.allow('guest', resource);

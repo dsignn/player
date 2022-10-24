@@ -1,28 +1,25 @@
 /**
  * Config
  */
- export const config = {
-
-    "modules": {
+export const config = {
+    "dashboard": {
         "dashboard": {
-            "dashboard" : {
-                "storage": {
-                    "name-service": "IceHockeyMatchStorage",
-                    "adapter": {
-                        "localStorage": {
-                            "collection": "widget",
-                            "namespace": "dsign"
-                        }
+            "storage": {
+                "name-service": "WidgetStorage",
+                "adapter": {
+                    "localStorage": {
+                        "collection": "widget",
+                        "namespace": "dsign"
                     }
-                },
-                "acl": {
-                    "resource": 'dashboard'
-                },
-                "hydrator": {
-                    "name-storage-service": "DashboardEntityHydrator",
-                },
-                "entityService": "WidgetEntity",
-            }
+                }
+            },
+            "acl": {
+                "resource": 'dashboard'
+            },
+            "hydrator": {
+                "name-storage-service": "DashboardEntityHydrator",
+            },
+            "entityService": "WidgetEntity",
         }
     }
 }

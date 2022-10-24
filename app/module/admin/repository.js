@@ -22,8 +22,8 @@ export class Repository extends ContainerAware {
      */
     loadConfig() {
         this.getContainer().set(
-            'Config',
-            this.getContainer().get('merge').merge(this.getContainer().get('Config'), config)
+            'ModuleConfig',
+            this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
         );
     }
 
@@ -33,7 +33,7 @@ export class Repository extends ContainerAware {
     initAcl() {
 
         let aclService = this.getContainer().get('Acl');
-        let resource = this.getContainer().get('Config').modules['admin']['config'].acl.resource;
+        let resource = this.getContainer().get('ModuleConfig')['admin']['admin'].acl.resource;
 
         aclService.addResource(resource);
         aclService.allow('guest', resource);

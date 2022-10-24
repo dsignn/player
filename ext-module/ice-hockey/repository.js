@@ -57,8 +57,8 @@ export async function Repository() {
          */
         initConfig() {
             this.getContainer().set(
-                'Config',
-                this.getContainer().get('merge').merge(this.getContainer().get('Config'), config)
+                'ModuleConfig',
+                this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
             );
         }
     
@@ -69,7 +69,7 @@ export async function Repository() {
             this.getContainer()
                 .get('EntityContainerAggregate')
                 .set(
-                    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].entityService,
+                    this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].entityService,
                     new IceHockeyMatchEntity()
                 );
         }
@@ -79,8 +79,8 @@ export async function Repository() {
          */
         initDexieStorage() {
     
-            var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
-            var collection =    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.dexie.collection;
+            var connectorServiceName = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
+            var collection =    this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.dexie.collection;
             const dexieManager = this.getContainer().get(connectorServiceName);
     
             let store = new Store(
@@ -97,7 +97,7 @@ export async function Repository() {
              * create schema
              */
             var generateSchema = () => {
-                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
                 hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
     
                 const adapter = new DexieTimeslotAdapter(dexieManager, collection);
@@ -105,7 +105,7 @@ export async function Repository() {
                 storage.setHydrator(hydrator);
     
                 this.getContainer().get('StorageContainerAggregate').set(
-                    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'],
+                    this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage['name-service'],
                     storage
                 );
             }
@@ -135,18 +135,18 @@ export async function Repository() {
          */
         initMongoMatchStorage() {
     
-            var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
+            var connectorServiceName = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.mongo['connection-service'];
     
             let loadStorage = () => {
     
                 const adapter = new MongoIceHockeyAdapter(
                     this.getContainer().get(connectorServiceName),
-                    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.mongo.collection
+                    this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.mongo.collection
                 );
     
                 const storage = new Storage(adapter);
     
-                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
                 hydrator.addPropertyStrategy('id', new MapPropertyStrategy('id', '_id'))
                     .addPropertyStrategy('_id', new MapPropertyStrategy('id', '_id'))
                     .addValueStrategy('id', new MongoIdStrategy())
@@ -155,7 +155,7 @@ export async function Repository() {
                 storage.setHydrator(hydrator);
     
                 this.getContainer().get('StorageContainerAggregate').set(
-                    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service'],
+                    this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage['name-service'],
                     storage
                 );
             };
@@ -181,7 +181,7 @@ export async function Repository() {
             if (this.getContainer().has('Acl')) {
     
                 let aclService = this.getContainer().get('Acl');
-                let resource = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].acl.resource;
+                let resource = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].acl.resource;
              
                 aclService.addResource(resource);
                 aclService.allow('guest', resource);
@@ -195,7 +195,7 @@ export async function Repository() {
             this.getContainer()
                 .get('HydratorContainerAggregate')
                 .set(
-                    this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service'],
+                    this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service'],
                     Repository.getIceHockeyMatchHydrator(this.getContainer())
                 );
         }
@@ -209,14 +209,14 @@ export async function Repository() {
                 const service = new IceHockeyScoreboardService(
                     this.getContainer()
                         .get('StorageContainerAggregate')
-                        .get(this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage['name-service']),
+                        .get(this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage['name-service']),
                     this.getContainer()
                         .get('SenderContainerAggregate')
-                        .get(this.getContainer().get('Config').modules['ice-hockey'].senderService)
+                        .get(this.getContainer().get('ModuleConfig')['ice-hockey'].senderService)
                 );
             
                 this.getContainer().set(
-                    this.getContainer().get('Config').modules['ice-hockey']['scoreboard-service'],
+                    this.getContainer().get('ModuleConfig')['ice-hockey']['scoreboard-service'],
                     service
                 );
     
@@ -224,7 +224,7 @@ export async function Repository() {
                     .set('ScoreboardDataInjector', new ScoreboardDataInjector(service));
             };
     
-            var connectorServiceName = this.getContainer().get('Config').modules['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
+            var connectorServiceName = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
             const dexieManager = this.getContainer().get(connectorServiceName);
           
             if (!dexieManager) {
@@ -247,7 +247,7 @@ export async function Repository() {
             this.getContainer()
                 .get('SenderContainerAggregate')
                 .set(this.getContainer().get(
-                    'Config').modules['ice-hockey'].senderService,
+                    'ModuleConfig')['ice-hockey'].senderService,
                      require('electron').ipcRenderer
                 );
         }
@@ -271,7 +271,7 @@ export async function Repository() {
     
             let hydrator = new PropertyHydrator(
                 container.get('EntityContainerAggregate').get(
-                    container.get('Config').modules['ice-hockey']['ice-hockey-match'].entityService
+                    container.get('ModuleConfig')['ice-hockey']['ice-hockey-match'].entityService
                 )
             );
     
