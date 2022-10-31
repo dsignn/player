@@ -16,6 +16,7 @@ import {ProxyIpc} from "@dsign/library/src/sender/ProxyIpc";
 import {MonitorEntity} from "./src/entity/MonitorEntity";
 import {MonitorContainerEntity} from "./src/entity/MonitorContainerEntity";
 import {MonitorService} from "./src/MonitorService";
+import {ProxyConfigMonitorService} from "./src/ProxyConfigMonitorService";
 
 /**
  * @class Repository
@@ -74,7 +75,7 @@ export class Repository extends ContainerAware {
      *
      */
     init() {
-        this.loadConfig();
+        this.initConfig();
         this.initAcl();
         this.initEntity();
         this.initSender();
@@ -82,12 +83,13 @@ export class Repository extends ContainerAware {
         this.initHydrator();
         // this.initMongoStorage();
         this.initDexieStorage();
+        this.initMonitorMetaId();
     }
 
     /**
      * Merge config
      */
-    loadConfig() {
+    initConfig() {
         this.container.set(
             'config',
             this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
@@ -142,6 +144,29 @@ export class Repository extends ContainerAware {
                 )
             )
         });
+    }
+
+    initMonitorMetaId() {
+
+        this.getContainer()
+            .set( 
+                'ProxyConfigMonitorService', 
+                new ProxyConfigMonitorService(
+                    this.getContainer().get('SenderContainerAggregate').get('ApplicationSender'),
+                    this.getContainer().get('ReceiverContainerAggregate').get(Repository.MONITOR_RECEIVER_SERVICE)
+                )
+            );
+
+            /*
+            .get(Repository.MONITOR_RECEIVER_SERVICE)
+            .on('monitor-id', (evt, monitorId) => { 
+                let ele = document.createElement('meta');
+                ele.setAttribute('monitor-id', monitorId);
+                document.getElementsByTagName('head')[0].appendChild(ele);
+                console.log('DIO CANEEEEEEEEEEEEEEEEEE')
+            });
+
+            */
     }
 
     /**

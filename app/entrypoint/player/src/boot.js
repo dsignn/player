@@ -16,6 +16,7 @@ import { Utils } from '@dsign/library/src/core/Utils';
 import { Acl } from "@dsign/library/src/permission/acl/Acl";
 import { JsAclAdapter } from "@dsign/library/src/permission/acl/adapter/js-acl/JsAclAdapter";
 import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
+import { ipcMain, ipcRenderer } from 'electron';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 
@@ -176,6 +177,10 @@ async function boot() {
     senderContainerAggregate.setContainer(container);
     container.set('SenderContainerAggregate', senderContainerAggregate);
 
+    /**
+     * to comunicate with main.js
+     */
+    senderContainerAggregate.set('ApplicationSender', ipcRenderer)
 
     const receiverContainerAggregate = new ContainerAggregate();
     // TODO review :)
@@ -187,6 +192,7 @@ async function boot() {
                                                     CONFIG SERVICE
      **********************************************************************************************************************/
     container.set('Config', config);
+    container.set('ModuleConfig', {});
 
     /***********************************************************************************************************************
      DEXIE MANAGER SERVICE

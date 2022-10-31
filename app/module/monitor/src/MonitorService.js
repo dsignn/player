@@ -82,6 +82,7 @@ export class MonitorService extends EventManagerAware {
             this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
         });
 
+
         this.sender.send('monitors', {'mock': 'mock'});
 
         /**

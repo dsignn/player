@@ -113,6 +113,7 @@ class Application {
         }
 
         if(this.config && this.config.enableMonitor && this.config.enableMonitor.id) {
+
             this.monitorsContainerEntity = this.config.enableMonitor;
         }
 
@@ -211,6 +212,8 @@ class Application {
         browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
+            browserWindows.send('monitor-id', monitor.getId());
+            /*
             // TODO delay for the fast load of the player index
             setTimeout(
                 () => {
@@ -225,6 +228,7 @@ class Application {
                 },
                 6000
             );
+            */
         });
 
         browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);
@@ -614,6 +618,35 @@ app.on('activate', () => {
         application.run();
     }
 });
+
+/**
+ * Ipc comunication
+ */
+ ipcMain.on('require-monitor-config', (event, message) => { 
+    console.log('DAMMI I MONITOR', message);
+
+    if (!application.monitorsContainerEntity) {
+        console.log('no monitorsContainerEntity set', message);
+        return;
+    }
+
+    let monitors = application.monitorsContainerEntity.getMonitors();
+
+    if (monitors.length > 0) {
+        for (let cont = 0; monitors.length > cont; cont++) {
+
+            if( monitors[cont].getId() === message) {
+                monitors[cont].browserWindows.send('paper-player-config', Application.getMonitorEntityHydrator().extract(monitors[cont]));
+                application.loadingCount--;
+                if (application.loadingCount == 0) {
+                    console.log('FINITO');
+                    application.dashboard.send('loading-player-windows-finish', {});
+                }
+                break;
+            }
+        }
+    }
+ });
 
 /**
  * Ipc comunication
