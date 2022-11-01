@@ -213,22 +213,6 @@ class Application {
 
         browserWindows.webContents.on('did-finish-load', () => {
             browserWindows.send('monitor-id', monitor.getId());
-            /*
-            // TODO delay for the fast load of the player index
-            setTimeout(
-                () => {
-                    if (browserWindows.isEnabled()) {
-                        browserWindows.send('paper-player-config', Application.getMonitorEntityHydrator().extract(monitor));
-                        this.loadingCount--;
-                        if (this.loadingCount == 0) {
-                            this.dashboard.send('loading-player-windows-finish', {});
-                        }
-                    }
-
-                },
-                6000
-            );
-            */
         });
 
         browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);

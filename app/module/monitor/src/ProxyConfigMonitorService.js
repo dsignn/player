@@ -18,15 +18,13 @@ import { EventManagerAware } from "@dsign/library/src/event";
         let ele = document.createElement('meta');
         ele.setAttribute('monitor-id', monitorId);
         document.getElementsByTagName('head')[0].appendChild(ele);
-        console.log('DIO GGGGGGGGGGGGGGG')
         this.sendMonitorConfigRequire(monitorId);
     }
 
     /**
      * @param {string} monitorId 
      */
-    sendMonitorConfigRequire(monitorId) {
-        console.log('DIO FFFFFFFFFFFFFFFFff')
+    sendMonitorConfigRequire(monitorId) {      
         this.sender.send('require-monitor-config', monitorId);
     }
  }
