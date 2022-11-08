@@ -607,7 +607,6 @@ app.on('activate', () => {
  * Ipc comunication
  */
  ipcMain.on('require-monitor-config', (event, message) => { 
-    console.log('DAMMI I MONITOR', message);
 
     if (!application.monitorsContainerEntity) {
         console.log('no monitorsContainerEntity set', message);
@@ -623,7 +622,6 @@ app.on('activate', () => {
                 monitors[cont].browserWindows.send('paper-player-config', Application.getMonitorEntityHydrator().extract(monitors[cont]));
                 application.loadingCount--;
                 if (application.loadingCount == 0) {
-                    console.log('FINITO');
                     application.dashboard.send('loading-player-windows-finish', {});
                 }
                 break;

@@ -22,72 +22,6 @@ import {DexieResourceAdapter} from "./src/storage/adapter/dexie/DexieResourceAda
 export class Repository extends ContainerAware {
 
     /**
-     * @return {string}
-     * @constructor
-     */
-    static get COLLECTION() { return 'resource'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get STORAGE_SERVICE() { return 'ResourceStorage'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get FILE_ENTITY_SERVICE() { return 'FileEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get IMAGE_ENTITY_SERVICE() { return 'ImageEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get VIDEO_ENTITY_SERVICE() { return 'VideoEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get AUDIO_ENTITY_SERVICE() { return 'AudioEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get FILE_HYDRATOR_SERVICE() { return 'FileEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get IMAGE_HYDRATOR_SERVICE() { return 'ImageEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get VIDEO_HYDRATOR_SERVICE() { return 'VideoEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get AUDIO_HYDRATOR_SERVICE() { return 'AudioEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get RESOURCE_HYDRATOR_SERVICE() { return 'ResourceEntityHydrator'; };
-
-    /**
      *
      */
     constructor() {
@@ -122,18 +56,24 @@ export class Repository extends ContainerAware {
         this.initAcl();
         this.initEntity();
         this.initHydrator();
-        //this.initMongoStorage();
         this.initDexieStorage();
         this.initService();
+    }
+
+    /**
+     * @returns Object
+     */
+    _getModuleConfig() {
+        return  this.getContainer().get('ModuleConfig')['resource']['resource'];
     }
 
     /**
      * Merge config
      */
      initConfig() {
-        this.container.set(
-            'Config',
-            this.getContainer().get('merge').merge(config, this.getContainer().get('Config'))
+        this.getContainer().set(
+            'ModuleConfig',
+            this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
         );
     }
 
@@ -152,20 +92,31 @@ export class Repository extends ContainerAware {
     initEntity() {
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.FILE_ENTITY_SERVICE, new FileEntity());
+            .set(
+                this._getModuleConfig().entityService, 
+                new FileEntity()
+            );
 
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.VIDEO_ENTITY_SERVICE, new VideoEntity());
+            .set(
+                this._getModuleConfig().entityServiceVideo, 
+                new VideoEntity()
+            );
 
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.AUDIO_ENTITY_SERVICE, new AudioEntity());
+            .set(
+                this._getModuleConfig().entityServiceAudio, 
+                new AudioEntity()
+            );
 
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.IMAGE_ENTITY_SERVICE, new ImageEntity());
-
+            .set(
+                this._getModuleConfig().entityServiceImage, 
+                new ImageEntity()
+            );
     }
 
     /**
@@ -173,10 +124,12 @@ export class Repository extends ContainerAware {
      */
     initDexieStorage() {
 
-        const dexieManager = this.getContainer().get('DexieManager');
+        const dexieManager = this.getContainer().get(
+            this._getModuleConfig().storage.adapter.dexie['connection-service']
+        );
 
         let store = new Store(
-            Repository.COLLECTION, 
+            this._getModuleConfig().storage.adapter.dexie['collection'], 
             [ 
                 "++id", 
                 "type", 
@@ -190,9 +143,16 @@ export class Repository extends ContainerAware {
 
         dexieManager.on("ready", () => {
 
-            const adapter = new DexieResourceAdapter(dexieManager, Repository.COLLECTION);
+            const adapter = new DexieResourceAdapter(
+                dexieManager,
+                this._getModuleConfig().storage.adapter.dexie['collection']
+            );
             const storage = new Storage(adapter);
-            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.RESOURCE_HYDRATOR_SERVICE));
+            storage.setHydrator(
+                this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service-resource']
+                )
+            );
 
             storage.getEventManager()
                 .on(Storage.BEFORE_UPDATE, this.onBeforeUpdate.bind(this))
@@ -202,7 +162,7 @@ export class Repository extends ContainerAware {
                 .on(Storage.POST_REMOVE, this.onPostRemove.bind(this));
 
             this.getContainer().get('StorageContainerAggregate').set(
-                Repository.STORAGE_SERVICE,
+                this._getModuleConfig().storage['name-service'],
                 storage
             );
         });
@@ -215,10 +175,17 @@ export class Repository extends ContainerAware {
 
         let loadStorage = () => {
 
-            const adapter = new MongoResourceAdapter(this.getContainer().get('MongoDb'), Repository.COLLECTION);
+            const adapter = new MongoResourceAdapter(
+                this.getContainer().get(this._getModuleConfig().storage.adapter.mongo['connection-service']),
+                this._getModuleConfig().storage.adapter.mongo['collection']
+            );
             const storage = new Storage(adapter);
 
-            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.RESOURCE_HYDRATOR_SERVICE));
+            storage.setHydrator(
+                this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service-resource']
+                )
+            );
 
             storage.getEventManager()
                 .on(Storage.BEFORE_UPDATE, this.onBeforeUpdate.bind(this))
@@ -228,7 +195,7 @@ export class Repository extends ContainerAware {
                 .on(Storage.POST_REMOVE, this.onPostRemove.bind(this));
 
             this.getContainer().get('StorageContainerAggregate').set(
-                Repository.STORAGE_SERVICE,
+                this._getModuleConfig().storage['name-service'],
                 storage
             );
         };
@@ -353,7 +320,9 @@ export class Repository extends ContainerAware {
                         return;
                     }
 
-                    let storage = this.getContainer().get('StorageContainerAggregate').get(Repository.STORAGE_SERVICE);
+                    let storage = this.getContainer().get('StorageContainerAggregate').get(
+                        this._getModuleConfig().storage['name-service'],
+                    );
                     let entity = storage.getHydrator().hydrate(resourceEntity);
 
                     entity.dimension = {
@@ -417,36 +386,36 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.FILE_HYDRATOR_SERVICE,
-                Repository.getFileEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service'],
+                Repository.getFileEntityHydrator(this.getContainer())
             );
 
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.AUDIO_HYDRATOR_SERVICE,
-                Repository.getAudioEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service-audio'],
+                Repository.getAudioEntityHydrator(this.getContainer())
             );
 
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.VIDEO_HYDRATOR_SERVICE,
-                Repository.getVideoEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service-video'],
+                Repository.getVideoEntityHydrator(this.getContainer())
             );
 
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.IMAGE_HYDRATOR_SERVICE,
-                Repository.getImageEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service-image'],
+                Repository.getImageEntityHydrator(this.getContainer())
             );
 
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.RESOURCE_HYDRATOR_SERVICE,
-                Repository.getResourceHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service-resource'],
+                Repository.getResourceHydrator(this.getContainer())
             );
     }
 
@@ -479,7 +448,11 @@ export class Repository extends ContainerAware {
      */
     static getFileEntityHydrator(container) {
 
-        let hydrator = new PropertyHydrator(container.get(Repository.FILE_ENTITY_SERVICE));
+        let hydrator = new PropertyHydrator(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].entityService
+            )
+        );
 
         let pathHydratorStrategy = new HydratorStrategy();
         pathHydratorStrategy.setHydrator(Repository.getPathHydrator(container));
@@ -522,7 +495,11 @@ export class Repository extends ContainerAware {
     static getVideoEntityHydrator(container) {
 
         let hydrator = Repository.getFileEntityHydrator(container);
-        hydrator.setTemplateObjectHydration(container.get(Repository.VIDEO_ENTITY_SERVICE));
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].entityServiceVideo
+            )
+        );
 
         hydrator.enableHydrateProperty('fps')
             .enableHydrateProperty('duration')
@@ -544,11 +521,35 @@ export class Repository extends ContainerAware {
     static getImageEntityHydrator(container) {
 
         let hydrator = Repository.getFileEntityHydrator(container);
-        hydrator.setTemplateObjectHydration(container.get(Repository.IMAGE_ENTITY_SERVICE));
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].entityServiceImage
+            )
+        );
 
         hydrator.enableHydrateProperty('dimension');
 
         hydrator.enableExtractProperty('dimension');
+
+        return hydrator;
+    }
+
+    /**
+     * @param container
+     * @return AbstractHydrator
+     */
+    static getAudioEntityHydrator(container) {
+
+        let hydrator = Repository.getFileEntityHydrator(container);
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].entityServiceAudio
+            )
+        );
+
+        hydrator.enableHydrateProperty('duration');
+
+        hydrator.enableExtractProperty('duration');
 
         return hydrator;
     }
@@ -564,23 +565,6 @@ export class Repository extends ContainerAware {
         hydrator.enableHydrateProperty('wcName');
 
         hydrator.enableExtractProperty('wcName');
-
-        return hydrator;
-    }
-
-
-    /**
-     * @param container
-     * @return AbstractHydrator
-     */
-    static getAudioEntityHydrator(container) {
-
-        let hydrator = Repository.getFileEntityHydrator(container);
-        hydrator.setTemplateObjectHydration(container.get(Repository.AUDIO_ENTITY_SERVICE));
-
-        hydrator.enableHydrateProperty('duration');
-
-        hydrator.enableExtractProperty('duration');
 
         return hydrator;
     }
@@ -634,9 +618,8 @@ export class Repository extends ContainerAware {
 
             let aclService = this.getContainer().get('Acl');
 
-            // TODO add method on service
-            aclService.addResource('resource');
-            aclService.allow('guest', 'resource');
+            aclService.addResource(this._getModuleConfig().acl.resource);
+            aclService.allow('guest', this._getModuleConfig().acl.resource);
         }
     }
 }

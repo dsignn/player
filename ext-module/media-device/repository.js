@@ -57,9 +57,9 @@ export async function Repository() {
          * Merge config
          */
          initConfig() {
-            this.container.set(
-                'Config',
-                this.getContainer().get('merge').merge(this.getContainer().get('Config'), config)
+            this.getContainer().set(
+                'ModuleConfig',
+                this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
             );
         }
 
@@ -71,7 +71,7 @@ export async function Repository() {
             this.getContainer()
                 .get('EntityContainerAggregate')
                 .set(
-                    this.getContainer().get('Config').modules['media-device']['media-device'].entityService,
+                    this.getContainer().get('ModuleConfig')['media-device']['media-device'].entityService,
                     new MediaDeviceEntity());
         }
 
@@ -83,7 +83,7 @@ export async function Repository() {
             if (this.getContainer().has('Acl')) {
 
                 let aclService = this.getContainer().get('Acl');
-                let resource = this.getContainer().get('Config').modules['media-device']['media-device'].acl.resource;
+                let resource = this.getContainer().get('ModuleConfig')['media-device']['media-device'].acl.resource;
 
                 aclService.addResource(resource);
                 aclService.allow('guest', resource);
@@ -96,12 +96,12 @@ export async function Repository() {
         initHydrator() {
 
             this.getContainer().get('HydratorContainerAggregate').set(
-                this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['name-storage-service'],
+                this.getContainer().get('ModuleConfig')['media-device']['media-device'].hydrator['name-storage-service'],
                 Repository.getMediaDeviceHydrator(this.getContainer())
             );
 
             this.getContainer().get('HydratorContainerAggregate').set(
-                this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['chrome-api-storage-service'],
+                this.getContainer().get('ModuleConfig')['media-device']['media-device'].hydrator['chrome-api-storage-service'],
                 Repository.getMediaDeviceChromeApiHydrator(this.getContainer())
             );
         }
@@ -111,8 +111,8 @@ export async function Repository() {
          */
         initDexieStorage() {
     
-            var connectorServiceName = this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.dexie['connection-service'];
-            var collection =    this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.dexie.collection;
+            var connectorServiceName = this.getContainer().get('ModuleConfig')['media-device']['media-device'].storage.adapter.dexie['connection-service'];
+            var collection =    this.getContainer().get('ModuleConfig')['media-device']['media-device'].storage.adapter.dexie.collection;
             const dexieManager = this.getContainer().get(connectorServiceName);
     
             let store = new Store(
@@ -129,7 +129,7 @@ export async function Repository() {
              * create schema
              */
             var generateSchema = () => {
-                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['name-storage-service']);
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config')['media-device']['media-device'].hydrator['name-storage-service']);
                 hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
     
                 const adapter = new DexieTimeslotAdapter(dexieManager, collection);
@@ -137,7 +137,7 @@ export async function Repository() {
                 storage.setHydrator(hydrator);
     
                 this.getContainer().get('StorageContainerAggregate').set(
-                    this.getContainer().get('Config').modules['media-device']['media-device'].storage['name-service'],
+                    this.getContainer().get('ModuleConfig')['media-device']['media-device'].storage['name-service'],
                     storage
                 );
 
@@ -172,24 +172,24 @@ export async function Repository() {
          */
         initMongoStorage() {
 
-            var connectorServiceName = this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.mongo['connection-service'];
+            var connectorServiceName = this.getContainer().get('ModuleConfig')['media-device']['media-device'].storage.adapter.mongo['connection-service'];
 
             let loadStorage = () => {
 
                 const adapter = new MongoMediaDeviceAdapter(
                     this.getContainer().get(connectorServiceName),
-                    this.getContainer().get('Config').modules['media-device']['media-device'].storage.adapter.mongo.collection
+                    this.getContainer().get('ModuleConfig')['media-device']['media-device'].storage.adapter.mongo.collection
                 );
 
                 const storage = new Storage(adapter);
 
                 storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
-                    this.getContainer().get('Config').modules['media-device']['media-device'].hydrator['name-storage-service'],
+                    this.getContainer().get('ModuleConfig')['media-device']['media-device'].hydrator['name-storage-service'],
          
                 ));
 
                 this.getContainer().get('StorageContainerAggregate').set(
-                    this.getContainer().get('Config').modules['media-device']['media-device'].storage['name-service'],
+                    this.getContainer().get('ModuleConfig')['media-device']['media-device'].storage['name-service'],
                     storage
                 );
 
@@ -224,7 +224,7 @@ export async function Repository() {
 
             let hydrator = new PropertyHydrator(
                 container.get('EntityContainerAggregate').get(
-                    container.get('Config').modules['media-device']['media-device'].entityService
+                    container.get('ModuleConfig')['media-device']['media-device'].entityService
                 )
             );
 

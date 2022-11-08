@@ -2,31 +2,29 @@
  * Config
  */
 export const config = {
-    "modules": {
-        "monitor" : {
-            "monitor": {
-                "storage": {
-                    "name-service": "MonitorStorage",
-                    "adapter": {
-                        "mongo": {
-                            "collection": "monitor",
-                            "connection-service": "MongoDb"
-                        }
+    "monitor" : {
+        "monitor": {
+            "storage": {
+                "name-service": "MonitorStorage",
+                "adapter": {
+                    "mongo": {
+                        "collection": "monitor",
+                        "connection-service": "MongoDb"
+                    },
+                    "dexie": {
+                        "collection": "monitor",
+                        "connection-service": "DexieManager"
                     }
-                }, 
-                "entityService": "MonitorEntity",
-                "acl": {
-                    "resource": 'monitor'
-                },
-                "hydrator": {
-                    "name-storage-service": "MonitorEntityHydrator",
                 }
+            }, 
+            "entityService": "MonitorContainerEntity",
+            "entityServiceWrapper": "MonitorEntity",
+            "acl": {
+                "resource": 'monitor'
             },
-            "monitor-container": {
-                "entityService": "MonitorContainerEntity",
-                "hydrator": {
-                    "name-storage-service": "MonitorContaninerEntityHydrator",
-                }
+            "hydrator": {
+                "name-storage-service-monitor": "MonitorEntityHydrator",
+                "name-storage-service-monitor-container": "MonitorContaninerEntityHydrator",
             },
             "monitorService": "MonitorService",
             "monitorSender": "MonitorSender",

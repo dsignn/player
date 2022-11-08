@@ -24,54 +24,6 @@ import {ProxyConfigMonitorService} from "./src/ProxyConfigMonitorService";
 export class Repository extends ContainerAware {
 
     /**
-     * @return {string}
-     * @constructor
-     */
-    static get COLLECTION() { return 'monitor'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get STORAGE_SERVICE() { return 'MonitorStorage'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get MONITOR_CONTAINER_ENTITY_SERVICE() { return 'MonitorContainerEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get MONITOR_ENTITY_SERVICE() { return 'MonitorEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get MONITOR_CONTAINER_HYDRATOR_SERVICE() { return 'MonitorContaninerEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get MONITOR_HYDRATOR_SERVICE() { return 'MonitorEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get MONITOR_SENDER_SERVICE() { return 'MonitorSender'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get MONITOR_RECEIVER_SERVICE() { return 'MonitorReceiver'; };
-
-    /**
      *
      */
     init() {
@@ -81,9 +33,15 @@ export class Repository extends ContainerAware {
         this.initSender();
         this.initReceiver();
         this.initHydrator();
-        // this.initMongoStorage();
         this.initDexieStorage();
         this.initMonitorMetaId();
+    }
+
+    /**
+     * @returns Object
+     */
+    _getModuleConfig() {
+        return  this.getContainer().get('ModuleConfig')['monitor']['monitor'];
     }
 
     /**
@@ -91,8 +49,8 @@ export class Repository extends ContainerAware {
      */
     initConfig() {
         this.container.set(
-            'config',
-            this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+            'ModuleConfig',
+            this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
         );
     }
 
@@ -101,13 +59,15 @@ export class Repository extends ContainerAware {
      */
     initDexieStorage() {
 
-        const dexieManager = this.getContainer().get('DexieManager');
-        
+        const dexieManager = this.getContainer().get(
+            this._getModuleConfig().storage.adapter.dexie['connection-service']
+        );
+
         /**
          * Add schema
          */
         let store = new Store(
-            Repository.COLLECTION, 
+            this._getModuleConfig().storage.adapter.dexie['collection'], 
             [
                 "++id", 
                 "name", 
@@ -122,12 +82,19 @@ export class Repository extends ContainerAware {
          */
         dexieManager.on("ready", () => {
 
-            const adapter = new DexieMonitorAdapter(dexieManager, Repository.COLLECTION);
+            const adapter = new DexieMonitorAdapter(
+                dexieManager, 
+                this._getModuleConfig().storage.adapter.dexie['collection']
+            );
             const storage = new Storage(adapter);
-            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.MONITOR_CONTAINER_HYDRATOR_SERVICE));
+            storage.setHydrator(
+                this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service-monitor-container']
+                )
+            );
 
             this.getContainer().get('StorageContainerAggregate').set(
-                Repository.STORAGE_SERVICE,
+                this._getModuleConfig().storage['name-service'],
                 storage
             );
 
@@ -138,8 +105,8 @@ export class Repository extends ContainerAware {
                 'MonitorService',
                 new MonitorService(
                     storage,
-                    this.getContainer().get('SenderContainerAggregate').get(Repository.MONITOR_SENDER_SERVICE),
-                    this.getContainer().get('ReceiverContainerAggregate').get(Repository.MONITOR_RECEIVER_SERVICE),
+                    this.getContainer().get('SenderContainerAggregate').get(this._getModuleConfig().monitorSender),
+                    this.getContainer().get('ReceiverContainerAggregate').get(this._getModuleConfig().monitorReceiver),
                     dashboardAlwayOnTop
                 )
             )
@@ -153,20 +120,9 @@ export class Repository extends ContainerAware {
                 'ProxyConfigMonitorService', 
                 new ProxyConfigMonitorService(
                     this.getContainer().get('SenderContainerAggregate').get('ApplicationSender'),
-                    this.getContainer().get('ReceiverContainerAggregate').get(Repository.MONITOR_RECEIVER_SERVICE)
+                    this.getContainer().get('ReceiverContainerAggregate').get(this._getModuleConfig().monitorReceiver)
                 )
             );
-
-            /*
-            .get(Repository.MONITOR_RECEIVER_SERVICE)
-            .on('monitor-id', (evt, monitorId) => { 
-                let ele = document.createElement('meta');
-                ele.setAttribute('monitor-id', monitorId);
-                document.getElementsByTagName('head')[0].appendChild(ele);
-                console.log('DIO CANEEEEEEEEEEEEEEEEEE')
-            });
-
-            */
     }
 
     /**
@@ -176,12 +132,22 @@ export class Repository extends ContainerAware {
 
         let loadStorage = () => {
 
-            const adapter = new MongoMonitorAdapter(this.getContainer().get('MongoDb'), Repository.COLLECTION);
+            const adapter = new MongoMonitorAdapter(
+                this.getContainer().get(this._getModuleConfig().storage.adapter.mongo['connection-service']), 
+                this._getModuleConfig().storage.adapter.mongo['collection']
+            );
             const storage = new Storage(adapter);
 
-            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.MONITOR_CONTAINER_HYDRATOR_SERVICE));
+            storage.setHydrator(
+                this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service-monitor-container']
+                )
+            );
 
-            this.getContainer().get('StorageContainerAggregate').set(Repository.STORAGE_SERVICE, storage);
+            this.getContainer().get('StorageContainerAggregate').set(
+                this._getModuleConfig().storage['name-service'], 
+                storage
+            );
 
             let dashboardAlwayOnTop =  this.getContainer().get('Config').dashboard &&  this.getContainer().get('Config').dashboard.alwaysOnTop ?
                 this.getContainer().get('Config').dashboard.alwaysOnTop : false;
@@ -190,8 +156,8 @@ export class Repository extends ContainerAware {
                 'MonitorService',
                 new MonitorService(
                     storage,
-                    this.getContainer().get('SenderContainerAggregate').get(Repository.MONITOR_SENDER_SERVICE),
-                    this.getContainer().get('ReceiverContainerAggregate').get(Repository.MONITOR_RECEIVER_SERVICE),
+                    this.getContainer().get('SenderContainerAggregate').get(this._getModuleConfig().monitorSender),
+                    this.getContainer().get('ReceiverContainerAggregate').get(this._getModuleConfig().monitorReceiver),
                     dashboardAlwayOnTop
                 )
             )
@@ -218,11 +184,17 @@ export class Repository extends ContainerAware {
     initEntity() {
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.MONITOR_CONTAINER_ENTITY_SERVICE, new MonitorContainerEntity());
+            .set(
+                this._getModuleConfig.entityService,
+                new MonitorContainerEntity()
+            );
 
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.MONITOR_ENTITY_SERVICE, new MonitorEntity());
+            .set(
+                this._getModuleConfig.entityServiceWrapper, 
+                new MonitorEntity()
+            );
     }
 
     /**
@@ -232,15 +204,15 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.MONITOR_CONTAINER_HYDRATOR_SERVICE,
-                Repository.getMonitorContainerEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service-monitor-container'],
+                Repository.getMonitorContainerEntityHydrator(this.getContainer())
             );
 
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.MONITOR_HYDRATOR_SERVICE,
-                Repository.getMonitorEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this._getModuleConfig().hydrator['name-storage-service-monitor'],
+                Repository.getMonitorEntityHydrator(this.getContainer())
             )
     }
 
@@ -254,7 +226,7 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('SenderContainerAggregate')
             .set(
-                Repository.MONITOR_SENDER_SERVICE,
+                this._getModuleConfig().monitorSender,
                 sender
             );
     }
@@ -266,7 +238,7 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('ReceiverContainerAggregate')
             .set(
-                Repository.MONITOR_RECEIVER_SERVICE,
+                this._getModuleConfig().monitorReceiver,
                 require('electron').ipcRenderer
             );
     }
@@ -279,10 +251,11 @@ export class Repository extends ContainerAware {
         if (this.getContainer().has('Acl')) {
 
             let aclService = this.getContainer().get('Acl');
+            let resource = this._getModuleConfig().acl.resource;
 
             // TODO add method on service
-            aclService.addResource('monitor');
-            aclService.allow('guest', 'monitor');
+            aclService.addResource(resource);
+            aclService.allow('guest', resource);
         }
     }
 
@@ -290,7 +263,11 @@ export class Repository extends ContainerAware {
      * @param {ContainerAggregate} container
      */
     static getMonitorContainerEntityHydrator(container) {
-        let hydrator = new PropertyHydrator(container.get(Repository.MONITOR_CONTAINER_ENTITY_SERVICE));
+        let hydrator = new PropertyHydrator(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['monitor']['monitor'].entityService
+            )
+        );
 
         let strategy = new HydratorStrategy();
         strategy.setHydrator(Repository.getMonitorEntityHydrator(container));
@@ -328,7 +305,11 @@ export class Repository extends ContainerAware {
      */
     static getMonitorEntityHydrator(container) {
 
-        let hydrator = new PropertyHydrator(container.get(Repository.MONITOR_ENTITY_SERVICE));
+        let hydrator = new PropertyHydrator(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['monitor']['monitor'].entityServiceWrapper
+            )
+        );
         let strategy = new HydratorStrategy();
         strategy.setHydrator(hydrator);
 
@@ -376,7 +357,9 @@ export class Repository extends ContainerAware {
     static getMonitorContainerReferenceHydrator(container) {
 
         let hydrator = new PropertyHydrator();
-        hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get('EntityNestedReference')
+        );
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('collection')
@@ -420,7 +403,9 @@ export class Repository extends ContainerAware {
     static getTimeslotReferenceHydrator(container) {
 
         let hydrator = new PropertyHydrator();
-        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get('EntityReference')
+        );
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('collection')
