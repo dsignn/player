@@ -1,317 +1,362 @@
-import {config} from './config';
-import {ContainerAggregate, ContainerAware} from "@dsign/library/src/container/index";
-import {Store} from "@dsign/library/src/storage/adapter/dexie/Store";
-import {Storage} from "@dsign/library/src/storage/Storage";
-import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/MongoDb";
-import {PropertyHydrator} from "@dsign/library/src/hydrator/index";
-import {
-    HybridStrategy,
-    HydratorStrategy,
-    MongoIdStrategy,
-    NumberStrategy
-} from "@dsign/library/src/hydrator/strategy/value/index";
-import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
-import {Repository as TimeslotRepository} from "./../timeslot/repository";
-import {MongoPlaylistAdapter} from "./src/storage/adapter/mongo/MongoPlaylistAdapter";
-import {DexiePlaylistAdapter} from "./src/storage/adapter/dexie/DexiePlaylistAdapter";
-import {PlaylistService} from "./src/PlaylistService";
-import {PlaylistEntity} from "./src/entity/PlaylistEntity";
-import {TimeslotPlaylistReference} from "./src/entity/TimeslotPlaylistReference";
+console.log('sucaaaaaaaaaaaaaaaaaaaaaaaaa');
+export async function Repository() {    
+    const { ContainerAware} = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/container/ContainerAware.js`));
+    const { HydratorStrategy } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/HydratorStrategy.js`));
+    const { HybridStrategy } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/HybridStrategy.js`));
+    const { MongoIdStrategy } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/MongoIdStrategy.js`));
+    const { NumberStrategy } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/NumberStrategy.js`));
+    const { MapPropertyStrategy } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/proprerty/MapPropertyStrategy.js`));
+    const { PropertyHydrator } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/PropertyHydrator.js`));
+    const { MongoDb } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoDb.js`));
+    const { Store } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/Store.js`));
+    const { Storage } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/Storage.js`));
+    
+    const { MongoPlaylistAdapter } = await import('./src/storage/adapter/mongo/MongoPlaylistAdapter.js');
+    const { DexiePlaylistAdapter } = await import('./src/storage/adapter/dexie/DexiePlaylistAdapter.js');
+    const { PlaylistService } = await import('./src/PlaylistService.js');
+    const { PlaylistEntity } = await import('./src/entity/PlaylistEntity.js');
+    const { TimeslotPlaylistReference } = await import('./src/entity/TimeslotPlaylistReference.js');
 
-/**
- * @class Repository
- */
-export class Repository extends ContainerAware {
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get COLLECTION() { return 'playlist'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get STORAGE_SERVICE() { return 'PlaylistStorage'; };
+    const { config } = await import('./config.js');
 
     /**
-     * @return {string}
-     * @constructor
+     * @class Repository
      */
-    static get PLAYLIST_ENTITY_SERVICE() { return 'PlaylistEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get PLAYLIST_TIMESLOT_REF_SERVICE() { return 'TimeslotPlaylistReference'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get PLAYLIST_ENTITY_SERVICE() { return 'PlaylistEntity'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get PLAYLIST_HYDRATOR_SERVICE() { return 'PlaylistEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get PLAYLIST_HYDRATOR_SERVICE() { return 'PlaylistEntityHydrator'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get PLAYLIST_SERVICE() { return 'PlaylistService'; };
-
-
-    /**
-     *
-     */
-    init() {
-        this.loadConfig();
-        this.initAcl();
-        this.initEntity();
-        this.initHydrator();
-        this.initMongoStorage();
-    }
-
-    /**
-     * Merge config
-     */
-    loadConfig() {
-        this.container.set(
-            'config',
-            this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
-        );
-    }
-
-    /**
-     *
-     */
-    initDexieStorage() {
-
-        const dexieManager = this.getContainer().get('DexieManager');
+    return class Repository extends ContainerAware {
 
         /**
-         * Add schema
+         * @return {string}
+         * @constructor
          */
-        let store = new Store(Repository.COLLECTION, ["++id", "name", "status"]);
-        dexieManager.addStore(store);
+        static get PLAYLIST_TIMESLOT_REF_SERVICE() { return 'TimeslotPlaylistReference'; };
 
         /**
-         * Create Schema
+         * @return {string}
+         * @constructor
          */
-        dexieManager.on("ready", () => {
+        static get PLAYLIST_ENTITY_SERVICE() { return 'PlaylistEntity'; };
 
-            const adapter = new DexiePlaylistAdapter(dexieManager, Repository.COLLECTION);
-            const storage = new Storage(adapter);
-            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.PLAYLIST_HYDRATOR_SERVICE));
+        /**
+         * @return {string}
+         * @constructor
+         */
+        static get PLAYLIST_HYDRATOR_SERVICE() { return 'PlaylistEntityHydrator'; };
 
-            this.getContainer().get('StorageContainerAggregate').set(
-                Repository.STORAGE_SERVICE,
-                storage
-            );
 
-            this.initPlaylistService();
-        });
-    }
-
-    /**
-     *
-     */
-    initMongoStorage() {
-
-        let loadStorage = () => {
-
-            const adapter = new MongoPlaylistAdapter(this.getContainer().get('MongoDb'), Repository.COLLECTION);
-
-            const storage = new Storage(adapter);
-            storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.PLAYLIST_HYDRATOR_SERVICE));
-
-            this.getContainer().get('StorageContainerAggregate').set(
-                Repository.STORAGE_SERVICE,
-                storage
-            );
-
-            this.initPlaylistService();
-        };
-
-        if (!this.getContainer().get('MongoDb')) {
-            return;
+        /**
+         * @returns Object
+         */
+        _getModuleConfig() {
+            return  this.getContainer().get('ModuleConfig')['playlist']['playlist'];
         }
 
-        if (this.getContainer().get('MongoDb').isConnected()) {
-            loadStorage();
-        } else {
-            this.getContainer().get('MongoDb').getEventManager().on(
-                MongoDb.READY_CONNECTION,
-                loadStorage
+        /**
+         *
+         */
+        init() {
+            this.initConfig();
+            this.initAcl();
+            this.initEntity();
+            this.initHydrator();
+            this.initDexieStorage();
+        }
+
+        /**
+         * Merge config
+         */
+        initConfig() {
+            this.getContainer().set(
+                'ModuleConfig',
+                this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
             );
         }
-    }
 
-    /**
-     *
-     */
-    initEntity() {
-        this.getContainer()
-            .get('EntityContainerAggregate')
-            .set(Repository.PLAYLIST_ENTITY_SERVICE, new PlaylistEntity());
+        /**
+         *
+         */
+        initDexieStorage() {
 
-        this.getContainer()
-            .get('EntityContainerAggregate')
-            .set(Repository.PLAYLIST_TIMESLOT_REF_SERVICE, new TimeslotPlaylistReference());
-    }
-
-    /**
-     *
-     */
-    initHydrator() {
-        this.getContainer()
-            .get('HydratorContainerAggregate')
-            .set(
-                Repository.PLAYLIST_HYDRATOR_SERVICE,
-                Repository.getPlaylistEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+            const dexieManager = this.getContainer().get(
+                this._getModuleConfig().storage.adapter.dexie['connection-service']
             );
-    }
 
-    /**
-     *
-     */
-    initPlaylistService() {
-        this.getContainer()
-            .set(
-                Repository.PLAYLIST_SERVICE,
-                new PlaylistService(
-                    this.getContainer().get('StorageContainerAggregate').get(TimeslotRepository.STORAGE_SERVICE),
-                    this.getContainer().get('SenderContainerAggregate').get(TimeslotRepository.TIMESLOT_SENDER_SERVICE),
-                    this.getContainer().get('Timer'),
-                    this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE),
-                    this.getContainer().get('StorageContainerAggregate').get(Repository.STORAGE_SERVICE)
+            /**
+             * Add schema
+             */
+            let store = new Store(
+                this._getModuleConfig().storage.adapter.dexie['collection'],
+                ["++id", "name", "status"]
+            );
+            dexieManager.addStore(store);
+
+            /**
+             * Create Schema
+             */
+            var generateSchema = () => {
+
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service']
+                );
+                hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
+
+                const adapter = new DexiePlaylistAdapter(
+                    dexieManager, 
+                    this._getModuleConfig().storage.adapter.dexie['collection']
+                );
+                const storage = new Storage(adapter);
+                storage.setHydrator(hydrator);
+
+                this.getContainer().get('StorageContainerAggregate').set(
+                    this._getModuleConfig().storage['name-service'],
+                    storage
+                );
+
+                this.initPlaylistService();
+            }
+
+            if(dexieManager.isOpen()) {
+                let version = dexieManager.upgradeSchema();
+                this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
+                this.getContainer().get('StorageContainerAggregate')
+                    .get('ConfigStorage')
+                    .update(this.getContainer().get('Config'))
+                    .then((data) => {
+                        this.getContainer().get('SenderContainerAggregate')
+                            .get('Ipc')
+                            .send('proxy', {event:'relaunch', data: {}}
+                        );
+                    });
+            } else {
+                dexieManager.on("ready", (data) => {
+                    generateSchema();
+                });
+            }
+        }
+
+        /**
+         *
+         */
+        initMongoStorage() {
+
+            let loadStorage = () => {
+
+                const adapter = new MongoPlaylistAdapter(
+                    this.getContainer().get('MongoDb'), 
+                    this._getModuleConfig().storage.adapter.mongo['collection']
+                );
+
+                const storage = new Storage(adapter);
+                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service']
+                ));
+
+                this.getContainer().get('StorageContainerAggregate').set(
+                    this._getModuleConfig().storage['name-service'],
+                    storage
+                );
+
+                this.initPlaylistService();
+            };
+
+            if (!this.getContainer().get('MongoDb')) {
+                return;
+            }
+
+            if (this.getContainer().get('MongoDb').isConnected()) {
+                loadStorage();
+            } else {
+                this.getContainer().get('MongoDb').getEventManager().on(
+                    MongoDb.READY_CONNECTION,
+                    loadStorage
+                );
+            }
+        }
+
+        /**
+         *
+         */
+        initEntity() {
+            this.getContainer()
+                .get('EntityContainerAggregate')
+                .set(
+                    this._getModuleConfig().entityService, 
+                    new PlaylistEntity()
+            );
+
+            this.getContainer()
+                .get('EntityContainerAggregate')
+                .set(
+                    this._getModuleConfig().entityServiceTimeslotRef, 
+                    new TimeslotPlaylistReference()
+                );
+        }
+
+        /**
+         *
+         */
+        initHydrator() {
+            this.getContainer()
+                .get('HydratorContainerAggregate')
+                .set(
+                    this._getModuleConfig().hydrator['name-storage-service'],
+                    Repository.getPlaylistEntityHydrator(this.getContainer())
+                );
+        }
+
+        /**
+         *
+         */
+        initPlaylistService() {
+            this.getContainer()
+                .set(
+                    this._getModuleConfig().playlistService,
+                    new PlaylistService(
+                        this.getContainer().get('StorageContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].storage['name-service']),
+                        this.getContainer().get('SenderContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].timeslotSender),
+                        this.getContainer().get('Timer'),
+                        this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
+                        this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service'])
+                    )
+                );
+        }
+
+        /**
+         * @param {ContainerAggregate} container
+         */
+        static getPlaylistEntityHydrator(container) {
+            let hydrator = new PropertyHydrator(
+                container.get('EntityContainerAggregate').get(
+                    container.get('ModuleConfig')['playlist']['playlist'].entityService
                 )
             );
-    }
 
-    /**
-     * @param {ContainerAggregate} container
-     */
-    static getPlaylistEntityHydrator(container) {
-        let hydrator = new PropertyHydrator(
-            container.get(Repository.PLAYLIST_ENTITY_SERVICE)
-        );
+            let timeslotStrategy = new HydratorStrategy();
+            timeslotStrategy.setHydrator(Repository.getTimeslotReferenceHydrator(container));
 
-        let timeslotStrategy = new HydratorStrategy();
-        timeslotStrategy.setHydrator(Repository.getTimeslotReferenceHydrator(container));
+            let playlistStrategy = new HydratorStrategy();
+            playlistStrategy.setHydrator(Repository.getPlaylistReferenceHydrator(container));
 
-        let playlistStrategy = new HydratorStrategy();
-        playlistStrategy.setHydrator(Repository.getPlaylistReferenceHydrator(container));
+            hydrator
+                //.addPropertyStrategy('id', new MapPropertyStrategy('id', '_id'))
+                //.addPropertyStrategy('_id', new MapPropertyStrategy('id', '_id'))
+                .addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
 
-        hydrator.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            .addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'));
+            hydrator
+                //.addValueStrategy('id', new MongoIdStrategy())
+                //.addValueStrategy('_id', new MongoIdStrategy())
+                .addValueStrategy('timeslots', timeslotStrategy)
+                .addValueStrategy('binds', playlistStrategy)
+                .addValueStrategy('enableAudio', new HybridStrategy(HybridStrategy.BOOLEAN_TYPE, HybridStrategy.NUMBER_TYPE));
 
-        hydrator.addValueStrategy('id', new MongoIdStrategy())
-            .addValueStrategy('_id', new MongoIdStrategy())
-            .addValueStrategy('timeslots', timeslotStrategy)
-            .addValueStrategy('binds', playlistStrategy)
-            .addValueStrategy('enableAudio', new HybridStrategy(HybridStrategy.BOOLEAN_TYPE, HybridStrategy.NUMBER_TYPE));
+            hydrator.enableExtractProperty('id')
+                .enableExtractProperty('_id')
+                .enableExtractProperty('name')
+                .enableExtractProperty('status')
+                .enableExtractProperty('context')
+                .enableExtractProperty('rotation')
+                .enableExtractProperty('enableAudio')
+                .enableExtractProperty('currentIndex')
+                .enableExtractProperty('binds')
+                .enableExtractProperty('timeslots');
 
-        hydrator.enableExtractProperty('id')
-            .enableExtractProperty('_id')
-            .enableExtractProperty('name')
-            .enableExtractProperty('status')
-            .enableExtractProperty('context')
-            .enableExtractProperty('rotation')
-            .enableExtractProperty('enableAudio')
-            .enableExtractProperty('currentIndex')
-            .enableExtractProperty('binds')
-            .enableExtractProperty('timeslots');
+            hydrator.enableHydrateProperty('id')
+                .enableHydrateProperty('_id')
+                .enableHydrateProperty('name')
+                .enableHydrateProperty('status')
+                .enableHydrateProperty('context')
+                .enableHydrateProperty('rotation')
+                .enableHydrateProperty('enableAudio')
+                .enableHydrateProperty('currentIndex')
+                .enableHydrateProperty('binds')
+                .enableHydrateProperty('timeslots');
 
-        hydrator.enableHydrateProperty('id')
-            .enableHydrateProperty('_id')
-            .enableHydrateProperty('name')
-            .enableHydrateProperty('status')
-            .enableHydrateProperty('context')
-            .enableHydrateProperty('rotation')
-            .enableHydrateProperty('enableAudio')
-            .enableHydrateProperty('currentIndex')
-            .enableHydrateProperty('binds')
-            .enableHydrateProperty('timeslots');
+            return hydrator;
+        }
 
-        return hydrator;
-    }
+        /**
+         * @param container
+         * @return {PropertyHydrator}
+         */
+        static getTimeslotReferenceHydrator(container) {
 
-    /**
-     * @param container
-     * @return {PropertyHydrator}
-     */
-    static getTimeslotReferenceHydrator(container) {
+            let monitorContainerStrategy = new HydratorStrategy();
+            monitorContainerStrategy.setHydrator(new PropertyHydrator(
+                container.get('EntityContainerAggregate').get('EntityNestedReference')
+            ));
 
-        let monitorContainerStrategy = new HydratorStrategy();
-        monitorContainerStrategy.setHydrator(new PropertyHydrator(container.get('EntityNestedReference')));
+            let hydrator = new PropertyHydrator(
+                container.get('EntityContainerAggregate').get(
+                    container.get('ModuleConfig')['playlist']['playlist'].entityServiceTimeslotRef
+                )
+            );
+            hydrator.addValueStrategy('monitorContainerReference', monitorContainerStrategy)
+                .addValueStrategy('duration', new NumberStrategy())
+                .addValueStrategy('currentTime', new NumberStrategy());
 
-        let hydrator = new PropertyHydrator(container.get(Repository.PLAYLIST_TIMESLOT_REF_SERVICE));
-        hydrator.addValueStrategy('monitorContainerReference', monitorContainerStrategy)
-            .addValueStrategy('duration', new NumberStrategy())
-            .addValueStrategy('currentTime', new NumberStrategy());
+            hydrator.enableHydrateProperty('id')
+                .enableHydrateProperty('parentId')
+                .enableHydrateProperty('collection')
+                .enableHydrateProperty('monitorContainerReference')
+                .enableHydrateProperty('name')
+                .enableHydrateProperty('duration')
+                .enableHydrateProperty('currentTime');
 
-        hydrator.enableHydrateProperty('id')
-            .enableHydrateProperty('parentId')
-            .enableHydrateProperty('collection')
-            .enableHydrateProperty('monitorContainerReference')
-            .enableHydrateProperty('name')
-            .enableHydrateProperty('duration')
-            .enableHydrateProperty('currentTime');
+            hydrator.enableExtractProperty('id')
+                .enableExtractProperty('parentId')
+                .enableExtractProperty('collection')
+                .enableExtractProperty('monitorContainerReference')
+                .enableExtractProperty('name')
+                .enableExtractProperty('duration')
+                .enableExtractProperty('currentTime');
 
-        hydrator.enableExtractProperty('id')
-            .enableExtractProperty('parentId')
-            .enableExtractProperty('collection')
-            .enableExtractProperty('monitorContainerReference')
-            .enableExtractProperty('name')
-            .enableExtractProperty('duration')
-            .enableExtractProperty('currentTime');
+            return hydrator;
+        }
 
-        return hydrator;
-    }
+        /**
+         * @param container
+         * @return {PropertyHydrator}
+         */
+        static getPlaylistReferenceHydrator(container) {
 
-    /**
-     * @param container
-     * @return {PropertyHydrator}
-     */
-    static getPlaylistReferenceHydrator(container) {
+            let hydrator = new PropertyHydrator();
+            hydrator.setTemplateObjectHydration(
+                container.get('EntityContainerAggregate').get('EntityReference')
+            );
 
-        let hydrator = new PropertyHydrator();
-        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+            hydrator.enableHydrateProperty('id')
+                .enableHydrateProperty('collection')
+                .enableHydrateProperty('name');
 
-        hydrator.enableHydrateProperty('id')
-            .enableHydrateProperty('collection')
-            .enableHydrateProperty('name');
+            hydrator.enableExtractProperty('id')
+                .enableExtractProperty('collection')
+                .enableExtractProperty('name');
 
-        hydrator.enableExtractProperty('id')
-            .enableExtractProperty('collection')
-            .enableExtractProperty('name');
+            return hydrator;
+        }
 
-        return hydrator;
-    }
+        /**
+         *
+         */
+        initAcl() {
 
-    /**
-     *
-     */
-    initAcl() {
+            if (this.getContainer().has('Acl')) {
 
-        if (this.getContainer().has('Acl')) {
+                let aclService = this.getContainer().get('Acl');
 
-            let aclService = this.getContainer().get('Acl');
-
-            // TODO add method on service
-            aclService.addResource('playlist');
-            aclService.allow('guest', 'playlist');
+                // TODO add method on service
+                aclService.addResource('playlist');
+                aclService.allow('guest', 'playlist');
+            }
         }
     }
 }

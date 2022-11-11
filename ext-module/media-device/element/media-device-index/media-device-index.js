@@ -13,8 +13,8 @@
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-icon-button/paper-icon-button.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-tooltip/paper-tooltip.js`));
 
-    await import('./../media-device-view-list/media-device-view-list.js')
-    await import('./../media-device-view-upsert/media-device-view-upsert.js')
+    await import('./../media-device-view-list/media-device-view-list.js');
+    await import('./../media-device-view-upsert/media-device-view-upsert.js');
 
     /**
      * Entry point for the module mediaDevice

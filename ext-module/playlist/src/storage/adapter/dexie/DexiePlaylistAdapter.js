@@ -1,28 +1,37 @@
-import {DexieAdapter} from '@dsign/library/src/storage/adapter/dexie/DexieAdapter';
-
-/**
- * @class DexiePlaylistAdapter
- */
-export class DexiePlaylistAdapter extends DexieAdapter {
+const DexiePlaylistAdapter = (async () => {   
+    
+    const { DexieAdapter } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/DexieAdapter.js`));
 
     /**
-     * @inheritDoc
+     * @class DexiePlaylistAdapter
      */
-    filter(filter) {
+    class DexiePlaylistAdapter extends DexieAdapter {
 
-        let collection = super.filter(filter);
-        if (filter !== null && typeof filter === 'object' && Object.entries(filter).length > 0) {
+        /**
+         * @inheritDoc
+         */
+        filter(filter) {
 
-            for (let property in filter) {
+            let collection = super.filter(filter);
+            if (filter !== null && typeof filter === 'object' && Object.entries(filter).length > 0) {
 
-                switch (property) {
-                    case 'name':
-                        collection = this.manager.table(this.getNameCollection()).where(property).startsWithIgnoreCase(filter[property]);
-                        break;
+                for (let property in filter) {
+
+                    switch (property) {
+                        case 'name':
+                            collection = this.manager.table(this.getNameCollection()).where(property).startsWithIgnoreCase(filter[property]);
+                            break;
+                    }
                 }
             }
-        }
 
-        return collection;
+            return collection;
+        }
     }
-}
+
+    return {DexiePlaylistAdapter: DexiePlaylistAdapter};
+})();
+
+export default DexiePlaylistAdapter;
+export const then = DexiePlaylistAdapter.then.bind(DexiePlaylistAdapter);

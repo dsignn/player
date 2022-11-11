@@ -1,29 +1,38 @@
-import {EntityReference} from "@dsign/library/src/storage/entity/EntityReference";
+const TimeslotPlaylistReference = (async () => {          
 
-/**
- *
- */
-export class TimeslotPlaylistReference extends EntityReference {
-
-    /**
-     * @return {number}
-     */
-    getDuration() {
-        return parseInt(this.duration);
-    }
-
-    /**
-     * @return {number}
-     */
-    getCurrentTime() {
-        return parseFloat(this.currentTime);
-    }
+    const { EntityReference } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/entity/EntityReference.js`));
 
     /**
      *
      */
-    reset() {
-        this.currentTime = 0;
+    class TimeslotPlaylistReference extends EntityReference {
 
+        /**
+         * @return {number}
+         */
+        getDuration() {
+            return parseInt(this.duration);
+        }
+
+        /**
+         * @return {number}
+         */
+        getCurrentTime() {
+            return parseFloat(this.currentTime);
+        }
+
+        /**
+         *
+         */
+        reset() {
+            this.currentTime = 0;
+
+        }
     }
-}
+
+    return {TimeslotPlaylistReference: TimeslotPlaylistReference};
+})();
+
+export default TimeslotPlaylistReference;
+export const then = TimeslotPlaylistReference.then.bind(TimeslotPlaylistReference);
