@@ -357,8 +357,10 @@ const PlaylistService = (async () => {
          */
         _changeTimeTimeslot(playlist, timeslot, dataTimeslot) {
 
+            console.log('DIO CAN');
             this._injectDataFromPlaylist(timeslot, playlist);
             this._send(PlaylistService.CHANGE_TIME, playlist, timeslot, dataTimeslot);
+            this.getEventManager().emit(PlaylistService.CHANGE_TIME, playlist);
             this.playlistStorage.update(playlist)
                 .then((data) => { console.log('CHANGE_TIME playlist EVT')})
                 .catch((err) => { console.error(err)});
@@ -375,9 +377,14 @@ const PlaylistService = (async () => {
                 let timeslotPlaylistRef = playlist.current();
 
                 timeslotPlaylistRef.currentTime = parseFloat(timeslotPlaylistRef.getCurrentTime() + 0.1).toFixed(1);
+
+
+                this.getEventManager().emit(PlaylistService.UPDATE_TIME, playlist);
+                /*
                 this.playlistStorage.update(playlist)
                     .then((data) => {})
                     .catch((err) => { console.log(err) });
+                    */
             }
         }
 

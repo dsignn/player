@@ -185,14 +185,14 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig.entityService,
+                this._getModuleConfig().entityService,
                 new MonitorContainerEntity()
             );
 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig.entityServiceWrapper, 
+                this._getModuleConfig().entityServiceWrapper, 
                 new MonitorEntity()
             );
     }

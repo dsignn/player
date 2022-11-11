@@ -285,7 +285,6 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             timeslotService: {
                 readOnly: true,
                 observer: 'timeslotServiceChanged'
-
             }
         }
     }
@@ -315,7 +314,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         }
 
         service.getEventManager().on(
-            TimeslotService.CHANGE_TIME,
+            TimeslotService.UPDATE_TIME,
             (data) => {
 
                 if (this.entity.getId() === data.data.getId()) {

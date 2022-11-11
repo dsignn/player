@@ -1,3 +1,4 @@
+
 (async () => { 
 
     const { html, PolymerElement } = await import(require('path').normalize(
@@ -9,6 +10,9 @@
     const { StorageEntityMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/storage/entity-mixin.js`));
     const { lang } = await import('./language.js');
+
+    const { PlaylistService } = await import('./../../src/PlaylistService.js');
+
  
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/iron-flex-layout/iron-flex-layout.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-tooltip/paper-tooltip.js`));
@@ -276,9 +280,16 @@
                         _localizeService: 'Localize',
                         StorageContainerAggregate: {
                             _storage: "PlaylistStorage"
-                        }
+                        },
+                        _playlistService: 'PlaylistService'
                     }
                 },
+
+                _playlistService: {
+                    type: Object,
+                    readOnly: true,
+                    observer: 'playlistServiceChanged'
+                }
             }
         }
 
@@ -298,6 +309,29 @@
             this.root.querySelector('paper-tooltip[for="rotationIcon"]').innerText = this.localize(
                 PaperPlaylist.LIST_ROTATION_LABEL_ICON[this.entity.rotation]
             );
+        }
+
+        playlistServiceChanged(service) {
+
+            if (!service) {
+                return;
+            }
+
+            var updateTime =  (data) => {
+    
+                if (this.entity.id === data.data.id) {
+                    this.entity = data.data;
+                    this.currentTime = this.entity.getCurrentTimeString();;
+
+                    if (!this.excludeSlider) {
+                        this.$.slider.value = this.currentTime;
+                    }
+                    this.notifyPath('currentTime')
+                }
+            }
+    
+            service.getEventManager().on(PlaylistService.UPDATE_TIME, updateTime);
+            service.getEventManager().on(PlaylistService.CHANGE_TIME, updateTime);
         }
 
         /**
