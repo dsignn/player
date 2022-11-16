@@ -1,59 +1,67 @@
-import {FileEntity} from "./../../../../resource/src/entity/FileEntity"
+const ResourceMosaic = (async () => {        
 
-/**
- * @class ResourceMosaic
- */
-export class ResourceMosaic extends FileEntity {
+    const { FileEntity } = await import(`${container.get('Application').getBasePath()}module/resource/src/entity/FileEntity.js`);
 
-    constructor() {
-        super();
+    /**
+     * @class ResourceMosaic
+     */
+    class ResourceMosaic extends FileEntity {
+
+        constructor() {
+            super();
+
+            /**
+             * @type {Object}
+             */
+            this.dimension = {};
+
+            /**
+             * @type {number}
+             */
+            this.computedWidth = 0;
+        }
 
         /**
-         * @type {Object}
+         * @returns {Number}
          */
-        this.dimension = {};
+        getWidth() {
+            return this.dimension.width;
+        }
 
         /**
-         * @type {number}
+         * @returns {Number}
          */
-        this.computedWidth = 0;
+        getHeight() {
+            return this.dimension.height;
+        }
+
+        /**
+         * @return {Number}
+         */
+        getRemainingWidth() {
+            return this.getWidth() - this.computedWidth;
+        }
+
+        /**
+         * @param {Number} addend
+         * @return {ResourceMosaic}
+         */
+        sumRemainingWidth(addend) {
+            this.computedWidth += addend;
+            return this;
+        }
+
+        /**
+         * @returns {ResourceMosaic}
+         */
+        resetComputedWidth() {
+            this.computedWidth = 0;
+            return this;
+        }
     }
 
-    /**
-     * @returns {Number}
-     */
-    getWidth() {
-        return this.dimension.width;
-    }
+    return {ResourceMosaic: ResourceMosaic};
+})();
 
-    /**
-     * @returns {Number}
-     */
-    getHeight() {
-        return this.dimension.height;
-    }
-
-    /**
-     * @return {Number}
-     */
-    getRemainingWidth() {
-        return this.getWidth() - this.computedWidth;
-    }
-
-    /**
-     * @param {Number} addend
-     * @return {ResourceMosaic}
-     */
-    sumRemainingWidth(addend) {
-        this.computedWidth += addend;
-        return this;
-    }
-
-    /**
-     * @returns {ResourceMosaic}
-     */
-    resetComputedWidth() {
-        this.computedWidth = 0;
-        return this;
-    }
-}
+export default ResourceMosaic;
+export const then = ResourceMosaic.then.bind(ResourceMosaic);

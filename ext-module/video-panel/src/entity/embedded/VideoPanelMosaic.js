@@ -1,35 +1,43 @@
-import {VideoPanel} from "./VideoPanel"
+const VideoPanelMosaic = (async () => {    
 
-/**
- * @class VideoPanelMosaic
- */
-export class VideoPanelMosaic extends VideoPanel {
+    const { VideoPanel } = await import(`./VideoPanel.js`);
 
     /**
-     *
+     * @class VideoPanelMosaic
      */
-    constructor() {
-        super();
+    class VideoPanelMosaic extends VideoPanel {
 
         /**
-         * @type {Number|null}
+         *
          */
-        this.computedWidth = 0;
+        constructor() {
+            super();
+
+            /**
+             * @type {Number|null}
+             */
+            this.computedWidth = 0;
+        }
+
+        /**
+         * @return {Number}
+         */
+        getRemainingWidth() {
+            return this.width - this.computedWidth;
+        }
+
+        /**
+         * @param {Number} addend
+         * @return {VideoPanelMosaic}
+         */
+        sumRemainingWidth(addend) {
+            this.computedWidth += addend;
+            return this;
+        }
     }
 
-    /**
-     * @return {Number}
-     */
-    getRemainingWidth() {
-        return this.width - this.computedWidth;
-    }
+    return {VideoPanelMosaic: VideoPanelMosaic};
+})();
 
-    /**
-     * @param {Number} addend
-     * @return {VideoPanelMosaic}
-     */
-    sumRemainingWidth(addend) {
-        this.computedWidth += addend;
-        return this;
-    }
-}
+export default VideoPanelMosaic;
+export const then = VideoPanelMosaic.then.bind(VideoPanelMosaic);

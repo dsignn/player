@@ -1,4 +1,3 @@
-console.log('sucaaaaaaaaaaaaaaaaaaaaaaaaa');
 export async function Repository() {    
     const { ContainerAware} = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/container/ContainerAware.js`));
@@ -35,32 +34,6 @@ export async function Repository() {
     return class Repository extends ContainerAware {
 
         /**
-         * @return {string}
-         * @constructor
-         */
-        static get PLAYLIST_TIMESLOT_REF_SERVICE() { return 'TimeslotPlaylistReference'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get PLAYLIST_ENTITY_SERVICE() { return 'PlaylistEntity'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get PLAYLIST_HYDRATOR_SERVICE() { return 'PlaylistEntityHydrator'; };
-
-
-        /**
-         * @returns Object
-         */
-        _getModuleConfig() {
-            return  this.getContainer().get('ModuleConfig')['playlist']['playlist'];
-        }
-
-        /**
          *
          */
         init() {
@@ -69,6 +42,13 @@ export async function Repository() {
             this.initEntity();
             this.initHydrator();
             this.initDexieStorage();
+        }
+
+        /**
+         * @returns Object
+         */
+        _getModuleConfig() {
+            return  this.getContainer().get('ModuleConfig')['playlist']['playlist'];
         }
 
         /**
@@ -247,13 +227,9 @@ export async function Repository() {
             playlistStrategy.setHydrator(Repository.getPlaylistReferenceHydrator(container));
 
             hydrator
-                //.addPropertyStrategy('id', new MapPropertyStrategy('id', '_id'))
-                //.addPropertyStrategy('_id', new MapPropertyStrategy('id', '_id'))
                 .addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
 
             hydrator
-                //.addValueStrategy('id', new MongoIdStrategy())
-                //.addValueStrategy('_id', new MongoIdStrategy())
                 .addValueStrategy('timeslots', timeslotStrategy)
                 .addValueStrategy('binds', playlistStrategy)
                 .addValueStrategy('enableAudio', new HybridStrategy(HybridStrategy.BOOLEAN_TYPE, HybridStrategy.NUMBER_TYPE));
@@ -354,8 +330,8 @@ export async function Repository() {
                 let aclService = this.getContainer().get('Acl');
 
                 // TODO add method on service
-                aclService.addResource('playlist');
-                aclService.allow('guest', 'playlist');
+                aclService.addResource(this._getModuleConfig().acl.resource);
+                aclService.allow('guest', this._getModuleConfig().acl.resource);
             }
         }
     }

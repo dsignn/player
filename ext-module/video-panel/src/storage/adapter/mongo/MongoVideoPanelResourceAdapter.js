@@ -1,28 +1,37 @@
-import {MongoCollectionAdapter} from "@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter"
+const MongoVideoPanelResourceAdapter = (async () => {    
 
-/**
- * @class MongoVideoPanelResourceAdapter
- */
-export class MongoVideoPanelResourceAdapter extends MongoCollectionAdapter {
+    const { MongoCollectionAdapter } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter.js`));
 
     /**
-     * @inheritDoc
+     * @class MongoVideoPanelResourceAdapter
      */
-    filter(filter) {
+    class MongoVideoPanelResourceAdapter extends MongoCollectionAdapter {
 
-        let returnFilter = {};
-        if (filter !== null && typeof filter === 'object') {
+        /**
+         * @inheritDoc
+         */
+        filter(filter) {
 
-            for (let property in filter) {
+            let returnFilter = {};
+            if (filter !== null && typeof filter === 'object') {
 
-                switch (property) {
-                    case 'name':
-                        returnFilter[property] =  {$regex: filter[property], $options: "$i"};
-                        break;
+                for (let property in filter) {
+
+                    switch (property) {
+                        case 'name':
+                            returnFilter[property] =  {$regex: filter[property], $options: "$i"};
+                            break;
+                    }
                 }
             }
-        }
 
-        return returnFilter;
+            return returnFilter;
+        }
     }
-}
+
+    return {MongoVideoPanelResourceAdapter: MongoVideoPanelResourceAdapter};
+})();
+
+export default MongoVideoPanelResourceAdapter;
+export const then = MongoVideoPanelResourceAdapter.then.bind(MongoVideoPanelResourceAdapter);

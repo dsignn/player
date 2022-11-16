@@ -1,55 +1,63 @@
-import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
-
-/**
- * @class VideoPanelResourceContainerEntity
- */
-export class VideoPanelResourceContainerEntity extends EntityIdentifier {
+const VideoPanelResourceContainerEntity = (async () => {        
+   
+    const { EntityIdentifier } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/entity/EntityIdentifier.js`));
 
     /**
-     *
+     * @class VideoPanelResourceContainerEntity
      */
-    constructor() {
-
-        super();
+    class VideoPanelResourceContainerEntity extends EntityIdentifier {
 
         /**
-         * @type {null}
+         *
          */
-        this.name = null;
+        constructor() {
+
+            super();
+
+            /**
+             * @type {null}
+             */
+            this.name = null;
+
+            /**
+             * @type {(EntityReference|Object)}
+             */
+            this.resourceReference = {};
+
+            /**
+             * @type {(VideoPanelResource|Object)}
+             */
+            this.videoPanelResource = {};
+        }
 
         /**
-         * @type {(EntityReference|Object)}
+         * @returns {(VideoPanelResource|object)}
          */
-        this.resourceReference = {};
+        getVideoPanelResource() {
+            return this.videoPanelResource;
+        }
 
         /**
-         * @type {(VideoPanelResource|Object)}
+         * @param {VideoPanelResource} videoPanelResource
+         * @return {VideoPanelResourceContainerEntity}
          */
-        this.videoPanelResource = {};
+        setVideoPanelResource(videoPanelResource) {
+
+            this.videoPanelResource = videoPanelResource;
+            return this;
+        }
+
+        /**
+         * @return {boolean}
+         */
+        hasVideoPanelResource() {
+
+            return Object.keys(this.videoPanelResource).length === 0 && this.videoPanelResource.constructor === Object ? false : true;
+        }
     }
+    return {VideoPanelResourceContainerEntity: VideoPanelResourceContainerEntity};
+})();
 
-    /**
-     * @returns {(VideoPanelResource|object)}
-     */
-    getVideoPanelResource() {
-        return this.videoPanelResource;
-    }
-
-    /**
-     * @param {VideoPanelResource} videoPanelResource
-     * @return {VideoPanelResourceContainerEntity}
-     */
-    setVideoPanelResource(videoPanelResource) {
-
-        this.videoPanelResource = videoPanelResource;
-        return this;
-    }
-
-    /**
-     * @return {boolean}
-     */
-    hasVideoPanelResource() {
-
-        return Object.keys(this.videoPanelResource).length === 0 && this.videoPanelResource.constructor === Object ? false : true;
-    }
-}
+export default VideoPanelResourceContainerEntity;
+export const then = VideoPanelResourceContainerEntity.then.bind(VideoPanelResourceContainerEntity);

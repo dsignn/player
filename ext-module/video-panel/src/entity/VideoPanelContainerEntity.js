@@ -1,50 +1,60 @@
-import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier"
+const VideoPanelContainerEntity = (async () => {       
+      
+    const { EntityIdentifier } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/entity/EntityIdentifier.js`));
 
-/**
- * @class VideoPanelContainerEntity
- */
-export class VideoPanelContainerEntity extends EntityIdentifier {
 
     /**
-     *
+     * @class VideoPanelContainerEntity
      */
-    constructor() {
-
-        super();
+    class VideoPanelContainerEntity extends EntityIdentifier {
 
         /**
-         * @type {null}
+         *
          */
-        this.name = null;
+        constructor() {
+
+            super();
+
+            /**
+             * @type {null}
+             */
+            this.name = null;
+
+            /**
+             * @type {(VideoPanel|Object)}
+             */
+            this.videoPanel = {};
+        }
 
         /**
-         * @type {(VideoPanel|Object)}
+         * @returns {(VideoPanel|null)}
          */
-        this.videoPanel = {};
+        getVideoPanel() {
+            return this.videoPanel;
+        }
+
+        /**
+         * @param {VideoPanel} videoPanel
+         * @return {VideoPanelContainerEntity}
+         */
+        setVideoPanel(videoPanel) {
+
+            this.videoPanel = videoPanel;
+            return this;
+        }
+
+        /**
+         * @return {boolean}
+         */
+        hasVideoPanel() {
+
+            return Object.keys(this.videoPanel).length === 0 && this.videoPanel.constructor === Object ? false : true;
+        }
     }
 
-    /**
-     * @returns {(VideoPanel|null)}
-     */
-    getVideoPanel() {
-        return this.videoPanel;
-    }
+    return {VideoPanelContainerEntity: VideoPanelContainerEntity};
+})();
 
-    /**
-     * @param {VideoPanel} videoPanel
-     * @return {VideoPanelContainerEntity}
-     */
-    setVideoPanel(videoPanel) {
-
-        this.videoPanel = videoPanel;
-        return this;
-    }
-
-    /**
-     * @return {boolean}
-     */
-    hasVideoPanel() {
-
-        return Object.keys(this.videoPanel).length === 0 && this.videoPanel.constructor === Object ? false : true;
-    }
-}
+export default VideoPanelContainerEntity;
+export const then = VideoPanelContainerEntity.then.bind(VideoPanelContainerEntity);

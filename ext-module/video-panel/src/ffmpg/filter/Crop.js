@@ -1,41 +1,47 @@
-/**
- *
- */
-export class Crop {
-
+const Crop = (async () => {         
     /**
-     * @param {Number} width
-     * @param {Number} height
-     * @param {Number} x
-     * @param {Number} y
+     *
      */
-    constructor(width, height, x, y) {
+    class Crop {
 
         /**
-         * @type {Number}
+         * @param {Number} width
+         * @param {Number} height
+         * @param {Number} x
+         * @param {Number} y
          */
-        this.width = width;
+        constructor(width, height, x, y) {
+
+            /**
+             * @type {Number}
+             */
+            this.width = width;
+
+            /**
+             * @type {Number}
+             */
+            this.height = height;
+
+            /**
+             * @type {Number}
+             */
+            this.x  = x;
+
+            /**
+             * @type {Number}
+             */
+            this.y = y;
+        }
 
         /**
-         * @type {Number}
+         * @return {string}
          */
-        this.height = height;
-
-        /**
-         * @type {Number}
-         */
-        this.x  = x;
-
-        /**
-         * @type {Number}
-         */
-        this.y = y;
+        toString() {
+            return  `crop=${this.width}:${this.height}:${this.x}:${this.y}`;
+        }
     }
+    return {Crop: Crop};
+})();
 
-    /**
-     * @return {string}
-     */
-    toString() {
-        return  `crop=${this.width}:${this.height}:${this.x}:${this.y}`;
-    }
-}
+export default Crop;
+export const then = Crop.then.bind(Crop);

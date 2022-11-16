@@ -1,31 +1,39 @@
-import {DexieAdapter} from "@dsign/library/src/storage/adapter/dexie/DexieAdapter"
-
-/**
- * @class DexieVideoPanelAdapter
- */
-export class DexieVideoPanelAdapter extends DexieAdapter {
+const DexieVideoPanelAdapter = (async () => {         
+  
+    const { DexieAdapter } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/DexieAdapter.js`));
 
     /**
-     * @param {Table} table
-     * @param search
-     * @return {*}
-     * @private
+     * @class DexieVideoPanelAdapter
      */
-    _search(table, search) {
+    class DexieVideoPanelAdapter extends DexieAdapter {
 
-        let collection = table.toCollection();
-        if (search !== null && typeof search === 'object') {
+        /**
+         * @param {Table} table
+         * @param search
+         * @return {*}
+         * @private
+         */
+        _search(table, search) {
 
-            for (let property in search) {
+            let collection = table.toCollection();
+            if (search !== null && typeof search === 'object') {
 
-                switch (property) {
-                    case 'name':
-                        collection = table.where(property).startsWithIgnoreCase(search[property]);
-                        break;
+                for (let property in search) {
+
+                    switch (property) {
+                        case 'name':
+                            collection = table.where(property).startsWithIgnoreCase(search[property]);
+                            break;
+                    }
                 }
             }
-        }
 
-        return collection;
+            return collection;
+        }
     }
-}
+    return {DexieVideoPanelAdapter: DexieVideoPanelAdapter};
+})();
+
+export default DexieVideoPanelAdapter;
+export const then = DexieVideoPanelAdapter.then.bind(DexieVideoPanelAdapter);
