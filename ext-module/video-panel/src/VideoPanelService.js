@@ -1,6 +1,6 @@
 const VideoPanelService = (async () => {      
     const { Crop } = await import(`./ffmpg/filter/Crop.js`);
-    const { Mosaic } = await import(`./ffmpg/filter/Mosaic.js`);
+    const { Mosaic } = await import(`./ffmpg/Mosaic.js`);
     
     /**
      * @class VideoPanelService

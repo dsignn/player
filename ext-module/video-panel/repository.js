@@ -30,10 +30,15 @@ export async function Repository() {
     const { VideoPanelMosaic } = await import('./src/entity/embedded/VideoPanelMosaic.js');
     const { MongoVideoPanelResourceAdapter } = await import('./src/storage/adapter/mongo/MongoVideoPanelResourceAdapter.js');
     const { MongoVideoPanelAdapter } = await import('./src/storage/adapter/mongo/MongoVideoPanelAdapter.js');
+    const { DexieVideoPanelAdapter } = await import('./src/storage/adapter/dexie/DexieVideoPanelAdapter.js');
+    const { DexieVideoPanelResourceAdapter } = await import('./src/storage/adapter/dexie/DexieVideoPanelResourceAdapter.js');
 
-    import {Repository as MonitorRepository} from "../monitor/repository";
-    import {Repository as ResourceRepository} from "../resource/repository";
+    var repository = await import(`${container.get('Application').getBasePath()}module/monitor/repository.js`);
+    const MonitorRepository = repository.Repository;
    
+    repository = await import(`${container.get('Application').getBasePath()}module/resource/repository.js`);
+    const ResourceRepository = repository.Repository;
+     
     const { config } = await import('./config.js');
 
     /**
@@ -46,8 +51,8 @@ export async function Repository() {
             this.initAcl();
             this.initEntity();
             this.initHydrator();
-            this.initVideoPanelMongoStorage();
-            this.initVideoPanelResourceMongoStorage();
+            this.initVideoPanelDexieStorage();
+            this.initVideoPanelResourceDexieStorage();
         }
 
         /**
@@ -57,13 +62,10 @@ export async function Repository() {
             return  this.getContainer().get('ModuleConfig')['video-panel']['video-panel'];
         }
 
-        /**
-         * Merge config
-         */
         initConfig() {
-            this.container.set(
-                'config',
-                this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+            this.getContainer().set(
+                'ModuleConfig',
+                this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
             );
         }
 
@@ -128,7 +130,7 @@ export async function Repository() {
 
             this.getContainer().get('HydratorContainerAggregate').set(
                 this._getModuleConfig()['hydrator']['video-panel-hydrator'],
-                Repository.getVideoPanelHydrator(this.getContainer().get('EntityContainerAggregate'))
+                Repository.getVideoPanelHydrator(this.getContainer())
             );
 
             this.getContainer().get('HydratorContainerAggregate').set(
@@ -137,7 +139,7 @@ export async function Repository() {
             );
 
             this.getContainer().get('HydratorContainerAggregate').set(
-                this._getModuleConfig()['hydrator']['video-panel-container-mosaic-hydrator'],
+                this._getModuleConfig()['hydrator']['video-panel-container-entity-hydrator'],
                 Repository.getVideoPanelContainerEntityHydrator(this.getContainer())
             );
 
@@ -148,7 +150,7 @@ export async function Repository() {
 
             this.getContainer().get('HydratorContainerAggregate').set(
                 this._getModuleConfig()['hydrator']['monitor-container-mosaic-hydrator'],
-                Repository.getMonitorContainerEntityForMosaicHydrator(this.getContainer().)
+                Repository.getMonitorContainerEntityForMosaicHydrator(this.getContainer())
             );
 
             this.getContainer().get('HydratorContainerAggregate').set(
@@ -160,6 +162,122 @@ export async function Repository() {
                 this._getModuleConfig()['hydrator']['resource-mosaic-hydrator'],
                 Repository.getResourceMosaicHydrator(this.getContainer())
             );
+        }
+
+        initVideoPanelDexieStorage() {
+            const dexieManager = this.getContainer().get(
+                this._getModuleConfig()['storage-video-panel'].adapter.dexie['connection-service']
+            );
+
+            /**
+             * Add schema
+             */
+            let store = new Store(
+                this._getModuleConfig()['storage-video-panel'].adapter.dexie['collection'],
+                ["++id", "name"]
+            );
+
+            dexieManager.addStore(store);
+
+                        /**
+             * Create Schema
+             */
+            var generateSchema = () => {
+
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['video-panel-container-entity-hydrator']
+                );
+                hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
+
+                const adapter = new DexieVideoPanelAdapter(
+                    dexieManager, 
+                    this._getModuleConfig()['storage-video-panel'].adapter.dexie['collection']
+                );
+                const storage = new Storage(adapter);
+                storage.setHydrator(hydrator);
+
+                this.getContainer().get('StorageContainerAggregate').set(
+                    this._getModuleConfig()['storage-video-panel']['name-service'],
+                    storage
+                );
+
+                this.initVideoPanelService();
+            }
+
+            if(dexieManager.isOpen()) {
+                let version = dexieManager.upgradeSchema();
+                this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
+                this.getContainer().get('StorageContainerAggregate')
+                    .get('ConfigStorage')
+                    .update(this.getContainer().get('Config'))
+                    .then((data) => {
+                        this.getContainer().get('SenderContainerAggregate')
+                            .get('Ipc')
+                            .send('proxy', {event:'relaunch', data: {}}
+                        );
+                    });
+            } else {
+                dexieManager.on("ready", (data) => {
+                    generateSchema();
+                });
+            }
+        }
+
+        initVideoPanelResourceDexieStorage() {
+            const dexieManager = this.getContainer().get(
+                this._getModuleConfig()['storage-video-panel-resource'].adapter.dexie['connection-service']
+            );
+
+            /**
+             * Add schema
+             */
+            let store = new Store(
+                this._getModuleConfig()['storage-video-panel-resource'].adapter.dexie['collection'],
+                ["++id", "name"]
+            );
+
+            dexieManager.addStore(store);
+
+                        /**
+             * Create Schema
+             */
+            var generateSchema = () => {
+
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['video-panel-resource-container-hydrator']
+                );
+                hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
+
+                const adapter = new DexieVideoPanelResourceAdapter(
+                    dexieManager, 
+                    this._getModuleConfig()['storage-video-panel-resource'].adapter.dexie['collection']
+                );
+                const storage = new Storage(adapter);
+                storage.setHydrator(hydrator);
+
+                this.getContainer().get('StorageContainerAggregate').set(
+                    this._getModuleConfig()['storage-video-panel-resource']['name-service'],
+                    storage
+                );
+            }
+
+            if(dexieManager.isOpen()) {
+                let version = dexieManager.upgradeSchema();
+                this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
+                this.getContainer().get('StorageContainerAggregate')
+                    .get('ConfigStorage')
+                    .update(this.getContainer().get('Config'))
+                    .then((data) => {
+                        this.getContainer().get('SenderContainerAggregate')
+                            .get('Ipc')
+                            .send('proxy', {event:'relaunch', data: {}}
+                        );
+                    });
+            } else {
+                dexieManager.on("ready", (data) => {
+                    generateSchema();
+                });
+            }
         }
 
         /**
@@ -283,7 +401,8 @@ export async function Repository() {
         static getVideoPanelContainerEntityHydrator(container) {
 
             let hydrator = new PropertyHydrator(
-                container.get(this._getModuleConfig().entityServiceContainer),
+                container.get('EntityContainerAggregate').get(
+                    container.get('ModuleConfig')['video-panel']['video-panel'].entityService),
                 {
                     videoPanel : new HydratorStrategy(Repository.getVideoPanelHydrator(container)),
                 }
@@ -306,7 +425,9 @@ export async function Repository() {
          */
         static getVideoPanelResourceContainerEntityHydrator(container) {
             let hydrator = new PropertyHydrator(
-                container.get(this._getModuleConfig()['hydrator']['video-panel-resource-container-hydrator']),
+                container.get('EntityContainerAggregate').get(
+                    container.get('ModuleConfig')['video-panel']['video-panel'].entityServiceContainer
+                ),
                 {
                     resourceReference: new HydratorStrategy(ResourceRepository.getResourceReferenceHydrator(container)),
                     videoPanelResource: new HydratorStrategy(Repository.getVideoPanelResourceHydrator(container))

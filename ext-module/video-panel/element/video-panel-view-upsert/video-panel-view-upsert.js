@@ -203,8 +203,7 @@
                  * @type VideoPanelContainerEntity
                  */
                 entity: {
-                    observer: '_changeEntity',
-                    value: {}
+                    observer: '_changeEntity'
                 },
 
                 hasVideoPanel: {
@@ -315,6 +314,11 @@
          * @param evt
          */
         _searchVideoPanel(evt) {
+            // Workaround when trigger the event with empty object
+            if (!this.entity || !this.entity.getVideoPanel) {
+                return;
+            }
+
             let filter = this.entity.getVideoPanel().getVideoPanels({nested:true}).filter(
                 element => {
                     return element.name.search(new RegExp(evt.detail.value.text, 'i')) > -1;
@@ -330,6 +334,10 @@
          * @param evt
          */
         _searchMonitor(evt) {
+            if(!this._monitorStorage) {
+                return;
+            }
+
 
             this._monitorStorage.getAll({name: evt.detail.value.text})
                 .then((data) => {

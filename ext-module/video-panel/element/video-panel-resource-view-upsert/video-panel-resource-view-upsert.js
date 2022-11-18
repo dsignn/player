@@ -424,6 +424,10 @@
          * @private
          */
         _searchVideoPanel(evt) {
+            if (!this._videoPanelStorage) {
+                return;
+            } 
+
             this._videoPanelStorage.getAll({name: evt.detail.value.text})
                 .then((data) => {
 
