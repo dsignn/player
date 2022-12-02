@@ -81,11 +81,14 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                             <form method="post" action="">
                                 <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
                                 <div id="monitorUpdate">
-                                    <dom-repeat items="{{entity.monitors}}" as="monitor">
-                                        <template>
-                                              <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
-                                        </template>
-                                    </dom-repeat>
+
+                                    <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
+                                        <div>
+                                            <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
+                                        </div>
+                                    </template>
+
+                    
                                 </div>
                                 <paper-button on-tap="submitMonitorContainerButton">{{localize(labelAction)}}</paper-button>
                             </form>

@@ -139,13 +139,13 @@
                                         <paper-input id="name" name="name" label="{{localize('name')}}" value="{{_videoPanel.name}}" required></paper-input>
                                         <paper-input id="videoPanelHeight" name="height" type="number" label="{{localize('height')}}" value="{{_videoPanel.height}}" required></paper-input>
                                         <paper-input id="videoPanelWidth" name="width" type="number" label="{{localize('width')}}" value="{{_videoPanel.width}}" required></paper-input>
+                                       
                                         <paper-autocomplete
                                                 id="monitorSelector"
                                                 label="Monitor"
                                                 text-property="name"
                                                 value-property="name"
                                                 remote-source
-                                                _selected-option="{{data}}"
                                                 on-autocomplete-selected="_selectMonitor"
                                                 on-autocomplete-change="_searchMonitor">
                                             <template slot="autocomplete-custom-template">
@@ -161,6 +161,7 @@
                                                 </paper-item>
                                             </template>
                                         </paper-autocomplete>
+                                        -
                                         <div hidden$="[[!hasVideoPanel]]">
                                             <paper-autocomplete
                                                     id="videoPanelSelector"
@@ -339,7 +340,7 @@
             }
 
 
-            this._monitorStorage.getAll({name: evt.detail.value.text})
+            this._monitorStorage.getAll({name: evt.detail.text})
                 .then((data) => {
                     let monitors =  [];
                     let tmpMonitors =  [];
@@ -358,28 +359,7 @@
 
                         monitors = monitors.concat(tmpMonitors);
                     }
-                    // TODO check data flow
-                    /*
-                                if (this.entity.hasVideoPanel()) {
-                                    let index = data.findIndex((element) => {
-                                        return element.id === this.entity.getVideoPanel().virtualMonitorReference.virtualMonitorId;
-                                    });
-                                    data = [
-                                        data[index]
-                                    ];
-                                }
-
-                                for (let cont = 0; data.length > cont; cont++) {
-                                    let internalMonitor = data[cont].getMonitors({nested: this.entity.hasVideoPanel()});
-                                    for (let index = 0; internalMonitor.length > index; index++) {
-                                        monitors.push({
-                                            monitor: internalMonitor[index],
-                                            config: data[cont],
-                                            name: internalMonitor[index].name
-                                        });
-                                    }
-                                }
-                */
+                                     
                     evt.detail.target.suggestions(
                         monitors
                     );
@@ -411,6 +391,10 @@
          */
         submitVideoPanel(evt) {
             evt.preventDefault();
+
+            if (!this.$.videoPanelSelector.value.id) {
+                return;
+            }
 
             this._videoPanel.setId(
                 require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId()

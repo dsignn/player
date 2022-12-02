@@ -8,6 +8,7 @@ export const lang = {
     "create-resource": "Crea risorsa",
     "save": "Salva",
     "update": "Modifica",
+    "search-resource": "Cerca risorsa"
   },
   "en": {
     "name": "Name",
@@ -18,5 +19,6 @@ export const lang = {
     "create-resource": "Create resource",
     "save": "Save",
     "update": "Update",
+    "search-resource": "Search resource"
   }
 };

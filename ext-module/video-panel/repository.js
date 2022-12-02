@@ -365,6 +365,12 @@ export async function Repository() {
          */
         initVideoPanelService() {
 
+            const fs = require('fs');
+            const path = require('path');
+            
+            let pathTmp = path.normalize(this.getContainer().get('Application').getStoragePath() + '/../video-panel/tmp');
+            fs.promises.mkdir(pathTmp, { recursive: true })
+
             this.getContainer().set(
                 this._getModuleConfig().videoPanelService,
                 new VideoPanelService(
@@ -374,7 +380,8 @@ export async function Repository() {
                     this.getContainer().get('HydratorContainerAggregate').get(this._getModuleConfig()['hydrator']['monitor-container-mosaic-hydrator']),
                     this.getContainer().get('HydratorContainerAggregate').get(this._getModuleConfig()['hydrator']['video-panel-container-mosaic-hydrator']),
                     this.getContainer().get('HydratorContainerAggregate').get(this._getModuleConfig()['hydrator']['resource-mosaic-hydrator']),
-                    this.getContainer().get('ResourceService')
+                    this.getContainer().get('ResourceService'),
+                    pathTmp
                 )
             );
         }
@@ -533,7 +540,9 @@ export async function Repository() {
         static geVideoPanelContainerReferenceHydrator(container) {
 
             let hydrator = new PropertyHydrator();
-            hydrator.setTemplateObjectHydration(container.get('EntityNestedReference'));
+            hydrator.setTemplateObjectHydration(
+                container.get('EntityContainerAggregate').get('EntityNestedReference')
+            );
 
             hydrator.enableHydrateProperty('id')
                 .enableHydrateProperty('collection')

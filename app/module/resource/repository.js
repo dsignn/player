@@ -595,7 +595,9 @@ export class Repository extends ContainerAware {
     static getResourceReferenceHydrator(container) {
 
         let hydrator = new PropertyHydrator();
-        hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+        hydrator.setTemplateObjectHydration( 
+            container.get('EntityContainerAggregate').get('EntityReference')
+        );
 
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('collection')

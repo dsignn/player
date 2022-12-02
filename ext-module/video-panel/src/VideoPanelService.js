@@ -24,8 +24,11 @@ const VideoPanelService = (async () => {
             monitorContainerMosaicHydrator,
             videoPanelMosaicHydrator,
             resourceMosaicHydrator,
-            resourceService
+            resourceService, 
+            tmpDir
         ) {
+
+            this.tmpDir = tmpDir;
 
             /**
              * @type {StorageInterface}

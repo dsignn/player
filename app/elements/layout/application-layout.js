@@ -304,6 +304,10 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 function() {
                     let paperIconBtn = this.shadowRoot.querySelector('#' + value);
 
+                    if (!paperIconBtn) {
+                        console.log('suca', value);
+                    }
+
                     paperIconBtn.style.color = 'white';
                     paperIconBtn.parentElement.style.backgroundColor = '#015b63';
                 }.bind(this),

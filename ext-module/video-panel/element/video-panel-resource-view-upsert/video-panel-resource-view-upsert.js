@@ -140,7 +140,7 @@
                                 </div>
                                 <div hidden$="{{hideResourceSection}}">
                                     <template is="dom-repeat" items="[[entity.videoPanelResource.videoPanelResources]]" as="videoPanelResource">
-                                    <paper-video-panel-resource-item video-panel-resource="{{videoPanelResource}}"></paper-video-panel-resource-item>
+                                        <paper-video-panel-resource-item video-panel-resource="{{videoPanelResource}}"></paper-video-panel-resource-item>
                                     </template>
                                     <paper-progress id="resourceProgress" hidden$="{{progressResource}}" indeterminate class="slow"></paper-progress>
                                 </div>
@@ -365,7 +365,7 @@
             // TODO change name dyslexia
             path.setNameFile(MongoIdGenerator.statcGenerateId());
             // TODO refactor sep
-            path.setDirectory(`${this._application.getStoragePath()}/../tmp` );
+            path.setDirectory(this._videoPanelService.tmpDir );
 
             this.progressResource = false;
             this._videoPanelService.generateResource(
