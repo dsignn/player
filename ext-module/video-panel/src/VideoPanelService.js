@@ -75,17 +75,14 @@ const VideoPanelService = (async () => {
 
             /**
              * @type {VideoPanelContainerEntity}
-             *
              * Contains VideoPanelMosaic object
              */
             let videoPanelContainer = this.videoPanelMosaicHydrator.hydrate(
                 await this.storageVideoPanel.get(videoPanelResource.videoPanelReference.parentId)
             );
 
-            // TODO add controll
             /**
              * @type {MonitorContainerEntity}
-             *
              * Contains MonitorMosaic object
              */
             let monitorContainerEntity = this.monitorContainerMosaicHydrator.hydrate(
@@ -139,26 +136,22 @@ const VideoPanelService = (async () => {
             while (parentVideoPanelMosaic.getRemainingWidth() > 0) {
 
                 currentVideoPanelResource = videoPanelResource.getVideoPanel(childVideoPanelMosaic.id);
+                // skip if there are not resource
                 if (currentVideoPanelResource.resources.length == 0) {
 
                     childVideoPanelMosaic.sumRemainingWidth(childVideoPanelMosaic.width);
                     parentVideoPanelMosaic.sumRemainingWidth(childVideoPanelMosaic.width);
+                    this.log('VUOTO', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
+                 
+                // Set variables
+                } else {
+                    indexResource = 0;
+                    crop = null;
+                    resources = await this._getResourceFromVideoPanel(currentVideoPanelResource);
+                    currentResource = resources[indexResource];
+                    currentResource.path.setDirectory(this.resourceService.getResourceDirectory(currentResource));
                 }
 
-                indexResource = 0;
-                crop = null;
-                resources = await this._getResourceFromVideoPanel(currentVideoPanelResource);
-                currentResource = resources[indexResource];
-                currentResource.path.setDirectory(this.resourceService.getResourceDirectory(currentResource));
-    /*
-                if (index === 0) {
-                    index++;
-                    childVideoPanelMosaic = videoPanelContainer.getVideoPanel().getVideoPanelByIndex(index);
-                    currentMonitor = monitorContainerEntity.getMonitor(childVideoPanelMosaic.monitorContainerReference.id);
-                    currentMonitor.initMonitor();
-                    continue;
-                }
-    */
                 while (childVideoPanelMosaic.getRemainingWidth() > 0) {
 
                     this.log('CICLO', currentMonitor, parentVideoPanelMosaic, childVideoPanelMosaic, currentResource, crop);
