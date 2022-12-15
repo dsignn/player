@@ -392,10 +392,6 @@
         submitVideoPanel(evt) {
             evt.preventDefault();
 
-            if (!this.$.videoPanelSelector.value.id) {
-                return;
-            }
-
             this._videoPanel.setId(
                 require("@dsign/library").storage.util.MongoIdGenerator.statcGenerateId()
             );

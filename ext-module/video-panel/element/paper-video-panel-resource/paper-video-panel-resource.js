@@ -62,7 +62,6 @@
                         background-size: cover;
                         background-position: center;
                         background-repeat: no-repeat;
-                        
                     }
                     
                     #fastAction {
@@ -78,6 +77,10 @@
                     
                     paper-menu-button {
                         padding: 0;
+                    }
+
+                    .name-video-panel {
+                        font-size: 14px;
                     }
                     
                     paper-icon-button[disabled].action {
@@ -119,7 +122,8 @@
                     <div id="right-section">
                         <div class="top">
                             <div id="content">
-                                <div class="name">{{entity.resourceReference.name}} /  {{entity.videoPanelResource.videoPanelReference.name}}</div>
+                                <div class="name">{{entity.resourceReference.name}}</div>
+                                <div class="name-video-panel">{{entity.videoPanelResource.videoPanelReference.name}}</div>
                             </div>
                             <div id="crud">
                                 <paper-menu-button ignore-select horizontal-align="right">

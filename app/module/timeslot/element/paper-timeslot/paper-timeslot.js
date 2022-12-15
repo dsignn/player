@@ -6,7 +6,7 @@ import {TimeslotService} from './../../src/TimeslotService.js';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/paper-slider/paper-slider';
-import {lang} from './language/language';
+import {lang} from './language.js';
 
 /**
  * @customElement
@@ -30,6 +30,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
+                    background-image: url("./../../module/timeslot/element/paper-timeslot/img/cover.jpg");
                 }
                 
                 #fastAction {

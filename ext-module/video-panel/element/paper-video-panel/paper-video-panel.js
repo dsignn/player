@@ -1,4 +1,4 @@
-(async () => {      
+(async () => {
     const { html, PolymerElement } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@polymer/polymer/polymer-element.js`));
     const { ServiceInjectorMixin } = await import(require('path').normalize(
@@ -8,14 +8,14 @@
     const { StorageEntityMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/storage/entity-mixin.js`));
     const { lang } = await import('./language.js');
-        
+
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/iron-flex-layout/iron-flex-layout.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-card/paper-card.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-item/paper-item.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-listbox/paper-listbox.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-tooltip/paper-tooltip.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-menu-button/paper-menu-button.js`));
- 
+
     /**
      * @customElement
      * @polymer
@@ -54,15 +54,9 @@
                         border-top: 1px solid  var(--divider-color);
                         padding: 6px 10px;
                     }
-                    
-                    
-                    #leftSection {
-                        width: 80px;
-                        min-height: 120px;
-                        background-size: cover;
-                        background-position: center;
-                        background-repeat: no-repeat;
-                        
+
+                    .name-monitor {
+                        font-size: 14px;
                     }
                     
                     #fastAction {
@@ -112,6 +106,22 @@
                     paper-icon-button.circle-small {
                         @apply --application-paper-icon-button-circle;
                     }
+
+                    .dimension {
+                        display: flex;
+                        padding-top: 4px;
+                        font-size: 14px;
+                    }
+
+                    .dimension > div {
+                        padding-right: 4px;
+                    }
+
+                    .dimension .name {
+                        font-style: italic;
+                        font-size: 12px;
+                        line-height: 16px;
+                    }
         
                 </style>
                 <paper-card>
@@ -120,8 +130,16 @@
                         <div class="top">
                             <div id="content">
                                 <div class="name">{{entity.name}}</div>
-                                <div>
-                                {{entity.videoPanel.width}}px {{entity.videoPanel.height}}px
+                                <div class="name-monitor"> {{nameMonitor}} - {{nameMonitorParent}}</div>
+                                <div class="dimension">
+                                    <div>
+                                        <div class="name">Larghezza</div>
+                                        <div>{{entity.videoPanel.width}} px</div>
+                                    </div>
+                                    <div>
+                                        <div class="name">Altezza</div>
+                                        <div>{{entity.videoPanel.height}} px</div>
+                                    </div>
                                 </div>
                             </div>
                             <div id="crud">
@@ -144,19 +162,31 @@
             this.resources = lang;
         }
 
-        static get properties () {
+        static get properties() {
             return {
 
                 /**
                  * @type object
                  */
-                services : {
-                    value : {
+                services: {
+                    value: {
                         _localizeService: 'Localize',
+                        _application: "Application",
                         StorageContainerAggregate: {
-                            "_storage" : "VideoPanelStorage"
+                            "_storage": "VideoPanelStorage",
+                            "_storageMonitor": "MonitorStorage"
                         }
                     }
+                },
+
+                nameMonitor: { },
+
+                nameMonitorParent: { },
+
+                _application: {
+                    type: Object,
+                    readOnly: true,
+                    observer: '_changeApplication',
                 },
 
                 /**
@@ -174,13 +204,50 @@
             }
         }
 
+        static get observers() {
+            return [
+                'changeMonitor(_storageMonitor, entity)'
+            ]
+        }
+
+        /**
+         * @param {Storage} storageMonitor 
+         * @param {*} entity 
+         */
+        changeMonitor(storageMonitor, entity) {
+            if (!storageMonitor || !entity) {
+                return;
+            }
+
+           
+            storageMonitor.get(entity.videoPanel.monitorContainerReference.parentId)
+                .then((data) => {
+                    
+                    this.nameMonitorParent = data.name;
+                    let monitors = data.getMonitors({nested:true});
+                    for (let cont = 0; monitors.length > cont; cont++) {
+                        if (monitors[cont].id === entity.videoPanel.monitorContainerReference.id) {
+                            console.log('ssssssssssssssss', data);
+                        }
+
+                    }
+                });
+        }
+
+        _changeApplication(application) {
+            if (!application) {
+                return;
+            }
+
+            this.$['left-section'].style.backgroundImage = ` url("${application.additionalModulePath}/video-panel/element/paper-video-panel/img/cover.jpg")`;
+        }
 
         /**
          * @param evt
          * @private
          */
         _delete(evt) {
-            this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
+            this.dispatchEvent(new CustomEvent('delete', { detail: this.entity }));
             this.$.crudButton.close();
         }
 
@@ -189,7 +256,7 @@
          * @private
          */
         _update(evt) {
-            this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
+            this.dispatchEvent(new CustomEvent('update', { detail: this.entity }));
             this.$.crudButton.close();
         }
     }
