@@ -154,8 +154,10 @@
                 services : {
                     value : {
                         _localizeService: 'Localize',
+                        _resourceService : "ResourceService",
                         StorageContainerAggregate: {
-                            "_storage" : "VideoPanelResourceStorage"
+                            "_storage" : "VideoPanelResourceStorage",
+                            "_storageResource": "ResourceStorage"
                         }
                     }
                 },
@@ -173,6 +175,30 @@
                     value: true
                 },
             }
+        }
+
+        static get observers() {
+            return [
+                'changeResource(_storageResource, _resourceService, entity)'
+            ]
+        }
+
+        changeResource(storageResource, resourceService, entity) {
+
+            if (!storageResource || !resourceService || !entity) {
+                return;
+            }
+
+            console.log('sucaaaaaaaaaaa', storageResource, entity);
+            if (entity.resourceReference.id) {
+                storageResource.get(entity.resourceReference.id)
+                    .then((resource) => {
+                        console.log('DIO CANE', resource);
+                    });
+            } else {
+                // PLACEHODER
+            }
+       
         }
 
 

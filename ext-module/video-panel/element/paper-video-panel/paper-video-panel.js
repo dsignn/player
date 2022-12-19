@@ -215,11 +215,11 @@
          * @param {*} entity 
          */
         changeMonitor(storageMonitor, entity) {
+           
             if (!storageMonitor || !entity) {
                 return;
             }
 
-           
             storageMonitor.get(entity.videoPanel.monitorContainerReference.parentId)
                 .then((data) => {
                     
@@ -227,7 +227,8 @@
                     let monitors = data.getMonitors({nested:true});
                     for (let cont = 0; monitors.length > cont; cont++) {
                         if (monitors[cont].id === entity.videoPanel.monitorContainerReference.id) {
-                            console.log('ssssssssssssssss', data);
+                            this.nameMonitor = monitors[cont].name;
+                            break;
                         }
 
                     }
@@ -239,7 +240,7 @@
                 return;
             }
 
-            this.$['left-section'].style.backgroundImage = ` url("${application.additionalModulePath}/video-panel/element/paper-video-panel/img/cover.jpg")`;
+            this.$['left-section'].style.backgroundImage = `url("${application.additionalModulePath}/video-panel/element/paper-video-panel/img/cover.jpg")`;
         }
 
         /**
