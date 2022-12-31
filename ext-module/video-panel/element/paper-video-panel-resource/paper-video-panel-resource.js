@@ -33,11 +33,38 @@
                     }
                     
                     #left-section {
+                        position: relative;
                         width: 80px;
                         min-height: 140px;
                         background-size: cover;
                         background-position: center;
                         background-repeat: no-repeat;
+                    }
+
+                    #left-section .action {
+                        position: absolute;
+                        bottom: 6px;
+                        right: 6px;
+                        z-index: 1;
+                    }
+
+                    #left-section video  {
+                        object-fit: cover;
+                        height: 120px;
+                        width: 80px;
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                    }
+
+                    paper-icon-button.circle-small {
+                        @apply --application-paper-icon-button-circle;
+                        background-color: var(--default-primary-color);
+                        color:var(--text-primary-color);
+                        height: 30px;
+                        width: 30px;
+                        padding: 4px;
+                      
                     }
                     
                     #right-section {
@@ -53,15 +80,6 @@
                     .content-action {
                         border-top: 1px solid  var(--divider-color);
                         padding: 6px 10px;
-                    }
-                    
-                    
-                    #leftSection {
-                        width: 80px;
-                        min-height: 120px;
-                        background-size: cover;
-                        background-position: center;
-                        background-repeat: no-repeat;
                     }
                     
                     #fastAction {
@@ -118,12 +136,18 @@
         
                 </style>
                 <paper-card>
-                    <div id="left-section"></div>
+                    <div id="left-section">
+                        <div class="action">
+                            <paper-icon-button id="previewButton" icon="resource:preview" on-tap="_openPreview" class="circle-small" ></paper-icon-button>
+                            <paper-tooltip for="previewButton" position="right" >{{localize('preview-resource')}}</paper-tooltip>
+                        </div>
+                    </div>
                     <div id="right-section">
                         <div class="top">
                             <div id="content">
-                                <div class="name">{{entity.resourceReference.name}}</div>
-                                <div class="name-video-panel">{{entity.videoPanelResource.videoPanelReference.name}}</div>
+                                <div class="name">{{entity.name}}</div>
+                                <div class="name-video-panel">{{resource.name}}</div>
+                                <div class="name-video-panel">{{entity.videoPanelResource.videoPanelReference.name}} - {{monitor.name}}</div>
                             </div>
                             <div id="crud">
                                 <paper-menu-button ignore-select horizontal-align="right">
@@ -137,7 +161,12 @@
                         </div>
                     </div>
                 </paper-card>
-            `
+                <paper-dialog id="previewDialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation" on-iron-overlay-closed="_closePreview">
+                    <div class="title">Preview</div>
+                    <paper-dialog-scrollable>
+                    <div id="contentPreview"></div>
+                    </paper-dialog-scrollable>
+                </paper-dialog>`
         }
 
         constructor() {
@@ -148,6 +177,10 @@
         static get properties () {
             return {
 
+                resource: {
+                    observer: '_changeResource',
+                },
+
                 /**
                  * @type object
                  */
@@ -157,7 +190,8 @@
                         _resourceService : "ResourceService",
                         StorageContainerAggregate: {
                             "_storage" : "VideoPanelResourceStorage",
-                            "_storageResource": "ResourceStorage"
+                            "_storageResource": "ResourceStorage",
+                            "_storageMonitor": "MonitorStorage"
                         }
                     }
                 },
@@ -166,6 +200,22 @@
                  * @type StorageInterface
                  */
                 _storage: {
+                    type: Object,
+                    readOnly: true
+                },
+
+                /**
+                 * @type StorageInterface
+                 */
+                _storageResource: {
+                    type: Object,
+                    readOnly: true
+                },
+
+                /**
+                 * @type StorageInterface
+                 */
+                _storageMonitor: {
                     type: Object,
                     readOnly: true
                 },
@@ -179,28 +229,167 @@
 
         static get observers() {
             return [
-                'changeResource(_storageResource, _resourceService, entity)'
+                'changeResource(_storageResource, _resourceService, entity)',
+                'changeMonitor(_storageMonitor, entity)'
             ]
         }
 
+        /**
+         * @param {StorageInterface} storageResource 
+         * @param {ResourceService} resourceService 
+         * @param {*} entity 
+         * @returns 
+         */
         changeResource(storageResource, resourceService, entity) {
 
-            if (!storageResource || !resourceService || !entity) {
+            if (!storageResource || !resourceService || !entity || !entity.resourceReference || !entity.resourceReference.id) {
+                this.resource = null;
                 return;
             }
 
-            console.log('sucaaaaaaaaaaa', storageResource, entity);
-            if (entity.resourceReference.id) {
-                storageResource.get(entity.resourceReference.id)
-                    .then((resource) => {
-                        console.log('DIO CANE', resource);
-                    });
-            } else {
-                // PLACEHODER
-            }
-       
+            storageResource.get(entity.resourceReference.id)
+                .then((resource) => {
+                    if (!resource) {
+                        console.warn('paper video panel resource resource not found');
+                        return;
+                    }
+                    this.resource = resource;
+                });
         }
 
+        /**
+         * @param {StorageInterface} storageMonitor 
+         * @param {*} entity 
+         * @returns 
+         */
+        changeMonitor(storageMonitor, entity) {
+            if (!storageMonitor || !entity ) {
+                this.monitor = null;
+                return;
+            } 
+
+            this._storageMonitor.get(entity.videoPanelResource.videoPanelReference.parentId)
+                .then((monitor) => {
+                    this.monitor = monitor;
+                });
+        }
+
+         /**
+         * @private
+         */
+        _updateLeftImageHtml() {
+
+            switch (true) {
+                case this.resource instanceof ImageEntity:
+                    this.$['left-section'].style.backgroundImage = `url("${this._resourceService.getResourcePath(this.resource)}")`;
+                    break;
+                case this.resource instanceof VideoEntity:       
+
+                    let video = document.createElement('video');
+                    video.setAttribute('width', 80);
+                    video.setAttribute('height', 120);
+                    video.setAttribute('preload', 'metadata');
+
+                    let source = document.createElement('source');
+                    source.setAttribute('src', `${this._resourceService.getResourcePath(this.resource)}#t=2`);
+
+                    video.appendChild(source);
+                    this.$['left-section'].appendChild(video);
+                    break;
+                case this.resource instanceof AudioEntity:
+                    this.$['left-section'].classList.add("audioBackground");
+                    break;
+                default:
+                    this.$['left-section'].classList.add("webBackground");
+                    break;
+            }
+        }
+
+        /**
+         * @param evt
+         * @private
+         */
+        _openPreview(evt) {
+            let element  = null;
+            switch (true) {
+                case this.resource instanceof ImageEntity === true:
+                    element = document.createElement('img');
+                    element.src = this._resourceService.getResourcePath(this.resource)  + '?' + new Date().getTime();
+                    break;
+                case this.resource instanceof AudioEntity === true:
+                case this.resource instanceof VideoEntity === true:
+                    element = document.createElement('video');
+                    element.src = this._resourceService.getResourcePath(this.resource)  + '?' + new Date().getTime();
+                    element.setAttribute('autoplay', true);
+                    element.muted = true; // TODO remove for debug
+                    element.setAttribute('controls', true);
+                    break;
+                case this.resource instanceof FileEntity === true:
+                    if (!customElements.get(this.resource.wcName)) {
+
+                        import(this._resourceService.getResourcePath(this.resource).replace('.html', '.js'))
+                            .then((module) => {
+                                element = document.createElement(this.resource.wcName);
+                                element.createMockData();
+                            }).catch((reason) => {
+                                console.error(`Web component ${this.resource.wcName}`, reason);
+                            });
+
+                    } else {
+                        element = document.createElement(this.resource.wcName);
+                        element.createMockData();
+                    }
+                    break;
+            }
+
+            if (element) {
+                this._closePreview();
+                this.$.contentPreview.append(element);
+    
+                switch (true) {
+                    case element.tagName === 'VIDEO':
+                    case element.tagName === 'IMG':
+                        element.addEventListener(
+                            element.tagName === 'IMG' ? 'load' : 'playing',
+                            () => {
+                                this.$.previewDialog.open();
+                            }
+                        );
+                        break;
+                    default:
+                        this.$.previewDialog.open();
+                }
+    
+            }
+        }
+
+        /**
+         * @private
+         */
+        _closePreview() {
+            let element = this.$.contentPreview.firstChild;
+
+            if (!element) {
+                return
+            }
+
+            switch (true) {
+                case this.resource instanceof AudioEntity === true:
+                case this.resource instanceof ImageEntity === true:
+                case this.resource instanceof VideoEntity === true:
+                    element.src = '';
+                    break;
+            }
+            this.$.contentPreview.innerHTML = '';
+        }
+
+        _changeResource(resource) {
+            if (!resource) {
+                return;
+            }
+
+            this._updateLeftImageHtml();
+        }
 
         /**
          * @param evt

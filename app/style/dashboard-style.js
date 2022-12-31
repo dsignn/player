@@ -34,14 +34,14 @@ const template = html`
 
             /* paper-input */
             --paper-input-container-color:       var(--primary-text-color);
-            --paper-input-container-focus-color: var(--accent-color);
+            --paper-input-container-focus-color: var( --default-primary-color);
             --paper-input-container-input-color: var(--primary-text-color);
 
             --paper-autocomplete-container-color:       var(--primary-text-color);
-            --paper-autocomplete-container-focus-color: var(--accent-color);
+            --paper-autocomplete-container-focus-color: var( --default-primary-color);
             --paper-autocomplete-container-input-color: var(--primary-text-color);
 
-            --paper-autocomplete-main-color : var(--accent-color);
+            --paper-autocomplete-main-color : var(--default-primary-color);
             --paper-input-font-color        : var(--primary-text-color);
 
 

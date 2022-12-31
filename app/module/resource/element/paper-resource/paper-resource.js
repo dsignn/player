@@ -239,7 +239,6 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         this.$.contentPreview.innerHTML = '';
     }
 
-
     /**
      * @param evt
      * @private
@@ -316,7 +315,6 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      * @private
      */
     _updateLeftImageHtml() {
-
 
         switch (true) {
             case this.entity instanceof ImageEntity:
