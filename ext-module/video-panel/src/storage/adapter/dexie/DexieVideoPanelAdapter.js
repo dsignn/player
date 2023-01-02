@@ -9,26 +9,22 @@ const DexieVideoPanelAdapter = (async () => {
     class DexieVideoPanelAdapter extends DexieAdapter {
 
         /**
-         * @param {Table} table
-         * @param search
+         * @param filter
          * @return {*}
          * @private
          */
-        _search(table, search) {
-
-            let collection = table.toCollection();
-            if (search !== null && typeof search === 'object') {
-
-                for (let property in search) {
-
+        filter(filter) {
+            let collection = super.filter(filter);
+            if (search !== null && typeof filter === 'object') {
+    
+                for (let property in filter) {
                     switch (property) {
                         case 'name':
-                            collection = table.where(property).startsWithIgnoreCase(search[property]);
+                            collection = this.manager.table(this.getNameCollection()).where(property).startsWithIgnoreCase(filter[property]);
                             break;
                     }
                 }
             }
-
             return collection;
         }
     }

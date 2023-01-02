@@ -191,7 +191,7 @@
                         StorageContainerAggregate: {
                             "_storage" : "VideoPanelResourceStorage",
                             "_storageResource": "ResourceStorage",
-                            "_storageMonitor": "MonitorStorage"
+                            "_storageVideoPanel": "VideoPanelStorage"
                         }
                     }
                 },
@@ -215,7 +215,7 @@
                 /**
                  * @type StorageInterface
                  */
-                _storageMonitor: {
+                _storageVideoPanel: {
                     type: Object,
                     readOnly: true
                 },
@@ -230,7 +230,7 @@
         static get observers() {
             return [
                 'changeResource(_storageResource, _resourceService, entity)',
-                'changeMonitor(_storageMonitor, entity)'
+                'changeMonitor(_storageVideoPanel, entity)'
             ]
         }
 
@@ -262,13 +262,13 @@
          * @param {*} entity 
          * @returns 
          */
-        changeMonitor(storageMonitor, entity) {
-            if (!storageMonitor || !entity ) {
+        changeMonitor(storageVideoPanel, entity) {
+            if (!storageVideoPanel || !entity ) {
                 this.monitor = null;
                 return;
             } 
 
-            this._storageMonitor.get(entity.videoPanelResource.videoPanelReference.parentId)
+            this._storageVideoPanel.get(entity.videoPanelResource.videoPanelReference.parentId)
                 .then((monitor) => {
                     this.monitor = monitor;
                 });

@@ -26,11 +26,15 @@ import {lang} from './language/language.js';
  * @polymer
  */
 class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
-
+// class="iron-selected"
     static get template() {
         return html`
              ${flexStyle}
              <style>
+                :host {
+                    display: block;
+                    height: 100%;
+                }
           
                 app-toolbar {
                     @apply --app-toolbar;
@@ -306,6 +310,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
 
                     if (!paperIconBtn) {
                         console.log('suca', value);
+                        this.$.menu.render();
+                        paperIconBtn = this.shadowRoot.querySelector('#' + value);
                     }
 
                     paperIconBtn.style.color = 'white';
