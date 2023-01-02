@@ -9,6 +9,8 @@ export async function Repository() {
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/proprerty/MapPropertyStrategy.js`));
     const { MongoIdStrategy } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/MongoIdStrategy.js`));
+    const { MongoIdGenerator } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/util/MongoIdGenerator.js`));
     const { PropertyHydrator } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/PropertyHydrator.js`));
     const { Store } = await import(require('path').normalize(
@@ -153,6 +155,11 @@ export async function Repository() {
                     .addValueStrategy('_id', new MongoIdStrategy());
     
                 storage.setHydrator(hydrator);
+
+                storage.getEventManager()
+                    .on(Storage.BEFORE_SAVE, (data) => {
+                        data.data.id = MongoIdGenerator.statcGenerateId();
+                    });
     
                 this.getContainer().get('StorageContainerAggregate').set(
                     this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage['name-service'],

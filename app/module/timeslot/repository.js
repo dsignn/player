@@ -10,7 +10,7 @@ import {
     MongoIdStrategy,
     NumberStrategy
 } from "@dsign/library/src/hydrator/strategy/value/index";
-
+import {MongoIdGenerator} from "@dsign/library/src/storage/util/MongoIdGenerator";
 import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
 import {AbstractInjector} from "./src/injector/AbstractInjector";
 import {Test1} from "./src/injector/Test1";
@@ -111,6 +111,11 @@ export class Repository extends ContainerAware {
             storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
                 this._getModuleConfig().hydrator['name-storage-service']
             ));
+
+            storage.getEventManager()
+                .on(Storage.BEFORE_SAVE, (data) => {
+                    data.data.id = MongoIdGenerator.statcGenerateId();
+                 });
 
             this.getContainer().get('StorageContainerAggregate').set(
                 this._getModuleConfig().storage['name-service'],

@@ -161,6 +161,11 @@ export class Repository extends ContainerAware {
                 .on(Storage.POST_SAVE, this.onPostUpsert.bind(this))
                 .on(Storage.POST_REMOVE, this.onPostRemove.bind(this));
 
+            storage.getEventManager()
+                .on(Storage.BEFORE_SAVE, (data) => {
+                    data.data.id = MongoIdGenerator.statcGenerateId();
+                 });
+
             this.getContainer().get('StorageContainerAggregate').set(
                 this._getModuleConfig().storage['name-service'],
                 storage

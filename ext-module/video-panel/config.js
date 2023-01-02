@@ -21,11 +21,11 @@
                 "name-service": "VideoPanelResourceStorage",
                 "adapter": {
                     "mongo": {
-                        "collection": "storage-video-panel-resource",
+                        "collection": "video-panel-resource",
                         "connection-service": "MongoDb"
                     },
                     "dexie": {
-                        "collection": "storage-video-panel-resource",
+                        "collection": "video-panel-resource",
                         "connection-service": "DexieManager"
                     }
                 }

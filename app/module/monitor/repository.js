@@ -11,6 +11,7 @@ import {
     MongoIdStrategy,
     NumberStrategy
 } from "@dsign/library/src/hydrator/strategy/value/index";
+import {MongoIdGenerator} from "@dsign/library/src/storage/util/MongoIdGenerator";
 import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
 import {ProxyIpc} from "@dsign/library/src/sender/ProxyIpc";
 import {MonitorEntity} from "./src/entity/MonitorEntity";
@@ -100,6 +101,11 @@ export class Repository extends ContainerAware {
 
             let dashboardAlwayOnTop = this.getContainer().get('Config').dashboard &&  this.getContainer().get('Config').dashboard.alwaysOnTop ?
                 this.getContainer().get('Config').dashboard.alwaysOnTop : false;
+
+            storage.getEventManager()
+                .on(Storage.BEFORE_SAVE, (data) => {
+                    data.data.id = MongoIdGenerator.statcGenerateId();
+                 });
 
             this.getContainer().set(
                 'MonitorService',
