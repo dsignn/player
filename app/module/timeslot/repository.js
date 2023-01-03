@@ -39,12 +39,6 @@ export class Repository extends ContainerAware {
     static get TIMESLOT_SENDER_SERVICE() { return 'TimeslotSender'; };
 
     /**
-     * @return {string}
-     * @constructor
-     */
-    static get TIMESLOT_RECEIVER_SERVICE() { return 'TimeslotReceiver'; };
-
-    /**
      *
      */
     init() {

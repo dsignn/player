@@ -15,6 +15,8 @@ export async function Repository() {
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/PropertyHydrator.js`));
     const { MongoDb } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoDb.js`));
+    const { MongoIdGenerator } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/util/MongoIdGenerator.js`)); 
     const { Store } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/Store.js`));
     const { Storage } = await import(require('path').normalize(
@@ -93,8 +95,14 @@ export async function Repository() {
                     dexieManager, 
                     this._getModuleConfig().storage.adapter.dexie['collection']
                 );
+                
                 const storage = new Storage(adapter);
                 storage.setHydrator(hydrator);
+                storage.getEventManager()
+                    .on(Storage.BEFORE_SAVE, (data) => {
+                        data.data.id = MongoIdGenerator.statcGenerateId();
+                    });
+
 
                 this.getContainer().get('StorageContainerAggregate').set(
                     this._getModuleConfig().storage['name-service'],
