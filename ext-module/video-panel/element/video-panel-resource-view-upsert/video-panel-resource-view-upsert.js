@@ -14,6 +14,8 @@
     const { lang } = await import('./language.js');
     const { flexStyle } = await import(`${container.get('Application').getBasePath()}style/layout-style.js`);
     const { autocompleteStyle } = await import(`${container.get('Application').getBasePath()}style/autocomplete-custom-style.js`);
+
+    const { Mapper } = await import(`${container.get('Application').getBasePath()}module/resource/src/util/Mapper.js`);
            
        
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-checkbox/paper-checkbox.js`));
@@ -192,6 +194,10 @@
                     value: true
                 },
 
+                extension: {
+                    value: 'jpg'
+                },
+
                 services : {
                     value : {
                         _notify: "Notify",
@@ -287,6 +293,8 @@
 
         ready() {
             super.ready();
+
+            console.log(Mapper, 'toni')
             this.$.formEntity.addEventListener('iron-form-presubmit', this.submitEntity.bind(this));
         }
 
@@ -361,7 +369,7 @@
         createVideoPanelResource(evt) {
 
             let path = new PathNode();
-            path.setExtension('mp4');
+            path.setExtension(this.extension);
             // TODO change name dyslexia
             path.setNameFile(MongoIdGenerator.statcGenerateId());
             // TODO refactor sep
@@ -399,7 +407,7 @@
             resource.name = this.entity.resourceReference.name;
             resource.resourceToImport = {};
             resource.resourceToImport.path = ffmpegCommand._currentOutput.target;
-            resource.type = "video/mp4";
+            resource.type = Mapper.mimeType()[this.extension];
             if (this.entity.resourceReference.id) {
                 method = 'update';
                 resource.id = this.entity.resourceReference.id;

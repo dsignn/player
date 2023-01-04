@@ -177,21 +177,15 @@ const Mosaic = (async () => {
                     command.addInput(this._resourceDestination[cont]);
                 }
 
-                command
-                    .complexFilter(
-                        this._getComplexFilter(),
-                        `base${this._index}`
-                    ).save(
-                    this._getDestinationString()
-                ).on(
-                    'error',
-                    (err) => {
-                        reject(err);
-                    }
-                ).on(
-                    'end',
-                    (data) => {
-                        console.log('command', data, command);
+                command.complexFilter(this._getComplexFilter(), `base${this._index}`)
+                    .save(this._getDestinationString())
+                    .on('error',
+                        (err) => {
+                            reject(err);
+                        }
+                    ).on('end',
+                        (data) => {
+                            console.log('command', data, command);
                         resolve(command);
                     }
                 );
