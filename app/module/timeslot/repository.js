@@ -27,18 +27,6 @@ import {Repository as MonitorRepository} from "../monitor/repository";
 export class Repository extends ContainerAware {
 
     /**
-     * @return {string}
-     * @constructor
-     */
-    static get TIMESLOT_INJECTOR_DATA_SERVICE() { return 'InjectorDataTimeslotAggregate'; };
-
-    /**
-     * @return {string}
-     * @constructor
-     */
-    static get TIMESLOT_SENDER_SERVICE() { return 'TimeslotSender'; };
-
-    /**
      *
      */
     init() {

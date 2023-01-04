@@ -134,8 +134,9 @@ export class Repository extends ContainerAware {
 
             this._loadTimerService();
 
-            this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE)
-                .set(
+            this.getContainer().get( 
+                    this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
+                ).set(
                     'TimerDataInjector',
                     new TimerDataInjector(storage, this.getContainer().get(Repository.TIMER_SERVICE))
                 );

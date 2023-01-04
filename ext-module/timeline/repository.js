@@ -144,9 +144,9 @@ export class Repository extends ContainerAware {
             Repository.TIMELINE_SERVICE,
             new TimelineService(
                 this.getContainer().get('StorageContainerAggregate').get(TimeslotRepository.STORAGE_SERVICE),
-                this.getContainer().get('SenderContainerAggregate').get(TimeslotRepository.TIMESLOT_SENDER_SERVICE),
+                this.getContainer().get('SenderContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['timeslotSender']),
                 this.getContainer().get('Timer'),
-                this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE),
+                this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']),
                 this.getContainer().get('StorageContainerAggregate').get(Repository.STORAGE_SERVICE)
             )
         );

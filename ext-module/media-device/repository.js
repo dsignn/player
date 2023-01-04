@@ -148,8 +148,9 @@ export async function Repository() {
                     storage
                 );
 
-                this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE)
-                    .set(
+                this.getContainer().get(
+                        this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
+                    ).set(
                         'MediaDeviceDataInjector',
                         new MediaDeviceDataInjector(storage)
                     );
@@ -200,8 +201,9 @@ export async function Repository() {
                     storage
                 );
 
-                this.getContainer().get(TimeslotRepository.TIMESLOT_INJECTOR_DATA_SERVICE)
-                    .set(
+                this.getContainer().get(
+                        this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
+                    ).set(
                         'MediaDeviceDataInjector',
                         new MediaDeviceDataInjector(storage)
                     );

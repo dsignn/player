@@ -134,5 +134,8 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "scripts": {
+        "zip": "zip -r  ../video-panel . -x video-generator/\\*"
+    }
 }

@@ -63,5 +63,8 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "scripts": {
+        "zip": "zip -r  ../playlist . "
+    }
 }
