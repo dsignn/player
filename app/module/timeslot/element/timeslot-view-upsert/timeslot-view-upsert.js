@@ -83,7 +83,7 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                                         <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
                                             <div index="[[index]]">
                                                 <div class="service-name">[[item.name]]</div>
-                                                <div class="service-description">[[item.height]] x [[item.width]]</div>
+                                                <div class="service-description">{{localize('duration')}}[[item.height]] x [[item.width]]</div>
                                             </div>
                                             <paper-ripple></paper-ripple>
                                         </paper-item>
@@ -256,6 +256,10 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchMonitor(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._monitorService || !evt.detail.value) {
+            return;
+        }
 
         let enableMonitor = this._monitorService.getEnableMonitor();
         let monitors = enableMonitor.id ? enableMonitor.getMonitors({nested: true}) : [];
@@ -271,6 +275,8 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
             reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
             reference.setCollection('monitor');
             reference.setId(filter[cont].id);
+            reference.height = filter[cont].height;
+            reference.width = filter[cont].width;
             reference.setParentId(this._monitorService.getEnableMonitor().getId());
             reference.name = filter[cont].name;
             filter[cont] = reference;
@@ -286,6 +292,10 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchResource(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._resourceStorage || !evt.detail.value) {
+            return;
+        }
 
         this._resourceStorage.getAll({name : evt.detail.value.text})
             .then((resources) => {
@@ -338,7 +348,11 @@ class TimeslotViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @private
      */
     _searchBindTimeslot(evt) {
-
+        // TODO cotroll papar autocomplete
+        if (!this._storage || !evt.detail.value) {
+            return;
+        }
+            
         this._storage.getAll({name : evt.detail.value.text})
             .then((resources) => {
 

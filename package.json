@@ -7,8 +7,8 @@
   "license": "BSD-3-Clause",
   "devDependencies": {
     "@dsign/player-cli": "github:dsignn/player-cli",
-    "electron-builder": "^22.10.5",
     "dexie": "^2.0.4",
+    "electron-builder": "^23.3.3",
     "run-script-os": "^1.1.5"
   },
   "scripts": {
@@ -17,7 +17,7 @@
     "postinstallscriptos:linux:darwin": "cp app/config/config.json.dist app/config/config-development.json && cp app/config/config.json.dist app/config/config-production.json && cp app/config/module.json.dist app/config/module.json && cd app && npm install",
     "postinstallscriptos:win32": "copy app\\config\\config.json.dist app\\config\\config-development.json && copy app\\config\\config.json.dist app\\config\\config-production.json && copy app\\config\\module.json.dist app\\config\\module.json && cd app && npm install",
     "start": "run-script-os",
-    "start:linux:darwin": "cd app && export APP_ENVIRONMENT=development && export ELECTRON_DISABLE_SECURITY_WARNINGS=true && ./node_modules/.bin/electron --enable-accelerated-mjpeg-decode --enable-vulkan --enable-accelerated-video --ignore-gpu-blacklist --enable-native-gpu-memory-buffers --enable-vulkan --enable-gpu-rasterization ./main.js --inspect=5858",
+    "start:linux:darwin": "cd app && export APP_ENVIRONMENT=development && export ELECTRON_DISABLE_SECURITY_WARNINGS=true && ./node_modules/.bin/electron ./main.js --inspect=5858",
     "start:win32": "cd app && set APP_ENVIRONMENT=development&& set ELECTRON_DISABLE_SECURITY_WARNINGS=true && electron .\\node_modules\\.bin\\main.js --inspect=5858",
     "polymer-build": "cd app && ./node_modules/.bin/polymer build",
     "postpolymer-build": "npm run postpolymer-buildscriptos",
@@ -28,23 +28,25 @@
     "start-pre-build:linux:darwin": "cd app && ./node_modules/.bin/electron ./../build/es6bundle/main.js --inspect=5858",
     "start-pre-build:win32": "cd app && .\\node_modules\\.bin\\electron .\\..\\build\\es6bundle\\main.js --inspect=5858",
     "test": "cd app && ./node_modules/.bin/polymer test -l chrome",
-    "dist": "electron-builder -c.extraMetadata.main=main.js -lw -p onTag",
+    "dist": "electron-builder -c.extraMetadata.main=main.js -wl",
     "clear-all": "run-script-os",
     "clear-all:linux:darwin": "rm -rf app/node_modules && rm -rf build && rm -rf releases",
     "clear-all:win32": "rmdir /Q /S  app\\node_modules && rmdir /Q /S build && rmdir /Q /S releases"
   },
   "build": {
     "appId": "dsign.player",
+    "productName": "Dsign player",
     "asar": false,
+    "electronVersion": "20.1.3",
     "npmRebuild": false,
     "publish": {
       "provider": "github",
       "releaseType": "release",
-      "vPrefixedTagName": false
+      "vPrefixedTagName": false,
+      "token": "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"
     },
     "directories": {
       "output": "releases",
-
       "app": "build/es6bundle"
     },
     "win": {
@@ -67,7 +69,6 @@
           "target": "AppImage",
           "arch": [
             "x64",
-            "ia32",
             "armv7l"
           ]
         }

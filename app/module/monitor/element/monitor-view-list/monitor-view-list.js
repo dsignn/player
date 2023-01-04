@@ -22,6 +22,12 @@ class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMi
                     @apply --layout-horizontal;
                     @apply --layout-wrap;
                 }
+
+                #empty {
+                    display: block;
+                    padding: 16px 0;
+                    font-size: 20px;
+                }
                 
                 @media (max-width: 500px) {
                     paper-monitor {
@@ -60,9 +66,10 @@ class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMi
                 }
             </style>
             <slot name="header"></slot>
+            <div id="empty">{{localize('empty-monitor')}}</div>
             <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="monitor">
-                    <paper-monitor entity="{{monitor}}" on-delete="_deleteEntity" on-update="_showUpdateView" on-enable-monitor="_updateEntity"></paper-monitor>
+                    <paper-monitor entity="{{monitor}}" on-delete="_deleteEntity" on-update="_showUpdateView" on-enable-monitor="_updateEntity" on-disable-monitor="_updateEntity"></paper-monitor>
                 </template>
             </div>
             <paper-pagination page="{{page}}" total-items="{{totalItems}}" item-per-page="{{itemPerPage}}" next-icon="next" previous-icon="previous"></paper-pagination>
@@ -91,6 +98,14 @@ class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMi
              */
             entitySelected: {
                 notify: true
+            },
+
+            /**
+             * @type Array
+             */
+             entities: {
+                notify: true,
+                observer: "_changedEntities"
             },
 
             /**
@@ -128,6 +143,25 @@ class MonitorViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMi
      */
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
+        this._updateList();
+    }
+
+    /**
+     * @private
+     */
+    _updateList() {
+        if (Array.isArray(this.entities) && this.entities.length == 0) {
+            this.$.empty.style.display = 'block';
+        } else {
+            this.$.empty.style.display = 'none';
+        }
+    }
+
+    /**
+     * @param {Array} entities 
+     */
+    _changedEntities(entities) {
+        this._updateList();
     }
 }
 window.customElements.define('monitor-view-list', MonitorViewList);

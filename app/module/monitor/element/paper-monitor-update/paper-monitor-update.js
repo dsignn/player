@@ -201,6 +201,10 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _defaultChanged(evt) {
+        if (!this._timeslotStorage) {
+            return;
+        }
+
         this._timeslotStorage
             .getAll({name: evt.detail.value.text})
             .then(
@@ -221,8 +225,6 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         entityReference.setId(evt.detail.value.id);
         entityReference.setCollection('timeslot');
         entityReference.name = evt.detail.value.name;
-
-        console.log(entityReference);
         this.entity.defaultTimeslotReference = entityReference;
     }
 

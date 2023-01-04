@@ -99,19 +99,7 @@ export const flexStyle = html`
         
         .layout-content {
             padding: var(--content-padding);
-        }
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        }     
         
       .layout.horizontal,
       .layout.vertical {

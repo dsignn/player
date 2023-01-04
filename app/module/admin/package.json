@@ -1,6 +1,7 @@
 {
     "title": "Admin",
     "name": "admin",
+    "core": true,
     "icon": "admin:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {

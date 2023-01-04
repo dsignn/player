@@ -17,37 +17,9 @@ export class Repository extends ContainerAware {
 
     /**
      *
-     * @return {string}
-     * @constructor
-     */
-    static get WIDGET_COLLECTION() { return 'widget'; };
-
-    /**
-     *
-     * @return {string}
-     * @constructor
-     */
-    static get WIDGET_STORAGE_SERVICE() { return 'WidgetStorage'; };
-
-    /**
-     *
-     * @return {string}
-     * @constructor
-     */
-    static get WIDGET_ENTITY_SERVICE() { return 'WidgetEntity'; };
-
-    /**
-     *
-     * @return {string}
-     * @constructor
-     */
-    static get WIDGET_HYDRATOR_SERVICE() { return 'DashboardEntityHydrator'; };
-
-    /**
-     *
      */
     init() {
-        this.loadConfig();
+        this.initConfig();
         this.initAcl();
         this.initEntity();
         this.initHydrator();
@@ -57,10 +29,10 @@ export class Repository extends ContainerAware {
     /**
      * Merge config
      */
-    loadConfig() {
+    initConfig() {
         this.container.set(
-            'config',
-            this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+            'ModuleConfig',
+            this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
         );
     }
 
@@ -70,7 +42,10 @@ export class Repository extends ContainerAware {
     initEntity() {
         this.getContainer()
             .get('EntityContainerAggregate')
-            .set(Repository.WIDGET_ENTITY_SERVICE, new WidgetEntity());
+            .set(
+                this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].entityService,
+                new WidgetEntity()
+            );
     }
 
     /**
@@ -81,23 +56,25 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('HydratorContainerAggregate')
             .set(
-                Repository.WIDGET_HYDRATOR_SERVICE,
-                Repository.getWidgetEntityHydrator(this.getContainer().get('EntityContainerAggregate'))
+                this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].hydrator['name-storage-service'],
+                Repository.getWidgetEntityHydrator(this.getContainer())
             );
     }
 
     /**
      *
      */
-    initStorage() {
+    initStorage() {    
 
         const adapter = new LocalStorageAdapter(
-            this.getContainer().get('Config').storage.adapter.localStorage.namespace,
-            Repository.WIDGET_COLLECTION
+            this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].storage.adapter.localStorage.namespace,
+            this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].storage.adapter.localStorage.collection
         );
 
         const storage = new Storage(adapter);
-        storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.WIDGET_HYDRATOR_SERVICE));
+        storage.setHydrator(this.getContainer().get('HydratorContainerAggregate')
+            .get(this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].hydrator['name-storage-service'])
+        );
 
         storage.getEventManager().on(
             Storage.BEFORE_SAVE,
@@ -108,7 +85,7 @@ export class Repository extends ContainerAware {
         );
 
         this.getContainer().get('StorageContainerAggregate').set(
-            Repository.WIDGET_STORAGE_SERVICE,
+            this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].storage['name-service'],
             storage
         );
 
@@ -119,7 +96,11 @@ export class Repository extends ContainerAware {
      */
     static getWidgetEntityHydrator(container) {
 
-        let hydrator = new PropertyHydrator(container.get(Repository.WIDGET_ENTITY_SERVICE));
+        let hydrator = new PropertyHydrator(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['dashboard']['dashboard'].entityService
+            )
+        );
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('col')
@@ -168,6 +149,8 @@ export class Repository extends ContainerAware {
         if (this.getContainer().has('Acl')) {
 
             let aclService = this.getContainer().get('Acl');
+            let resource = this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].acl.resource;
+
 
             // TODO add method on service
             aclService.addResource('dashboard');

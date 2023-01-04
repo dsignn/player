@@ -1,11 +1,13 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import { LocalizeMixin } from '@dsign/polymer-mixin/localize/localize-mixin';
 import '@fluidnext-polymer/paper-chip/paper-chip';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/iron-icon/iron-icon';
+import {lang} from './language';
 
-class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement) {
+class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -23,6 +25,10 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
                 .divider {
                     height: auto;
                     width: 8px;
+                }
+
+                paper-button {
+                    height: 100%;
                 }
                 
                 paper-chip {
@@ -42,6 +48,12 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
 				    color: black;
 			    }
                 
+                paper-autocomplete {
+                    --autocomplete-wrapper: {
+                        position: absolute;
+                        min-width:250px;
+                    }
+                }
                     
             </style>
             <div id="container">
@@ -92,8 +104,11 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
                             value-property="name"
                             remote-source
                             on-autocomplete-change="_searchValue"
-                            on-autocomplete-selected="_selectData">
+                            on-autocomplete-selected="_addInjector">
                     </paper-autocomplete>
+                </div>
+                <div hidden$="{{hideNoDataInput}}"> 
+                    <paper-button on-tap="_addInjector">{{localize('add')}}</paper-button>
                 </div>
             </div>
             <div>
@@ -107,6 +122,11 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
         `;
     }
 
+    constructor() {
+        super();
+        this.resources = lang;
+    }
+
     static get properties() {
         return {
 
@@ -114,6 +134,12 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
              * @type boolean
              */
             hideDataInput: {
+                type: Boolean,
+                notify: true,
+                value: true
+            },
+
+            hideNoDataInput: {
                 type: Boolean,
                 notify: true,
                 value: true
@@ -149,6 +175,7 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
 
             services : {
                 value : {
+                    _localizeService: 'Localize',
                     _injectorServices:"InjectorDataTimeslotAggregate"
                 }
             },
@@ -181,16 +208,19 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
         }
 
         for (let cont = 0; newValue.length > cont; cont++) {
-            console.log('nuovo', newValue[cont]);
+            console.log('nuovo', newValue[cont])
             this._injectorServices.get(newValue[cont].name)
                 .getTimeslotData(newValue[cont].data)
                 .then(function(data) {
 
                     let obj = {
-                        name: data ? data[ this.element._injectorServices.get(this.service.name).serviceNamespace].name : '',
                         serviceLabel: this.element._injectorServices.get(this.service.name).serviceLabel,
                         serviceName:  this.element._injectorServices.get(this.service.name).serviceName
                     };
+
+                    if (this._injectorServices.get(injector.name).hasData) {
+                        obj.name = data[this._injectorServices.get(injector.name).serviceNamespace].name;
+                    }
 
                     this.element.push('paperItemsData', obj);
                 }.bind({element: this, service: newValue[cont]}));
@@ -209,6 +239,10 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
      * @private
      */
     _serviceSearch(evt) {
+        // TODO cotroll papar autocomplete
+        if (!evt.detail.value) {
+            return;
+        }
 
         let suggestions = [];
         for (let property in this._injectorServices.services) {
@@ -225,7 +259,15 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
      * @private
      */
     _selectService(evt) {
-        this.hideDataInput = false;
+        if (evt.detail.value.hasData) {
+            this.hideDataInput = false;
+            this.hideNoDataInput = true;
+            this.$.serviceInput.style.flexBasis = "50%";
+        } else {
+            this.hideDataInput = true;
+            this.hideNoDataInput = false;
+            this.$.serviceInput.style.flexBasis = "100%";
+        }
     }
 
     /**
@@ -233,6 +275,10 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
      * @private
      */
     _searchValue(evt) {
+        // TODO cotroll papar autocomplete
+        if (!evt.detail.value) {
+            return;
+        }
 
         this.$.serviceInput.value.getServiceData(evt.detail.value.text)
             .then((data) => {
@@ -244,10 +290,13 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
      * @param evt
      * @private
      */
-    _selectData(evt) {
+     _addInjector(evt) {
         let injector = new Injector();
-        injector.setData(this.$.serviceInput.value.extractTimeslot(evt.detail.value));
         injector.setName(this.$.serviceInput.value.serviceName);
+        if (this.$.serviceInput.value.hasData) {
+            injector.setData(this.$.serviceInput.value.extractTimeslot(evt.detail.value));
+        }
+       
 
         this.push('value', injector);
         this.$.serviceInput.clear();
@@ -263,10 +312,13 @@ class PaperInputInjectorDataService extends ServiceInjectorMixin(PolymerElement)
             .then(function(data) {
 
                 let obj = {
-                    name: data ? data[this._injectorServices.get(injector.name).serviceNamespace].name : '',
                     serviceLabel: this._injectorServices.get(injector.name).serviceLabel,
                     serviceName: this._injectorServices.get(injector.name).serviceName
                 };
+
+                if (this._injectorServices.get(injector.name).hasData) {
+                    obj.name = data[this._injectorServices.get(injector.name).serviceNamespace].name;
+                }
 
                 this.push('paperItemsData', obj);
             }.bind(this));

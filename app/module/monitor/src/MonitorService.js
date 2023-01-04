@@ -1,14 +1,25 @@
+import { EventManagerAware } from "@dsign/library/src/event";
 import {Storage} from "@dsign/library/src/storage/Storage";
 
 /**
  * @class MonitorService
  */
-export class MonitorService {
+export class MonitorService extends EventManagerAware {
 
     /**
      * @return {string}
      */
-    static get LOAD_MONITOR() { return 'paper-player-config'; };
+    static get LOADING_MONITOR_FINISH() { return 'windos-loading-finish'; };
+
+    /**
+     * @return {string}
+     */
+     static get LOADING_MONITOR() { return 'windos-loading-start'; };
+
+    /**
+     * @return {string}
+     */
+    static get LOAD_MONITOR() { return 'paper-player-windos-loading'; };
 
     /**
      * @return {string}
@@ -23,6 +34,11 @@ export class MonitorService {
     /**
      * @return {string}
      */
+    static get DISABLE_MONITOR() { return 'paper-player-disable'; };
+
+    /**
+     * @return {string}
+     */
     static get DASHBOARD_ALWAYS_ON_TOP() { return 'dashboard-always-on-top'; };
 
     /**
@@ -33,6 +49,7 @@ export class MonitorService {
      * @param {string} resourcePath
      */
     constructor(monitorStorage, sender, receiver, alwaysOnTopDashboard, resourcePath) {
+        super();
 
         /**
          * @type {Storage}
@@ -56,6 +73,15 @@ export class MonitorService {
         this.receiver.on('monitors', (event, data) => {
             this.screen = data;
         });
+
+        this.receiver.on('loading-player-windows', (event, data) => {
+            this.eventManager.emit(MonitorService.LOAD_MONITOR, {});
+        });
+
+        this.receiver.on('loading-player-windows-finish', (event, data) => {
+            this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
+        });
+
 
         this.sender.send('monitors', {'mock': 'mock'});
 
@@ -97,7 +123,7 @@ export class MonitorService {
                 this.enableMonitor = enableMonitors[0];
             });
 
-        const { app, BrowserWindow, screen } = require('electron');
+        const { screen } = require('electron');
         this.screen = screen;
 
     }
@@ -113,22 +139,27 @@ export class MonitorService {
      * @param evt
      */
     _checkUpdateMonitor(evt) {
-
-        if (!evt.data.enable) {
-            return;
-        }
-
+ 
         switch (true) {
-            case evt.data.id === this.enableMonitor.id:
-                this.sender.send(MonitorService.UPDATE_MONITOR, evt.data);
+            case (evt.data.id === this.enableMonitor.id && evt.data.enable === false):
+                console.log('DISABLE', evt.data.name, this.enableMonitor.name)
+                this.sender.send(MonitorService.DISABLE_MONITOR, evt.data);
+                this.eventManager.emit(MonitorService.DISABLE_MONITOR, evt.data);
+                this.enableMonitor = {};
                 break;
-            default:
+            case (evt.data.id === this.enableMonitor.id && evt.data.enable === true):
+                console.log('ENABLE', evt.data.name, this.enableMonitor.name)
+                this.sender.send(MonitorService.UPDATE_MONITOR, evt.data);
+                this.eventManager.emit(MonitorService.UPDATE_MONITOR, evt.data);
+                break;
+            case (evt.data.enable === true):
+                console.log('CHANGE', evt.data.name, this.enableMonitor.name)
                 this._clearMonitorsEnabled();
                 this.sender.send(MonitorService.CHANGE_MONITOR, evt.data);
+                this.eventManager.emit(MonitorService.CHANGE_MONITOR, evt.data);
+                this.enableMonitor = evt.data;
                 break;
         }
-
-        this.enableMonitor = evt.data;
     }
 
     /**

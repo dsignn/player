@@ -1,6 +1,7 @@
 {
     "title": "Dashboard",
     "name": "dashboard",
+    "core": true,
     "icon": "dashboard:menu",
     "entryPoint": {
         "name": "dashboard-index",
@@ -21,7 +22,7 @@
             }
         }
     ],
-    "autoloadsWs": [
+    "autoloadsWc": [
         {
             "name": "dashboard-icons",
             "path": {

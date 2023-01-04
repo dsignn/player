@@ -33,6 +33,10 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                         background:  var(--divider-color);
                     }
                 }
+
+                .container {
+                    min-height: 150px;
+                }
   
             </style>
             <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>

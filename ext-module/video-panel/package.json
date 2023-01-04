@@ -1,0 +1,141 @@
+{
+    "title": "Video panel",
+    "name": "video-panel",
+    "icon": "video-panel:menu",
+    "configEntryPoint": "repository.js",
+    "entryPoint": {
+        "name": "video-panel-index",
+        "path": {
+            "directory": "element/video-panel-index",
+            "nameFile": "video-panel-index",
+            "extension": "js"
+        }
+    },
+    "autoloadsWc": [
+        {
+            "name": "video-panel-icons",
+            "path": {
+                "directory": "element/video-panel-icons",
+                "nameFile": "video-panel-icons",
+                "extension": "js"
+            }
+        }
+    ],
+    "autoloads": [
+        {
+            "name": "Mosaic",
+            "path": {
+                "directory": "src/ffmpg",
+                "nameFile": "Mosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "Crop",
+            "path": {
+                "directory": "src/ffmpg/filter",
+                "nameFile": "Crop",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "Crop",
+            "path": {
+                "directory": "src/ffmpg",
+                "nameFile": "Default",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelContainerEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "VideoPanelContainerEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelResourceContainerEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "VideoPanelResourceContainerEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanel",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "VideoPanel",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelResource",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "VideoPanelResource",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MonitorMosaic",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "MonitorMosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "ResourceMosaic",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "ResourceMosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelMosaic",
+            "path": {
+                "directory": "src/entity/embedded",
+                "nameFile": "VideoPanelMosaic",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoVideoPanelResourceAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoVideoPanelResourceAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoVideoPanelAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoVideoPanelAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelToVideoPanelResourceHydrator",
+            "path": {
+                "directory": "src/hydrator",
+                "nameFile": "VideoPanelToVideoPanelResourceHydrator",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "VideoPanelService",
+            "path": {
+                "directory": "src",
+                "nameFile": "VideoPanelService",
+                "extension": "js"
+            }
+        }
+    ],
+    "scripts": {
+        "zip": "zip -r  ../video-panel . -x video-generator/\\*"
+    }
+}

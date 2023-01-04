@@ -1,6 +1,7 @@
 {
     "title": "Monitor",
     "name": "monitor",
+    "core": true,
     "icon": "monitor:menu",
     "entryPoint": {
         "name": "monitor-index",
@@ -53,7 +54,7 @@
             }
         }
     ],
-    "autoloadsWs": [
+    "autoloadsWc": [
         {
             "name": "monitor-icons",
             "path": {

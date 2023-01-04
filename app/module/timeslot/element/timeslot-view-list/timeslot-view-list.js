@@ -23,6 +23,12 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                     @apply --layout-wrap;
                 }
                 
+                #empty {
+                    display: block;
+                    padding: 16px 0;
+                    font-size: 20px;
+                }
+                
                 @media (max-width: 500px) {
                     paper-timeslot {
                         flex-basis: 100%;
@@ -65,6 +71,7 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                 }
             </style>
             <slot name="header"></slot>
+                <div id="empty">{{localize('empty-timeslot')}}</div>
                 <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="timeslot">
                     <paper-timeslot entity="{{timeslot}}" 
@@ -110,6 +117,14 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
             },
 
             /**
+             * @type Array
+             */
+            entities: {
+                notify: true,
+                observer: "_changedEntities"
+            },
+
+            /**
              * @type object
              */
             services : {
@@ -136,6 +151,7 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
      */
     _deleteCallback() {
         this._notify.notify(this.localize('notify-delete'));
+        this._updateList();
     }
 
     /**
@@ -183,5 +199,22 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
         this._timeslotService.pause(evt.detail);
     }
 
+    /**
+     * @private
+     */
+    _updateList() {
+        if (Array.isArray(this.entities) && this.entities.length == 0) {
+            this.$.empty.style.display = 'block';
+        } else {
+            this.$.empty.style.display = 'none';
+        }
+    }
+
+    /**
+     * @param {Array} entities 
+     */
+    _changedEntities(entities) {
+        this._updateList();
+    }
 }
 window.customElements.define('timeslot-view-list', TimeslotViewList);

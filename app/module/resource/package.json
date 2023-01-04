@@ -1,6 +1,7 @@
 {
     "title": "Resource",
     "name": "resource",
+    "core": true,
     "icon": "resource:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {
@@ -69,12 +70,20 @@
             }
         }
     ],
-    "autoloadsWs": [
+    "autoloadsWc": [
         {
             "name": "resource-icons",
             "path": {
                 "directory": "element/resource-icons",
                 "nameFile": "resource-icons",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "paper-icon-resource-upsert",
+            "path": {
+                "directory": "element/paper-icon-resource-upsert",
+                "nameFile": "paper-icon-resource-upsert",
                 "extension": "js"
             }
         }

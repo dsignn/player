@@ -2,6 +2,7 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import {StorageEntityMixin} from "@dsign/polymer-mixin/storage/entity-mixin";
+import {MonitorService} from "../../src/MonitorService";
 import '@polymer/paper-card/paper-card';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-listbox/paper-listbox';
@@ -31,7 +32,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
                     background-size: cover;
                     background-position: center;
                     background-repeat: no-repeat;
-                    background-image: url("./../../module/monitor/element/paper-monitor/img/cover.png");
+              background-image: url("./../../module/monitor/element/paper-monitor/img/cover.png");      
                 }
                 
                 #fastAction {
@@ -75,7 +76,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
                         {{entity.name}}
                     </div>
                     <div id="crud">
-                        <paper-menu-button ignore-select horizontal-align="right">
+                        <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
                             <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                             <paper-listbox slot="dropdown-content" multi>
                                 <paper-item on-click="_update">{{localize('modify')}}</paper-item>
@@ -101,6 +102,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
             services : {
                 value : {
                     _localizeService: 'Localize',
+                    _monitorService: "MonitorService",
                     "StorageContainerAggregate": {
                         "_storage":"MonitorStorage"
                     }
@@ -120,6 +122,16 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
              */
             autoUpdateEntity: {
                 value: true
+            },
+
+
+            /**
+             * @type MonitorService
+             */
+            _monitorService: {
+                type: Object,
+                readOnly: true,
+                observer: "changeMonitorService"
             }
         }
     }
@@ -130,6 +142,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
      */
     _update(evt) {
         this.dispatchEvent(new CustomEvent('update', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 
     /**
@@ -138,6 +151,7 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
      */
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', {detail: this.entity}));
+        this.$.crudButton.close();
     }
 
     /**
@@ -147,6 +161,16 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
     _toggleEnableMonitor(evt) {
         let event = evt.target.checked ? 'enable-monitor' : 'disable-monitor';
         this.dispatchEvent(new CustomEvent(event, {detail: this.entity}));
+    }
+
+    changeMonitorService(service) {
+        service.getEventManager().on(MonitorService.LOAD_MONITOR, (data) => {
+            this.$.paperToggleEnable.disabled = true;
+        });
+
+        service.getEventManager().on(MonitorService.LOADING_MONITOR_FINISH, (data) => {
+            this.$.paperToggleEnable.disabled = false;
+        });
     }
 }
 window.customElements.define('paper-monitor', PaperMonitor);

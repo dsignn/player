@@ -3,6 +3,10 @@
  */
 export class AbstractInjector {
 
+    constructor() {
+        this.hasData = true;
+    }
+
     /**
      * @param {string} value
      * @return Promise

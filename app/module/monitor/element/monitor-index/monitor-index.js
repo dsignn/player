@@ -4,6 +4,7 @@ import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import '@polymer/iron-pages/iron-pages';
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tabs/paper-tabs';
+import './../../../../elements/paper-filter-storage/paper-filter-storage'
 import '../monitor-view-list/monitor-view-list'
 import '../monitor-view-upsert/monitor-view-upsert'
 import {flexStyle} from '../../../../style/layout-style';
@@ -35,6 +36,28 @@ class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 .topology {
                     position: relative;
                 }
+
+                paper-filter-storage {
+                    flex: 1;
+                    --paper-filter-storage : {
+                        padding: 0 8px;
+                        align-items: center;
+                        display: flex;
+                        min-height: 70px;
+                        width: -webkit-fill-available;
+                        margin-right: 8px;
+
+                    }
+                }
+
+                .filter-container {
+                    display: flex;
+                    padding-bottom: 6px;
+                }
+
+                .filter-container > * { 
+                    padding-right: 6px;
+                }
             </style>
             <paper-tabs selected="{{selectedTab}}" tabindex="0">
                 <paper-tab>{{localize('monitor-data')}}</paper-tab>
@@ -44,9 +67,13 @@ class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 <div>
                     <iron-pages id="index" selected="{{selected}}">
                         <div id="list"> 
-                            <monitor-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                            <monitor-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                                  <div slot="header" class="layout-horizontal layout-center-aligned header">
-                                    <div class="layout-flex">{{localize('list-monitor')}}</div>
+                                    <paper-filter-storage on-value-changed="_filterChange" >
+                                        <div slot="filters" class="filter-container">
+                                            <paper-input name="name" label="{{localize('name')}}"></paper-input>
+                                        </div>
+                                    </paper-filter-storage>
                                     <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
                                     <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-monitor')}}</paper-tooltip>
                                  </div>
@@ -133,6 +160,10 @@ class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 observer: "observerMonitorService"
             }
         };
+    }
+
+    _filterChange(evt) {
+        this.$.viewList.filter = JSON.parse(JSON.stringify(evt.detail));
     }
 
     /**

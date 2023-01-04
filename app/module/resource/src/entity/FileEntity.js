@@ -32,6 +32,11 @@ export class FileEntity extends EntityIdentifier {
          * @type {Array}
          */
         this.tags = [];
+
+        /**
+         * @type {string}
+         */
+        this.checksum;
     }
 
     /**

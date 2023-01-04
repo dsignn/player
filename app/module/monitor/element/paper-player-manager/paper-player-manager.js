@@ -36,6 +36,15 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type ReceiverInterface
              */
+             _applicationSender : {
+                type: Object,
+                readOnly: true,
+                observer : 'changeApplicationSender'
+            },
+
+            /**
+             * @type ReceiverInterface
+             */
             _monitorReceiver : {
                 type: Object,
                 readOnly: true,
@@ -53,7 +62,7 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
-     * @param {ReceiverInterface} monitorReceiver
+     * @param {SenderInterface} monitorReceiver
      */
     changeMonitorReceiver(monitorReceiver) {
         if(!monitorReceiver) {
@@ -83,7 +92,9 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
         this.monitor = this._monitorEntityHydrator.hydrate(msg);
         // TODO implements better solution
         let paperPlayer = document.querySelector('paper-player');
-        paperPlayer.remove();
+        if (paperPlayer) {
+            paperPlayer.remove();
+        }
         this._appendPaperPlayer(document.body, this.monitor);
     }
 

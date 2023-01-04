@@ -25,7 +25,8 @@ export class ResourceService {
      */
     getResourcePath(resourceEntity) {
 
-        return require('path').normalize(`${this.getResourceDirectory(resourceEntity)}${require('path').sep}${resourceEntity.computeName()}`);
+        let computeName = typeof resourceEntity.computeName  === 'function' ? resourceEntity.computeName() : this._workAroundComputeName(resourceEntity); 
+        return require('path').normalize(`${this.getResourceDirectory(resourceEntity)}${require('path').sep}${computeName}`);
     }
 
     /**
@@ -33,5 +34,19 @@ export class ResourceService {
      */
     getResourceDirectory(resourceEntity) {
         return  require('path').normalize(`${this.localPath}${require('path').sep}${resourceEntity.id}`);
+    }
+
+    /**
+     * @param resourceEntity 
+     * @returns 
+     */
+    _workAroundComputeName(resourceEntity) {
+
+        if(resourceEntity === null || !(resourceEntity instanceof Object) || !resourceEntity.path || !resourceEntity.path.nameFile || !resourceEntity.path.extension) {
+            console.warn('Wrong parameter to _workAroundComputeName');
+            return;
+        }
+
+        return `${resourceEntity.path.nameFile}.${resourceEntity.path.extension}`;
     }
 }

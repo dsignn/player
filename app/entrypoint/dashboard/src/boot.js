@@ -8,17 +8,20 @@ import {Listener} from '@dsign/library/src/event/index'
 import {Container, ContainerAggregate} from '@dsign/library/src/container/index';
 import {Localize} from '@dsign/library/src/localize/Localize';
 import {PathNode} from '@dsign/library/src/path/PathNode';
-import {Acl} from '@dsign/library/src/permission/acl/Acl';
 import {JsAclAdapter} from '@dsign/library/src/permission/acl/adapter/js-acl/JsAclAdapter';
+import {Acl} from '@dsign/library/src/permission/acl/Acl';
 import {Storage} from '@dsign/library/src/storage/Storage';
 import {EntityIdentifier, EntityReference} from '@dsign/library/src/storage/entity/index';
 import {EntityNestedReference} from '@dsign/library/src/storage/entity/EntityNestedReference';
 import {AbstractHydrator, PropertyHydrator} from '@dsign/library/src/hydrator/index';
 import {HydratorStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
+import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManager';
 import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
+import {ChronoService} from './../../../src/ChronoService';
+import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 
@@ -26,306 +29,383 @@ const fs = require('fs');
 const path = require('path');
 // when is compile generate the __dirname is different
 const back = process.env.APP_ENVIRONMENT === 'development' ? '/../../../' : '/../../';
-
+const homeData = Utils.getHomeDir(process.env, process.env.APP_ENVIRONMENT == 'development' ? 'dsign-player-development' : 'dsign-player');
 const basePath = path.normalize(`${__dirname}${back}`);
-const packageJson =  JSON.parse(fs.readFileSync(`${basePath}${path.sep}package.json`).toString());
-process.env.npm_package_name = process.env.npm_package_name ? process.env.npm_package_name : packageJson.name;
-const homeData = Utils.getHomeDir(process.env);
-const config =  JSON.parse(
+
+var config =  JSON.parse(
     fs.readFileSync(`${basePath}${path.sep}config${path.sep}config-${process.env.APP_ENVIRONMENT}.json`).toString()
 );
 
+config = Array.isArray(config) ? config[0] : config;
+
 /**
- * IMPORTANT add absolute node module path for web component script
- * TODO replace in application?
+ * @returns {HydratorInterface}
  */
-require('app-module-path').addPath(`${basePath}${path.sep}node_modules`);
+var getModuleHydrator = () => {
 
-/***********************************************************************************************************************
- * Container
- * @type {ContainerInterface} container
- **********************************************************************************************************************/
+    let pathHydrator = new PropertyHydrator(new PathNode());
+    let moduleHydrator = new PropertyHydrator(new Module());
+    
+    let webComponentHydrator = new PropertyHydrator(new WebComponent());
+    webComponentHydrator.addValueStrategy('path', new HydratorStrategy(pathHydrator));
+    
+    let autoLoadClassHydrator = new PropertyHydrator(new AutoLoadClass());
+    autoLoadClassHydrator.addValueStrategy('path', new HydratorStrategy(pathHydrator));
 
-const container = new Container();
+    moduleHydrator.addValueStrategy('autoloadsWc', new HydratorStrategy(webComponentHydrator));
+    moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
+    moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
 
-/***********************************************************************************************************************
- * Merge
- * @type {mergeDeep} merge
- **********************************************************************************************************************/
+    let widgetHydrator = new PropertyHydrator(new Widget());
+    widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));
+    widgetHydrator.addValueStrategy('webComponentData', new HydratorStrategy(webComponentHydrator));
 
-const merge = {};
-merge.merge = mergeDeep;
-container.set('merge', merge);
+    moduleHydrator.addValueStrategy('widgets', new HydratorStrategy(widgetHydrator));
 
-/***********************************************************************************************************************
- * Application
- * @type {Application} application
- **********************************************************************************************************************/
-
-const application = new Application();
-application.setBasePath(path.normalize(`${__dirname}${back}`))
-    .setModulePath(`${basePath}module`)
-    .setResourcePath(`${homeData}${path.sep}resource`)
-    .setStoragePath(`${homeData}${path.sep}storage`);
-
-let pathHydrator = new PropertyHydrator(new PathNode());
-let moduleHydrator = new PropertyHydrator(new Module());
-let webComponentHydrator = new PropertyHydrator(new WebComponent());
-webComponentHydrator.addValueStrategy('path',  new HydratorStrategy(pathHydrator));
-let autoLoadClassHydrator = new PropertyHydrator(new AutoLoadClass());
-autoLoadClassHydrator.addValueStrategy('path',new HydratorStrategy(pathHydrator));
-
-moduleHydrator.addValueStrategy('autoloadsWs', new HydratorStrategy(webComponentHydrator));
-moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
-moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
-
-let widgetHydrator = new PropertyHydrator(new Widget());
-widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));
-widgetHydrator.addValueStrategy('webComponentData', new HydratorStrategy(webComponentHydrator));
-
-let modules = JSON.parse(fs.readFileSync(`${basePath}${path.sep}config${path.sep}module.json`).toString());
-let modulesHydrate = [];
-let widgetHydrate = [];
-
-
-for (let cont = 0; modules.length > cont; cont++) {
-    modulesHydrate.push(moduleHydrator.hydrate(modules[cont]));
-    if (modules[cont].widgets && Array.isArray(modules[cont].widgets) && modules[cont].widgets.length > 0) {
-
-        for (let cont2 = 0; modules[cont].widgets.length > cont2; cont2++) {
-            widgetHydrate.push(widgetHydrator.hydrate(modules[cont].widgets[cont2]));
-        }
-    }
+    return moduleHydrator;
 }
 
-/**
- *
- */
+async function boot() {
 
-application.getEventManager().on(
-    Application.BOOTSTRAP_MODULE,
-    new Listener( function(modules) {
+    let fileSystem = new FileSystemAdapter(path.normalize(`${homeData}/config`), 'application');
+    fileSystem.setIdentifier('id');
 
-        container.get('MongoDb')
-            .getEventManager()
-            .on(
-                MongoDb.READY_CONNECTION,
-                (connection) =>  {
-                    console.log(window.document);
-                    loadApplication();
-                }
-            );
+    const configStorage = new Storage(fileSystem);
 
-        if (window.document.readyState === "complete" || window.document.readyState === "loaded") {
-            container.get('MongoDb').connect();
-        } else {
-            window.addEventListener('DOMContentLoaded', (event) => {
-                container.get('MongoDb').connect();
-            });
-        }
-    }.bind(container))
-);
-
-/**
- * LOAD APPLICATION
- */
-const loadApplication = () => {
-    let wcApplication = window.document.createElement('application-layout');
-    window.document.body.appendChild(wcApplication);
-};
-
-application.setWidgets(widgetHydrate)
-    .loadModules(modulesHydrate, container);
-
-container.set('Application', application);
-
-/***********************************************************************************************************************
- * Storage container aggregate
- **********************************************************************************************************************/
-
-const storageContainerAggregate = new ContainerAggregate();
-storageContainerAggregate.setPrototipeClass(Storage);
-storageContainerAggregate.setContainer(container);
-container.set('StorageContainerAggregate', storageContainerAggregate);
-
-/***********************************************************************************************************************
- * Hydrator container aggregate
- **********************************************************************************************************************/
-
-const hydratorContainerAggregate = new ContainerAggregate();
-hydratorContainerAggregate.setPrototipeClass(AbstractHydrator);
-hydratorContainerAggregate.setContainer(container);
-container.set('HydratorContainerAggregate', hydratorContainerAggregate);
-
-/***********************************************************************************************************************
- * Entity container aggregate
- **********************************************************************************************************************/
-
-const entityContainerAggregate = new ContainerAggregate();
-entityContainerAggregate.setPrototipeClass(EntityIdentifier);
-entityContainerAggregate.setContainer(container);
-
-entityContainerAggregate.set('EntityNestedReference', new EntityNestedReference());
-entityContainerAggregate.set('EntityReference', new EntityReference());
-
-container.set('EntityContainerAggregate', entityContainerAggregate);
-
-/***********************************************************************************************************************
- * Sender container aggregate
- **********************************************************************************************************************/
-
-const senderContainerAggregate = new ContainerAggregate();
-
-// TODO review :)
-senderContainerAggregate.setPrototipeClass((new Object).constructor);
-senderContainerAggregate.setContainer(container);
-container.set('SenderContainerAggregate', senderContainerAggregate);
-
-senderContainerAggregate.set('Ipc', require('electron').ipcRenderer);
-
-/***********************************************************************************************************************
- * Receiver container aggregate
- **********************************************************************************************************************/
-
-const receiverContainerAggregate = new ContainerAggregate();
-// TODO review :)
-receiverContainerAggregate.setPrototipeClass((new Object).constructor);
-receiverContainerAggregate.setContainer(container);
-container.set('ReceiverContainerAggregate', receiverContainerAggregate);
-
-receiverContainerAggregate.set('Ipc', require('electron').ipcRenderer);
-
-/***********************************************************************************************************************
-                                               CONFIG SERVICE
-***********************************************************************************************************************/
-
-container.set('Config', config);
-
-/***********************************************************************************************************************
-                                              LOCALIZE SERVICE
- ***********************************************************************************************************************/
-
-container.set('Localize', new Localize(
-    config.localize.defaultLanguage,
-    config.localize.languages
-));
-
-/***********************************************************************************************************************
-                                            ACL
- ***********************************************************************************************************************/
-
-const acl = new Acl(new JsAclAdapter(new window.JsAcl()));
-
-acl.addRole('guest');
-acl.addRole('admin');
-
-acl.addResource('application');
-acl.setRole('guest');
-container.set('Acl', acl);
-
-/***********************************************************************************************************************
-                                            DEXIE MANAGER SERVICE
- **********************************************************************************************************************/
-
-// container.set('DexieManager', new DexieManager(config.storage.adapter.dexie.nameDb));
-
-/***********************************************************************************************************************
-                                           MONGODB
- **********************************************************************************************************************/
-
-container.set('MongoDb', new MongoDb(
-        config.storage.adapter.mongo.name,
-        config.storage.adapter.mongo.uri,
-        config.storage.adapter.mongo.port,
-{
-            useUnifiedTopology: true,
-            connectTimeoutMS: 60000,
-        }
-    )
-);
-
-/***********************************************************************************************************************
-                                            NOTIFICATION SERVICE
- **********************************************************************************************************************/
-
-container.set('Notify', {
-    notify:  (text) => {
-
-        let id = 'notification';
-        let paperToast = document.getElementById(id);
-        if (!paperToast) {
-            console.warn('Element by id ' + id + ' not found');
-            return;
-        }
-
-        // TODO inject Translator
-        paperToast.text = text;
-        paperToast.open();
+    let configFs = await configStorage.get('application');
+    if (!configFs) {
+        config.id = 'application';
+        configFs = await configStorage.save(config);
     }
-});
+    config = configFs;
 
-/***********************************************************************************************************************
-                                            ARCHIVE SERVICE
- **********************************************************************************************************************/
+    /**
+     * IMPORTANT add absolute node module path for web component script
+     * TODO replace in application?
+     */
+    require('app-module-path').addPath(`${basePath}${path.sep}node_modules`);
 
-let archive = new Archive(`${homeData}${path.sep}archive${path.sep}`);
-//archive.appendDirectory(resourcePath, 'resource');
-archive.setTmpDir(`${homeData}tmp${path.sep}`)
-    .setResourceDir(application.getResourcePath())
-    .setStorageContainer(container.get('StorageContainerAggregate'));
+    /***********************************************************************************************************************
+     * Container
+     * @type {ContainerInterface} container
+     **********************************************************************************************************************/
 
-container.set('Archive', archive);
+    const container = new Container();
 
-/***********************************************************************************************************************
-                                        P2P
- **********************************************************************************************************************/
+    /***********************************************************************************************************************
+     * Merge
+     * @type {mergeDeep} merge
+     **********************************************************************************************************************/
 
-let p2p = new P2p(
-    config.p2p.udpOption,
-    config.p2p.clientOption,
-    config.p2p.identifier
-);
-//p2p.runKeepAlive();
+    const merge = {};
+    merge.merge = mergeDeep;
+    container.set('merge', merge);
 
-container.set('P2p', p2p);
+    /***********************************************************************************************************************
+     * Application
+     * @type {Application} application
+     **********************************************************************************************************************/
 
-/***********************************************************************************************************************
- APPLICATION SERVICE
- **********************************************************************************************************************/
+    const application = new Application();
+    application.setBasePath(basePath)
+        .setModulePath(`${basePath}module`)
+        .setResourcePath(`${homeData}${path.sep}resource`)
+        .setStoragePath(`${homeData}${path.sep}storage`)
+        .setAdditionalModulePath(`${homeData}${path.sep}modules`)
+        .setNodeModulePath(path.normalize(`${basePath}${path.sep}node_modules`));
 
-container.set('Timer',
-    function (sm) {
-        const Timer = require('easytimer.js').Timer;
+    fs.mkdirSync(application.getAdditionalModulePath(), { recursive: true });   
 
-        let timer =  new Timer();
-        timer.start({precision: 'secondTenths'});
-        return timer;
+    let moduleHydrator = getModuleHydrator();
 
+    let modulesHydrate = [];
+
+    for (let cont = 0; configFs.module.length > cont; cont++) {
+        let hydrateModule = moduleHydrator.hydrate(configFs.module[cont]);
+        modulesHydrate.push(hydrateModule);
+    }
+
+    application.setModuleHydrator(moduleHydrator);
+
+    /**
+     *
+     */
+
+    application.getEventManager().on(
+        Application.BOOTSTRAP_MODULE,
+        new Listener(function(modules) {
+
+            var loadMongo = true;
+            var loadDexie = false;
+
+            // IMPORTANT you have to wait for all the services to load
+            container.get('DexieManager').on("ready", () => {
+                    loadDexie = true;
+                    if (loadDexie === true && loadMongo === true) {
+                        loadApplication();
+                    }
+                
+                });
+
+
+            container.get('DexieManager').on("versionchange",  (event) => {
+                    console.log('suca', event);
+                });
+
+            container.get('MongoDb').getEventManager().on(MongoDb.READY_CONNECTION, (connection) =>  {
+                    loadMongo = true;
+                    if (loadDexie === true && loadMongo === true) {
+                        loadApplication();
+                    }
+                });
+
+            if (window.document.readyState === "complete" || window.document.readyState === "loaded") {
+                container.get('DexieManager').generateSchema();
+                container.get('DexieManager').open().then((data) => {
+        
+                }).catch((error) => {
+                    console.error(error);
+                });
+            } else {
+                window.addEventListener('DOMContentLoaded', (event) => {
+                    //container.get('MongoDb').connect();
+                    container.get('DexieManager').generateSchema();
+                    container.get('DexieManager').open().then((data) => {
+            
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+        
+                });
+            }
+        }.bind(container))
+    );
+
+    /**
+     * LOAD APPLICATION
+     */
+    const loadApplication = () => {
+        let wcApplication = window.document.createElement('application-layout');
+        window.document.body.appendChild(wcApplication);
+    };
+
+    application.loadModules(modulesHydrate, container);
+
+    container.set('Application', application);
+
+    /***********************************************************************************************************************
+     * Storage container aggregate
+     **********************************************************************************************************************/
+
+    const storageContainerAggregate = new ContainerAggregate();
+    storageContainerAggregate.setPrototipeClass(Storage);
+    storageContainerAggregate.setContainer(container);
+    container.set('StorageContainerAggregate', storageContainerAggregate);
+
+    /***********************************************************************************************************************
+     * Config
+     * @type {StorageInterface} config
+    **********************************************************************************************************************/
+     storageContainerAggregate.set(
+        'ConfigStorage',
+        configStorage
+     );
+
+    /***********************************************************************************************************************
+     * Hydrator container aggregate
+     **********************************************************************************************************************/
+
+    const hydratorContainerAggregate = new ContainerAggregate();
+    hydratorContainerAggregate.setPrototipeClass(AbstractHydrator);
+    hydratorContainerAggregate.setContainer(container);
+    container.set('HydratorContainerAggregate', hydratorContainerAggregate);
+
+    /***********************************************************************************************************************
+     * Entity container aggregate
+     **********************************************************************************************************************/
+
+    const entityContainerAggregate = new ContainerAggregate();
+    entityContainerAggregate.setPrototipeClass(EntityIdentifier);
+    entityContainerAggregate.setContainer(container);
+
+    entityContainerAggregate.set('EntityNestedReference', new EntityNestedReference());
+    entityContainerAggregate.set('EntityReference', new EntityReference());
+
+    container.set('EntityContainerAggregate', entityContainerAggregate);
+
+    /***********************************************************************************************************************
+     * Sender container aggregate
+     **********************************************************************************************************************/
+
+    const senderContainerAggregate = new ContainerAggregate();
+
+    // TODO review :)
+    senderContainerAggregate.setPrototipeClass((new Object).constructor);
+    senderContainerAggregate.setContainer(container);
+    container.set('SenderContainerAggregate', senderContainerAggregate);
+
+    senderContainerAggregate.set('Ipc', require('electron').ipcRenderer);
+
+    /***********************************************************************************************************************
+     * Receiver container aggregate
+     **********************************************************************************************************************/
+
+    const receiverContainerAggregate = new ContainerAggregate();
+    // TODO review :)
+    receiverContainerAggregate.setPrototipeClass((new Object).constructor);
+    receiverContainerAggregate.setContainer(container);
+    container.set('ReceiverContainerAggregate', receiverContainerAggregate);
+
+    receiverContainerAggregate.set('Ipc', require('electron').ipcRenderer);
+
+    /***********************************************************************************************************************
+                                                 CONFIG SERVICE
+    ***********************************************************************************************************************/
+
+    container.set('Config', config);
+    container.set('ModuleConfig', {});
+
+    /***********************************************************************************************************************
+                                                 LOCALIZE SERVICE
+    ***********************************************************************************************************************/
+
+    container.set('Localize', new Localize(
+        config.localize.defaultLanguage,
+        config.localize.languages
+    ));
+
+    /***********************************************************************************************************************
+                                                ACL
+    ***********************************************************************************************************************/
+
+    const acl = new Acl(new JsAclAdapter(new window.JsAcl()));
+
+    acl.addRole('guest');
+    acl.addRole('admin');
+
+    acl.addResource('application');
+    acl.setRole('guest');
+    container.set('Acl', acl);
+
+    /***********************************************************************************************************************
+                                                DEXIE MANAGER SERVICE
+    **********************************************************************************************************************/
+    const DexieManagerService = new DexieManager(config.storage.adapter.dexie.nameDb);
+    DexieManagerService.setVersion(config.storage.adapter.dexie.version);
+    container.set('DexieManager', DexieManagerService);
+
+    /***********************************************************************************************************************
+                                             MONGODB
+    **********************************************************************************************************************/
+
+    container.set('MongoDb', new MongoDb(
+            config.storage.adapter.mongo.name,
+            config.storage.adapter.mongo.uri,
+            config.storage.adapter.mongo.port,
+    {
+                useUnifiedTopology: true,
+                connectTimeoutMS: 60000,
+            }
+        )
+    );
+
+    /***********************************************************************************************************************
+                                                NOTIFICATION SERVICE
+    **********************************************************************************************************************/
+
+    container.set('Notify', {
+        notify:  (text) => {
+
+            let id = 'notification';
+            let paperToast = document.getElementById(id);
+            if (!paperToast) {
+                console.warn('Element by id ' + id + ' not found');
+                return;
+            }
+
+            // TODO inject Translator
+            paperToast.text = text;
+            paperToast.open();
+        }
     });
 
+    /***********************************************************************************************************************
+                                                ARCHIVE SERVICE
+    **********************************************************************************************************************/
+                                    
+    let archivePath = `${homeData}${path.sep}archive${path.sep}`;    
+    let archivePathTmp = `${homeData}${path.sep}archive${path.sep}tmp${path.sep}`;                 
+    fs.mkdirSync(archivePath, { recursive: true });                                            
+    fs.mkdirSync(archivePathTmp, { recursive: true });                                            
 
 
+    let archive = new Archive(archivePath);
+    //archive.appendDirectory(resourcePath, 'resource');
+    archive.setTmpDir(archivePathTmp)
+        .setResourceDir(application.getResourcePath())
+        .setStorageContainer(container.get('StorageContainerAggregate'))
+        .appendDirectory(application.getResourcePath(), 'resource');
 
-/**
- * Load application in global scope
- */
-switch (true) {
-    case  typeof window !== 'undefined':
+    container.set('Archive', archive);
 
-        Object.defineProperty(window, 'container', {
-            value: container,
-            writable: false
+    /***********************************************************************************************************************
+                                            P2P
+    **********************************************************************************************************************/
+
+    let p2p = new P2p(
+        config.p2p.udpOption,
+        config.p2p.clientOption,
+        config.p2p.identifier
+    );
+    //p2p.runKeepAlive();
+
+    container.set('P2p', p2p);
+
+    /***********************************************************************************************************************
+     APPLICATION SERVICE
+    **********************************************************************************************************************/
+
+    container.set('Timer',
+        function (sm) {
+            const Timer = require('easytimer.js').Timer;
+
+            let timer =  new Timer();
+            timer.start({precision: 'secondTenths'});
+            return timer;
+
         });
 
-        break;
-    case  typeof global !== 'undefined':
 
-        Object.defineProperty(global, 'container', {
-            value: container,
-            writable: false
+    container.set('ChronoService',
+        function(sm) {
+            return new ChronoService(sm.get('Timer'))
         });
+        
 
-        break;
-    default:
-        throw 'wrong context';
+
+    /**
+     * Load application in global scope
+     */
+    switch (true) {
+        case  typeof window !== 'undefined':
+
+            Object.defineProperty(window, 'container', {
+                value: container,
+                writable: false
+            });
+
+            break;
+        case  typeof global !== 'undefined':
+
+            Object.defineProperty(global, 'container', {
+                value: container,
+                writable: false
+            });
+
+            break;
+        default:
+            throw 'wrong context';
+    }
 }
+
+boot();

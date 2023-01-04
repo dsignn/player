@@ -81,11 +81,14 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                             <form method="post" action="">
                                 <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
                                 <div id="monitorUpdate">
-                                    <dom-repeat items="{{entity.monitors}}" as="monitor">
-                                        <template>
-                                              <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
-                                        </template>
-                                    </dom-repeat>
+
+                                    <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
+                                        <div>
+                                            <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
+                                        </div>
+                                    </template>
+
+                    
                                 </div>
                                 <paper-button on-tap="submitMonitorContainerButton">{{localize(labelAction)}}</paper-button>
                             </form>
@@ -100,8 +103,8 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                                     <paper-input name="name" label="{{localize('name')}}" required></paper-input>
                                     <paper-input name="height" label="{{localize('height')}}" type="number" required></paper-input>
                                     <paper-input name="width" label="{{localize('width')}}" type="number" required></paper-input>
-                                    <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" required></paper-input>
-                                    <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" required></paper-input>
+                                    <paper-input name="offsetX" label="{{localize('offsetY')}}" type="number" required></paper-input>
+                                    <paper-input name="offsetY" label="{{localize('offsetX')}}" type="number" required></paper-input>
                                     <paper-input-points id="points"></paper-input-points>
                                     <paper-autocomplete id="parentMonitor" 
                                         label="{{localize('father-monitor')}}" 

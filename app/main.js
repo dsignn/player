@@ -1,14 +1,38 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, screen} = require('electron');
+const {app, BrowserWindow, ipcMain, screen, globalShortcut} = require('electron');
 const fs = require('fs');
 const url = require('url');
 const path = require('path')
 const MonitorContainerEntity = require('./module/monitor/src/entity/require/MonitorContainerEntity');
 const MonitorEntity = require('./module/monitor/src/entity/require/MonitorEntity');
+const { PathNode } = require('@dsign/library/commonjs/path/PathNode');
+const { Module } = require('@dsign/library/commonjs/core/module/Module');
+const { AutoLoadClass } = require('@dsign/library/commonjs/core/autoload/AutoLoadClass');
+const { WebComponent } = require('@dsign/library/commonjs/core/webcomponent');
+const { Widget } = require('@dsign/library/commonjs/core/widget/Widget');
 const PropertyHydrator = require('@dsign/library').hydrator.PropertyHydrator;
 const HydratorStrategy = require('@dsign/library').hydrator.strategy.value.HydratorStrategy;
 const NumberStrategy = require('@dsign/library').hydrator.strategy.value.NumberStrategy;
+const FileSystemAdapter = require('@dsign/library').storage.adapter.fileSystem.FileSystemAdapter;
+const Storage = require('@dsign/library').storage.Storage;
+const Utils = require('@dsign/library').core.Utils;
 const Enviroment = process.env.APP_ENVIRONMENT ? process.env.APP_ENVIRONMENT.trim() : 'production';
+const homeData = Utils.getHomeDir(process.env, process.env.APP_ENVIRONMENT == 'development' ? 'dsign-player-development' : 'dsign-player');
+
+/**
+ * @returns {StorageInterface}
+ */
+var loadStorageService = () => {
+    let fileSystem = new FileSystemAdapter(path.normalize(`${homeData}/config`), 'application');
+    fileSystem.setIdentifier('id');
+
+    let storage = new Storage(fileSystem);
+
+    storage.setHydrator(Application.getConfigHydrator());
+
+    return storage;
+}
+
 
 /**
  * GLobal setting eletron
@@ -23,16 +47,10 @@ if (Enviroment === 'development') {
 class Application {
 
     /**
-     * @return {string}
-     */
-    static get PATH_MONITOR_FILE_CONFIG() {
-        return path.join(__dirname, '/config/monitor-config.json');
-    };
-
-    /**
      * @param {Object} options
+     * @param {StorageInterface} configStorage
      */
-    constructor(options) {
+    constructor(options, configStorage) {
 
         /**
          * @type {module:child_process}
@@ -54,27 +72,58 @@ class Application {
          */
         this.monitorsContainerEntity = new MonitorContainerEntity();
 
-        try {
-            /**
-             * @type {Object}
-             */
-            this.config = JSON.parse(
-                fs.readFileSync(
-                    this._getPathConfig(),
-                    {'encoding': 'UTF8'}
-                )
-            );
-        } catch (e) {
-            console.warn('Load file config');
-            this.config = {};
-        }
+        /**
+         * @type {StorageInterface}
+         */
+        this.configStorage = configStorage;
+
+
+        this._loadConfig()
+            .then((config) => {
+                console.log('[Dsign-dbug]', 'Load config');
+            });
 
         app.whenReady().then(() => {
-            this.displays = screen.getAllDisplays()
+            this.displays = screen.getAllDisplays();
+            this.loadShortcut();
         });
 
-        this._loadMonitorsConfig();
-        this._startScript();
+        this.dashboardDevToolsOpen = false;
+
+        this.playerDevToolsOpen = false;
+    }
+
+    /**
+     * @private
+     */
+    async _loadConfig() {
+   
+        let configMoved = await this.configStorage.get('application');
+        if (!configMoved && !configMoved.id) {
+            try {
+                this.config = JSON.parse(fs.readFileSync(this._getPathConfig(), {'encoding': 'UTF8'}));
+                this.config.id = 'application';
+                let savedConfig = await this.configStorage.save();
+            } catch (err) {
+                console.warn('Error load file config', err);
+                this.config = {};
+            }
+        } else {
+            this.config = configMoved;
+        }
+
+        if(this.config && this.config.enableMonitor && this.config.enableMonitor.id) {
+
+            this.monitorsContainerEntity = this.config.enableMonitor;
+        }
+
+        if (this.config.enableFetures) {
+            Object.entries(this.config.enableFetures).forEach(([key, value]) => {
+                app.commandLine.appendSwitch(key, value);
+            });
+        }
+
+        return this.config;
     }
 
     /**
@@ -102,68 +151,6 @@ class Application {
     }
 
     /**
-     * @return {Application}
-     * @private
-     */
-    _loadMonitorsConfig() {
-
-        if (!fs.existsSync(Application.PATH_MONITOR_FILE_CONFIG)) {
-            return;
-        }
-
-        let monitorsData = null;
-        try {
-            monitorsData = JSON.parse(fs.readFileSync(Application.PATH_MONITOR_FILE_CONFIG, {'encoding': 'UTF8'}));
-        } catch (e) {
-            console.warn('Load monitor data');
-        }
-
-        if (monitorsData && monitorsData.monitorConfig) {
-            this.monitorsContainerEntity = this.getMonitorContainerEntityHydrator().hydrate(monitorsData.monitorConfig);
-        }
-        return this;
-    }
-
-    /**
-     * @private
-     */
-    _startScript() {
-
-        switch (true) {
-            case this.config.storage !== undefined && this.config.storage.adapter !== undefined && this.config.storage.adapter.mongo !== undefined:
-
-                if (this.environment === 'development') {
-                    let dockerCompose = require('child_process').spawn('docker-compose', ['up', '-d']);
-                    dockerCompose.stdout.on('data',(data) => {
-                        console.log("start docker compose: ",data.toString('utf8'));
-                    });
-                } else {
-                    console.warn('Star mongo service');
-                }
-        }
-    }
-
-    /**
-     * @private
-     */
-    _stopScript() {
-
-
-        switch (true) {
-            case this.config.storage !== undefined && this.config.storage.adapter !== undefined && this.config.storage.adapter.mongo !== undefined:
-
-                if (this.environment === 'development') {
-                    let dockerCompose = require('child_process').spawn('docker-compose', ['stop']);
-                    dockerCompose.stdout.on('data',(data) => {
-                        console.log("stop docker compose: ",data.toString('utf8'));
-                    });
-                } else {
-                    console.warn('stop mongo service');
-                }
-        }
-    }
-
-    /**
      * Create the browser window.
      * @private
      */
@@ -185,10 +172,6 @@ class Application {
             minWidth: 600,
             useContentWidth: true
         });
-
-        if (this.environment === 'development') {
-            this.dashboard.webContents.openDevTools({detached: true});
-        }
 
         this.dashboard.loadFile(`${__dirname}${path.sep}${this._getDashboardEntryPoint()}`);
 
@@ -219,9 +202,9 @@ class Application {
             movable: false,
             resizable: false,
             frame: false,
+            transparent: true,
             enableLargerThanScreen: true,
             hasShadow: false,
-            // icon: path.join(__dirname, 'css/log/icon256x256.png'),
             title :  `Dsign Screen [${monitor.name.toUpperCase()}]`
 
         });
@@ -229,19 +212,8 @@ class Application {
         browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
-            // TODO delay for the fast load of the player index
-            setTimeout(
-                () => {
-                    browserWindows.send('paper-player-config', this.getMonitorEntityHydrator().extract(monitor));
-                },
-                2000
-            );
+            browserWindows.send('monitor-id', monitor.getId());
         });
-
-        if (this.environment === 'development') {
-            browserWindows.webContents.openDevTools({detached: true});
-        }
-
 
         browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);
 
@@ -279,41 +251,66 @@ class Application {
     }
 
     /**
-     * @param monitorContainer
+     * @returns {HydrationInterface}
      */
-    saveMonitorContainerConfig(monitorContainer) {
-        fs.writeFile(
-            Application.PATH_MONITOR_FILE_CONFIG,
-            JSON.stringify({'monitorConfig' : monitorContainer}, null, 4),
-            (err) =>  {
-                if (err) {
-                    console.error('Monitor config', err);
-                    return;
-                }
-            }
-        )
+    static getConfigHydrator() {
+        let pathHydrator = new PropertyHydrator(new PathNode());
+        let moduleHydrator = new PropertyHydrator(new Module());
+        
+        let webComponentHydrator = new PropertyHydrator(new WebComponent());
+        webComponentHydrator.addValueStrategy('path', new HydratorStrategy(pathHydrator));
+        
+        let autoLoadClassHydrator = new PropertyHydrator(new AutoLoadClass());
+        autoLoadClassHydrator.addValueStrategy('path', new HydratorStrategy(pathHydrator));
+    
+        moduleHydrator.addValueStrategy('autoloadsWc', new HydratorStrategy(webComponentHydrator));
+        moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
+        moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
+    
+        let widgetHydrator = new PropertyHydrator(new Widget());
+        widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));
+        widgetHydrator.addValueStrategy('webComponentData', new HydratorStrategy(webComponentHydrator));
+    
+        moduleHydrator.addValueStrategy('widgets', new HydratorStrategy(widgetHydrator));
+
+        let configHydrator = new PropertyHydrator();
+        configHydrator.addValueStrategy('module', new HydratorStrategy(moduleHydrator));
+        configHydrator.addValueStrategy('enableMonitor', new HydratorStrategy(Application.getMonitorContainerEntityHydrator()));
+
+        return configHydrator;
     }
 
-    /**
-     *
-     */
-    saveConfig() {
-        fs.writeFile(
-            this._getPathConfig(),
-            JSON.stringify(this.config, null, 4),
-            (err) => {
-                if (err) {
-                    console.error('Application config', err);
-                    return;
+    static relaunch() {
+        app.relaunch({ args: process.argv.slice(1).concat(['--relaunch']) })
+        app.exit(0); 
+    }
+
+    loadShortcut() {
+        
+        globalShortcut.register('Alt+Control+1', () => {
+            this.dashboard.webContents.openDevTools({detached: true});
+        });
+
+        globalShortcut.register('Alt+Control+2', () => {
+
+            let monitors = this.monitorsContainerEntity.getMonitors();
+            for (let cont = 0; monitors.length > cont; cont++) {
+
+                if (monitors[cont].browserWindows) {
+                    monitors[cont].browserWindows.webContents.openDevTools({detached: true});
                 }
             }
-        )
+        });
+
+        globalShortcut.register('Alt+Control+3', () => {
+            Application.relaunch();
+        });
     }
 
     /**
      * @return {PropertyHydrator}
      */
-    getMonitorContainerEntityHydrator() {
+    static getMonitorContainerEntityHydrator() {
 
         if (this.monitorContainerEntityHydrator) {
             return this.monitorContainerEntityHydrator;
@@ -324,7 +321,7 @@ class Application {
         );
 
         let strategy = new HydratorStrategy();
-        strategy.setHydrator(this.getMonitorEntityHydrator());
+        strategy.setHydrator(Application.getMonitorEntityHydrator());
         monitorContainerEntityHydrator.addValueStrategy('monitors', strategy);
 
         this.monitorContainerEntityHydrator = monitorContainerEntityHydrator;
@@ -334,7 +331,7 @@ class Application {
     /**
      * @return {PropertyHydrator}
      */
-    getMonitorEntityHydrator() {
+    static getMonitorEntityHydrator() {
         if (this.monitorEntityHydrator) {
             return this.monitorEntityHydrator;
         }
@@ -429,7 +426,9 @@ class Application {
      * @return {Application}
      */
     createPlayerBrowserWindows() {
+        this.dashboard.send('loading-player-windows', {});
         let monitors = this.monitorsContainerEntity.getMonitors();
+        this.loadingCount = monitors.length;
         if (monitors.length > 0) {
             for (let cont = 0; monitors.length > cont; cont++) {
                 monitors[cont].browserWindows = this.createWindowPlayer(monitors[cont]);
@@ -442,11 +441,17 @@ class Application {
      * @param object monitorContainerData
      */
     changePlayerMonitors(monitorContainerData) {
+        this.config.enableMonitor = Application.getMonitorContainerEntityHydrator().hydrate(monitorContainerData);
+        this.configStorage.update(this.config)
+            .then((data) => {
 
-        this.saveMonitorContainerConfig(monitorContainerData);
-        application.closePlayerBrowserWindows();
-        application.monitorsContainerEntity = application.getMonitorContainerEntityHydrator().hydrate(monitorContainerData);
-        application.createPlayerBrowserWindows();
+                application.closePlayerBrowserWindows();   
+                application.monitorsContainerEntity = this.config.enableMonitor;  
+                application.createPlayerBrowserWindows();
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }
 
     /**
@@ -454,7 +459,7 @@ class Application {
      */
     updatePlayerMonitors(monitorContainerData) {
 
-        let newMonitorContainer = this.getMonitorContainerEntityHydrator().hydrate(monitorContainerData);
+        let newMonitorContainer = Application.getMonitorContainerEntityHydrator().hydrate(monitorContainerData);
         let newMonitors = newMonitorContainer.getMonitors();
         let index;
 
@@ -489,7 +494,7 @@ class Application {
                         newMonitors[cont].width,
                         newMonitors[cont].height
                     );
-                    newMonitors[cont].browserWindows.send('paper-player-update', this.getMonitorEntityHydrator().extract(newMonitors[cont]));
+                    newMonitors[cont].browserWindows.send('paper-player-update', Application.getMonitorEntityHydrator().extract(newMonitors[cont]));
                     this.monitorsContainerEntity.monitors[index] = newMonitors[cont];
                     break;
                 default:
@@ -515,7 +520,16 @@ class Application {
             this.monitorsContainerEntity.removeMonitor(this.monitorsContainerEntity.monitors[cont]);
         }
 
-        this.saveMonitorContainerConfig(monitorContainerData);
+        
+        this.config.enableMonitor = newMonitorContainer;
+        this.configStorage.update(this.config)
+            .then((data) => {
+
+                application.monitorsContainerEntity = this.config.enableMonitor;
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     }
 
     /**
@@ -536,49 +550,47 @@ class Application {
         this.createPlayerDashboard();
         this.createPlayerBrowserWindows();
     }
-
-    /**
-     * Close application
-     */
-    close() {
-        this._stopScript();
-    }
 }
 
+
+const storage = loadStorageService();
+let options = {
+    env: Enviroment
+}
 /**
  * @type {Application}
  */
-const application = new Application({
-        env: Enviroment
-    }
-);
+const application = new Application(options, storage);
 
-/**
- * Enable autoplay tag video
- */
-app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+const gotTheLock = app.requestSingleInstanceLock()
+    
+if (!gotTheLock) {
+     console.warn('Try to start second instance');
+     app.quit()
+} else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+        // Someone tried to run a second instance, we should focus our window.
+        if (application.dashboard.BrowserWindow) {
+            if (application.dashboard.BrowserWindow.isMinimized()) {
+                application.dashboard.BrowserWindow.restore();  
+            } 
+            application.dashboard.BrowserWindow.focus()
+        }
+    })
+    /**
+     * Electron ready
+     */
+    app.on('ready', () => {
+        application.run();
+    });
+}
+    
 
-app.commandLine.appendSwitch('enable-native-gpu-memory-buffers', 'true');
-app.commandLine.appendSwitch('enable-accelerated-mjpeg-decode', 'true');
-app.commandLine.appendSwitch('enable-gpu-rasterization', 'true');
-app.commandLine.appendSwitch('enable-accelerated-video', 'true');
-app.commandLine.appendSwitch('enable-zero-copy', 'true');
-app.commandLine.appendSwitch('disable-software-rasterizer', 'true');
-app.commandLine.appendSwitch('enable-native-gpu-memory-buffers', 'true');
-
-/**
- * Electron ready
- */
-app.on('ready', () => {
-    application.run();
-});
 
 /**
  * Electron close all windows
  */
 app.on('window-all-closed', () => {
-    // On OS X it is common for applications and their menu bar to stay active until the user quits explicitly with Cmd + Q
-    application.close();;
     if (process.platform !== 'darwin') {
         app.quit()
     }
@@ -594,9 +606,35 @@ app.on('activate', () => {
 /**
  * Ipc comunication
  */
+ ipcMain.on('require-monitor-config', (event, message) => { 
+
+    if (!application.monitorsContainerEntity) {
+        console.log('no monitorsContainerEntity set', message);
+        return;
+    }
+
+    let monitors = application.monitorsContainerEntity.getMonitors();
+
+    if (monitors.length > 0) {
+        for (let cont = 0; monitors.length > cont; cont++) {
+
+            if( monitors[cont].getId() === message) {
+                monitors[cont].browserWindows.send('paper-player-config', Application.getMonitorEntityHydrator().extract(monitors[cont]));
+                application.loadingCount--;
+                if (application.loadingCount == 0) {
+                    application.dashboard.send('loading-player-windows-finish', {});
+                }
+                break;
+            }
+        }
+    }
+ });
+
+/**
+ * Ipc comunication
+ */
 ipcMain.on('proxy', (event, message) => {
 
-    console.warn('MESSAGE', message);
     if (!message.event || !message.data)  {
         let stringData = message.data !== null && typeof message.data === 'object' ? JSON.stringify(message.data) : 'not object';
         console.error(`Wrong message for proxy event ${message.event}: ${stringData}`);
@@ -604,6 +642,12 @@ ipcMain.on('proxy', (event, message) => {
     }
 
     switch (message.event) {
+        case 'paper-player-disable':
+            application.closePlayerBrowserWindows(); 
+            application.config.enableMonitor = new MonitorContainerEntity();  
+            application.monitorsContainerEntity = application.config.enableMonitor;
+            application.configStorage.update(application.config);
+            break;
         case 'paper-player-change':
             application.changePlayerMonitors(message.data);
             break;
@@ -616,14 +660,16 @@ ipcMain.on('proxy', (event, message) => {
         case 'dashboard-always-on-top':
             application.config.dashboard = {alwaysOnTop : message.data};
             application.dashboard.setAlwaysOnTop(message.data.checked);
-            application.saveConfig();
+            application.configStorage.save(application.config);
             break;
         case 'monitors':
-            console.log(application.displays);
             event.reply('monitors', application.displays);
+            break;
+        case 'relaunch':
+            Application.relaunch();
+            break;
 
         default:
             application.broadcastMessage(message.event, message.data);
     }
-
 });

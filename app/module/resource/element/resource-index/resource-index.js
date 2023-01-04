@@ -5,6 +5,8 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/iron-pages/iron-pages';
 import '../resource-view-list/resource-view-list'
 import './../resource-view-upsert/resource-view-upsert'
+import './../../../../elements/paper-filter-storage/paper-filter-storage'
+import './../../../../elements/paper-input-list/paper-input-list'
 import {flexStyle} from '../../../../style/layout-style';
 import {lang} from './language';
 
@@ -21,12 +23,41 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                 paper-icon-button.circle {
                     @apply --paper-icon-button-action;
                 }
+
+                paper-filter-storage {
+                    flex: 1;
+                    --paper-filter-storage : {
+                        padding: 0 8px;
+                        align-items: center;
+                        display: flex;
+                        min-height: 70px;
+                        width: -webkit-fill-available;
+                        margin-right: 8px;
+
+                    }
+                }
+
+                .filter-container {
+                    display: flex;
+                    padding-bottom: 6px;
+                }
+
+                .filter-container > * { 
+                    padding-right: 6px;
+                }
             </style>
             <iron-pages id="index" selected="{{selected}}">
                 <div id="list"> 
-                    <resource-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                    <resource-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                          <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <div class="layout-flex">{{localize('list-resource')}}</div>
+                            <paper-filter-storage on-value-changed="_filterChange" >
+                                <div slot="filters" class="filter-container">
+                                    <paper-input name="name" label="{{localize('name')}}"></paper-input>
+                                    <paper-input name="size" label="{{localize('size')}}"></paper-input>
+                                    <paper-input name="type" label="{{localize('type')}}"></paper-input>
+                                    <paper-input-list name="tags" label="{{localize('tags')}}"></paper-input-list>
+                                </div>
+                            </paper-filter-storage>
                             <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
                             <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-resource')}}</paper-tooltip>
                          </div>
@@ -75,6 +106,10 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                 }
             },
         };
+    }
+
+    _filterChange(evt) {
+        this.$.viewList.filter = JSON.parse(JSON.stringify(evt.detail));
     }
 
     /**

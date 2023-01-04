@@ -41,6 +41,13 @@ export class AbstractTimeslotService {
     static get CHANGE_TIME() { return 'change-time-timeslot'; }
 
     /**
+     * Name of the "message" send from sender when resume timeslot
+     *
+     * @return {string}
+     */
+    static get UPDATE_TIME() { return 'update-time-timeslot'; }
+
+    /**
      * @param {Storage} timeslotStorage
      * @param {sender} sender
      * @param {Timer} timer
@@ -67,6 +74,11 @@ export class AbstractTimeslotService {
          * @type {ContainerAggregate}
          */
         this.dataInjectorManager = dataInjectorManager;
+
+        /**
+         * @type {Boolean}
+         */
+        this.hasData = true;
 
         /**
          * Event manager
@@ -130,7 +142,7 @@ export class AbstractTimeslotService {
      * @return {Promise}
      * @private
      */
-    _extractTimeslotDataFromDataReferences(dataReferences) {
+     async _extractTimeslotDataFromDataReferences(dataReferences) {
         let promises = [];
         let property;
         let data;
@@ -140,7 +152,7 @@ export class AbstractTimeslotService {
             if (this.dataInjectorManager.has(dataReferences[cont].name)) {
 
                 data[this.dataInjectorManager.get(dataReferences[cont].name).serviceNamespace] =
-                    this.dataInjectorManager.get(dataReferences[cont].name).getTimeslotData(dataReferences[cont].data);
+                    await this.dataInjectorManager.get(dataReferences[cont].name).getTimeslotData(dataReferences[cont].data);
 
                 promises.push(data);
             }

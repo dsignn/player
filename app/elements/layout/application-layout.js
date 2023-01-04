@@ -26,20 +26,24 @@ import {lang} from './language/language.js';
  * @polymer
  */
 class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
-
+// class="iron-selected"
     static get template() {
         return html`
              ${flexStyle}
              <style>
+                :host {
+                    display: block;
+                    height: 100%;
+                }
           
-                 app-toolbar {
+                app-toolbar {
                     @apply --app-toolbar;
-                 }
+                }
                  
-                 app-drawer .avatar-image {
+                app-drawer .avatar-image {
                     height: 256px;
                     padding: 0 8px;
-                 }
+                }
                 
                 app-drawer .avatar-image iron-icon {
                     --iron-icon-width : 240px;
@@ -69,7 +73,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 .layout-menu {
                     background-color:  #FFFFFF;
                 }
-                  
   
                 #menuContent {
                     position: fixed;
@@ -81,15 +84,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 }
                 
                 .menu-icon-wrapper {
-                    margin-bottom: 12px;
-                    margin-top: 12px;
+                    padding: 12px;
                 }
-                
                 
                 #content {
                     margin-left: 64pX;
-                }
-                          
+                }            
              </style>
              <app-header-layout>
                 <app-header slot="header" fixed condenses effects="waterfall">
@@ -136,7 +136,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'monitor'
+                value : 'video-panel',
+                observer: 'changeSection'
             },
 
             modules: {
@@ -148,14 +149,23 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             services : {
                 notify: true,
                 value : {
+                    _config: "Config",
                     application:  "Application",
                     _aclService: 'Acl',
-                    _localizeService: 'Localize'
+                    _localizeService: 'Localize',
+                    _dexieManager : 'DexieManager',
+                    StorageContainerAggregate : {
+                        _configStorage :"ConfigStorage"
+                    }
                 }
             },
 
             application :  {
                 observer: 'changeApplicationService'
+            },
+
+            _configStorage: {
+                readOnly: true
             }
         }
     }
@@ -196,7 +206,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      * @param newValue
      */
     changeApplicationService(newValue) {
-        console.log('TONI', newValue);
         if (!newValue) {
             return;
         }
@@ -209,6 +218,17 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 new Listener(this.loadModules.bind(this))
             );
         }
+
+        newValue.getEventManager().on(
+            Application.IMPORT_MODULE,
+            new Listener(this.importModuleEvt.bind(this))
+        );
+
+
+        newValue.getEventManager().on(
+            Application.DELETE_MODULE,
+            new Listener(this.deleteModuleEvt.bind(this))
+        );
     }
 
     /**
@@ -216,6 +236,22 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      */
     loadModules(evt) {
         this.modules = evt.data;
+    }
+
+    /**
+     * @param evt
+     */
+     importModuleEvt(evt) {
+        let elem = document.createElement(evt.data.getEntryPoint().getName());
+        elem.name = evt.data.getName();
+        this.$.pages.appendChild(elem);
+        this.$.menu.render();
+        this.changeSection(this.section);
+    }
+
+    deleteModuleEvt(evt) {
+        this.modules = this.application.getModules();
+        this.$.menu.render();
     }
 
     /**
@@ -249,6 +285,40 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             let elem = document.createElement(this.modules[cont].getEntryPoint().getName());
             elem.name = this.modules[cont].getName();
             this.$.pages.appendChild(elem);
+        }
+    }
+
+    /**
+     * @param {string} value 
+     */
+    changeSection(value) {
+        let nodes = this.shadowRoot.querySelector('#menuContent').querySelectorAll('div');
+        nodes.forEach(element => {
+            element.style.backgroundColor = 'white';
+            let paperIconBtn = element.querySelector('paper-icon-button');
+            paperIconBtn.style.color = '#015b63';
+        });
+
+        let paperIconBtn = this.shadowRoot.querySelector('#' + value);
+        if (paperIconBtn)  {
+            paperIconBtn.style.color = 'white';
+            paperIconBtn.parentElement.style.backgroundColor = '#015b63';
+        } else {
+            setTimeout(
+                function() {
+                    let paperIconBtn = this.shadowRoot.querySelector('#' + value);
+
+                    if (!paperIconBtn) {
+                        console.log('suca', value);
+                        this.$.menu.render();
+                        paperIconBtn = this.shadowRoot.querySelector('#' + value);
+                    }
+
+                    paperIconBtn.style.color = 'white';
+                    paperIconBtn.parentElement.style.backgroundColor = '#015b63';
+                }.bind(this),
+                500
+            );
         }
     }
 }

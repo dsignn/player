@@ -143,7 +143,6 @@ export class TimeslotService extends AbstractTimeslotService {
      */
     async play(timeslot, options = {}) {
 
-
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
         let bindTimeslots = options.isBindExecution !== false ? await this.getTimeslotsFromArrayReference(timeslot.binds) : [];
         this._playTimeslot(timeslot, dataTimeslot);
@@ -306,7 +305,7 @@ export class TimeslotService extends AbstractTimeslotService {
     /**
      * @private
      */
-    _updateRunningTimslot() {
+     _updateRunningTimslot() {
 
         for (let property in this.runningTimeslots) {
 
@@ -314,9 +313,12 @@ export class TimeslotService extends AbstractTimeslotService {
                 this.runningTimeslots[property].currentTime = parseFloat(this.runningTimeslots[property].getCurrentTime() + 0.1).toFixed(1);
             }
 
+            this.getEventManager().emit(TimeslotService.UPDATE_TIME, this.runningTimeslots[property]);
+            /*
             this.timeslotStorage.update(this.runningTimeslots[property])
                 .then((data) => {})
                 .catch((err) => { console.log(err) });
+                */
         }
     }
 
@@ -351,9 +353,9 @@ export class TimeslotService extends AbstractTimeslotService {
         };
 
         if(data) {
-            message.data.data = {};
+            message.data.data = data;
         }
-
+        console.log('TIMESLOT SEND',message);
         this.sender.send('proxy', message);
     }
 }

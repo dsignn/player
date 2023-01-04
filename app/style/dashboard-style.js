@@ -21,8 +21,6 @@ const template = html`
 
             --app-primary-color:  #015b63;
 
-
-
             /* Components */
 
             /* paper-drawer-panel */
@@ -36,8 +34,17 @@ const template = html`
 
             /* paper-input */
             --paper-input-container-color:       var(--primary-text-color);
-            --paper-input-container-focus-color: var(--primary-text-color);
+            --paper-input-container-focus-color: var( --default-primary-color);
             --paper-input-container-input-color: var(--primary-text-color);
+
+            --paper-autocomplete-container-color:       var(--primary-text-color);
+            --paper-autocomplete-container-focus-color: var( --default-primary-color);
+            --paper-autocomplete-container-input-color: var(--primary-text-color);
+
+            --paper-autocomplete-main-color : var(--default-primary-color);
+            --paper-input-font-color        : var(--primary-text-color);
+
+
             
             /* paper-tooltup */
             --paper-tooltip-background: var(--default-primary-color);
@@ -111,13 +118,7 @@ const template = html`
                 background-color: var(--default-primary-color);
                 color: var(--text-primary-color);
             }
-            
-             --app-toolbar: {
-                background: var(--default-primary-color);
-                background-color: var(--default-primary-color);
-                color: var(--text-primary-color);
-            }
-            
+                        
             --paper-icon-button-action: {
                 color: var(--text-primary-color);
                 background-color: var(--accent-color);
@@ -128,7 +129,6 @@ const template = html`
             }
             
             --paper-icon-button-menu: {
-      
                 color: var(--default-primary-color);
             }
             
