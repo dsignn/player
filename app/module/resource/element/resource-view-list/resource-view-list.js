@@ -100,6 +100,10 @@ class ResourceViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                 notify: true
             },
 
+            itemPerPage: {
+                value: 3
+            },
+
             /**
              * @type Array
              */

@@ -126,7 +126,6 @@ export async function Repository() {
                     });
             } else {
                 dexieManager.on("ready", (data) => {
-                    console.log('TO OPNE', data);
                     generateSchema();
                 });
             }

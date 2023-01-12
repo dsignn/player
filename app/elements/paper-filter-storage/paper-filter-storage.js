@@ -61,7 +61,7 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
                 switch (true) {
                     case element.tagName === 'PAPER-INPUT':
                         setTimeout(() => {
-                            element.addEventListener("value-changed", this._valueChanged.bind(this));
+                                element.addEventListener("value-changed", this._valueChanged.bind(this));
                             }, 
                             1000
                         );
@@ -69,15 +69,21 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
                         break;
                     case element.tagName === 'PAPER-INPUT-LIST':
                         setTimeout(() => {
-                            element.addEventListener("list-value-changed", this._valueChanged.bind(this));
+                                element.addEventListener("list-value-changed", this._valueChanged.bind(this));
                             }, 
                             1000
                         );
                         
                         break;
+                    case element.tagName === 'PAPER-DROPDOWN-MENU':
+                        setTimeout(() => {
+                                element.addEventListener("iron-select", this._selectChange.bind(this));
+                                element.addEventListener("iron-deselect", this._deselectChange.bind(this));
+                            }, 
+                            1000
+                        );       
+                        break;
                 }
-
-               
             }
         });
     }
@@ -99,7 +105,33 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
                 delete this.filters[evt.target.name];
         }
         
-        console.log('cusa');
+      
+        let event = new CustomEvent('value-changed', {detail: this.filters});
+        this.dispatchEvent(event);
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    _selectChange(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+
+        this.filters[evt.target.parentElement.name] = evt.detail.item.value;
+
+        let event = new CustomEvent('value-changed', {detail: this.filters});
+        this.dispatchEvent(event);
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    _deselectChange(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+
+        delete this.filters[evt.target.parentElement.name];
+
         let event = new CustomEvent('value-changed', {detail: this.filters});
         this.dispatchEvent(event);
     }
@@ -107,6 +139,8 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
     _isInputFilter (node) {
         return !node.disabled && !!node.name;
     }
+
+
 }
 
 window.customElements.define('paper-filter-storage', PaperFilterStorage);

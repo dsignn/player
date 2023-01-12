@@ -117,7 +117,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     <div id="content">
                         <div class="name">{{entity.name}}</div>
                         <div class="size">
-                            <div>{{size}} {{sizeLabel}}</div>
+                            <div>{{size}} {{sizeLabel}} {{entity.type}}</div>
                         </div>
                         <template is="dom-if" if="{{entity.dimension.height}}">
                             <div class="dimension">{{entity.dimension.width}} px {{entity.dimension.height}} px</div>

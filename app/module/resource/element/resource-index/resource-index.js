@@ -45,16 +45,52 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                 .filter-container > * { 
                     padding-right: 6px;
                 }
+
+                .searchIcon {
+                    position: relative;
+                    backface-visibility : hidden;
+                    padding: 0;
+                    height: 20px;
+                    width: 20px;
+                }
+
+                .max-width-100 {
+                    max-width: 100px;
+                }
+
+                .rotate {
+                    rotate: 180deg;
+                    transition: rotate 1s;
+                }
             </style>
             <iron-pages id="index" selected="{{selected}}">
                 <div id="list"> 
                     <resource-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                          <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <paper-filter-storage on-value-changed="_filterChange" >
+                            <paper-filter-storage on-value-changed="_filterChange">
                                 <div slot="filters" class="filter-container">
-                                    <paper-input name="name" label="{{localize('name')}}"></paper-input>
-                                    <paper-input name="size" label="{{localize('size')}}"></paper-input>
-                                    <paper-input name="type" label="{{localize('type')}}"></paper-input>
+                                    <paper-input name="name" label="{{localize('name')}}" ></paper-input>
+                                    <paper-dropdown-menu name="type" label="{{localize('type')}}">
+                                        <paper-listbox slot="dropdown-content" class="dropdown-content">
+                                            <dom-repeat id="menu" items="{{resourceType}}" as="type">
+                                                <template>
+                                                    <paper-item value="{{type.value}}">{{type.name}}</paper-item>
+                                                </template>
+                                            </dom-repeat>
+                                        </paper-listbox>
+                                    </paper-dropdown-menu>
+                                    <div>
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension" direction="down"></paper-icon-button>
+                                    </div>
+                                    <paper-input name="size"  type="number" class="max-width-100" label="{{localize('size')}}">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension" direction="down"></paper-icon-button>
+                                    </paper-input>
+                                    <paper-input name="height" type="number" class="max-width-100" label="{{localize('height')}}">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension" direction="down"></paper-icon-button>
+                                    </paper-input>
+                                    <paper-input name="width" type="number" class="max-width-100" label="{{localize('width')}}">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-click="toggleDimension"  direction="down"></paper-icon-button>
+                                    </paper-input>
                                     <paper-input-list name="tags" label="{{localize('tags')}}"></paper-input-list>
                                 </div>
                             </paper-filter-storage>
@@ -92,6 +128,18 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
 
     static get properties () {
         return {
+
+            resourceType: {
+                value: [
+                    {"name": "jpeg", "value": "image/jpeg"},
+                    {"name": "jpg", "value":  "image/jpeg"},
+                    {"name": "png", "value": "image/png"},
+                    {"name": "mp4", "value": "video/mp4"},
+                    {"name": "mp3", "value": "video/mp3"},
+                    {"name": "zip", "value": "application/zip"},
+                ]
+            },
+
             selected: {
                 type: Number,
                 value: 0
@@ -113,14 +161,30 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
     }
 
     /**
-     * @param evt
+     * 
+     * @param {Event} evt 
+     */
+     toggleDimension(evt) {
+
+        let direction = evt.target.getAttribute('direction');
+        if (direction === 'down') {
+            evt.target.setAttribute('direction', 'up');
+            evt.target.classList.add('rotate');
+        } else {
+            evt.target.setAttribute('direction', 'down');
+            evt.target.classList.remove('rotate');
+        }
+    }
+
+    /**
+     * @param {Event} evt
      */
     displayAddView(evt) {
         this.selected = 1;
     }
 
     /**
-     * @param evt
+     * @param {Event} evt
      */
     displayListView(evt) {
         this.selected = 0;

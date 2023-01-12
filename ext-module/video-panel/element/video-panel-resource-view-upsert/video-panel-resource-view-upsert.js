@@ -293,8 +293,6 @@
 
         ready() {
             super.ready();
-
-            console.log(Mapper, 'toni')
             this.$.formEntity.addEventListener('iron-form-presubmit', this.submitEntity.bind(this));
         }
 
