@@ -67,10 +67,10 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                 <div id="list"> 
                     <resource-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                          <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <paper-filter-storage on-value-changed="_filterChange">
+                            <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
                                 <div slot="filters" class="filter-container">
                                     <paper-input name="name" label="{{localize('name')}}" ></paper-input>
-                                    <paper-dropdown-menu name="type" label="{{localize('type')}}">
+                                    <paper-dropdown-menu id="type" name="type" label="{{localize('type')}}" style="padding:0px">
                                         <paper-listbox slot="dropdown-content" class="dropdown-content">
                                             <dom-repeat id="menu" items="{{resourceType}}" as="type">
                                                 <template>
@@ -79,17 +79,17 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                                             </dom-repeat>
                                         </paper-listbox>
                                     </paper-dropdown-menu>
-                                    <div>
-                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension" direction="down"></paper-icon-button>
+                                    <div style="margin-top: 29px; border-bottom: 1px solid; height: 24px; margin-right:6px;">
+                                        <paper-icon-button slot="suffix" icon="clear" alt="clear" title="clear" class="searchIcon" on-tap="clearType"></paper-icon-button>
                                     </div>
-                                    <paper-input name="size"  type="number" class="max-width-100" label="{{localize('size')}}">
-                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension" direction="down"></paper-icon-button>
+                                    <paper-input name="size"  type="number" class="max-width-100" label="{{localize('size')}}" direction="down">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension"></paper-icon-button>
                                     </paper-input>
-                                    <paper-input name="height" type="number" class="max-width-100" label="{{localize('height')}}">
-                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension" direction="down"></paper-icon-button>
+                                    <paper-input name="height" type="number" class="max-width-100" label="{{localize('height')}}" direction="down">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension"></paper-icon-button>
                                     </paper-input>
-                                    <paper-input name="width" type="number" class="max-width-100" label="{{localize('width')}}">
-                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-click="toggleDimension"  direction="down"></paper-icon-button>
+                                    <paper-input name="width" type="number" class="max-width-100" label="{{localize('width')}}"  direction="down">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-click="toggleDimension"></paper-icon-button>
                                     </paper-input>
                                     <paper-input-list name="tags" label="{{localize('tags')}}"></paper-input-list>
                                 </div>
@@ -164,16 +164,25 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
      * 
      * @param {Event} evt 
      */
-     toggleDimension(evt) {
+    toggleDimension(evt) {
 
-        let direction = evt.target.getAttribute('direction');
+        let ele = evt.target.parentElement;
+        let direction = ele.getAttribute('direction');
         if (direction === 'down') {
-            evt.target.setAttribute('direction', 'up');
+            ele.setAttribute('direction', 'up');
             evt.target.classList.add('rotate');
         } else {
-            evt.target.setAttribute('direction', 'down');
+            ele.setAttribute('direction', 'down');
             evt.target.classList.remove('rotate');
         }
+        
+        if (ele.value) {
+            ele.dispatchEvent(new CustomEvent('value-changed'));
+        }
+    }
+
+    clearType(evt) {
+        this.$.type.querySelector('paper-listbox').selected = null;
     }
 
     /**

@@ -136,7 +136,8 @@ export class Repository extends ContainerAware {
                 "size", 
                 "name", 
                 "*tags", 
-                "[name+type]" 
+                "dimension.height",
+                "dimension.width" 
             ]
         );
         dexieManager.addStore(store);

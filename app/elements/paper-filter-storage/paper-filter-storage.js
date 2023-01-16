@@ -94,11 +94,19 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
     _valueChanged(evt) {
         evt.preventDefault();
         evt.stopImmediatePropagation();
+       
         switch(true) {
+    
+            case evt.target.getAttribute('direction') !== null:
+                this.filters[evt.target.name] = {
+                    'direction':  evt.target.getAttribute('direction'), 
+                    'value': parseInt(evt.target.value)
+                }
+                break;
             case Array.isArray(evt.detail.value) && evt.detail.value.length > 0:
                 this.filters[evt.target.name] = evt.detail.value
                 break;
-            case !!evt.detail.value:
+            case !!evt.detail.value && !Array.isArray(evt.detail.value):
                 this.filters[evt.target.name] = evt.detail.value
                 break;
             default:
@@ -118,7 +126,10 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
         evt.stopImmediatePropagation();
 
         this.filters[evt.target.parentElement.name] = evt.detail.item.value;
+        this._dispatch();
+    }
 
+    _dispatch() {
         let event = new CustomEvent('value-changed', {detail: this.filters});
         this.dispatchEvent(event);
     }
@@ -139,8 +150,6 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
     _isInputFilter (node) {
         return !node.disabled && !!node.name;
     }
-
-
 }
 
 window.customElements.define('paper-filter-storage', PaperFilterStorage);
