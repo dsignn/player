@@ -32,6 +32,8 @@ export class DexieResourceAdapter extends DexieAdapter {
                         .and(this._andFilterTags.bind({"dataFilter": filter}));
                     break;
 
+                // 5 filter   
+
                 case filter.name !== undefined && 
                      filter.size !== undefined && 
                      filter.width !== undefined && 
@@ -39,36 +41,74 @@ export class DexieResourceAdapter extends DexieAdapter {
                      filter.type !== undefined:
                     collection = this.manager.table(this.getNameCollection())
                         .where('name').startsWithIgnoreCase(filter['name'])
-                        .and(this._andFilterType.bind({"dataFilter": filter}))
                         .and(this._andFilterSize.bind({"dataFilter": filter}))
                         .and(this._andFilterWidth.bind({"dataFilter": filter}))
-                        .and(this._andFilterHeigh.bind({"dataFilter": filter}));
+                        .and(this._andFilterHeigh.bind({"dataFilter": filter}))
+                        .and(this._andFilterType.bind({"dataFilter": filter}));
                     break;
-/*
+
                 case filter.name !== undefined && 
                      filter.size !== undefined && 
                      filter.width !== undefined && 
-                     filter.height !== undefined:
+                     filter.height !== undefined && 
+                     filter.tags !== undefined:
                     collection = this.manager.table(this.getNameCollection())
-                        .where('name').startsWithIgnoreCase(filter['name'])
-                        .and(this._andFilterSize.bind({"dataFilter": filter}))
-                        .and(this._andFilterWidth.bind({"dataFilter": filter}))
-                        .and(this._andFilterHeigh.bind({"dataFilter": filter}));
-                    break;
-
-                case filter.name !== undefined && 
-                    filter.size !== undefined && 
-                    filter.width !== undefined && 
-                    filter.tags !== undefined:
-                   collection = this.manager.table(this.getNameCollection())
                        .where('name').startsWithIgnoreCase(filter['name'])
                        .and(this._andFilterSize.bind({"dataFilter": filter}))
                        .and(this._andFilterWidth.bind({"dataFilter": filter}))
+                       .and(this._andFilterHeigh.bind({"dataFilter": filter}))
+                       .and(this._andFilterTags.bind({"dataFilter": filter}));
+                    break;
+
+                case filter.name !== undefined && 
+                     filter.size !== undefined && 
+                     filter.width !== undefined && 
+                     filter.type !== undefined && 
+                     filter.tags !== undefined:
+                    collection = this.manager.table(this.getNameCollection())
+                       .where('name').startsWithIgnoreCase(filter['name'])
+                       .and(this._andFilterType.bind({"dataFilter": filter}))
+                       .and(this._andFilterWidth.bind({"dataFilter": filter}))
+                       .and(this._andFilterType.bind({"dataFilter": filter}))
+                       .and(this._andFilterTags.bind({"dataFilter": filter}));
+                    break;
+
+                case filter.name !== undefined && 
+                     filter.size !== undefined && 
+                     filter.height !== undefined && 
+                     filter.type !== undefined && 
+                     filter.tags !== undefined:
+                    collection = this.manager.table(this.getNameCollection())
+                       .where('name').startsWithIgnoreCase(filter['name'])
+                       .and(this._andFilterSize.bind({"dataFilter": filter}))
+                       .and(this._andFilterHeigh.bind({"dataFilter": filter}))
+                       .and(this._andFilterType.bind({"dataFilter": filter}))
                        .and(this._andFilterTags.bind({"dataFilter": filter}));
                    break;
 
+                // 4 filter 
+                
+                case filter.name !== undefined && 
+                     filter.tags !== undefined && 
+                     filter.size !== undefined && 
+                     filter.width !== undefined:
+                    collection = this.manager.table(this.getNameCollection())
+                    .where('name').startsWithIgnoreCase(filter['name'])
+                    .and(this._andFilterTags.bind({"dataFilter": filter}))
+                    .and(this._andFilterSize.bind({"dataFilter": filter}))
+                    .and(this._andFilterWidth.bind({"dataFilter": filter}));
+                    break;
 
-*/
+                case filter.name !== undefined && 
+                     filter.tags !== undefined && 
+                     filter.size !== undefined && 
+                     filter.height !== undefined:
+                    collection = this.manager.table(this.getNameCollection())
+                    .where('name').startsWithIgnoreCase(filter['name'])
+                    .and(this._andFilterTags.bind({"dataFilter": filter}))
+                    .and(this._andFilterSize.bind({"dataFilter": filter}))
+                    .and(this._andFilterHeigh.bind({"dataFilter": filter}));
+                    break;
 
                 case filter.name !== undefined && 
                      filter.tags !== undefined && 
@@ -147,6 +187,8 @@ export class DexieResourceAdapter extends DexieAdapter {
                         .and(this._andFilterHeigh.bind({"dataFilter": filter}));
                     break;
              
+                // 3 filter 
+
                 case filter.name !== undefined && 
                     filter.tags !== undefined && 
                     filter.size !== undefined:
@@ -237,7 +279,7 @@ export class DexieResourceAdapter extends DexieAdapter {
                         .and(this._andFilterWidth.bind({"dataFilter": filter}));
                     break;
 
-                // NAME 
+                // 2 filter 
 
                 case filter.name !== undefined && filter.tags !== undefined:
                     collection = this.manager.table(this.getNameCollection())
