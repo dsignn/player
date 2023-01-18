@@ -1,0 +1,9 @@
+{
+  "name": "ext-module",
+  "scripts": {
+    "zipModules": "echo \"Error: no test specified\" && exit 1",
+    "deleteZipModule": "echo ciao"
+  },
+  "author": "",
+  "license": "ISC"
+}
