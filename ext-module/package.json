@@ -1,8 +1,8 @@
 {
   "name": "ext-module",
   "scripts": {
-    "zipModules": "echo \"Error: no test specified\" && exit 1",
-    "deleteZipModule": "echo ciao"
+    "zipModules": "zip -r hello-word hello-word && zip -r playlist playlist  && zip -r media-device media-device && zip -r ice-hockey ice-hockey && zip -r video-panel video-panel -x video-generator/\\*",
+    "deleteZipModule": "rm *.zip"
   },
   "author": "",
   "license": "ISC"

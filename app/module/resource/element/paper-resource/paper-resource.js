@@ -214,7 +214,10 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             return;
         }
 
-
+        let ele = this.shadowRoot.querySelector('#videoBackground');
+        if (ele) {
+            ele.remove();
+        }
         this._updateSize(entity.size);
         this._updateLeftImageHtml();
     }
@@ -323,6 +326,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             case this.entity instanceof VideoEntity:       
 
                 let video = document.createElement('video');
+                video.setAttribute('id', 'videoBackground')
                 video.setAttribute('width', 80);
                 video.setAttribute('height', 120);
                 video.setAttribute('preload', 'metadata');
