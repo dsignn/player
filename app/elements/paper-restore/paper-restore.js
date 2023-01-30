@@ -16,7 +16,11 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
 
                 :host {
                     --paper-tooltip-opacity : 1;
-                    padding: 8px;
+                    display:block; 
+                    padding: 5px;
+                    width: 95px;
+                    height: 95px;
+                    border-radius: 6px;
                     --paper-tooltip : {
                         background-color: var(--accent-color);
                         background:  var(--accent-color);
@@ -34,15 +38,49 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     }
                 }
 
+                :host(:hover){
+                    background-color: #e8f0fe;
+                }
+
+                paper-icon-button {
+                      
+                    --paper-icon-button : {
+                        width: 60px;
+                        height: 60px;
+                        color: var(--default-primary-color);
+                    }
+                    --paper-icon-button-disabled : {
+                         background:  red;
+                    }
+                }
+
+                paper-dialog {
+                    width: 250px;
+                    max-width: 250px !important;
+                    left: unset !important;
+                    right: 0px;
+                }
+
                 .container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+
+                .container-dialog {
                     min-height: 150px;
                 }
   
             </style>
-            <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>
-            <paper-tooltip id="paperTooltip" for="paperRestore" position="left">{{localize('run-restore')}}</paper-tooltip>
+            <div class="container">
+                <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>
+                <!--<paper-tooltip id="paperTooltip" for="paperRestore" position="left">{{localize('run-restore')}}</paper-tooltip>-->
+                <div style="font-size: 16px;">Restore</div>
+            </div>
             <paper-dialog id="restoreDialog" auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
-                <div class="container">
+                <div class="container-dialog">
                     <paper-input-file id="restoreFile" files="{{files}}" accept="application/zip"></paper-input-file>
                     <paper-button id="importButton" on-tap="restore" disabled>{{localize('import')}}</paper-button>
                 </div>

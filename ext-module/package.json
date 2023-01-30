@@ -1,7 +1,7 @@
 {
   "name": "ext-module",
   "scripts": {
-    "zipModules": "zip -r hello-word hello-word && zip -r playlist playlist  && zip -r media-device media-device && zip -r ice-hockey ice-hockey && zip -r video-panel video-panel -x video-generator/\\*",
+    "zipModules": "zip -r hello-word hello-word && zip -r playlist playlist  && zip -r media-device media-device && zip -r ice-hockey ice-hockey && zip -r video-panel video-panel -x video-generator/\\* && zip -r timeline timeline",
     "deleteZipModule": "rm *.zip"
   },
   "author": "",

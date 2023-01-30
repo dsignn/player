@@ -89,17 +89,34 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 
                 #content {
                     margin-left: 64pX;
-                }            
+                } 
+                
+                #alignedDialog {
+                   
+                    outline: none;
+                    position: fixed;
+                    top: 32px;
+                    z-index: 103;
+                    width: 331px;
+                    max-width: 331px;
+                    right: -32px;
+                    border-radius: 6px;
+                }
+
+                .short-cut-menu {
+                    margin: 8px;
+                    padding: 0;
+                    display: flex;
+                    flex-wrap: wrap;
+                    justify-content: flex-start;
+                }
              </style>
              <app-header-layout>
                 <app-header slot="header" fixed condenses effects="waterfall">
                     <app-toolbar>
                         <div main-title>{{localize('nameApp')}}</div>
                         <paper-select-language></paper-select-language>
-                        <paper-gpu-setting></paper-gpu-setting>
-                        <paper-backup></paper-backup>
-                        <paper-restore></paper-restore>
-                        <paper-always-on-top></paper-always-on-top>
+                        <paper-icon-button icon="menu" on-tap="openApp" raised></paper-icon-button>
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
                     </app-toolbar>
                 </app-header>
@@ -127,6 +144,14 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 </div>
                 <div class="avatar-name">Mario rossi</div>
             </app-drawer>
+            <paper-dialog id="alignedDialog" no-overlap horizontal-align="left" vertical-align="top">
+                <div class="short-cut-menu">
+                    <paper-gpu-setting></paper-gpu-setting>
+                    <paper-backup></paper-backup>
+                    <paper-restore></paper-restore>
+                    <paper-always-on-top></paper-always-on-top>      
+                <div>
+            </paper-dialog>
         `;
     }
 
@@ -181,6 +206,14 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
         document.body.onresize = (event) => {
             this.updateHeightMenu();
         }
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    openApp(evt) {
+        this.$.alignedDialog.positionTarget = evt.element;
+        this.$.alignedDialog.open();
     }
 
     /**
