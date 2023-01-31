@@ -12,74 +12,51 @@ export async function Repository() {
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/NumberStrategy.js`));
     const { MapPropertyStrategy } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/proprerty/MapPropertyStrategy.js`));
+    const { MongoIdGenerator } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/util/MongoIdGenerator.js`)); 
     const { PropertyHydrator } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/PropertyHydrator.js`));
     const { Time } = await import(require('path').normalize(
-        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoDb.js`));
-        
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));        
     const { MongoDb } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoDb.js`));
+    const { Store } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/Store.js`));
     const { Storage } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/Storage.js`));
      
     const { config } = await import('./config.js');
-   
-      import {Time} from "@dsign/library/src/date";
-       import {Repository as TimeslotRepository} from "../timeslot/repository";
 
     /**
      * @class Repository
      */
-    export class Repository extends ContainerAware {
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get TIMELINE_ENTITY_SERVICE() { return 'TimelineEntity'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get TIMELINE_HYDRATOR_SERVICE() { return 'TimelineEntityHydrator'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get COLLECTION() { return 'timeline'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get STORAGE_SERVICE() { return 'TimelineStorage'; };
-
-        /**
-         * @return {string}
-         * @constructor
-         */
-        static get TIMELINE_SERVICE() { return 'TimelineService'; };
+    return class Repository extends ContainerAware {
 
         /**
          *
          */
         init() {
-            this.loadConfig();
+            this.initConfig();
             this.initAcl();
             this.initEntity();
             this.initHydrator();
-            this.initMongoStorage();
+            this.initDexieStorage();
         }
 
         /**
+         * @returns Object
+         */
+        _getModuleConfig() {
+            return  this.getContainer().get('ModuleConfig')['timeline']['timeline'];
+        }
+
+         /**
          * Merge config
          */
-        loadConfig() {
-            this.container.set(
-                'config',
-                this.getContainer().get('merge').merge(config, this.getContainer().get('config'))
+        initConfig() {
+            this.getContainer().set(
+                'ModuleConfig',
+                this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
             );
         }
 
@@ -89,7 +66,10 @@ export async function Repository() {
         initEntity() {
             this.getContainer()
                 .get('EntityContainerAggregate')
-                .set(Repository.TIMELINE_ENTITY_SERVICE, new TimelineEntity());
+                .set(
+                    this._getModuleConfig().entityService, 
+                    new TimelineEntity()
+                );
         }
 
         /**
@@ -98,10 +78,8 @@ export async function Repository() {
         initHydrator() {
 
             this.getContainer().get('HydratorContainerAggregate').set(
-                Repository.TIMELINE_HYDRATOR_SERVICE,
-                Repository.getTimelineHydrator(
-                    this.getContainer().get('EntityContainerAggregate')
-                )
+                this._getModuleConfig().hydrator['name-storage-service'],
+                Repository.getTimelineHydrator(this.getContainer())
             );
 
         }
@@ -116,8 +94,8 @@ export async function Repository() {
                 let aclService = this.getContainer().get('Acl');
 
                 // TODO add method on service
-                aclService.addResource('timeline');
-                aclService.allow('guest', 'timeline');
+                aclService.addResource(this._getModuleConfig().acl.resource);
+                aclService.allow('guest', this._getModuleConfig().acl.resource);
             }
         }
 
@@ -128,13 +106,18 @@ export async function Repository() {
 
             let loadStorage = () => {
 
-                const adapter = new MongoTimelineAdapter(this.getContainer().get('MongoDb'), Repository.COLLECTION);
+                const adapter = new MongoTimelineAdapter(
+                    this.getContainer().get('MongoDb'), 
+                    this._getModuleConfig().storage.adapter.mongo['collection']
+                );
+                
                 const storage = new Storage(adapter);
-
-                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(Repository.TIMELINE_HYDRATOR_SERVICE));
+                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service']
+                ));
 
                 this.getContainer().get('StorageContainerAggregate').set(
-                    Repository.STORAGE_SERVICE,
+                    this._getModuleConfig().storage['name-service'],
                     storage
                 );
 
@@ -158,15 +141,60 @@ export async function Repository() {
         /**
          *
          */
+        initDexieStorage() {
+
+            const dexieManager = this.getContainer().get(
+                this._getModuleConfig().storage.adapter.dexie['connection-service']
+            );
+
+            let store = new Store(
+                this._getModuleConfig().storage.adapter.dexie['collection'],
+                [
+                    "++id", 
+                    "name"
+                ]
+            );
+
+            dexieManager.addStore(store);
+
+            dexieManager.on("ready", () => {
+
+                const adapter = new DexieTimeslotAdapter(
+                    dexieManager, 
+                    this._getModuleConfig().storage.adapter.dexie['collection']
+                );
+                const storage = new Storage(adapter);
+                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service']
+                ));
+
+                storage.getEventManager()
+                    .on(Storage.BEFORE_SAVE, (data) => {
+                        data.data.id = MongoIdGenerator.statcGenerateId();
+                    });
+
+                this.getContainer().get('StorageContainerAggregate').set(
+                    this._getModuleConfig().storage['name-service'],
+                    storage
+                );
+
+                this.initTimelineService();
+            });
+        }
+
+
+        /**
+         *
+         */
         initTimelineService() {
             this.getContainer().set(
-                Repository.TIMELINE_SERVICE,
+                this._getModuleConfig().timelineService,
                 new TimelineService(
-                    this.getContainer().get('StorageContainerAggregate').get(TimeslotRepository.STORAGE_SERVICE),
+                    this.getContainer().get('StorageContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].storage['name-service']),
                     this.getContainer().get('SenderContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['timeslotSender']),
                     this.getContainer().get('Timer'),
                     this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']),
-                    this.getContainer().get('StorageContainerAggregate').get(Repository.STORAGE_SERVICE)
+                    this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service'])
                 )
             );
         }
@@ -178,7 +206,9 @@ export async function Repository() {
         static getTimelineHydrator(container) {
 
             let hydrator =  new PropertyHydrator(
-                container.get(Repository.TIMELINE_ENTITY_SERVICE),
+                container.get('EntityContainerAggregate').get(
+                    container.get('ModuleConfig')['timeline']['timeline'].entityService
+                ),
                 {
                     id: new MongoIdStrategy(),
                     _id: new MongoIdStrategy(),
@@ -235,7 +265,7 @@ export async function Repository() {
                 new TimelineItem(),
                 {
                     time: new HydratorStrategy(timeHydrator),
-                    timeslotReferences:  new HydratorStrategy(TimeslotRepository.getTimeslotReferenceHydrator(container))
+                    timeslotReferences:  new HydratorStrategy(Repository.getTimeslotReferenceHydrator(container))
                 }
             );
 
@@ -255,8 +285,34 @@ export async function Repository() {
         static getTimelineReferenceHydrator(container) {
 
             let hydrator = new PropertyHydrator();
-            hydrator.setTemplateObjectHydration(container.get('EntityReference'));
+            hydrator.setTemplateObjectHydration(
+                container.get('EntityContainerAggregate').get('EntityReference')
+            );
 
+            hydrator.enableHydrateProperty('id')
+                .enableHydrateProperty('collection')
+                .enableHydrateProperty('name');
+
+
+            hydrator.enableExtractProperty('id')
+                .enableExtractProperty('collection')
+                .enableExtractProperty('name');
+
+            return hydrator;
+        }
+
+        /**
+         * @param container
+         * @return {PropertyHydrator}
+         */
+        static getTimeslotReferenceHydrator(container) {
+
+            let hydrator = new PropertyHydrator();
+            
+            hydrator.setTemplateObjectHydration(
+                container.get('EntityContainerAggregate').get('EntityReference')
+            );
+            
             hydrator.enableHydrateProperty('id')
                 .enableHydrateProperty('collection')
                 .enableHydrateProperty('name');

@@ -45,14 +45,6 @@
                 "nameFile": "TimelineItem",
                 "extension": "js"
             }
-        },
-        {
-            "name": "MongoTimelineAdapter",
-            "path": {
-                "directory": "src/storage/adapter/mongo",
-                "nameFile": "MongoTimelineAdapter",
-                "extension": "js"
-            }
         }
     ]
 }

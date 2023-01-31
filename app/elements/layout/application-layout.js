@@ -161,7 +161,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'video-panel',
+                value : 'timeslot',
                 observer: 'changeSection'
             },
 
@@ -350,7 +350,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     paperIconBtn.style.color = 'white';
                     paperIconBtn.parentElement.style.backgroundColor = '#015b63';
                 }.bind(this),
-                500
+                2000
             );
         }
     }
