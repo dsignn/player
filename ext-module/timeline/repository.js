@@ -24,7 +24,12 @@ export async function Repository() {
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/Store.js`));
     const { Storage } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/Storage.js`));
-     
+
+    const { TimelineEntity } = await import('./src/entity/TimelineEntity.js');
+    const { TimelineItem } = await import('./src/entity/embedded/TimelineItem.js');
+    const { MongoTimelineAdapter } = await import('./src/storage/adapter/mongo/MongoTimelineAdapter.js');
+    const { DexieTimelineAdapter } = await import('./src/storage/adapter/dexie/DexieTimelineAdapter.js');
+
     const { config } = await import('./config.js');
 
     /**
@@ -147,31 +152,37 @@ export async function Repository() {
                 this._getModuleConfig().storage.adapter.dexie['connection-service']
             );
 
+            /**
+             * Add schema
+             */
             let store = new Store(
                 this._getModuleConfig().storage.adapter.dexie['collection'],
-                [
-                    "++id", 
-                    "name"
-                ]
+                ["++id", "name"]
             );
-
             dexieManager.addStore(store);
 
-            dexieManager.on("ready", () => {
+            /**
+             * Create Schema
+             */
+            var generateSchema = () => {
 
-                const adapter = new DexieTimeslotAdapter(
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(
+                    this._getModuleConfig().hydrator['name-storage-service']
+                );
+                hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
+
+                const adapter = new DexieTimelineAdapter(
                     dexieManager, 
                     this._getModuleConfig().storage.adapter.dexie['collection']
                 );
+                
                 const storage = new Storage(adapter);
-                storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get(
-                    this._getModuleConfig().hydrator['name-storage-service']
-                ));
-
+                storage.setHydrator(hydrator);
                 storage.getEventManager()
                     .on(Storage.BEFORE_SAVE, (data) => {
                         data.data.id = MongoIdGenerator.statcGenerateId();
                     });
+
 
                 this.getContainer().get('StorageContainerAggregate').set(
                     this._getModuleConfig().storage['name-service'],
@@ -179,7 +190,25 @@ export async function Repository() {
                 );
 
                 this.initTimelineService();
-            });
+            }
+
+            if(dexieManager.isOpen()) {
+                let version = dexieManager.upgradeSchema();
+                this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
+                this.getContainer().get('StorageContainerAggregate')
+                    .get('ConfigStorage')
+                    .update(this.getContainer().get('Config'))
+                    .then((data) => {
+                        this.getContainer().get('SenderContainerAggregate')
+                            .get('Ipc')
+                            .send('proxy', {event:'relaunch', data: {}}
+                        );
+                    });
+            } else {
+                dexieManager.on("ready", (data) => {
+                    generateSchema();
+                });
+            }
         }
 
 
