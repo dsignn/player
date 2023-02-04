@@ -27,13 +27,17 @@ const TimelineEntity = (async () => {
 
             /**
              * @type {Time}
+             * @deprecated
              */
             this.time = new Time();
 
             /**
              * @type {Time}
+             * @deprecated
              */
             this.timer = new Time();
+
+            this.currentTime = 0;
 
             /**
              * @type {Array}
@@ -272,6 +276,23 @@ const TimelineEntity = (async () => {
                 this.binds.splice(index, 1);
             }
             return index > -1;
+        }
+
+        /**
+         * 
+         */
+        getDuration() {
+           
+            let last = this.timelineItems[this.timelineItems.length - 1];
+            let duration = last.time.getDuration();  
+            let itemDuration = 0;
+            for(let index = 0; last.timeslotReferences.length > index; index++) {
+                if(itemDuration < last.timeslotReferences[index].duration) {
+                    itemDuration = last.timeslotReferences[index].duration;
+                }
+            }
+
+            return (duration + itemDuration); 
         }
     }
     return {TimelineEntity: TimelineEntity};

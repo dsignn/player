@@ -333,6 +333,7 @@
             timeslotReference.id = this.$.autocompleteTimeslot.value.id;
             timeslotReference.setCollection('timeslot');
             timeslotReference.name = this.$.autocompleteTimeslot.value.name;
+            timeslotReference.duration = this.$.autocompleteTimeslot.value.duration;
             this.entity.addItem(this.time.clone(), timeslotReference);
 
             let list = this.entity.timelineItems;
