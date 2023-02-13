@@ -74,15 +74,7 @@
                     <iron-form id="formEntity">
                         <form method="post">
                             <paper-input id="name" name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
-                            <paper-checkbox checked="{{entity.enableAudio}}" style="padding-top: 20px;">{{localize('enable-audio')}} <i>({{localize('info-working')}})</i></paper-checkbox>
-                            <div class="layout horizontal" style="width: 100%;">
-                                <paper-input label="{{localize('hours-end')}}" class="layout-flex-4" value="{{entity.time.hours}}" type="number" required></paper-input>
-                                <div class="pd-r"></div>
-                                <paper-input label="{{localize('minutes-end')}}" class="layout-flex-4" value="{{entity.time.minutes}}" type="number" required></paper-input>
-                                <div class="pd-r"></div>
-                                <paper-input label="{{localize('seconds-end')}}" class="layout-flex-4" value="{{entity.time.seconds}}" type="number" required></paper-input>
-                            </div>
-                            <div class="layout horizontal">
+                                <div class="layout horizontal">
                                 <paper-card class="layout horizontal layout-flex padding-6">
                                     <paper-input class="layout-flex" label="{{localize('hours')}}" value="{{time.hours}}" type="number"></paper-input>
                                     <div class="pd-r"></div>
@@ -133,7 +125,8 @@
                                         </paper-item>
                                     </template>
                                 </paper-autocomplete>
-                                <paper-chips id="bindChips" items="{{entity.binds}}"></paper-chips>           
+                                <paper-chips id="bindChips" items="{{entity.binds}}"></paper-chips>      
+                                <paper-checkbox checked="{{entity.enableAudio}}" style="padding-top: 15px; padding-bottom: 15px;">{{localize('enable-audio')}} <i>({{localize('info-working')}})</i></paper-checkbox>
                             </div>
                             <div id="listItems" class="timeline flex-1">
                                 <template is="dom-repeat" id="timelineItems" items="[[entity.timelineItems]]" as="timelineItem">

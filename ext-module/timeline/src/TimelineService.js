@@ -1,13 +1,9 @@
 const TimelineService = (async () => {        
 
-    const { Time } = await import(require('path').normalize(
-        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));
-
     const { AbstractTimeslotService } = await import(`${container.get('Application').getBasePath()}module/timeslot/src/AbstractTimeslotService.js`);
     const { TimeslotEntity } = await import(`${container.get('Application').getBasePath()}module/timeslot/src/entity/TimeslotEntity.js`);
     const { TimelineEntity } = await import(`./entity/TimelineEntity.js`);
-    
-
+    const { Time } = await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));
     /**
      * @class TimelineService
      */
@@ -38,7 +34,7 @@ const TimelineService = (async () => {
              */
             this.runningTimelines = {};
 
-            this.timer.addEventListener('secondsUpdated', (evt) => {
+            this.timer.addEventListener('secondTenthsUpdated', (evt) => {
                 this._schedule();
             });
         }
@@ -48,11 +44,22 @@ const TimelineService = (async () => {
          */
         _schedule(evt) {
 
-            this._promoteToRunTimeline();
-            this._startTimelinePromote();
-
-            this._updateRunningTimeline();
             this._scheduleRunningTimeline();
+            this._updateRunningTimeline();
+        }
+
+        /**
+         * @private
+         */
+        _updateRunningTimeline() {
+
+            for (let property in this.runningTimelines) {
+                //console.log(this.runningTimelines[property].currentTime);
+                //console.log('Update schedule', this.runningTimelines[property].name, this.runningTimelines[property].currentTime, updateTime);
+                this.runningTimelines[property].currentTime =  Math.round((this.runningTimelines[property].currentTime + 0.1) * 10) / 10;    ;
+            
+                this.getEventManager().emit(TimeslotService.UPDATE_TIME, this.runningTimelines[property]);
+            }
         }
 
         /**
@@ -100,36 +107,6 @@ const TimelineService = (async () => {
             return runningTimeline;
         }
 
-        /**
-         * @private
-         */
-        _updateRunningTimeline() {
-
-            for (let property in this.runningTimelines) {
-                if (this.runningTimelines[property].status === TimeslotEntity.RUNNING) {
-                    this.runningTimelines[property].timer.sumSeconds(1);
-                    this.timelineStorage.update(this.runningTimelines[property])
-                        .then((data) => {
-                            //console.log('update timeline')
-                        })
-                        .catch((err) => { console.error(err)});
-                }
-            }
-        }
-
-        /**
-         * @private
-         */
-        _promoteToRunTimeline() {
-            /**
-             *
-             */
-            for (let property in this.runningTimelines) {
-                if (this.runningTimelines[property].status === TimelineEntity.TO_RUN) {
-                    this.runningTimelines[property].status = TimeslotEntity.RUNNING;
-                }
-            }
-        }
 
         /**
          * @private
@@ -141,14 +118,14 @@ const TimelineService = (async () => {
                 switch (true) {
                     // Loop controll
                     case this.runningTimelines[property].status === TimeslotEntity.RUNNING &&
-                            this.runningTimelines[property].timer.compare(this.runningTimelines[property].time) > -1 &&
-                            this.runningTimelines[property].rotation === TimeslotEntity.ROTATION_LOOP:
+                         this.runningTimelines[property].currentTime > this.runningTimelines[property].getDuration() &&
+                         this.runningTimelines[property].rotation === TimeslotEntity.ROTATION_LOOP:
                         this.runningTimelines[property].timer.reset();
                         this._checkTimeslotToStart(this.runningTimelines[property]);
                         break;
                     // Stop controll
                     case this.runningTimelines[property].status === TimeslotEntity.RUNNING &&
-                            this.runningTimelines[property].timer.compare(this.runningTimelines[property].time) > -1 :
+                         this.runningTimelines[property].currentTime > this.runningTimelines[property].getDuration() :
                         // TODO event
                         this._stopTimeline( this.runningTimelines[property]);
                         break;
@@ -160,25 +137,13 @@ const TimelineService = (async () => {
         }
 
         /**
-         * @private
-         */
-        _startTimelinePromote() {
-            for (let property in this.runningTimelines) {
-                if (this.runningTimelines[property].status === TimeslotEntity.RUNNING &&
-                    this.runningTimelines[property].timer.compare(new Time()) === 0) {
-
-                    this._checkTimeslotToStart(this.runningTimelines[property]);
-                }
-            }
-        }
-
-        /**
          * @param {TimelineEntity} timeline
          */
         _checkTimeslotToStart(timeline) {
 
-            if (timeline.hasItem(timeline.timer)) {
-                let item = timeline.getItem(timeline.timer);
+
+            if (timeline.hasCurrentTimeItem()) {
+                let item = timeline.getCurrentTimeItem();
                 if (item.timeslotReferences.length > 0) {
                     this._runTimelineItem(TimelineService.PLAY, timeline, item);
                 }
@@ -213,11 +178,50 @@ const TimelineService = (async () => {
 
         /**
          * @param {TimelineEntity} timeline
+         * @return {TimelineService}
+         */
+         async play(timeline) {
+            if (this.isRunning(timeline)) {
+                return;
+            }
+
+            let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+            this._playTimeline(timeline);
+            this._executeBids(bindTimelines, 'play');
+            return this;
+        }
+
+        /**
+         * @param {TimelineEntity} timeline
          * @param {TimelineEntity} timeslot
          * @private
          */
-        _playTimeslot(timeline, timeslot) {
-            this._send(TimelineService.PLAY, timeline, timeslot);
+        _playTimeline(timeline, timeslot) {
+           
+            timeline.status = TimeslotEntity.RUNNING;
+            timeline.currentTime = 0;
+            if (this.isRunning(timeline) === false) {
+                this._addRunningTimeline(timeline);
+            }
+
+            this._send(TimelineService.PLAY, timeline);
+            this.timelineStorage.update(timeline)
+                .then((data) => {
+                    // console.log('STOP timeline')
+                }).catch((err) => { console.error(err)});
+
+        }
+
+        /**
+         * @param {TimelineEntity} timeline
+         * @return {TimelineService}
+         */
+        async stop(timeline) {
+
+            let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+            this._stopTimeline(timeline);
+            this._executeBids(bindTimelines, 'stop');
+            return this;
         }
 
         /**
@@ -227,13 +231,28 @@ const TimelineService = (async () => {
         _stopTimeline(timeline) {
             // TODO add event timeline
             timeline.status = TimeslotEntity.IDLE;
-            timeline.timer.reset();
+            timeline.currentTime = 0;
             this._send(TimelineService.STOP, timeline);
             this.timelineStorage.update(timeline)
                 .then((data) => {
                     // console.log('STOP timeline')
                 }).catch((err) => { console.error(err)});
             this._removeRunningTimeline(timeline);
+        }
+
+
+        /**
+         * @param {TimelineEntity} timeline
+         * @return {TimelineService}
+         */
+         async pause(timeline) {
+            if (!this.isRunning(timeline)) {
+                return;
+            }
+            let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
+            this._pauseTimeline(timeline);
+            this._executeBids(bindTimelines, 'pause');
+            return this;
         }
 
         /**
@@ -253,68 +272,6 @@ const TimelineService = (async () => {
 
         /**
          * @param {TimelineEntity} timeline
-         * @private
-         */
-        _restoreTimeline(timeline, event) {
-
-            timeline.status = TimeslotEntity.RUNNING;
-            let item = timeline.getPreviousItem(timeline.timer);
-            // TODO control time timeslot in timeline
-            this._runTimelineItem(event, timeline, item, item.time.getDiffSecond(timeline.timer));
-            this._addRunningTimeline(timeline);
-
-            this.timelineStorage.update(timeline)
-                .then((data) => {
-                    //console.log('RESUME timeline')
-                }).catch((err) => { console.error(err)});
-        }
-
-        /**
-         * @param {TimelineEntity} timeline
-         * @return {TimelineService}
-         */
-        async play(timeline) {
-            if (this.isRunning(timeline)) {
-                return;
-            }
-
-            let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-            timeline.status = TimelineEntity.TO_RUN;
-            if (this.isRunning(timeline) === false) {
-                this._addRunningTimeline(timeline);
-            }
-            this._executeBids(bindTimelines, 'play');
-            return this;
-        }
-
-        /**
-         * @param {TimelineEntity} timeline
-         * @return {TimelineService}
-         */
-        async stop(timeline) {
-
-            let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-            this._stopTimeline(timeline);
-            this._executeBids(bindTimelines, 'stop');
-            return this;
-        }
-
-        /**
-         * @param {TimelineEntity} timeline
-         * @return {TimelineService}
-         */
-        async pause(timeline) {
-            if (!this.isRunning(timeline)) {
-                return;
-            }
-            let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-            this._pauseTimeline(timeline);
-            this._executeBids(bindTimelines, 'pause');
-            return this;
-        }
-
-        /**
-         * @param {TimelineEntity} timeline
          * @return {TimelineService}
          */
         async resume(timeline) {
@@ -323,9 +280,29 @@ const TimelineService = (async () => {
             }
 
             let bindTimelines = timeline.isBind !== true ? await this.getTimelineFromArrayReference(timeline.binds) : [];
-            this._restoreTimeline(timeline, TimelineService.RESUME);
+            this._resumeTimeline(timeline, TimelineService.RESUME);
             this._executeBids(bindTimelines, 'resume');
             return this;
+        }
+
+        /**
+         * @param {TimelineEntity} timeline
+         * @private
+         */
+         _resumeTimeline(timeline, event) {
+
+            timeline.status = TimeslotEntity.RUNNING;
+            let item = timeline.getCurrentTimePreviuosItem();
+            // TODO control time timeslot in timeline
+            let time = new Time();
+            time.sumSeconds(timeline.currentTime);
+            this._runTimelineItem(event, timeline, item, item.time.getDiffSecond(time));
+            this._addRunningTimeline(timeline);
+
+            this.timelineStorage.update(timeline)
+                .then((data) => {
+                    //console.log('RESUME timeline')
+                }).catch((err) => { console.error(err)});
         }
 
         /**
@@ -348,15 +325,15 @@ const TimelineService = (async () => {
                 return;
             }
 
-            let timeToShift = new (require("@dsign/library").date.Time)();
+            let timeToShift = new Time();
             timeToShift.sumSeconds(second);
-            if (running.time.getDuration() <= timeToShift.getDuration()) {
+            if (running.getDuration() < timeToShift.getDuration()) {
                 console.warn('Second too long', timeline, second);
                 return;
             }
 
-            running.timer = timeToShift;
-            this._restoreTimeline(timeline, TimelineService.CHANGE_TIME);
+            running.currentTime = timeToShift.getDuration();
+            this._resumeTimeline(running, TimelineService.CHANGE_TIME);
         }
 
 

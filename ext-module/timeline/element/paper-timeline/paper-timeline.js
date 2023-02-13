@@ -9,8 +9,12 @@
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/localize/localize-mixin.js`));
     const { StorageEntityMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/storage/entity-mixin.js`));
+    const {Time} = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));
     const { flexStyle } = await import(`${container.get('Application').getBasePath()}style/layout-style.js`);
     const { lang } = await import('./language.js');
+
+    const { TimelineService } = await import(`./../../src/TimelineService.js`);
     
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-card/paper-card.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-slider/paper-slider.js`));
@@ -129,7 +133,7 @@
                                 <div class="dataWrapper">
                                     <div>{{entity.name}}</div>
                                     <div id="status">{{status}}</div>
-                                    <div class="flex flex-horizontal-end">{{timer}} | {{total}}</div>
+                                    <div class="flex flex-horizontal-end">{{currentTime}} | {{total}}</div>
                                 </div>
                             </div>
                             <div id="crud" hidden$="[[removeCrud]]">
@@ -261,12 +265,39 @@
                         _localizeService: 'Localize',
                         StorageContainerAggregate: {
                             _storage: "TimelineStorage"
-                        }
+                        },
+                        timelineService: 'TimelineService'
                     }
+                },
+
+                timelineService: {
+                    readOnly: true,
+                    observer: 'timeslotServiceChanged'
                 }
             };
         }
 
+
+        timeslotServiceChanged(service) {
+            if (!service) {
+                return;
+            }
+    
+            service.getEventManager().on(
+                TimelineService.UPDATE_TIME,
+                (data) => {
+                    
+                    if (this.entity.getId() === data.data.getId()) {
+                        this.entity.currentTime = data.data.currentTime;
+                        this._updateCurrentTime(this.entity);
+                
+                        this.notifyPath('currentTime');
+                    }
+                    
+                });
+        }
+
+        
         /**
          * @param {Event} evt
          */
@@ -316,19 +347,20 @@
             this._clearStatusClass(timeline.status);
             this._updateContextHtml();
             this._updateRotationHtml();
-            this._updateTimer();
+            this._updateCurrentTime(timeline);
+            this._updateTotalTime(timeline);
             this._updateActionHtml();
 
-            this.$.slider.max = this.entity.time.getDuration();
+            this.$.slider.max = this.entity.getDuration();
             this.$.slider.disabled = this.entity.status === 'running' ? false : true;
 
             if (!this.excludeSlider) {
-                this.$.slider.value = this.entity.timer.getDuration();
+                this.$.slider.value = this.entity.currentTime;
             }
 
             if (this.entity.status === 'idle') {
                 this.$.slider.dispatchEvent(new Event('mouseup'));
-                this.$.slider.value = this.entity.timer.getDuration();
+                this.$.slider.value = this.entity.currentTime;
                 this.$.slider.disabled = true;
             }
 
@@ -440,16 +472,38 @@
         }
 
         /**
-         * @private
+         * @param {TimelineEntity} entity 
+         * @returns 
          */
-        _updateTimer() {
-            if (!this.entity) {
+        _updateCurrentTime(entity) {
+            if (!entity) {
                 return;
             }
 
-            this.timer = this.entity.timer.toString();
-            this.total = this.entity.time.toString();
+            let currentTime = new Time(0, 0, 0);
+            currentTime.sumSeconds(entity.currentTime);
+            this.currentTime = currentTime.toString();
+
+            if (!this.excludeSlider) {
+                this.$.slider.value = entity.currentTime;
+            }
         }
+
+         /**
+         * @param {TimelineEntity} entity 
+         * @returns 
+         */
+        _updateTotalTime(entity) {
+            if (!entity) {
+                return;
+            }
+
+            let total = new Time(0, 0, 0);
+            total.sumSeconds(entity.getDuration());
+            this.total = total.toString();
+        }
+
+
 
         /**
          * @private

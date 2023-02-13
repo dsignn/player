@@ -240,8 +240,6 @@ export async function Repository() {
                     container.get('ModuleConfig')['timeline']['timeline'].entityService
                 ),
                 {
-                    time: new HydratorStrategy(new PropertyHydrator(new Time())),
-                    timer: new HydratorStrategy(new PropertyHydrator(new Time())),
                     timelineItems: new HydratorStrategy(Repository.getTimelineItemHydrator(container)),
                     binds: new HydratorStrategy(Repository.getTimelineReferenceHydrator(container)),
                     currentTime: new NumberStrategy()
@@ -253,8 +251,8 @@ export async function Repository() {
                 .enableExtractProperty('name')
                 .enableExtractProperty('currentTime')
                
-                .enableExtractProperty('time')
-                .enableExtractProperty('timer')
+              //  .enableExtractProperty('time')
+              //  .enableExtractProperty('timer')
                
                 .enableExtractProperty('context')
                 .enableExtractProperty('status')
@@ -268,8 +266,8 @@ export async function Repository() {
                 .enableHydrateProperty('name')
                 .enableHydrateProperty('currentTime')
              
-                .enableHydrateProperty('time')
-                .enableHydrateProperty('timer')
+            //    .enableHydrateProperty('time')
+            //    .enableHydrateProperty('timer')
              
                 .enableHydrateProperty('context')
                 .enableHydrateProperty('status')
@@ -360,46 +358,5 @@ export async function Repository() {
 
             return hydrator;
         }
-
-                /**
-         * @param container
-         * @return {PropertyHydrator}
-        
-                 static getTimeslotReferenceHydrator(container) {
-
-                    let monitorContainerStrategy = new HydratorStrategy();
-                    monitorContainerStrategy.setHydrator(new PropertyHydrator(
-                        container.get('EntityContainerAggregate').get('EntityNestedReference')
-                    ));
-        
-                    let hydrator = new PropertyHydrator(
-                        container.get('EntityContainerAggregate').get(
-                            container.get('ModuleConfig')['playlist']['playlist'].entityServiceTimeslotRef
-                        )
-                    );
-                    hydrator.addValueStrategy('monitorContainerReference', monitorContainerStrategy)
-                        .addValueStrategy('duration', new NumberStrategy())
-                        .addValueStrategy('currentTime', new NumberStrategy());
-        
-                    hydrator.enableHydrateProperty('id')
-                        .enableHydrateProperty('parentId')
-                        .enableHydrateProperty('collection')
-                        .enableHydrateProperty('monitorContainerReference')
-                        .enableHydrateProperty('name')
-                        .enableHydrateProperty('duration')
-                        .enableHydrateProperty('currentTime');
-        
-                    hydrator.enableExtractProperty('id')
-                        .enableExtractProperty('parentId')
-                        .enableExtractProperty('collection')
-                        .enableExtractProperty('monitorContainerReference')
-                        .enableExtractProperty('name')
-                        .enableExtractProperty('duration')
-                        .enableExtractProperty('currentTime');
-        
-                    return hydrator;
-                }
-
-                */
     }
 }
