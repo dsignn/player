@@ -81,6 +81,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     flex-direction: column;
                     display: flex;
                     width: 64px;
+                    z-index: 5;
                 }
                 
                 .menu-icon-wrapper {

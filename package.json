@@ -37,7 +37,7 @@
     "appId": "dsign.player",
     "productName": "Dsign player",
     "asar": false,
-    "electronVersion": "20.1.3",
+    "electronVersion": "23.0.0",
     "npmRebuild": false,
     "publish": {
       "provider": "github",
