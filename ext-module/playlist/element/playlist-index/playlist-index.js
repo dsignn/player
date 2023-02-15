@@ -41,14 +41,31 @@
                     .topology {
                         position: relative;
                     }
+
+                    paper-filter-storage {
+                        flex: 1;
+                        --paper-filter-storage : {
+                            padding: 0 8px;
+                            align-items: center;
+                            display: flex;
+                            min-height: 70px;
+                            width: -webkit-fill-available;
+                            margin-right: 8px;
+
+                        }
+                    }
                 </style>
                     <iron-pages id="index" selected="{{selected}}">
                         <div id="list"> 
-                            <playlist-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                            <playlist-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                                 <div slot="header" class="layout-horizontal layout-center-aligned header">
-                                    <div class="layout-flex">{{localize('list-playlist')}}</div>
-                                    <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
-                                    <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-playlist')}}</paper-tooltip>
+                                    <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
+                                        <div slot="filters" class="filter-container">
+                                            <paper-input name="name" label="{{localize('name')}}" ></paper-input>
+                                        </div>
+                                    </paper-filter-storage>
+                                    <paper-icon-button id="iconBackInsert" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
+                                    <paper-tooltip for="iconBackInsert" position="left">{{localize('insert-playlist')}}</paper-tooltip>
                                 </div>
                             </playlist-view-list>
                         </div>
@@ -100,6 +117,10 @@
                 }
             };
         }
+
+        _filterChange(evt) {
+            this.$.viewList.filter = JSON.parse(JSON.stringify(evt.detail));
+        }    
 
         /**
          * @param evt
