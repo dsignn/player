@@ -118,7 +118,9 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                         <div main-title>{{localize('nameApp')}}</div>
                         <paper-select-language></paper-select-language>
                         <paper-icon-button icon="menu" on-tap="openApp" raised></paper-icon-button>
+                        <!--
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
+                        -->
                     </app-toolbar>
                 </app-header>
                 <div class="layout-container layout-horizontal">

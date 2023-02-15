@@ -2,6 +2,7 @@ import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
 import {StorageListMixin} from "@dsign/polymer-mixin/storage/list-mixin";
+import {Storage} from "@dsign/library/src/storage/Storage.js";
 import {lang} from './language';
 import "../../paper-timeslot/paper-timeslot";
 
@@ -84,7 +85,10 @@ export class PaperTimeslotTags extends StorageListMixin(LocalizeMixin(ServiceInj
             return;
         }
 
-        // TODO event only from user interface
+        newValue.getEventManager()
+            .on(Storage.POST_SAVE, this._updateList.bind(this))
+            .on(Storage.POST_UPDATE, this._updateList.bind(this))
+            .on(Storage.POST_REMOVE, this._updateList.bind(this));
     }
 
     /**
