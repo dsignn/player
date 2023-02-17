@@ -262,6 +262,7 @@
                  */
                 services : {
                     value : {
+                        _application: 'Application',
                         _localizeService: 'Localize',
                         StorageContainerAggregate: {
                             _storage: "TimelineStorage"
@@ -270,11 +271,25 @@
                     }
                 },
 
+                _application: {
+                    type: Object,
+                    readOnly: true,
+                    observer: '_applicationChanged'
+                },
+
                 timelineService: {
                     readOnly: true,
                     observer: 'timeslotServiceChanged'
                 }
             };
+        }
+
+        _applicationChanged(service) {
+            if (!service) {
+                return;
+            }
+
+            this.$['left-section'].style.backgroundImage =  `url("${service.getAdditionalModulePath()}/timeline/element/paper-timeline/img/cover.jpeg")`;
         }
 
 
