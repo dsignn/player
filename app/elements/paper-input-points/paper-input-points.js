@@ -55,12 +55,12 @@ class PaperInputPoints extends PolymerElement {
 
             labelX: {
                 type: String,
-                value: 'Y axis'
+                value: 'X axis'
             },
 
             labelY: {
                 type: String,
-                value: 'X axis'
+                value: 'Y axis'
             },
 
             save: {
