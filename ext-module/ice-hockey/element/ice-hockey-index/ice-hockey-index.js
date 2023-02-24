@@ -54,6 +54,19 @@
                     ice-hockey-scoreboard {
                         display:none;
                     }
+
+                    paper-filter-storage {
+                        flex: 1;
+                        --paper-filter-storage : {
+                            padding: 0 8px;
+                            align-items: center;
+                            display: flex;
+                            min-height: 70px;
+                            width: -webkit-fill-available;
+                            margin-right: 8px;
+
+                        }
+                    }
                 </style>
                 <paper-tabs selected="{{selectedTab}}" tabindex="0">
                     <paper-tab>{{localize('general')}}</paper-tab>
@@ -63,11 +76,15 @@
                     <div> 
                         <iron-pages id="index" selected="{{selected}}">
                             <div id="list"> 
-                                <ice-hockey-view-list selected="{{selected}}" entity-selected="{{entitySelected}}">
+                                <ice-hockey-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
                                     <div slot="header" class="layout-horizontal layout-center-aligned header">
-                                        <div class="layout-flex">{{localize('list-ice-hockey-match')}}</div>
-                                        <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
-                                        <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-playlist')}}</paper-tooltip>
+                                        <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
+                                            <div slot="filters" class="filter-container">
+                                                <paper-input name="name" label="{{localize('name')}}" ></paper-input>
+                                            </div>
+                                        </paper-filter-storage>
+                                        <paper-icon-button id="iconBackInsert" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
+                                        <paper-tooltip for="iconBackInsert" position="left">{{localize('insert-ice-hockey-match')}}</paper-tooltip>
                                     </div>
                                 </ice-hockey-view-list>
                             </div>

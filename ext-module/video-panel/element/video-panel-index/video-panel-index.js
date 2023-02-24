@@ -39,6 +39,19 @@
                         margin-bottom: 8px;
                         max-width: 450px;
                     }
+
+                    paper-filter-storage {
+                        flex: 1;
+                        --paper-filter-storage : {
+                            padding: 0 8px;
+                            align-items: center;
+                            display: flex;
+                            min-height: 70px;
+                            width: -webkit-fill-available;
+                            margin-right: 8px;
+
+                        }
+                    }
                 </style>
                 <paper-tabs selected="{{selected}}" tabindex="0">
                     <paper-tab>{{localize('video-panel')}}</paper-tab>
@@ -48,11 +61,15 @@
                     <div>
                         <iron-pages id="ironPages" selected="{{viewSelected}}">
                             <div id="list">
-                                <video-panel-view-list selected="{{viewSelected}}" entity-selected="{{videoPanelSelected}}">
+                                <video-panel-view-list id="viewList" selected="{{viewSelected}}" entity-selected="{{videoPanelSelected}}">
                                     <div slot="header" class="layout-horizontal layout-center-aligned header">
-                                        <div class="layout-flex">{{localize('list-video-panel')}}</div>
+                                        <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
+                                            <div slot="filters" class="filter-container">
+                                                <paper-input name="name" label="{{localize('name')}}" ></paper-input>
+                                            </div>
+                                        </paper-filter-storage>
                                         <paper-icon-button id="iconBackInsert" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
-                                        <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                                        <paper-tooltip for="iconBackInsert" position="left">{{localize('insert-video-panel')}}</paper-tooltip>
                                     </div>
                                 </video-panel-view-list>   
                             </div>
@@ -81,9 +98,13 @@
                             <div id="listResource">
                                 <video-panel-resource-view-list selected="{{viewResourceSelected}}" entity-selected="{{videoPanelResourceSelected}}">
                                     <div slot="header" class="layout-horizontal layout-center-aligned header">
-                                        <div class="layout-flex">{{localize('list-video-panel-resource')}}</div>
+                                        <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
+                                            <div slot="filters" class="filter-container">
+                                                <paper-input name="name" label="{{localize('name')}}" ></paper-input>
+                                            </div>
+                                        </paper-filter-storage>
                                         <paper-icon-button id="iconBackInsert" icon="insert" class="circle" on-click="displayAddViewResource"></paper-icon-button>
-                                        <paper-tooltip for="iconBackInsert" position="left">{{localize('back')}}</paper-tooltip>
+                                        <paper-tooltip for="iconBackInsert" position="left">{{localize('insert-video-panel-resource')}}</paper-tooltip>
                                     </div>
                                 </video-panel-resource-view-list>       
                             </div>

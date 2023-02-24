@@ -7,7 +7,8 @@ export const lang = {
     "update-ice-hockey-match": "Aggiorna partita di hockey",
     "notify-update": "Squadra modificata",
     "notify-save": "Squadra salvata",
-    "choose-match": "Scegli il match"
+    "choose-match": "Scegli il match",
+    "name": "Nome",
   },
   "en": {
     "general": "General",
@@ -17,6 +18,7 @@ export const lang = {
     "update-ice-hockey-match": "todo",
     "notify-update": "Team updated",
     "notify-save": "Team saved", 
-    "choose-match": "Choose match"
+    "choose-match": "Choose match",
+    "name": "Name",
   }
 };
