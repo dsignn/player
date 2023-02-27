@@ -179,7 +179,8 @@ class Application {
          * On close browser window
          */
         this.dashboard.on('closed', () => {
-            this.dashboard = null
+            this.dashboard = null;
+            app.quit();
         });
     }
 
@@ -599,7 +600,7 @@ if (!gotTheLock) {
  */
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        app.quit();
     }
 });
 
