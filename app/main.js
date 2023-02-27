@@ -193,7 +193,8 @@ class Application {
             webPreferences : {
                 nodeIntegration: true,
                 contextIsolation: false,
-                enableRemoteModule: true
+                enableRemoteModule: true,
+                preload: __dirname + '/entrypoint/player/src/preload.js'
             },
             width: parseInt(monitor.width),
             height: parseInt(monitor.height),
@@ -212,7 +213,13 @@ class Application {
         browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
-            browserWindows.send('monitor-id', monitor.getId());
+            // TODO IMPLEMENT FLOW TO LOAD DATA
+            setTimeout(
+                () => {
+                    browserWindows.send('monitor-id', monitor.getId());
+                },
+                3000
+            );  
         });
 
         browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);

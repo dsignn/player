@@ -183,7 +183,7 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
      */
     _startHtmlBackup() {
         this.$.paperRestore.disabled = true;
-        this.$.paperTooltip.innerHTML = this.localize('in-progress');
+        //this.$.paperTooltip.innerHTML = this.localize('in-progress');
         // TODO REFACTOR
         setTimeout(
             () => {
@@ -199,7 +199,7 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
      */
     _stoptHtmlBackup() {
         this.$.paperRestore.disabled = false;
-        this.$.paperTooltip.innerHTML = this.localize('run-backup');
+        //this.$.paperTooltip.innerHTML = this.localize('run-backup');
     }
 }
 
