@@ -218,7 +218,7 @@ class Application {
                 () => {
                     browserWindows.send('monitor-id', monitor.getId());
                 },
-                3000
+                5000
             );  
         });
 
