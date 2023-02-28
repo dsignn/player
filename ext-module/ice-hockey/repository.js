@@ -28,8 +28,7 @@ export async function Repository() {
     const { MongoIceHockeyAdapter } = await import('./src/storage/adapter/mongo/MongoIceHockeyAdapter.js')
     const { ScoreboardDataInjector } = await import('./src/injector/ScoreboardDataInjector.js');
 
-    let Repository = await import(`${container.get('Application').getBasePath()}module/timeslot/repository.js`);
-    const TimeslotRepository = Repository.Repository;
+
     Repository = await import(`${container.get('Application').getBasePath()}module/resource/repository.js`);
     const ResourceRepository = Repository.Repository;
     const { config } = await import('./config.js');
@@ -323,7 +322,11 @@ export async function Repository() {
             playerHydratorStrategy.setHydrator(Repository.getIceHockeyPlayerHydrator(container));
     
             let resoyrceHydratorStrategy = new HydratorStrategy();
-            resoyrceHydratorStrategy.setHydrator(container.get('HydratorContainerAggregate').get(ResourceRepository.RESOURCE_HYDRATOR_SERVICE));
+            resoyrceHydratorStrategy.setHydrator(
+                container.get('HydratorContainerAggregate').get(
+                    container.get('ModuleConfig')['resource']['resource'].hydrator['name-storage-service-resource']
+                )
+            );
     
             let hydrator = new PropertyHydrator(new IceHockeyTeam());
     
