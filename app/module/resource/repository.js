@@ -162,11 +162,6 @@ export class Repository extends ContainerAware {
                 .on(Storage.POST_SAVE, this.onPostUpsert.bind(this))
                 .on(Storage.POST_REMOVE, this.onPostRemove.bind(this));
 
-            storage.getEventManager()
-                .on(Storage.BEFORE_SAVE, (data) => {
-                    data.data.id = MongoIdGenerator.statcGenerateId();
-                 });
-
             this.getContainer().get('StorageContainerAggregate').set(
                 this._getModuleConfig().storage['name-service'],
                 storage
@@ -242,6 +237,7 @@ export class Repository extends ContainerAware {
 
     onPostUpsert(evt) {
         
+        this._checkUpdateMetadata(evt.data);
         if (evt.data.resourceToImport) {
             delete evt.data.resourceToImport;
         }
@@ -287,12 +283,6 @@ export class Repository extends ContainerAware {
             resourceEntity.checksum = this._computeChecksum(fileName);
 
             switch (resourceEntity.type) {
-                case 'video/mp4':
-                case 'video/webm':
-                case 'image/jpeg':
-                case 'image/png':
-                    this._updateMetadata(resourceEntity);
-                    break;
                 case 'application/zip':
                     this._extractZip(resourceEntity);
                     break;
@@ -314,11 +304,27 @@ export class Repository extends ContainerAware {
     }
 
     /**
+     * 
+     * @param {*} resourceEntity 
+     * @returns 
+     */
+    _checkUpdateMetadata(resourceEntity) {
+        switch (resourceEntity.type) {
+            case 'video/mp4':
+            case 'video/webm':
+            case 'image/jpeg':
+            case 'image/png':
+                this._updateMetadata(resourceEntity);
+                break;
+        }
+    }
+
+    /**
      * @param resourceEntity
      * @private
      */
     _updateMetadata(resourceEntity) {
-        if (resourceEntity.resourceToImport.path) {
+        if (resourceEntity.resourceToImport && resourceEntity.resourceToImport.path) {
             let command = this.fluentFfmeg(resourceEntity.resourceToImport.path);
             command.ffprobe(0, function(err, metadata) {
                     if (err) {
@@ -343,13 +349,9 @@ export class Repository extends ContainerAware {
                         entity.aspectRation = metadata.streams[0]['sample_aspect_ratio'];
                     }
 
-                    // TODO better solution
-                    setTimeout(
-                        () => {
-                            storage.update(entity);
-                        },
-                        3000
-                    );
+                    console,console.log('FFF MMM CCCC');
+                    storage.update(entity);
+                 
 
                 }.bind(this)
             );
