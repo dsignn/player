@@ -40,8 +40,6 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
                 }
     
                 video {
-                    height: 100%;
-                    width: 100%;
                     object-fit: fill;
                 }
     
@@ -145,46 +143,6 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      */
     connectedCallback() {
         super.connectedCallback();
-        /*
-        for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
-
-            switch (true) {
-                // TODO add regex on type
-                case this.timeslot.resources[cont] instanceof ImageEntity === true:
-
-                    this.$.resources.appendChild(
-                        this._creteImage(this.timeslot.resources[cont])
-                    );
-                    break;
-                case this.timeslot.resources[cont] instanceof VideoEntity === true:
-                    this.$.resources.appendChild(
-                        this._createVideo(this.timeslot.resources[cont])
-                    );
-                    break;
-                case this.timeslot.resources[cont] instanceof AudioEntity === true:
-                    this.$.resources.appendChild(
-                        this._createAudio(this.timeslot.resources[cont])
-                    );
-                    break;
-                case this.timeslot.resources[cont] instanceof FileEntity === true:
-                    this._createWebComponent(this.timeslot.resources[cont])
-                        .then(
-                            function(data) {
-                                this.$.resources.appendChild(data);
-                            }.bind(this)
-                        )
-                        .catch(
-                            function(data) {
-                                console.warn(data);
-                            }
-                        );
-                    break;
-                default:
-                    // TODO log error
-                    console.error('Resource type not found', this.timeslot.resource[cont]);
-            }
-        }
-         */
     }
 
     _changeTimeslot(timeslot) {
@@ -200,12 +158,12 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
                 case this.timeslot.resources[cont] instanceof ImageEntity === true:
 
                     this.$.resources.appendChild(
-                        this._creteImage(this.timeslot.resources[cont])
+                        this._creteImage(this.timeslot.resources[cont], this.timeslot.size)
                     );
                     break;
                 case this.timeslot.resources[cont] instanceof VideoEntity === true:
                     this.$.resources.appendChild(
-                        this._createVideo(this.timeslot.resources[cont])
+                        this._createVideo(this.timeslot.resources[cont], this.timeslot.size)
                     );
                     break;
                 case this.timeslot.resources[cont] instanceof AudioEntity === true:
@@ -356,12 +314,20 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      * @param resource
      * @return Element
      */
-    _creteImage(resource) {
+    _creteImage(resource, size) {
 
         let element = document.createElement('div');
 
         element.classList.add("image");
         element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
+
+        if (size === 'size-contain') {
+            element.style.backgroundSize = 'contain';
+            element.style.backgroundPosition = 'center';
+        } else {
+            element.style.backgroundSize = 'auto';
+            element.style.backgroundPosition = '0 0';
+        }
 
         let container = this._createResourceDiv();
         container.appendChild(element);
@@ -375,7 +341,9 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      * @param resource
      * @return Element
      */
-    _createVideo(resource) {
+    _createVideo(resource, size) {
+
+        // TODO size deve passare sulla risorsa
 
         let element = document.createElement('video');
         element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
@@ -384,6 +352,11 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
         element.setAttribute('muted', true); // TODO remove use to debug
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
         element.muted = !this.timeslot.enableAudio;
+
+        if (size === 'size-contain') {
+            element.setAttribute('height', '100%'); // TODO remove use to debug
+            element.setAttribute('width', '100%');
+        }
 
         if (this.startAt > 0) {
             element.currentTime = this.startAt;
