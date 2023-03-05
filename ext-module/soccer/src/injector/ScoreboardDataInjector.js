@@ -55,7 +55,7 @@ const ScoreboardDataInjector = (async () => {
          *  @return string
          */
         get serviceLabel() {
-            return 'Scoreboard data';
+            return 'Scoreboard soccer data';
         }
 
         /**
@@ -69,7 +69,7 @@ const ScoreboardDataInjector = (async () => {
          *  @return string
          */
         get serviceDescription() {
-            return 'Scoreboard metadata';
+            return 'Scoreboard soccer metadata';
         }
 
         get serviceNamespace() {

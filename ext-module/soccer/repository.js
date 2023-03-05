@@ -224,10 +224,10 @@ export async function Repository() {
                     this.getContainer().get('ModuleConfig')['soccer']['scoreboard-service'],
                     service
                 );
-    
+    console.log('FIOCA NEFDA');
                 this.getContainer().get(
                         this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
-                    ).set('ScoreboardDataInjector', new ScoreboardDataInjector(service));
+                    ).set('ScoreboardDataSoccerInjector', new ScoreboardDataInjector(service));
             };
     
             var connectorServiceName = this.getContainer().get('ModuleConfig')['soccer']['soccer-match'].storage.adapter.dexie['connection-service'];

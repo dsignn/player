@@ -29,7 +29,7 @@ const MongoSoccerAdapter = (async () => {
         }
     }
 
-    return {MongoIceHockeyAdapter: MongoIceHockeyAdapter};
+    return {MongoSoccerAdapter: MongoSoccerAdapter};
 })();
 
 export default MongoSoccerAdapter;

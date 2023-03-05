@@ -2,13 +2,13 @@ const SoccerMatchEntity = (async () => {
 
     const { EntityIdentifier } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/entity/EntityIdentifier.js`));
-    const { SoccerMatch } = await import(require('path').normalize(
-        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/soccer/matchSoccer.js`));
+    const { AbstractMatch } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/match/AbstractMatch.js`));
     const { GenericPeriod } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/match/GenericPeriod.js`));
     const { Time } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));
-    const {SoccerTeam } = await import('./embedded/Soccer.js');
+    const {SoccerTeam } = await import('./embedded/SoccerTeam.js');
 
     /**
     * @class SoccerMatchEntity
@@ -49,20 +49,20 @@ const SoccerMatchEntity = (async () => {
     /**
      * Custom inheritance
      */
-    let functions = Object.getOwnPropertyNames(SoccerMatch.prototype);
+    let functions = Object.getOwnPropertyNames(AbstractMatch.prototype);
     functions.forEach(function (method) {
         if (method !== 'constructor') {
-            SoccerMatchEntity.prototype[method] = SoccerMatch.prototype[method];
+            SoccerMatchEntity.prototype[method] = AbstractMatch.prototype[method];
         }
     });
-
-    functions = Object.getOwnPropertyNames(SoccerMatch.prototype.__proto__);
+/*
+    functions = Object.getOwnPropertyNames(AbstractMatch.prototype.__proto__);
     functions.forEach(function (method) {
         if (method !== 'constructor') {
             SoccerMatchEntity.prototype[method] = SoccerMatch.prototype.__proto__[method];
         }
     });
-
+*/
     return {SoccerMatchEntity: SoccerMatchEntity};
 })();
 

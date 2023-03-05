@@ -228,7 +228,7 @@ export async function Repository() {
     
                 this.getContainer().get(
                         this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
-                    ).set('ScoreboardDataInjector', new ScoreboardDataInjector(service));
+                    ).set('ScoreboardIceHockeyDataInjector', new ScoreboardDataInjector(service));
             };
     
             var connectorServiceName = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
