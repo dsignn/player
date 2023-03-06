@@ -4,7 +4,7 @@
     const { ServiceInjectorMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/service/injector-mixin.js`));
     const { SoccerMatchEntity } = await import(require('path').normalize(
-        `${container.get('Application').getAdditionalModulePath()}module/soccer/src/entity/SoccerMatchEntity.js`));
+        `${container.get('Application').getAdditionalModulePath()}/soccer/src/entity/SoccerMatchEntity.js`));
          
     /**
      *
@@ -65,18 +65,18 @@
         </style>
         <div id="scoreboard" class="match hidden">
             <div class="row j-c">
-                {{scoreboard.time.hours}}:{{scoreboard.time.minutes}}:{{scoreboard.time.seconds}}
+                {{scoreboardSoccer.time.hours}}:{{scoreboardSoccer.time.minutes}}:{{scoreboardSoccer.time.seconds}}
             </div>
             <div class="row">   
                 <div class="column half a-c">
                     <div>{{homeScore}}</div>
                     <div class="logo" id="logoHome"></div>
-                    <div>{{scoreboard.homeTeam.name}}</div>
+                    <div>{{scoreboardSoccer.homeTeam.name}}</div>
                 </div>
                 <div class="column half a-c">
                     <div>{{guestScore}}</div> 
                     <div class="logo" id="logoGuest"></div>
-                    <div>{{scoreboard.guestTeam.name}}</div>
+                    <div>{{scoreboardSoccer.guestTeam.name}}</div>
                 </div>
             </div>
          
@@ -86,7 +86,7 @@
 
         static get properties() {
             return {
-                scoreboard: {
+                scoreboardSoccer: {
                     type: Object,
                     notify: true,
                     value: new SoccerMatchEntity()
@@ -112,29 +112,29 @@
 
         static get observers() {
             return [
-                'observerSoccerMatchChanged(_resourceService, scoreboard)'
+                'observerSoccerMatchChanged(_resourceService, scoreboardSoccer)'
             ]
         }
 
         ready() {
             super.ready();
 
-            require('electron').ipcRenderer.on('data-scoreboard', this._updateTimer.bind(this))
+            require('electron').ipcRenderer.on('data-soccer-scoreboard', this._updateTimer.bind(this))
         }
 
         /**
          * @param newValue
         */
-        observerSoccerMatchChanged(_resourceService, scoreboard) {
-            if (!_resourceService || !scoreboard) {
+        observerSoccerMatchChanged(_resourceService, scoreboardSoccer) {
+            if (!_resourceService || !scoreboardSoccer) {
                 return;
             }
 
-            this.homeScore = scoreboard.homeScores.length;
-            this.guestScore = scoreboard.guestScores.length;
+            this.homeScore = scoreboardSoccer.homeScores.length;
+            this.guestScore = scoreboardSoccer.guestScores.length;
             this.$.scoreboard.classList.remove('hidden');
-            this.loadHomeLogo(scoreboard.homeTeam.logo);
-            this.loadGuestLogo(scoreboard.guestTeam.logo);
+            this.loadHomeLogo(scoreboardSoccer.homeTeam.logo);
+            this.loadGuestLogo(scoreboardSoccer.guestTeam.logo);
         }
 
         /**
@@ -143,7 +143,7 @@
          * @param {Object} data 
          */
         _updateTimer(evt, data) {
-            this.scoreboard = data.match;
+            this.scoreboardSoccer = data.match;
         }
 
         loadHomeLogo(resource) {

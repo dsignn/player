@@ -12,17 +12,17 @@ const SoccerScoreboardService = (async () => {
      */
     class SoccerScoreboardService extends EventManagerAware {
 
-        static get DATA() { return 'data-scoreboard'; }
+        static get DATA() { return 'data-soccer-scoreboard'; }
 
         /**
          * @return {string}
          */
-        static get CHANGE_SCOREBOARD_MATCH() { return 'change-scoreboard-match'; }
+        static get CHANGE_SCOREBOARD_MATCH() { return 'change-soccer-scoreboard-match'; }
 
         /**
          * @return {string}
          */
-         static get CLEAR_SCOREBOARD_MATCH() { return 'clear-scoreboard-match'; }
+         static get CLEAR_SCOREBOARD_MATCH() { return 'clear-soccer-scoreboard-match'; }
 
         /**
          * @param {StorageInterface} storage

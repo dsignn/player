@@ -73,7 +73,7 @@ const ScoreboardSoccerDataInjector = (async () => {
         }
 
         get serviceNamespace() {
-            return 'scoreboard';
+            return 'scoreboardSoccer';
         }
     }
 

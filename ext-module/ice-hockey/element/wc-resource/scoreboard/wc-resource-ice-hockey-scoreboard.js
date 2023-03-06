@@ -3,8 +3,9 @@
         `${container.get('Application').getNodeModulePath()}/@polymer/polymer/polymer-element.js`));
     const { ServiceInjectorMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/service/injector-mixin.js`));
-    const { IceHockeyMatch } = await import(require('path').normalize(
-        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/sport/ice-hockey/match/IceHockeyMatch.js`));
+    const { IceHockeyMatchEntity } = await import(require('path').normalize(
+        `${container.get('Application').getAdditionalModulePath()}/ice-hockey/src/entity/IceHockeyMatchEntity.js`));
+
          
     /**
      *
@@ -65,18 +66,18 @@
         </style>
         <div id="scoreboard" class="match hidden">
             <div class="row j-c">
-                {{scoreboard.time.hours}}:{{scoreboard.time.minutes}}:{{scoreboard.time.seconds}}
+                {{scoreboardIceHockey.time.hours}}:{{scoreboardIceHockey.time.minutes}}:{{scoreboardIceHockey.time.seconds}}
             </div>
             <div class="row">   
                 <div class="column half a-c">
                     <div>{{homeScore}}</div>
                     <div class="logo" id="logoHome"></div>
-                    <div>{{scoreboard.homeTeam.name}}</div>
+                    <div>{{scoreboardIceHockey.homeTeam.name}}</div>
                 </div>
                 <div class="column half a-c">
                     <div>{{guestScore}}</div> 
                     <div class="logo" id="logoGuest"></div>
-                    <div>{{scoreboard.guestTeam.name}}</div>
+                    <div>{{scoreboardIceHockey.guestTeam.name}}</div>
                 </div>
             </div>
          
@@ -86,10 +87,10 @@
 
         static get properties() {
             return {
-                scoreboard: {
+                scoreboardIceHockey: {
                     type: Object,
                     notify: true,
-                    value: new IceHockeyMatch()
+                    value: new IceHockeyMatchEntity()
                 },
 
                 homeScore: {
@@ -112,29 +113,29 @@
 
         static get observers() {
             return [
-                'observerIceHockeyMatchChanged(_resourceService, scoreboard)'
+                'observerIceHockeyMatchChanged(_resourceService, scoreboardIceHockey)'
             ]
         }
 
         ready() {
             super.ready();
 
-            require('electron').ipcRenderer.on('data-scoreboard', this._updateTimer.bind(this))
+            require('electron').ipcRenderer.on('data-ice-hockey-scoreboard', this._updateTimer.bind(this))
         }
 
         /**
          * @param newValue
         */
-        observerIceHockeyMatchChanged(_resourceService, scoreboard) {
-            if (!_resourceService || !scoreboard) {
+        observerIceHockeyMatchChanged(_resourceService, scoreboardIceHockey) {
+            if (!_resourceService || !scoreboardIceHockey) {
                 return;
             }
 
-            this.homeScore = scoreboard.homeScores.length;
-            this.guestScore = scoreboard.guestScores.length;
+            this.homeScore = scoreboardIceHockey.homeScores.length;
+            this.guestScore = scoreboardIceHockey.guestScores.length;
             this.$.scoreboard.classList.remove('hidden');
-            this.loadHomeLogo(scoreboard.homeTeam.logo);
-            this.loadGuestLogo(scoreboard.guestTeam.logo);
+            this.loadHomeLogo(scoreboardIceHockey.homeTeam.logo);
+            this.loadGuestLogo(scoreboardIceHockey.guestTeam.logo);
         }
 
         /**
@@ -143,7 +144,7 @@
          * @param {Object} data 
          */
         _updateTimer(evt, data) {
-            this.scoreboard = data.match;
+            this.scoreboardIceHockey = data.match;
         }
 
         loadHomeLogo(resource) {

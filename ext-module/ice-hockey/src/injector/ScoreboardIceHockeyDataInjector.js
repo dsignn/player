@@ -1,4 +1,4 @@
-const ScoreboardDataInjector = (async () => {
+const ScoreboardIceHockeyDataInjector = (async () => {
 
     const { AbstractInjector } = await import(
         `${container.get('Application').getBasePath()}module/timeslot/src/injector/AbstractInjector.js`);
@@ -6,7 +6,7 @@ const ScoreboardDataInjector = (async () => {
     /**
     *
     */
-    class ScoreboardDataInjector extends AbstractInjector {
+    class ScoreboardIceHockeyDataInjector extends AbstractInjector {
 
         /**
          * @param {IceHockeyScoreboardService} iceHockeyScoreboardService 
@@ -62,7 +62,7 @@ const ScoreboardDataInjector = (async () => {
          *  @return string
          */
         get serviceName() {
-            return ScoreboardDataInjector.name;
+            return this.constructor.name;
         }
 
         /**
@@ -73,13 +73,13 @@ const ScoreboardDataInjector = (async () => {
         }
 
         get serviceNamespace() {
-            return 'scoreboard';
+            return 'scoreboardIceHockey';
         }
     }
 
-    return {ScoreboardDataInjector: ScoreboardDataInjector};
+    return {ScoreboardIceHockeyDataInjector: ScoreboardIceHockeyDataInjector};
 })();
 
-export default ScoreboardDataInjector;
-export const then = ScoreboardDataInjector.then.bind(ScoreboardDataInjector);
+export default ScoreboardIceHockeyDataInjector;
+export const then = ScoreboardIceHockeyDataInjector.then.bind(ScoreboardIceHockeyDataInjector);
 

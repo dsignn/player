@@ -27,11 +27,7 @@ export async function Repository() {
     const { IceHockeyTeam } = await import('./src/entity/embedded/IceHockeyTeam.js');
     const { DexieIceHockeyAdapter } = await import('./src/storage/adapter/dexie/DexieIceHockeyAdapter.js')
     const { MongoIceHockeyAdapter } = await import('./src/storage/adapter/mongo/MongoIceHockeyAdapter.js')
-    const { ScoreboardDataInjector } = await import('./src/injector/ScoreboardDataInjector.js');
-
-
-    Repository = await import(`${container.get('Application').getBasePath()}module/resource/repository.js`);
-    const ResourceRepository = Repository.Repository;
+    const { ScoreboardIceHockeyDataInjector } = await import('./src/injector/ScoreboardIceHockeyDataInjector.js');
     const { config } = await import('./config.js');
 
     // TODO REMOVE
@@ -225,10 +221,12 @@ export async function Repository() {
                     this.getContainer().get('ModuleConfig')['ice-hockey']['scoreboard-service'],
                     service
                 );
+
+                let injector = new ScoreboardIceHockeyDataInjector(service);
     
                 this.getContainer().get(
                         this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
-                    ).set('ScoreboardIceHockeyDataInjector', new ScoreboardDataInjector(service));
+                    ).set(injector.constructor.name, injector);
             };
     
             var connectorServiceName = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
