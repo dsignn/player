@@ -4,7 +4,7 @@
     const { ServiceInjectorMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/service/injector-mixin.js`));
     const { SoccerMatchEntity } = await import(require('path').normalize(
-        `${container.get('Application').getBasePath()}module/soccer/src/entity/SoccerMatchEntity.js`));
+        `${container.get('Application').getAdditionalModulePath()}module/soccer/src/entity/SoccerMatchEntity.js`));
          
     /**
      *

@@ -26,7 +26,7 @@ export async function Repository() {
     const { SoccerScoreboardService } = await import('./src/SoccerScoreboardService.js');
     const { SoccerTeam } = await import('./src/entity/embedded/SoccerTeam.js');
     const { MongoSoccerAdapter } = await import('./src/storage/adapter/mongo/MongoSoccerAdapter.js')
-    const { ScoreboardDataInjector } = await import('./src/injector/ScoreboardDataInjector.js');
+    const { ScoreboardSoccerDataInjector } = await import('./src/injector/ScoreboardSoccerDataInjector.js');
 
     //Repository = await import(`${container.get('Application').getBasePath()}module/resource/repository.js`);
 
@@ -224,10 +224,12 @@ export async function Repository() {
                     this.getContainer().get('ModuleConfig')['soccer']['scoreboard-service'],
                     service
                 );
-    console.log('FIOCA NEFDA');
+
+
+                let injector = new ScoreboardSoccerDataInjector(service);
                 this.getContainer().get(
                         this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
-                    ).set('ScoreboardDataSoccerInjector', new ScoreboardDataInjector(service));
+                    ).set(injector.constructor.name, injector);
             };
     
             var connectorServiceName = this.getContainer().get('ModuleConfig')['soccer']['soccer-match'].storage.adapter.dexie['connection-service'];

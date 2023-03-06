@@ -1,8 +1,8 @@
 {
-  "name": "wc-resource-ice-hockey-scoreboard",
+  "name": "wc-resource-soccer-scoreboard",
   "version": "0.1.0",
-  "description": "Scoreboard of ice hockey",
-  "main": "wc-resource-ice-hockey-scoreboard.js",
+  "description": "Scoreboard of soccer",
+  "main": "wc-resource-soccer-scoreboard.js",
   "dependencies": {
     "@polymer/polymer": "^3.3.0",
     "polymer": "^0.5.0",
