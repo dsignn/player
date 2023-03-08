@@ -18,6 +18,11 @@
             :host {
                 display: block;
                 height: 100%;
+                font-family: 'sans-serif';
+            }
+
+            .h-100 {
+                height: 100%;
             }
 
             .row {
@@ -34,6 +39,14 @@
                 width: 50%;
             }
 
+            .f-size-100 {
+                font-size:100px;
+            }
+
+            .f-size-210 {
+                font-size: 210px;
+            }
+
             .a-c {
                 align-items: center;
             }
@@ -42,12 +55,16 @@
                 justify-content: center;
             }
 
+            .j-e {
+                justify-content: end;
+            }
+
             .match {
                 padding: 0;
                 height: 100%;
                 width: 100%;
                 color: white;
-                font-size: 100px;
+                
             }
 
             .hidden {
@@ -55,8 +72,8 @@
             }
 
             .logo {
-                height: 200px;
-                width: 200px;
+                height: 300px;
+                width: 300px;
                 background-position: center center;
                 background-repeat: no-repeat;
                 background-size: contain;
@@ -64,22 +81,22 @@
 
         </style>
         <div id="scoreboard" class="match hidden">
-            <div class="row j-c">
-                {{scoreboardSoccer.time.hours}}:{{scoreboardSoccer.time.minutes}}:{{scoreboardSoccer.time.seconds}}
-            </div>
-            <div class="row">   
-                <div class="column half a-c">
-                    <div>{{homeScore}}</div>
+          
+            <div class="row j-c f-size-100 a-c">{{scoreboardSoccer.time.hours}}:{{scoreboardSoccer.time.minutes}}:{{scoreboardSoccer.time.seconds}}</div> 
+            <div class="row h-100">  
+                <div class="row half a-c j-e">
                     <div class="logo" id="logoHome"></div>
-                    <div>{{scoreboardSoccer.homeTeam.name}}</div>
+                    <div class="f-size-210">{{homeScore}}</div>
+                    <!--<div>{{scoreboardSoccer.homeTeam.name}}</div>-->
                 </div>
-                <div class="column half a-c">
-                    <div>{{guestScore}}</div> 
+                <div style="font-size: 210px" class="row a-c">-</div>
+                <div class="row half a-c">
+                    <div class="f-size-210">{{guestScore}}</div> 
                     <div class="logo" id="logoGuest"></div>
-                    <div>{{scoreboardSoccer.guestTeam.name}}</div>
+                    <!--<div>{{scoreboardSoccer.guestTeam.name}}</div>-->
                 </div>
+
             </div>
-         
         </div>
         `;
         }
@@ -165,7 +182,3 @@
     window.customElements.define('wc-resource-soccer-scoreboard', WcResourceSoccerScoreboard);
 
 })();
-
-
-
-

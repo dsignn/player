@@ -24,5 +24,22 @@
                 "extension": "js"
             }
         }
+    ],
+    "widgets": [
+        {
+            "name": "Scoreboard",
+            "description": "Scoreboard soccer",
+            "property": "soccer",
+            "label": "soccer",
+            "require": false,
+            "webComponent": {
+                "name": "paper-timeslot-tags",
+                "path": {
+                    "directory": "timeslot/element/widget/paper-timeslot-tags",
+                    "nameFile": "paper-timeslot-tags",
+                    "extension": "js"
+                }
+            }
+        }
     ]
 }
