@@ -27,9 +27,9 @@ import './../module/timeslot/element/timeslot-icons/timeslot-icons';
 import './../module/timeslot/element/timeslot-style/timeslot-style';
 
 import './../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags';
-import './../module/timeslot/element/widget/paper-timeslot-tags-data/paper-timeslot-tags-data';
+import './../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data';
 import './../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors';
-import './../module/timeslot/element/widget/paper-timeslot-monitors-data/paper-timeslot-monitors-data';
+import './../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data';
 /**
  * start playlist
  */

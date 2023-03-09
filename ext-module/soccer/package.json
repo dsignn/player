@@ -33,10 +33,10 @@
             "label": "soccer",
             "require": false,
             "webComponent": {
-                "name": "paper-timeslot-tags",
+                "name": "scoreboard-soccer",
                 "path": {
-                    "directory": "timeslot/element/widget/paper-timeslot-tags",
-                    "nameFile": "paper-timeslot-tags",
+                    "directory": "timeslot/element/widget/scoreboard-soccer",
+                    "nameFile": "scoreboard-soccer",
                     "extension": "js"
                 }
             }
