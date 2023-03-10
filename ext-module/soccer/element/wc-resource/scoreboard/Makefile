@@ -5,5 +5,5 @@ help:
 
 ## zip:			Generate zip wc
 zip:
-	rm wc-resource-soccer-scoreboard.zip; \
-	zip -r wc-resource-soccer-scoreboard.zip wc-resource-soccer-scoreboard.js package.json node_modules
+	rm wc-soccer-scoreboard.zip; \
+	zip -r wc-soccer-scoreboard.zip wc-soccer-scoreboard.js package.json node_modules

@@ -71,6 +71,8 @@ export class Repository extends ContainerAware {
             this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].storage.adapter.localStorage.collection
         );
 
+        adapter.setIdentifier('id');
+
         const storage = new Storage(adapter);
         storage.setHydrator(this.getContainer().get('HydratorContainerAggregate')
             .get(this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].hydrator['name-storage-service'])

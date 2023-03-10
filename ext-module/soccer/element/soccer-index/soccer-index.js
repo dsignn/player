@@ -15,7 +15,7 @@
 
     await import('../soccer-view-list/soccer-view-list.js');
     await import('../soccer-view-upsert/soccer-view-upsert.js');
-    await import('../soccer-scoreboard/soccer-scoreboard.js');
+    await import('../widget/scoreboard-soccer/scoreboard-soccer.js');
     
     /**
      * @customElement
@@ -51,7 +51,7 @@
                         }
                     }
 
-                    soccer-scoreboard {
+                    scoreboard-soccer {
                         display:none;
                     }
 
@@ -136,7 +136,7 @@
                                 </template>
                                 <paper-icon-button slot="suffix" on-tap="clearInput" icon="clear" alt="clear" title="clear"></paper-icon-button>
                         </paper-autocomplete>
-                        <soccer-scoreboard></soccer-scoreboard>  
+                        <scoreboard-soccer></scoreboard-soccer>  
                     </div>
                 </iron-pages>
             `;
@@ -192,7 +192,7 @@
             }
 
             service.getEventManager().on(SoccerScoreboardService.CLEAR_SCOREBOARD_MATCH, (evt) => {
-                let ele = this.shadowRoot.querySelector('soccer-scoreboard');
+                let ele = this.shadowRoot.querySelector('scoreboard-soccer');
                 ele.style.display = 'none';
             });
         }
@@ -243,7 +243,7 @@
          */
         _selectMatch(evt) {
             this.scoreboardService.setMatch(evt.detail.value);
-            let ele = this.shadowRoot.querySelector('soccer-scoreboard');
+            let ele = this.shadowRoot.querySelector('scoreboard-soccer');
             if (evt.detail.value.getId()) {
                 ele.style.display = 'block';
             } else {

@@ -1,8 +1,8 @@
 {
-  "name": "wc-resource-soccer-scoreboard",
+  "name": "wc-soccer-scoreboard",
   "version": "0.1.0",
   "description": "Scoreboard of soccer",
-  "main": "wc-resource-soccer-scoreboard.js",
+  "main": "wc-soccer-scoreboard.js",
   "dependencies": {
     "@polymer/polymer": "^3.3.0",
     "polymer": "^0.5.0",

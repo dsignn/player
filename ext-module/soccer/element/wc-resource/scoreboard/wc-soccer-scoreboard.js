@@ -179,6 +179,6 @@
         createMockData() { }
     }
 
-    window.customElements.define('wc-resource-soccer-scoreboard', WcResourceSoccerScoreboard);
+    window.customElements.define('wc-soccer-scoreboard', WcResourceSoccerScoreboard);
 
 })();

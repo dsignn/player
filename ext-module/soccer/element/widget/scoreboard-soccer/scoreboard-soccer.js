@@ -422,6 +422,10 @@
                 this.match = evt.data;
             });
 
+            service.getEventManager().on(SoccerScoreboardService.DATA, (evt) => {
+                this.match = evt.data;
+            });
+
             service.getEventManager().on(SoccerScoreboardService.CLEAR_SCOREBOARD_MATCH, (evt) => {
                 this.match = null;
             });
