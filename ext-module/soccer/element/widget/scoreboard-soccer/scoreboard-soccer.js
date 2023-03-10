@@ -10,7 +10,7 @@
     const { SoccerPlayerEntity } = await import(`${container.get('Application').getAdditionalModulePath()}/soccer/src/entity/SoccerPlayerEntity.js`);
     const { SoccerScore } = await import(`${container.get('Application').getAdditionalModulePath()}/soccer/src/entity/embedded/SoccerScore.js`);
     const { SoccerScoreboardService } = await import(`${container.get('Application').getAdditionalModulePath()}/soccer/src/SoccerScoreboardService.js`);
-   // const { lang } = await import(`${container.get('Application').getAdditionalModulePath()}./language.js`);
+    const { lang } = await import(`${container.get('Application').getAdditionalModulePath()}/soccer/element/widget/scoreboard-soccer/language.js`);
 
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/iron-flex-layout/iron-flex-layout.js`));
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/paper-card/paper-card.js`));
@@ -237,7 +237,7 @@
         
         constructor() {
             super();
-        //    this.resources = lang;
+            this.resources = lang;
         }
 
         static get properties () {
@@ -288,6 +288,20 @@
                     observer: 'localizeChange'
                 }
             }
+        }
+
+        /**
+         * @return {string}
+         */
+        getTitle() {
+            return this.localize('title');
+        }
+
+        /**
+         * @return {string}
+         */
+        getSubTitle() {
+            return '';
         }
 
         localizeChange(service) {
