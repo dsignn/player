@@ -161,20 +161,19 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
         }       
     }
 
+    /**
+     * @param {*} service 
+     */
     _storageChanged(service) {
         if (!service) {
             return;
         }
-        console.log('jjjjjjjjjjjjjjjjjjjjjjjjjjjj');
-        service.getEventManager().on(Storage.POST_UPDATE, (data) => {
 
+        service.getEventManager().on(Storage.POST_UPDATE, (data) => {
             if (this.ref && this.ref.id === data.data.id) {
-                console.log('Aggiornati', this.ref.id, data.data);
                 this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(this.ref)}?cache=${Date.now()}")`;
             }
         });
     }
-
-    _update
 }
 window.customElements.define('paper-icon-resource-upsert', PaperIconResourceUpsert);
