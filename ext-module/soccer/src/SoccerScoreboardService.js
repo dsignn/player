@@ -28,15 +28,10 @@ const SoccerScoreboardService = (async () => {
          * @param {StorageInterface} storage
          * @param {AbstractSender} sender
          */
-        constructor(storage, sender) {
+        constructor(storage) {
             super();
 
             this.match = null;
-
-            /**
-             * @type EventManagerAwareInterface
-             */
-            this.sender = sender;
 
             /**
              * @type StorageInterface
@@ -96,16 +91,7 @@ const SoccerScoreboardService = (async () => {
 
             evt.data.time = this.match.time;
             this.setMatch(evt.data);
-
-            //this
-            let message = {
-                event: SoccerScoreboardService.DATA,
-                data: {
-                    match: this.match
-                }
-            };
-
-            this.sender.send('proxy', message);
+            this.getEventManager().emit(SoccerScoreboardService.DATA, {match: this.match});
         }
 
         /**

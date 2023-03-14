@@ -1,6 +1,10 @@
 export async function Repository() {
     const { ContainerAware} = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/container/ContainerAware.js`));
+    const { EventManager } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/event/EventManager.js`));
+    const { EventManagerAggregate } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/event/EventManagerAggregate.js`));    
     const { HydratorStrategy } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/value/HydratorStrategy.js`));
     const { MongoDb } = await import(require('path').normalize(
@@ -13,6 +17,8 @@ export async function Repository() {
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/util/MongoIdGenerator.js`));
     const { PropertyHydrator } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/PropertyHydrator.js`));
+    const { ProxyEventManager } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/event/electron/ProxyEventManager.js`));
     const { Store } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/dexie/Store.js`));
     const { Storage } = await import(require('path').normalize(
@@ -214,11 +220,20 @@ export async function Repository() {
                 const service = new SoccerScoreboardService(
                     this.getContainer()
                         .get('StorageContainerAggregate')
-                        .get(this.getContainer().get('ModuleConfig')['soccer']['soccer-match'].storage['name-service']),
-                    this.getContainer()
-                        .get('SenderContainerAggregate')
-                        .get(this.getContainer().get('ModuleConfig')['soccer'].senderService)
+                        .get(this.getContainer().get('ModuleConfig')['soccer']['soccer-match'].storage['name-service'])
                 );
+                
+                let proxyEventManager = new ProxyEventManager( 
+                    this.getContainer().get('SenderContainerAggregate').get(this.getContainer().get('ModuleConfig')['soccer'].senderService)
+                );
+                let eventManager = new EventManager();
+                let eventManagerAggregate = new EventManagerAggregate();
+
+                eventManagerAggregate
+                    .addEventManager(proxyEventManager)
+                    .addEventManager(eventManager);
+
+                service.setEventManager(eventManagerAggregate);
             
                 this.getContainer().set(
                     this.getContainer().get('ModuleConfig')['soccer']['scoreboard-service'],

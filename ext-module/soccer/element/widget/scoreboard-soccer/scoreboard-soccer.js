@@ -358,7 +358,9 @@
             } else {
                 this.homePoint = newMatch.getHomeScores().length;
                 this.guestPoint = newMatch.getGuestScores().length;
-                this._syncPeriod(oldMatch);
+                if (oldMatch) {
+                    this._syncPeriod(oldMatch);
+                }
             }
 
             this._injectMetadataLogos();
@@ -423,7 +425,10 @@
             });
 
             service.getEventManager().on(SoccerScoreboardService.DATA, (evt) => {
-                this.match = evt.data;
+                console.log('sucaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+                this.match = evt.data.match;
+                // TODO better method to force update???
+                this.matchChange(this.match);
             });
 
             service.getEventManager().on(SoccerScoreboardService.CLEAR_SCOREBOARD_MATCH, (evt) => {
