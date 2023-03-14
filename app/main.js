@@ -676,8 +676,8 @@ ipcMain.on('proxy', (event, message) => {
         case 'relaunch':
             Application.relaunch();
             break;
-
         default:
+            console.log('DATA DATA', message.data);
             application.broadcastMessage(message.event, message.data);
     }
 });

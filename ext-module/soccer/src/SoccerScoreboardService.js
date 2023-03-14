@@ -90,8 +90,8 @@ const SoccerScoreboardService = (async () => {
             }
 
             evt.data.time = this.match.time;
-            this.setMatch(evt.data);
-            this.getEventManager().emit(SoccerScoreboardService.DATA, {match: this.match});
+            this.match = evt.data;
+            this.getEventManager().emit(SoccerScoreboardService.DATA, this.match);
         }
 
         /**

@@ -356,11 +356,13 @@
                 this.homePoint = null;
                 this.guestPoint = null;
             } else {
+                this.notifyPath('match.homeTeam');
+                this.notifyPath('match.guestTeam')
                 this.homePoint = newMatch.getHomeScores().length;
+                this.$.homeRepeat.render();
                 this.guestPoint = newMatch.getGuestScores().length;
-                if (oldMatch) {
-                    this._syncPeriod(oldMatch);
-                }
+                this.$.guestRepeat.render();
+                this._syncPeriod(newMatch);
             }
 
             this._injectMetadataLogos();
@@ -425,8 +427,7 @@
             });
 
             service.getEventManager().on(SoccerScoreboardService.DATA, (evt) => {
-                console.log('sucaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-                this.match = evt.data.match;
+                this.match = evt.data;
                 // TODO better method to force update???
                 this.matchChange(this.match);
             });
@@ -541,7 +542,7 @@
             let team = 'homeScores';
 
             if (type !== 'home') {
-                let team = 'guestScores';            
+                team = 'guestScores';            
             } 
             
             this.match[team].push(evt.detail.score);

@@ -160,7 +160,7 @@
          * @param {Object} data 
          */
         _updateTimer(evt, data) {
-            this.scoreboardSoccer = data.match;
+            this.scoreboardSoccer = data;
         }
 
         loadHomeLogo(resource) {
