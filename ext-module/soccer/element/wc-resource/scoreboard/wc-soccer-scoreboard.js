@@ -136,7 +136,8 @@
         ready() {
             super.ready();
 
-            require('electron').ipcRenderer.on('data-soccer-scoreboard', this._updateTimer.bind(this))
+            require('electron').ipcRenderer.on('data-soccer-scoreboard', this._updateTimer.bind(this));
+            require('electron').ipcRenderer.on('change-soccer-scoreboard-match', this._updateTimer.bind(this))
         }
 
         /**
