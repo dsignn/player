@@ -284,6 +284,10 @@
             };
         }
 
+        /**
+         * @param {Application} service 
+         * @returns 
+         */
         _applicationChanged(service) {
             if (!service) {
                 return;
