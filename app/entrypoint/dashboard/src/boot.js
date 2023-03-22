@@ -17,7 +17,6 @@ import {AbstractHydrator, PropertyHydrator} from '@dsign/library/src/hydrator/in
 import {HydratorStrategy} from '@dsign/library/src/hydrator/strategy/value/index';
 import {MongoDb} from '@dsign/library/src/storage/adapter/mongo/index';
 import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManager';
-import {P2p} from '@dsign/library/src/net/index';
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
 import {ChronoService} from './../../../src/ChronoService';
@@ -347,19 +346,6 @@ async function boot() {
         .appendDirectory(application.getResourcePath(), 'resource');
 
     container.set('Archive', archive);
-
-    /***********************************************************************************************************************
-                                            P2P
-    **********************************************************************************************************************/
-
-    let p2p = new P2p(
-        config.p2p.udpOption,
-        config.p2p.clientOption,
-        config.p2p.identifier
-    );
-    //p2p.runKeepAlive();
-
-    container.set('P2p', p2p);
 
     /***********************************************************************************************************************
      APPLICATION SERVICE

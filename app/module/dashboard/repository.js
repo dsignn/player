@@ -7,7 +7,6 @@ import {Storage} from "@dsign/library/src/storage/Storage";
 import {MongoIdGenerator} from "@dsign/library/src/storage/util/MongoIdGenerator";
 import {PropertyHydrator} from "@dsign/library/src/hydrator/PropertyHydrator";
 import {PathNode} from "@dsign/library/src/path/PathNode";
-
 import {config} from './config';
 
 /**
