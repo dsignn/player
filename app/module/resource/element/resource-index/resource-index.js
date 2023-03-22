@@ -66,7 +66,7 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
             <iron-pages id="index" selected="{{selected}}">
                 <div id="list"> 
                     <resource-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
-                         <div slot="header" class="layout-horizontal layout-center-aligned header">
+                        <div slot="header" class="layout-horizontal layout-center-aligned header">
                             <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
                                 <div slot="filters" class="filter-container">
                                     <paper-input name="name" label="{{localize('name')}}" ></paper-input>
@@ -96,7 +96,7 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                             </paper-filter-storage>
                             <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
                             <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-resource')}}</paper-tooltip>
-                         </div>
+                        </div>
                     </resource-view-list>
                 </div>
                 <div id="insert"> 
