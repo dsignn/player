@@ -46,6 +46,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 paper-spinner {
                     display:none;
                     margin-top: 6px;
+                    margin-bottom: 28px;
                     --paper-spinner-color: var(--accent-color);
                     --paper-spinner-layer-1-color: var(--accent-color);
                     --paper-spinner-layer-2-color: var(--accent-color);
@@ -64,7 +65,6 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
             <div class="container">
                 <paper-spinner id="spinner"></paper-spinner>
                 <paper-icon-button id="paperBackup" icon="backup" title="{{label}}" on-tap="backup"></paper-icon-button>
-                <!--<paper-tooltip id="paperTooltip" for="paperBackup" position="left">{{localize('run-backup')}}</paper-tooltip>-->
                 <div style="font-size: 16px;">Backup</div>
             </div>
         `
@@ -125,7 +125,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _progress(evt) {
-     //   console.log('Archive progress', evt);
+        this._working(true);
     }
 
     _working(isWorking) {
@@ -144,7 +144,6 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @param {CustomEvent} evt
      */
     backup(evt) {
-        this._working(true);
         this._archive.archive();
     }
 }
