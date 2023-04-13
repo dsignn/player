@@ -8,7 +8,7 @@
   "devDependencies": {
     "@dsign/player-cli": "github:dsignn/player-cli",
     "dexie": "^2.0.4",
-    "electron-builder": "^23.3.3",
+    "electron-builder": "^23.6.0",
     "run-script-os": "^1.1.5"
   },
   "scripts": {
@@ -37,7 +37,7 @@
     "appId": "dsign.player",
     "productName": "Dsign player",
     "asar": false,
-    "electronVersion": "23.0.0",
+    "electronVersion": "24.1.0",
     "npmRebuild": false,
     "publish": {
       "provider": "github",
