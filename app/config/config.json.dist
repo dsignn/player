@@ -410,7 +410,7 @@
             "name": "paper-timeslot-tags-data",
             "path": {
               "nameFile": "paper-timeslot-tags-data",
-              "directory": "timeslot/element/widget/paper-timeslot-tags-data",
+              "directory": "timeslot/element/widget/paper-timeslot-tags",
               "extension": "js"
             }
           }
