@@ -433,7 +433,7 @@
             "name": "paper-timeslot-tags-data",
             "path": {
               "nameFile": "paper-timeslot-monitors-data",
-              "directory": "timeslot/element/widget/paper-timeslot-monitors-data",
+              "directory": "timeslot/element/widget/paper-timeslot-monitors",
               "extension": "js"
             }
           }

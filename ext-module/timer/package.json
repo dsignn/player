@@ -97,7 +97,7 @@
             "webComponentData" : {
                  "name": "paper-timeslot-tags-data",
                  "path": {
-                     "directory": "timeslot/element/widget/paper-timeslot-monitors-data",
+                     "directory": "timeslot/element/widget/paper-timeslot-monitors",
                      "nameFile": "paper-timeslot-monitors-data",
                      "extension": "js"
                  }
