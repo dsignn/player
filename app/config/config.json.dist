@@ -430,7 +430,7 @@
             }
           },
           "webComponentData": {
-            "name": "paper-timeslot-tags-data",
+            "name": "paper-timeslot-monitors-data",
             "path": {
               "nameFile": "paper-timeslot-monitors-data",
               "directory": "timeslot/element/widget/paper-timeslot-monitors",
