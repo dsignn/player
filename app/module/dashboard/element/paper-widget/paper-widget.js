@@ -211,6 +211,10 @@ export class PaperWidget extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         return widget;
     }
 
+    getTitle() {
+        return '';
+    }
+
     /**
      * @param {WidgetEntity} widget
      */

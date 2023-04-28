@@ -311,7 +311,7 @@
         _injectMetadataLogos() {
             let resources = this.shadowRoot.querySelectorAll('paper-icon-resource-upsert');
             resources.forEach(element => {
-                element.name = `${this.localize('score-logo')} susus${this.match.name ?  ' ' + this.match.name : ''}`;
+                element.name = `${this.localize('score-logo')} ${this.match.name ?  ' ' + this.match.name : ''}`;
                 element.tags = [this.localize('score-tag')];
             });
         }

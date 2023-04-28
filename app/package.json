@@ -68,7 +68,8 @@
     "fluent-ffmpeg": "^2.1.2",
     "js-acl": "^1.0.0",
     "paper-collapse-item": "^4.0.5",
-    "web-animations-js": "^2.3.1"
+    "web-animations-js": "^2.3.1",
+    "decompress": "4.2.1"
   },
   "keywords": [
     "polymer 3",
