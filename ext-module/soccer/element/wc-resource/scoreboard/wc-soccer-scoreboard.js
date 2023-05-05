@@ -9,7 +9,7 @@
     /**
      *
      */
-    class WcResourceSoccerScoreboard extends ServiceInjectorMixin(PolymerElement) {
+    class WcSoccerScoreboard extends ServiceInjectorMixin(PolymerElement) {
 
         static get template() {
             return html`
@@ -18,84 +18,185 @@
             :host {
                 display: block;
                 height: 100%;
-                font-family: 'sans-serif';
+                --color-wc: #FFFFFF;
+                font-family: roboto;
+                color:var(--color-wc);
             }
-
-            .h-100 {
+        
+            #scoreboard {
+                display: flex;
+                flex-direction: row;
                 height: 100%;
             }
 
-            .row {
+            #homeContainer {
+                flex-basis: 20%;
+            }
+
+            #data {
+                flex: 1;
+            }
+
+            #guestContainer {
+                flex-basis: 20%;
+            }
+
+            #header {
                 display: flex;
-                flex-direction: row;
-            }
-
-            .column {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .half {
-                width: 50%;
-            }
-
-            .f-size-100 {
-                font-size:100px;
-            }
-
-            .f-size-210 {
-                font-size: 210px;
-            }
-
-            .a-c {
+                height: 33%;
+                margin-left: 50px;
+                margin-right: 50px;
                 align-items: center;
-            }
-
-            .j-c {
                 justify-content: center;
             }
 
-            .j-e {
-                justify-content: end;
-            }
-
-            .match {
-                padding: 0;
-                height: 100%;
+            .teamContainer {
                 width: 100%;
-                color: white;
-                
+                display: flex;
+                flex-direction: row;
+                font-size: 16em;
             }
 
-            .hidden {
-                display: none;
+            .score {
+                height: 100%;
+                flex-basis: 35%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             .logo {
-                height: 300px;
-                width: 300px;
+                height: 100%;
+                flex-basis: 65%;
                 background-position: center center;
-                background-repeat: no-repeat;
                 background-size: contain;
+                background-repeat: no-repeat;
             }
 
-        </style>
-        <div id="scoreboard" class="match hidden">
-          
-            <div class="row j-c f-size-100 a-c">{{scoreboardSoccer.time.hours}}:{{scoreboardSoccer.time.minutes}}:{{scoreboardSoccer.time.seconds}}</div> 
-            <div class="row h-100">  
-                <div class="row half a-c j-e">
-                    <div class="logo" id="logoHome"></div>
-                    <div class="f-size-210">{{homeScore}}</div>
-                    <!--<div>{{scoreboardSoccer.homeTeam.name}}</div>-->
-                </div>
-                <div style="font-size: 210px" class="row a-c">-</div>
-                <div class="row half a-c">
-                    <div class="f-size-210">{{guestScore}}</div> 
-                    <div class="logo" id="logoGuest"></div>
-                    <!--<div>{{scoreboardSoccer.guestTeam.name}}</div>-->
-                </div>
 
+            .divider {
+                width: 60px; 
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            .line {
+                width: 48%;
+                height: 70%;
+                border-right: 3px solid var(--color-wc);
+            }
+
+            #metdata {
+                margin-top: 50px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #time {
+                font-family: digital;
+                font-size: 8em;
+                font-weight: 500;
+                display: flex;
+            }
+
+            .number {
+                width: 130px;
+                text-align:center;
+            }
+
+            .timeDivider {
+                line-height: 60px;
+            }
+
+            .player {
+                padding: 10px;
+                font-size: 2.5em;
+                font-weight: 500;
+                display: flex;
+                flex-direction: row;
+                color: var(--color-wc);
+            }
+
+            .player .number {
+                width: 50px;
+                font-weight: 600;
+            }
+
+            .tx-l {
+                text-align: left;
+            }
+
+            .tx-r {
+                text-align: right;
+            }
+
+            .jc-l {
+                justify-content: left;
+            }
+
+            .jc-r {
+                justify-content: right;
+            }
+
+            .coach {
+                height: 100%;
+            }
+
+            @media (min-width: 1280px) and (max-width: 1480px) {
+
+                .player {
+                    font-size: 1.6em;
+                }
+            }
+
+            @media (min-width: 600px) and (max-width: 1271px) {
+
+                #homeContainer, #guestContainer {
+                    display: none;
+                }
+            }
+        </style>
+        <div id="scoreboard">
+            <div id="homeContainer">
+                <template is="dom-repeat"  items="{{scoreboardSoccer.homeTeam.players}}" as="player">
+                    <div class="player jc-l">
+                        <div class="number tx-l">{{player.shirtNumber}}</div>
+                        <div class="name">{{player.lastName}} {{player.firstName}}</div>
+                    </div>
+                </template>
+            </div>
+            <div id="data">
+                <div id="header">
+                    <div class="teamContainer">
+                        <div class="logo" id="logoHome">&nbsp</div>
+                        <div id="homeScore" class="score">{{homeScore}}</div>
+                    </div>
+                    <div class="divider">
+                        <div class="line"></div>
+                    </div>
+                    <div class="teamContainer">
+                        <div id="guestScore" class="score">{{guestScore}}</div>
+                        <div class="logo" id="logoGuest">&nbsp</div>
+                    </div>
+                </div>
+                <div id="metdata">
+                    <div id="time">
+                        <div class="number">{{_getStringTime(scoreboardSoccer.time.minutes)}}</div>
+                        <div class="timeDivider">:</div>
+                        <div class="number">{{_getStringTime(scoreboardSoccer.time.seconds)}}</div>
+                    </div>
+                </div>
+            </div>
+            <div id="guestContainer">
+                <template is="dom-repeat"  items="{{scoreboardSoccer.guestTeam.players}}" as="player">
+                    <div class="player jc-r">
+                        <div class="name">{{player.lastName}} {{player.firstName}}</div>
+                        <div class="number tx-r">{{player.shirtNumber}}</div>
+                    </div>
+                </template>
             </div>
         </div>
         `;
@@ -119,9 +220,14 @@
                     notify: true,
                 },
 
+                resource: {
+
+                },
+
                 services: {
                     value: {
-                        _resourceService: "ResourceService"
+                        _resourceService: "ResourceService",
+                        _application: "Application"
                     }
                 },
             };
@@ -129,7 +235,8 @@
 
         static get observers() {
             return [
-                'observerSoccerMatchChanged(_resourceService, scoreboardSoccer)'
+                'observerSoccerMatchChanged(_resourceService, scoreboardSoccer)',
+                'observerApplicationChanged(_application, resource)',
             ]
         }
 
@@ -137,7 +244,11 @@
             super.ready();
 
             require('electron').ipcRenderer.on('data-soccer-scoreboard', this._updateTimer.bind(this));
-            require('electron').ipcRenderer.on('change-soccer-scoreboard-match', this._updateTimer.bind(this))
+            require('electron').ipcRenderer.on('change-soccer-scoreboard-match', this._updateTimer.bind(this));
+        }
+
+        _getResourcePath() {
+            return `${this._application.getResourcePath()}/${this.resource.id}`;
         }
 
         /**
@@ -153,6 +264,28 @@
             this.$.scoreboard.classList.remove('hidden');
             this.loadHomeLogo(scoreboardSoccer.homeTeam.logo);
             this.loadGuestLogo(scoreboardSoccer.guestTeam.logo);
+        }
+
+        observerApplicationChanged(_application, resource) {
+            if (!_application || !resource) {
+                return
+            }
+
+            let digital = new FontFace('digital',  `url(${ this._getResourcePath()}/digital-7.ttf)`);
+            digital.load().then(function(loaded_face) {
+                document.fonts.add(loaded_face);
+              
+            }).catch(function(error) {
+                console.error(error);
+            });
+
+            let roboto = new FontFace('roboto',  `url(${ this._getResourcePath()}/Roboto-Regular.ttf)`);
+            roboto.load().then(function(loaded_face) {
+                document.fonts.add(loaded_face);
+              
+            }).catch(function(error) {
+                console.error(error);
+            });
         }
 
         /**
@@ -175,11 +308,25 @@
         }
 
         /**
+         * @param {number} time 
+         * @returns 
+         */
+        _getStringTime(time) {
+            if(time < 10) {
+                time = '0' + time
+            }
+
+            return time;
+        }
+
+        /**
          *
          */
         createMockData() { }
     }
 
-    window.customElements.define('wc-soccer-scoreboard', WcResourceSoccerScoreboard);
+    window.customElements.define('wc-soccer-scoreboard', WcSoccerScoreboard);
 
 })();
+
+

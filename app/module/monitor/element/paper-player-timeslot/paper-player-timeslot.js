@@ -180,7 +180,6 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
                         .then(
                             function(data) {
                                 data.style.zIndex = cont+1;
-                                console.log('DENTRO', cont+1)
                                 this.$.resources.appendChild(data);
                             }.bind(this)
                         )
@@ -417,12 +416,12 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
             let entryPoint = this.resourceService.getResourcePath(resource);
             switch (true) {
                 case customElements.get(resource.wcName) !== undefined:
-                    resolve(this._initWebComponent(resource.wcName));
+                    resolve(this._initWebComponent(resource));
                     break;
                 case fs.existsSync(entryPoint) === true:
                     import(entryPoint)
                         .then((module) => {
-                            resolve(this._initWebComponent(resource.wcName));
+                            resolve(this._initWebComponent(resource));
                         })
                         .catch((err) => {
                             reject(err);
@@ -440,10 +439,11 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
     /**
      * @return element
      */
-    _initWebComponent(name) {
-        let element = document.createElement(name);
+    _initWebComponent(resource) {
+        let element = document.createElement(resource.wcName);
         element.height = this.height;
         element.width = this.width;
+        element.resource = resource;
 
         if (Array.isArray(this.data)) {
             for (let cont = 0; this.data.length > cont; cont++) {

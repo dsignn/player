@@ -6,4 +6,4 @@ help:
 ## zip:			Generate zip wc
 zip:
 	rm wc-soccer-scoreboard.zip; \
-	zip -r wc-soccer-scoreboard.zip wc-soccer-scoreboard.js package.json node_modules
+	zip -r wc-soccer-scoreboard.zip wc-soccer-scoreboard.js package.json node_modules Roboto-Regular.ttf digital-7.ttf
