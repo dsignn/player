@@ -324,7 +324,14 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
         let element = document.createElement('div');
 
         element.classList.add("image");
-        element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
+
+        try {
+            let url = new URL(`${this.resourceService.getResourcePath(resource)}?${Date.now()}`);
+            element.style.backgroundImage = `url('${url.href}')`;
+        } catch(error) {
+            element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
+            console.log('PORCO DIO');
+        }
 
         if (size === 'size-contain') {
             element.style.backgroundSize = 'cover';
@@ -351,7 +358,14 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
         // TODO size deve passare sulla risorsa
 
         let element = document.createElement('video');
-        element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+       
+        try {
+            let url = new URL(`${this.resourceService.getResourcePath(resource)}?${Date.now()}`);
+            element.src = `${url.href}`;
+        } catch(error) {
+            element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+        }
+
         element.setAttribute('preload', null);
         element.autoplay = true;
         element.setAttribute('muted', true); // TODO remove use to debug
@@ -392,7 +406,13 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
     _createAudio(resource) {
         let element = document.createElement('audio');
         element.setAttribute('hidden', '');
-        element.src = this.resourceService.getResourcePath(resource);
+        try {
+            let url = new URL(`${this.resourceService.getResourcePath(resource)}?${Date.now()}`);
+            element.src = url.href;
+        } catch(error) {
+            element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+        }
+       
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
         if (this.startAt > 0) {
             element.currentTime = this.startAt;

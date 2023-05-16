@@ -162,7 +162,6 @@ class Application {
                 contextIsolation: false,
                 experimentalFeatures: true,
             },
-            titleBarStyle: 'hidden',
             autoHideMenuBar: true,
             icon: path.join(__dirname, 'images/android-chrome-384x384.png'),
             title: `Dsign dashboard`,
