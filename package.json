@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "antonino.visalli@gmail.com",
   "name": "dsign-player",
   "description": "Polymer 3 in an electron application",
