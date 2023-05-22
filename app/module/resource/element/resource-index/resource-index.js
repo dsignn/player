@@ -45,22 +45,58 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                 .filter-container > * { 
                     padding-right: 6px;
                 }
+
+                .searchIcon {
+                    position: relative;
+                    backface-visibility : hidden;
+                    padding: 0;
+                    height: 20px;
+                    width: 20px;
+                }
+
+                .max-width-100 {
+                    max-width: 100px;
+                }
+
+                .rotate {
+                    rotate: 180deg;
+                    transition: rotate 1s;
+                }
             </style>
             <iron-pages id="index" selected="{{selected}}">
                 <div id="list"> 
                     <resource-view-list id="viewList" selected="{{selected}}" entity-selected="{{entitySelected}}">
-                         <div slot="header" class="layout-horizontal layout-center-aligned header">
-                            <paper-filter-storage on-value-changed="_filterChange" >
+                        <div slot="header" class="layout-horizontal layout-center-aligned header">
+                            <paper-filter-storage id="filterStorage" on-value-changed="_filterChange">
                                 <div slot="filters" class="filter-container">
-                                    <paper-input name="name" label="{{localize('name')}}"></paper-input>
-                                    <paper-input name="size" label="{{localize('size')}}"></paper-input>
-                                    <paper-input name="type" label="{{localize('type')}}"></paper-input>
+                                    <paper-input name="name" label="{{localize('name')}}" ></paper-input>
+                                    <paper-dropdown-menu id="type" name="type" label="{{localize('type')}}" style="padding:0px">
+                                        <paper-listbox slot="dropdown-content" class="dropdown-content">
+                                            <dom-repeat id="menu" items="{{resourceType}}" as="type">
+                                                <template>
+                                                    <paper-item value="{{type.value}}">{{type.name}}</paper-item>
+                                                </template>
+                                            </dom-repeat>
+                                        </paper-listbox>
+                                    </paper-dropdown-menu>
+                                    <div style="margin-top: 29px; border-bottom: 1px solid; height: 24px; margin-right:6px;">
+                                        <paper-icon-button slot="suffix" icon="clear" alt="clear" title="clear" class="searchIcon" on-tap="clearType"></paper-icon-button>
+                                    </div>
+                                    <paper-input name="size"  type="number" class="max-width-100" label="{{localize('size')}}" direction="down">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension"></paper-icon-button>
+                                    </paper-input>
+                                    <paper-input name="height" type="number" class="max-width-100" label="{{localize('height')}}" direction="down">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension"></paper-icon-button>
+                                    </paper-input>
+                                    <paper-input name="width" type="number" class="max-width-100" label="{{localize('width')}}"  direction="down">
+                                        <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-click="toggleDimension"></paper-icon-button>
+                                    </paper-input>
                                     <paper-input-list name="tags" label="{{localize('tags')}}"></paper-input-list>
                                 </div>
                             </paper-filter-storage>
                             <paper-icon-button id="iconInsertMonitor" icon="insert" class="circle" on-click="displayAddView"></paper-icon-button>
                             <paper-tooltip for="iconInsertMonitor" position="left">{{localize('insert-resource')}}</paper-tooltip>
-                         </div>
+                        </div>
                     </resource-view-list>
                 </div>
                 <div id="insert"> 
@@ -92,6 +128,18 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
 
     static get properties () {
         return {
+
+            resourceType: {
+                value: [
+                    {"name": "jpeg", "value": "image/jpeg"},
+                    {"name": "jpg", "value":  "image/jpeg"},
+                    {"name": "png", "value": "image/png"},
+                    {"name": "mp4", "value": "video/mp4"},
+                    {"name": "mp3", "value": "video/mp3"},
+                    {"name": "zip", "value": "application/zip"},
+                ]
+            },
+
             selected: {
                 type: Number,
                 value: 0
@@ -113,14 +161,39 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
     }
 
     /**
-     * @param evt
+     * 
+     * @param {Event} evt 
+     */
+    toggleDimension(evt) {
+
+        let ele = evt.target.parentElement;
+        let direction = ele.getAttribute('direction');
+        if (direction === 'down') {
+            ele.setAttribute('direction', 'up');
+            evt.target.classList.add('rotate');
+        } else {
+            ele.setAttribute('direction', 'down');
+            evt.target.classList.remove('rotate');
+        }
+        
+        if (ele.value) {
+            ele.dispatchEvent(new CustomEvent('value-changed'));
+        }
+    }
+
+    clearType(evt) {
+        this.$.type.querySelector('paper-listbox').selected = null;
+    }
+
+    /**
+     * @param {Event} evt
      */
     displayAddView(evt) {
         this.selected = 1;
     }
 
     /**
-     * @param evt
+     * @param {Event} evt
      */
     displayListView(evt) {
         this.selected = 0;

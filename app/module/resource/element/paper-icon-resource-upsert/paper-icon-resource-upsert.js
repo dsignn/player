@@ -1,6 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
+import {Storage} from "@dsign/library/src/storage/Storage";
 import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/iron-pages/iron-pages';
@@ -98,7 +99,8 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
             _storage: {
                 type: Object,
                 notify: true,
-                readOnly: true
+                readOnly: true,
+                observer: '_storageChanged'
             },
 
             /**
@@ -157,6 +159,21 @@ class PaperIconResourceUpsert extends LocalizeMixin(ServiceInjectorMixin(Polymer
         } else {
             this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(ref)}?cache=${Date.now()}")`;
         }       
+    }
+
+    /**
+     * @param {*} service 
+     */
+    _storageChanged(service) {
+        if (!service) {
+            return;
+        }
+
+        service.getEventManager().on(Storage.POST_UPDATE, (data) => {
+            if (this.ref && this.ref.id === data.data.id) {
+                this.$.container.style.backgroundImage = `url("${this._resoruceService.getResourcePath(this.ref)}?cache=${Date.now()}")`;
+            }
+        });
     }
 }
 window.customElements.define('paper-icon-resource-upsert', PaperIconResourceUpsert);

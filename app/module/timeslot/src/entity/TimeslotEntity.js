@@ -24,6 +24,9 @@ export class TimeslotEntity extends EntityIdentifier {
     static get ROTATION_LOOP() { return 'rotation-loop'; }
     static get ROTATION_INFINITY() { return 'rotation-infinity'; }
 
+    static get SIZE_NORMAL() { return 'size-normal'; }
+    static get SIZE_CONTAIN() { return 'size-contain'; }
+
 
     constructor() {
         super();
@@ -52,6 +55,11 @@ export class TimeslotEntity extends EntityIdentifier {
          * @type {string}
          */
         this.rotation = TimeslotEntity.ROTATION_NO;
+
+        /**
+         * 
+         */
+        this.size = TimeslotEntity.SIZE_CONTAIN;
 
         /**
          * @type {integer}

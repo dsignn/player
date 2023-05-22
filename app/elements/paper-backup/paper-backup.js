@@ -13,6 +13,11 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
             <style>
 
                 :host {
+                    display:block; 
+                    padding: 5px;
+                    width: 95px;
+                    height: 95px;
+                    border-radius: 6px;
                     --paper-tooltip-opacity : 1;
                     
                     --paper-tooltip : {
@@ -20,16 +25,28 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                         background:  var(--accent-color);
                         font-size: 16px;
                     }
-                    
-                    paper-icon-button {
-                        --paper-icon-button-disabled : {
-                             background:  red;
-                        }
+                }
+
+                :host(:hover){
+                    background-color: #e8f0fe;
+                }
+
+                paper-icon-button {
+                      
+                    --paper-icon-button : {
+                        width: 60px;
+                        height: 60px;
+                        color: var(--default-primary-color);
+                    }
+                    --paper-icon-button-disabled : {
+                         background:  red;
                     }
                 }
 
                 paper-spinner {
+                    display:none;
                     margin-top: 6px;
+                    margin-bottom: 28px;
                     --paper-spinner-color: var(--accent-color);
                     --paper-spinner-layer-1-color: var(--accent-color);
                     --paper-spinner-layer-2-color: var(--accent-color);
@@ -37,16 +54,18 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                     --paper-spinner-layer-4-color: var(--accent-color);
                 }
   
-                .spinner-container {
+                .container {
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
                     height: 100%;
                 }
             </style>
-            <div class="spinner-container">
+            <div class="container">
                 <paper-spinner id="spinner"></paper-spinner>
                 <paper-icon-button id="paperBackup" icon="backup" title="{{label}}" on-tap="backup"></paper-icon-button>
-                <paper-tooltip id="paperTooltip" for="paperBackup" position="left">{{localize('run-backup')}}</paper-tooltip>
+                <div style="font-size: 16px;">Backup</div>
             </div>
         `
     }
@@ -106,7 +125,7 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _progress(evt) {
-     //   console.log('Archive progress', evt);
+        this._working(true);
     }
 
     _working(isWorking) {
@@ -125,7 +144,6 @@ export class PaperBackup extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @param {CustomEvent} evt
      */
     backup(evt) {
-        this._working(true);
         this._archive.archive();
     }
 }

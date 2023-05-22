@@ -112,7 +112,15 @@
                         <form method="post">
                             <div>
                                 <paper-input id="name" name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
-                                <paper-input id="nameResource" name="name" label="{{localize('name-resource')}}" value="{{entity.resourceReference.name}}" required></paper-input>
+                                <div class="flex flex-horizontal">
+                                    <paper-input id="nameResource" name="name" label="{{localize('name-resource')}}" value="{{entity.resourceReference.name}}" required></paper-input>
+                                    <paper-dropdown-menu name="type" label="{{localize('type-resource')}}" style="padding:0px" on-iron-select="changeTypeEvt">
+                                        <paper-listbox id="typeListbox" slot="dropdown-content" class="dropdown-content">
+                                            <paper-item value="jpeg">{{localize('image')}}</paper-item>
+                                            <paper-item value="mp4">{{localize('video')}}</paper-item>
+                                        </paper-listbox>
+                                    </paper-dropdown-menu>
+                                </div>
                                 <div class="flex flex-horizontal">
                                     <paper-autocomplete
                                             style="flex: 1;"
@@ -164,8 +172,12 @@
                  * @type VideoPanelContainerEntity
                  */
                 entity: {
-                    observer: '_changeEntity',
                     value: {}
+                },
+
+                resource: {
+                    observer: '_changeResource',
+                    value: null
                 },
 
                 videoPanel: {
@@ -286,6 +298,12 @@
             };
         }
 
+        static get observers() {
+            return [
+                '_changeEntity(entity, _resourceStorage)'
+            ]
+        }
+
         constructor() {
             super();
             this.resources = lang;
@@ -293,16 +311,19 @@
 
         ready() {
             super.ready();
-
-            console.log(Mapper, 'toni')
             this.$.formEntity.addEventListener('iron-form-presubmit', this.submitEntity.bind(this));
+        }
+
+        changeTypeEvt(evt) {            
+            this.extension = evt.detail.item.getAttribute('value');
         }
 
         /**
          * @param newValue
          * @private
          */
-        _changeEntity(newValue) {
+        _changeEntity(newValue, resourceStorage) {
+
             this.labelAction = 'save';
             if (!newValue) {
                 this.hideResourceSection = true;
@@ -312,6 +333,28 @@
             if (newValue.id) {
                 this.hideResourceSection = false;
                 this.labelAction = 'update';
+            }
+
+            if (resourceStorage && newValue.resourceReference && newValue.resourceReference.id) {
+                resourceStorage.get(newValue.resourceReference.id)
+                    .then((entity) => {
+                        this.resource = entity;
+
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+            } else  {
+                this.resource = null;
+            }
+        }
+
+        _changeResource(resource) {
+    
+            this.extension = 'mp4';
+            this.$.typeListbox.selected = 1;
+            if(resource && resource.type == "image/jpeg") {
+                this.extension = 'jpeg';
+                this.$.typeListbox.selected = 0;
             }
         }
 

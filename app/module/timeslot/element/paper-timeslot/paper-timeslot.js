@@ -22,6 +22,7 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     @apply --application-paper-card;
                     margin-right: 4px;
                     margin-bottom: 4px;
+                    height: 154px;
                 }
                 
                 #left-section {
@@ -73,6 +74,12 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     overflow: hidden;
                     white-space: nowrap;
                     text-overflow: ellipsis;
+                    height:20px;
+                }
+
+                .row-data-timeslot {
+                    overflow: hidden;
+                    height:20px;
                 }
     
                 paper-listbox {
@@ -151,8 +158,8 @@ class PaperTimeslot extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                         <div id="content">
                            <div class="nameTimeslot">{{entity.name}}</div>
                             <div id="status">{{status}}</div>
-                            <div class="flex flex-horizontal-end">{{entity.monitorContainerReference.name}}</div>
-                            <div class="flex flex-horizontal-end">{{currentTime}} / {{entity.duration}} sec</div>
+                            <div class="flex flex-horizontal-end row-data-timeslot">{{entity.monitorContainerReference.name}}</div>
+                            <div class="flex flex-horizontal-end row-data-timeslot">{{currentTime}} / {{entity.duration}} sec</div>
                         </div>
                         <div id="crud" hidden$="[[removeCrud]]">
                             <paper-menu-button id="crudButton" ignore-select horizontal-align="right">

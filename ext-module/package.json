@@ -1,0 +1,9 @@
+{
+  "name": "ext-module",
+  "scripts": {
+    "zipModules": "zip -r hello-word hello-word && zip -r playlist playlist  && zip -r media-device media-device && zip -r ice-hockey ice-hockey && zip -r video-panel video-panel -x video-generator/\\* && zip -r timeline timeline && zip -r soccer soccer",
+    "deleteZipModule": "rm *.zip"
+  },
+  "author": "",
+  "license": "ISC"
+}

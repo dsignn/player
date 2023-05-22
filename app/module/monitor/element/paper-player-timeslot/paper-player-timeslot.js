@@ -36,12 +36,10 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
                     width: 100%;
                     background-position: center;
                     background-repeat: no-repeat;
-                    background-size: contain;
+                    background-size: cover;
                 }
     
                 video {
-                    height: 100%;
-                    width: 100%;
                     object-fit: fill;
                 }
     
@@ -145,46 +143,6 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      */
     connectedCallback() {
         super.connectedCallback();
-        /*
-        for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
-
-            switch (true) {
-                // TODO add regex on type
-                case this.timeslot.resources[cont] instanceof ImageEntity === true:
-
-                    this.$.resources.appendChild(
-                        this._creteImage(this.timeslot.resources[cont])
-                    );
-                    break;
-                case this.timeslot.resources[cont] instanceof VideoEntity === true:
-                    this.$.resources.appendChild(
-                        this._createVideo(this.timeslot.resources[cont])
-                    );
-                    break;
-                case this.timeslot.resources[cont] instanceof AudioEntity === true:
-                    this.$.resources.appendChild(
-                        this._createAudio(this.timeslot.resources[cont])
-                    );
-                    break;
-                case this.timeslot.resources[cont] instanceof FileEntity === true:
-                    this._createWebComponent(this.timeslot.resources[cont])
-                        .then(
-                            function(data) {
-                                this.$.resources.appendChild(data);
-                            }.bind(this)
-                        )
-                        .catch(
-                            function(data) {
-                                console.warn(data);
-                            }
-                        );
-                    break;
-                default:
-                    // TODO log error
-                    console.error('Resource type not found', this.timeslot.resource[cont]);
-            }
-        }
-         */
     }
 
     _changeTimeslot(timeslot) {
@@ -193,30 +151,35 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
             return;
         }
 
+        let ele;
         for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
 
             switch (true) {
                 // TODO add regex on type
                 case this.timeslot.resources[cont] instanceof ImageEntity === true:
 
-                    this.$.resources.appendChild(
-                        this._creteImage(this.timeslot.resources[cont])
-                    );
+                    ele =  this._creteImage(this.timeslot.resources[cont], this.timeslot.size);
+                    ele.style.zIndex = cont+1;
+                    console.log('FUORI', cont+1)
+                    this.$.resources.appendChild(ele);
                     break;
                 case this.timeslot.resources[cont] instanceof VideoEntity === true:
-                    this.$.resources.appendChild(
-                        this._createVideo(this.timeslot.resources[cont])
-                    );
+                    ele = this._createVideo(this.timeslot.resources[cont], this.timeslot.size);
+                    ele.style.zIndex = cont+1;
+                    console.log('FUORI', cont+1)
+                    this.$.resources.appendChild(ele);
                     break;
                 case this.timeslot.resources[cont] instanceof AudioEntity === true:
-                    this.$.resources.appendChild(
-                        this._createAudio(this.timeslot.resources[cont])
-                    );
+                    ele = this._createAudio(this.timeslot.resources[cont]);
+                    ele.style.zIndex = cont+1;
+                    console.log('FUORI', cont+1)
+                    this.$.resources.appendChild(ele);
                     break;
                 case this.timeslot.resources[cont] instanceof FileEntity === true:
                     this._createWebComponent(this.timeslot.resources[cont])
                         .then(
                             function(data) {
+                                data.style.zIndex = cont+1;
                                 this.$.resources.appendChild(data);
                             }.bind(this)
                         )
@@ -356,12 +319,27 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      * @param resource
      * @return Element
      */
-    _creteImage(resource) {
+    _creteImage(resource, size) {
 
         let element = document.createElement('div');
 
         element.classList.add("image");
-        element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
+
+        try {
+            let url = new URL(`${this.resourceService.getResourcePath(resource)}?${Date.now()}`);
+            element.style.backgroundImage = `url('${url.href}')`;
+        } catch(error) {
+            element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
+            console.log('PORCO DIO');
+        }
+
+        if (size === 'size-contain') {
+            element.style.backgroundSize = 'cover';
+            element.style.backgroundPosition = 'center';
+        } else {
+            element.style.backgroundSize = 'auto';
+            element.style.backgroundPosition = '0 0';
+        }
 
         let container = this._createResourceDiv();
         container.appendChild(element);
@@ -375,15 +353,29 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
      * @param resource
      * @return Element
      */
-    _createVideo(resource) {
+    _createVideo(resource, size) {
+
+        // TODO size deve passare sulla risorsa
 
         let element = document.createElement('video');
-        element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+       
+        try {
+            let url = new URL(`${this.resourceService.getResourcePath(resource)}?${Date.now()}`);
+            element.src = `${url.href}`;
+        } catch(error) {
+            element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+        }
+
         element.setAttribute('preload', null);
         element.autoplay = true;
         element.setAttribute('muted', true); // TODO remove use to debug
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
         element.muted = !this.timeslot.enableAudio;
+
+        if (size === 'size-contain') {
+            element.setAttribute('height', '100%'); // TODO remove use to debug
+            element.setAttribute('width', '100%');
+        }
 
         if (this.startAt > 0) {
             element.currentTime = this.startAt;
@@ -414,7 +406,13 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
     _createAudio(resource) {
         let element = document.createElement('audio');
         element.setAttribute('hidden', '');
-        element.src = this.resourceService.getResourcePath(resource);
+        try {
+            let url = new URL(`${this.resourceService.getResourcePath(resource)}?${Date.now()}`);
+            element.src = url.href;
+        } catch(error) {
+            element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+        }
+       
         element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
         if (this.startAt > 0) {
             element.currentTime = this.startAt;
@@ -438,12 +436,12 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
             let entryPoint = this.resourceService.getResourcePath(resource);
             switch (true) {
                 case customElements.get(resource.wcName) !== undefined:
-                    resolve(this._initWebComponent(resource.wcName));
+                    resolve(this._initWebComponent(resource));
                     break;
                 case fs.existsSync(entryPoint) === true:
                     import(entryPoint)
                         .then((module) => {
-                            resolve(this._initWebComponent(resource.wcName));
+                            resolve(this._initWebComponent(resource));
                         })
                         .catch((err) => {
                             reject(err);
@@ -461,10 +459,11 @@ class PaperPlayerTimeslot extends ServiceInjectorMixin(PolymerElement) {
     /**
      * @return element
      */
-    _initWebComponent(name) {
-        let element = document.createElement(name);
+    _initWebComponent(resource) {
+        let element = document.createElement(resource.wcName);
         element.height = this.height;
         element.width = this.width;
+        element.resource = resource;
 
         if (Array.isArray(this.data)) {
             for (let cont = 0; this.data.length > cont; cont++) {

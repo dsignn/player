@@ -16,23 +16,45 @@ export class PaperGpuSetting extends LocalizeMixin(ServiceInjectorMixin(PolymerE
 
                 :host {
                     --paper-tooltip-opacity : 1;
-                    
+                    display:block; 
+                    padding: 5px;
+                    width: 95px;
+                    height: 95px;
+                    border-radius: 6px;
                     --paper-tooltip : {
                         background-color: var(--accent-color);
                         background:  var(--accent-color);
                         font-size: 16px;
                     }
-  
-                    --paper-icon-button-disabled : {               
-                        color:  var(--accent-color);
+                }
+
+                :host(:hover){
+                    background-color: #e8f0fe;
+                }
+
+                paper-icon-button {
+                      
+                    --paper-icon-button : {
+                        width: 60px;
+                        height: 60px;
+                        color: var(--default-primary-color);
                     }
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
                 }
   
             </style>
-
-            <paper-icon-button id="paperGpu" icon="gpu" on-tap="open"></paper-icon-button>
-            <paper-tooltip id="paperTooltip" for="paperGpu" position="left">{{localize('view-gpu')}}</paper-tooltip>
-        `
+            <div class="container">
+                <paper-icon-button id="paperGpu" icon="gpu" on-tap="open"></paper-icon-button>
+                <paper-tooltip id="paperTooltip" for="paperGpu" position="left">{{localize('view-gpu')}}</paper-tooltip>
+                <div style="font-size: 16px;">Gpu</div>
+            </div>`
     }
 
     static get CLOSE() { return 'paper-gpu-close'; }

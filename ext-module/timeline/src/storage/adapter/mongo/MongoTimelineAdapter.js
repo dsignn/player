@@ -1,28 +1,36 @@
-import {MongoCollectionAdapter} from "@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter"
-
-/**
- * @class MongoTimelineAdapter
- */
-export class MongoTimelineAdapter extends MongoCollectionAdapter{
+const MongoTimelineAdapter = (async () => {   
+  
+    const { MongoCollectionAdapter } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/adapter/mongo/MongoCollectionAdapter.js`));
 
     /**
-     * @inheritDoc
+     * @class MongoTimelineAdapter
      */
-    filter(filter) {
+    class MongoTimelineAdapter extends MongoCollectionAdapter{
 
-        let returnFilter = {};
-        if (filter !== null && typeof filter === 'object') {
+        /**
+         * @inheritDoc
+         */
+        filter(filter) {
 
-            for (let property in filter) {
+            let returnFilter = {};
+            if (filter !== null && typeof filter === 'object') {
 
-                switch (property) {
-                    case 'name':
-                        returnFilter[property] =  {$regex: filter[property], $options: "$i"};
-                        break;
+                for (let property in filter) {
+
+                    switch (property) {
+                        case 'name':
+                            returnFilter[property] =  {$regex: filter[property], $options: "$i"};
+                            break;
+                    }
                 }
             }
-        }
 
-        return returnFilter;
+            return returnFilter;
+        }
     }
-}
+    return {MongoTimelineAdapter: MongoTimelineAdapter};
+})();
+
+export default MongoTimelineAdapter;
+export const then = MongoTimelineAdapter.then.bind(MongoTimelineAdapter);

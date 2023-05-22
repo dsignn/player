@@ -16,7 +16,11 @@ export class PaperAlwaysOnTop extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
                 :host {
                     --paper-tooltip-opacity : 1;
-                    padding: 8px;
+                    display:block; 
+                    padding: 5px;
+                    width: 95px;
+                    height: 95px;
+                    border-radius: 6px;
                     --paper-tooltip : {
                         background-color: var(--accent-color);
                         background:  var(--accent-color);
@@ -24,12 +28,28 @@ export class PaperAlwaysOnTop extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     }
                 }
 
+                :host(:hover){
+                    background-color: #e8f0fe;
+                }
+
+                .container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+
                 paper-toggle-button {
                     cursor: pointer !important;
+                    height: 56px;
                 }  
             </style>
-            <paper-toggle-button id="paperToggleEnable" on-change="_changeAlwaysOnTop"></paper-toggle-button>
-            <paper-tooltip for="paperToggleEnable" position="left">{{localize('enable-always-on-top')}}</paper-tooltip>
+            <div class="container">
+                <paper-toggle-button id="paperToggleEnable" on-change="_changeAlwaysOnTop"></paper-toggle-button> 
+                <div style="font-size: 16px;">On top</div>
+            </div>
+            <!--<paper-tooltip for="paperToggleEnable" position="left">{{localize('enable-always-on-top')}}</paper-tooltip>-->
         `
     }
 

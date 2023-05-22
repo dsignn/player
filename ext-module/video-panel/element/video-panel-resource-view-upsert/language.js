@@ -8,7 +8,11 @@ export const lang = {
     "create-resource": "Crea risorsa",
     "save": "Salva",
     "update": "Modifica",
-    "search-resource": "Cerca risorsa"
+    "search-resource": "Cerca risorsa",
+    "type-resource": "Tipo di risorsa",
+    "image": "Immagine",
+    "video": "Video"
+
   },
   "en": {
     "name": "Name",
@@ -19,6 +23,9 @@ export const lang = {
     "create-resource": "Create resource",
     "save": "Save",
     "update": "Update",
-    "search-resource": "Search resource"
+    "search-resource": "Search resource",
+    "type-resource": "Type resource",
+    "image": "Image",
+    "video": "Video"
   }
 };

@@ -39,8 +39,8 @@ jobs:
 
       # Build sideline for all platform
       - run:
-          name: Build and Pubblish
-          command: sudo npm run dist
+          name: Publish the release
+          command: sudo npm run release
 
 
 workflows:

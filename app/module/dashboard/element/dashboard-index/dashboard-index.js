@@ -292,7 +292,13 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
 
         this.removeDataWidget();
 
-        let element = document.createElement(evt.detail.value.getWebComponentData().getName());
+        let dataComponent = evt.detail.value.getWebComponentData();
+        if(!dataComponent) {
+            this._enableAddButton();
+            return;
+        }
+
+        let element = document.createElement(dataComponent.getName());
         element.addEventListener('ready-data', this._enableAddButton.bind(this));
         element.addEventListener('unready-data', this._disableAddButton.bind(this));
         element.setAttribute('id', 'dataComponent');
@@ -354,8 +360,13 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
 
         let widget = new WidgetEntity();
         widget.wc = this.$.widgetAutocomplete.value.getWebComponent().getName();
-        widget.data = this.shadowRoot.querySelector('#dataComponent').getData();
+        if(widget.data = this.shadowRoot.querySelector('#dataComponent')) { 
+            widget.data = this.shadowRoot.querySelector('#dataComponent').getData();
 
+        } else {
+            widget.data = {};
+        }
+        
         this._storage
             .save(widget)
             .then((data) => {

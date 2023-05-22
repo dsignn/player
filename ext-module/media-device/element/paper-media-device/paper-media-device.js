@@ -32,7 +32,7 @@
                         margin-bottom: 4px;
                     }
                     
-                    #leftSection {
+                    #left-section {
                         width: 80px;
                         min-height: 120px;
                         background-size: cover;
@@ -66,7 +66,7 @@
         
                 </style>
                 <paper-card>
-                    <div id="leftSection"></div>
+                    <div id="left-section"></div>
                     <div id="rightSection">
                         <div id="content">
                             <div class="name">{{entity.name}}</div>
@@ -101,11 +101,18 @@
                  */
                 services : {
                     value : {
+                        _application: 'Application',
                         _localizeService: 'Localize',
                         StorageContainerAggregate: {
                             "_storage" : "MediaDeviceStorage"
                         }
                     }
+                },
+
+                _application: {
+                    type: Object,
+                    readOnly: true,
+                    observer: '_applicationChanged'
                 },
 
                 /**
@@ -121,6 +128,18 @@
                     value: true
                 }
             }
+        }
+
+        /**
+         * @param {Application} service 
+         * @returns 
+         */
+        _applicationChanged(service) {
+            if (!service) {
+                return;
+            }
+
+            this.$['left-section'].style.backgroundImage =  `url("${service.getAdditionalModulePath()}/media-device/element/paper-media-device/img/cover.png")`;
         }
 
         /**

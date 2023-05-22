@@ -6,8 +6,10 @@ export const lang = {
     "back" : "Indietro",
     "name": "Nome",
     "tags": "Tags",
-    "size": "Dimensione",
-    "type": "Tipologia"
+    "height": "Altezza",
+    "width": "Larghezza",
+    "type": "Tipologia",
+    "size": "Dimensione"
   },
   "en": {
     "list-resource": "List resource",
@@ -16,7 +18,9 @@ export const lang = {
     "back" : "Back",
     "name": "Name",
     "tags": "Tags",
-    "size": "Size",
-    "type": "Type"
+    "height": "Height",
+    "width": "Width",
+    "type": "Type",
+    "size": "Size"
   }
 };

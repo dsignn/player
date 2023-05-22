@@ -162,7 +162,6 @@ class Application {
                 contextIsolation: false,
                 experimentalFeatures: true,
             },
-            titleBarStyle: 'hidden',
             autoHideMenuBar: true,
             icon: path.join(__dirname, 'images/android-chrome-384x384.png'),
             title: `Dsign dashboard`,
@@ -179,7 +178,8 @@ class Application {
          * On close browser window
          */
         this.dashboard.on('closed', () => {
-            this.dashboard = null
+            this.dashboard = null;
+            app.quit();
         });
     }
 
@@ -193,7 +193,8 @@ class Application {
             webPreferences : {
                 nodeIntegration: true,
                 contextIsolation: false,
-                enableRemoteModule: true
+                enableRemoteModule: true,
+                preload: __dirname + '/entrypoint/player/src/preload.js'
             },
             width: parseInt(monitor.width),
             height: parseInt(monitor.height),
@@ -212,7 +213,13 @@ class Application {
         browserWindows.setAlwaysOnTop(monitor.alwaysOnTop);
 
         browserWindows.webContents.on('did-finish-load', () => {
-            browserWindows.send('monitor-id', monitor.getId());
+            // TODO IMPLEMENT FLOW TO LOAD DATA
+            setTimeout(
+                () => {
+                    browserWindows.send('monitor-id', monitor.getId());
+                },
+                5000
+            );  
         });
 
         browserWindows.loadFile(`${__dirname}${path.sep}${this._getPlayerEntryPoint()}`);
@@ -592,7 +599,7 @@ if (!gotTheLock) {
  */
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-        app.quit()
+        app.quit();
     }
 });
 
@@ -668,7 +675,6 @@ ipcMain.on('proxy', (event, message) => {
         case 'relaunch':
             Application.relaunch();
             break;
-
         default:
             application.broadcastMessage(message.event, message.data);
     }

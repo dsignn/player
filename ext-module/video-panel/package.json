@@ -39,9 +39,9 @@
             }
         },
         {
-            "name": "Crop",
+            "name": "Default",
             "path": {
-                "directory": "src/ffmpg",
+                "directory": "src/ffmpg/filter",
                 "nameFile": "Default",
                 "extension": "js"
             }

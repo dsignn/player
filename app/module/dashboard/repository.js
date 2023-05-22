@@ -7,7 +7,6 @@ import {Storage} from "@dsign/library/src/storage/Storage";
 import {MongoIdGenerator} from "@dsign/library/src/storage/util/MongoIdGenerator";
 import {PropertyHydrator} from "@dsign/library/src/hydrator/PropertyHydrator";
 import {PathNode} from "@dsign/library/src/path/PathNode";
-
 import {config} from './config';
 
 /**
@@ -70,6 +69,8 @@ export class Repository extends ContainerAware {
             this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].storage.adapter.localStorage.namespace,
             this.getContainer().get('ModuleConfig')['dashboard']['dashboard'].storage.adapter.localStorage.collection
         );
+
+        adapter.setIdentifier('id');
 
         const storage = new Storage(adapter);
         storage.setHydrator(this.getContainer().get('HydratorContainerAggregate')

@@ -27,7 +27,6 @@ const TimeslotPlaylistReference = (async () => {
          */
         reset() {
             this.currentTime = 0;
-
         }
     }
 

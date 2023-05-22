@@ -16,7 +16,7 @@
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
-    "electron": "20.1.3",
+    "electron": "^24.1.0",
     "extract-zip": "2.0.1",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.9.10"
@@ -28,7 +28,7 @@
     "@fluidnext-polymer/paper-chip": "github:fluidnext/paper-chip#develop",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
     "@fluidnext-polymer/paper-input-color": "^3.1.0",
-    "@fluidnext-polymer/paper-input-file": "^3.0.0",
+    "@fluidnext-polymer/paper-input-file": "git@github.com:fluidnext/paper-input-file.git#3.2.0",
     "@fluidnext-polymer/paper-pagination": "^3.0.0",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",
@@ -68,7 +68,8 @@
     "fluent-ffmpeg": "^2.1.2",
     "js-acl": "^1.0.0",
     "paper-collapse-item": "^4.0.5",
-    "web-animations-js": "^2.3.1"
+    "web-animations-js": "^2.3.1",
+    "decompress": "4.2.1"
   },
   "keywords": [
     "polymer 3",

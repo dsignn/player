@@ -36,10 +36,10 @@
                     #left-section {
                         width: 80px;
                         min-height: 140px;
-                        background-size: cover;
+                        background-size: 90%;
                         background-position: center;
-                        background-repeat: no-repeat;
-                        
+                        background-repeat: no-repeat;   
+                        background-color: #cdaae6;                     
                     }
                     
                     #fastAction {
@@ -277,12 +277,19 @@
 
                 services : {
                     value : {
+                        _application: 'Application',
                         _localizeService: 'Localize',
                         StorageContainerAggregate: {
                             _storage: "PlaylistStorage"
                         },
                         _playlistService: 'PlaylistService'
                     }
+                },
+
+                _application: {
+                    type: Object,
+                    readOnly: true,
+                    observer: '_applicationChanged'
                 },
 
                 _playlistService: {
@@ -311,8 +318,15 @@
             );
         }
 
-        playlistServiceChanged(service) {
+        _applicationChanged(service) {
+            if (!service) {
+                return;
+            }
 
+            this.$['left-section'].style.backgroundImage =  `url("${service.getAdditionalModulePath()}/playlist/element/paper-playlist/img/cover.png")`;
+        }
+
+        playlistServiceChanged(service) {
             if (!service) {
                 return;
             }

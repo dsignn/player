@@ -103,8 +103,8 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                                     <paper-input name="name" label="{{localize('name')}}" required></paper-input>
                                     <paper-input name="height" label="{{localize('height')}}" type="number" required></paper-input>
                                     <paper-input name="width" label="{{localize('width')}}" type="number" required></paper-input>
-                                    <paper-input name="offsetX" label="{{localize('offsetY')}}" type="number" required></paper-input>
-                                    <paper-input name="offsetY" label="{{localize('offsetX')}}" type="number" required></paper-input>
+                                    <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" required></paper-input>
+                                    <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" required></paper-input>
                                     <paper-input-points id="points"></paper-input-points>
                                     <paper-autocomplete id="parentMonitor" 
                                         label="{{localize('father-monitor')}}" 

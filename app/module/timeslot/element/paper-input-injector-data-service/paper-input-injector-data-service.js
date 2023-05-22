@@ -208,7 +208,7 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
         }
 
         for (let cont = 0; newValue.length > cont; cont++) {
-            console.log('nuovo', newValue[cont])
+            
             this._injectorServices.get(newValue[cont].name)
                 .getTimeslotData(newValue[cont].data)
                 .then(function(data) {
@@ -217,9 +217,9 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
                         serviceLabel: this.element._injectorServices.get(this.service.name).serviceLabel,
                         serviceName:  this.element._injectorServices.get(this.service.name).serviceName
                     };
-
-                    if (this._injectorServices.get(injector.name).hasData) {
-                        obj.name = data[this._injectorServices.get(injector.name).serviceNamespace].name;
+                    console.log('TODO check the correct funzionality', newValue[cont].name);
+                    if (this.element._injectorServices.get(this.service.name).hasData) {
+                        obj.name = data[this.element._injectorServices.get(this.service.name).serviceNamespace].name;
                     }
 
                     this.element.push('paperItemsData', obj);

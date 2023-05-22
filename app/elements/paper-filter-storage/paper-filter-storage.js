@@ -61,7 +61,7 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
                 switch (true) {
                     case element.tagName === 'PAPER-INPUT':
                         setTimeout(() => {
-                            element.addEventListener("value-changed", this._valueChanged.bind(this));
+                                element.addEventListener("value-changed", this._valueChanged.bind(this));
                             }, 
                             1000
                         );
@@ -69,15 +69,21 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
                         break;
                     case element.tagName === 'PAPER-INPUT-LIST':
                         setTimeout(() => {
-                            element.addEventListener("list-value-changed", this._valueChanged.bind(this));
+                                element.addEventListener("list-value-changed", this._valueChanged.bind(this));
                             }, 
                             1000
                         );
                         
                         break;
+                    case element.tagName === 'PAPER-DROPDOWN-MENU':
+                        setTimeout(() => {
+                                element.addEventListener("iron-select", this._selectChange.bind(this));
+                                element.addEventListener("iron-deselect", this._deselectChange.bind(this));
+                            }, 
+                            1000
+                        );       
+                        break;
                 }
-
-               
             }
         });
     }
@@ -88,18 +94,55 @@ export class PaperFilterStorage extends LocalizeMixin(ServiceInjectorMixin(Polym
     _valueChanged(evt) {
         evt.preventDefault();
         evt.stopImmediatePropagation();
+       
         switch(true) {
+    
+            case evt.target.getAttribute('direction') !== null:
+                this.filters[evt.target.name] = {
+                    'direction':  evt.target.getAttribute('direction'), 
+                    'value': parseInt(evt.target.value)
+                }
+                break;
             case Array.isArray(evt.detail.value) && evt.detail.value.length > 0:
                 this.filters[evt.target.name] = evt.detail.value
                 break;
-            case !!evt.detail.value:
+            case !!evt.detail.value && !Array.isArray(evt.detail.value):
                 this.filters[evt.target.name] = evt.detail.value
                 break;
             default:
                 delete this.filters[evt.target.name];
         }
         
-        console.log('cusa');
+      
+        let event = new CustomEvent('value-changed', {detail: this.filters});
+        this.dispatchEvent(event);
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    _selectChange(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+
+        this.filters[evt.target.parentElement.name] = evt.detail.item.value;
+        this._dispatch();
+    }
+
+    _dispatch() {
+        let event = new CustomEvent('value-changed', {detail: this.filters});
+        this.dispatchEvent(event);
+    }
+
+    /**
+     * @param {Event} evt 
+     */
+    _deselectChange(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+
+        delete this.filters[evt.target.parentElement.name];
+
         let event = new CustomEvent('value-changed', {detail: this.filters});
         this.dispatchEvent(event);
     }

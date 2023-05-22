@@ -33,6 +33,15 @@
             }
         }
 
+        disconnectedCallback() {
+            super.disconnectedCallback();
+            if (this.$.camera.srcObject) {
+                this.$.camera.srcObject.getTracks().forEach((track) => {
+                    track.stop();
+                });
+            }
+        }
+
         /**
          * @param newValue
          * @param oldValue
@@ -40,14 +49,17 @@
          */
         _mediaDeviceChanged(newValue, oldValue) {
 
-            let constraint = { video : {deviceId: { exact:  newValue.deviceId}}};
-            console.log(newValue);
+            let constraint = { video : {deviceId: { exact: newValue.deviceId}}};
+        
             navigator.mediaDevices.getUserMedia(constraint)
-                .then((stream) => {
-                    this.$.camera.srcObject = stream;
-                })
-                .catch((err) => {
-                    console.log(err);
+                .then((MediaStream) => {           
+                        this.$.camera.srcObject = MediaStream;
+                        this.$.camera.play().then((data) => {
+                    }).catch((error) => {
+                        console.error(error);
+                    });
+                }).catch((err) => {
+                    console.error(err);
                 });
         }
 
@@ -56,10 +68,10 @@
          */
         createMockData() {
 
-            navigator.mediaDevices.enumerateDevices({video:true})
+            navigator.mediaDevices.enumerateDevices({video:true, audio:false})
                 .then((devices) => {
                     this.mediaDevice = devices.find((element) => {
-                        return element.deviceId ==='4361251acb9d5732c5a970aeba29360e7f808dbc2aa41cc37bb46b28dbe424dd';
+                        return element.kind ==='videoinput';
                     });
                 })
                 .catch(function (err) {

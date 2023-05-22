@@ -135,7 +135,8 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
      * @param {Event} evt 
      */
     importModule(evt) {
-        this._application.addModule(this.$.fileUpload.files[0].path, container);
+        let t = this._application.addModule(this.$.fileUpload.files[0].path, container);
+        console.log('ddddddddddddddddddd', t);
     }
 
     /**

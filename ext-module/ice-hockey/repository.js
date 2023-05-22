@@ -25,13 +25,9 @@ export async function Repository() {
     const { IceHockeyScore } = await import('./src/entity/embedded/IceHockeyScore.js');
     const { IceHockeyScoreboardService } = await import('./src/IceHockeyScoreboardService.js');
     const { IceHockeyTeam } = await import('./src/entity/embedded/IceHockeyTeam.js');
+    const { DexieIceHockeyAdapter } = await import('./src/storage/adapter/dexie/DexieIceHockeyAdapter.js')
     const { MongoIceHockeyAdapter } = await import('./src/storage/adapter/mongo/MongoIceHockeyAdapter.js')
-    const { ScoreboardDataInjector } = await import('./src/injector/ScoreboardDataInjector.js');
-
-    let Repository = await import(`${container.get('Application').getBasePath()}module/timeslot/repository.js`);
-    const TimeslotRepository = Repository.Repository;
-    Repository = await import(`${container.get('Application').getBasePath()}module/resource/repository.js`);
-    const ResourceRepository = Repository.Repository;
+    const { ScoreboardIceHockeyDataInjector } = await import('./src/injector/ScoreboardIceHockeyDataInjector.js');
     const { config } = await import('./config.js');
 
     // TODO REMOVE
@@ -102,7 +98,7 @@ export async function Repository() {
                 let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].hydrator['name-storage-service']);
                 hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
     
-                const adapter = new DexieTimeslotAdapter(dexieManager, collection);
+                const adapter = new DexieIceHockeyAdapter(dexieManager, collection);
                 const storage = new Storage(adapter);
                 storage.setHydrator(hydrator);
     
@@ -126,7 +122,6 @@ export async function Repository() {
                     });
             } else {
                 dexieManager.on("ready", (data) => {
-                    console.log('TO OPNE', data);
                     generateSchema();
                 });
             }
@@ -226,10 +221,12 @@ export async function Repository() {
                     this.getContainer().get('ModuleConfig')['ice-hockey']['scoreboard-service'],
                     service
                 );
+
+                let injector = new ScoreboardIceHockeyDataInjector(service);
     
                 this.getContainer().get(
                         this.getContainer().get('ModuleConfig')['timeslot']['timeslot']['injectorDataTimeslotAggregate']
-                    ).set('ScoreboardDataInjector', new ScoreboardDataInjector(service));
+                    ).set(injector.constructor.name, injector);
             };
     
             var connectorServiceName = this.getContainer().get('ModuleConfig')['ice-hockey']['ice-hockey-match'].storage.adapter.dexie['connection-service'];
@@ -324,7 +321,11 @@ export async function Repository() {
             playerHydratorStrategy.setHydrator(Repository.getIceHockeyPlayerHydrator(container));
     
             let resoyrceHydratorStrategy = new HydratorStrategy();
-            resoyrceHydratorStrategy.setHydrator(container.get('HydratorContainerAggregate').get(ResourceRepository.RESOURCE_HYDRATOR_SERVICE));
+            resoyrceHydratorStrategy.setHydrator(
+                container.get('HydratorContainerAggregate').get(
+                    container.get('ModuleConfig')['resource']['resource'].hydrator['name-storage-service-resource']
+                )
+            );
     
             let hydrator = new PropertyHydrator(new IceHockeyTeam());
     

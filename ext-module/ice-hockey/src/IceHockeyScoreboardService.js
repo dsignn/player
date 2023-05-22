@@ -12,17 +12,17 @@ const IceHockeyScoreboardService = (async () => {
      */
     class IceHockeyScoreboardService extends EventManagerAware {
 
-        static get DATA() { return 'data-scoreboard'; }
+        static get DATA() { return 'data-ice-hockey-scoreboard'; }
 
         /**
          * @return {string}
          */
-        static get CHANGE_SCOREBOARD_MATCH() { return 'change-scoreboard-match'; }
+        static get CHANGE_SCOREBOARD_MATCH() { return 'change-ice-hockey-scoreboard-match'; }
 
         /**
          * @return {string}
          */
-         static get CLEAR_SCOREBOARD_MATCH() { return 'clear-scoreboard-match'; }
+         static get CLEAR_SCOREBOARD_MATCH() { return 'clear-ice-hockey-scoreboard-match'; }
 
         /**
          * @param {StorageInterface} storage

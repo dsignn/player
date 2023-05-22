@@ -16,7 +16,11 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
 
                 :host {
                     --paper-tooltip-opacity : 1;
-                    padding: 8px;
+                    display:block; 
+                    padding: 5px;
+                    width: 95px;
+                    height: 95px;
+                    border-radius: 6px;
                     --paper-tooltip : {
                         background-color: var(--accent-color);
                         background:  var(--accent-color);
@@ -34,16 +38,61 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                     }
                 }
 
+                :host(:hover){
+                    background-color: #e8f0fe;
+                }
+
+                paper-icon-button {
+                      
+                    --paper-icon-button : {
+                        width: 60px;
+                        height: 60px;
+                        color: var(--default-primary-color);
+                    }
+                    --paper-icon-button-disabled : {
+                         background:  red;
+                    }
+                }
+
+                paper-dialog {
+                    width: 250px;
+                    max-width: 250px !important;
+                    left: unset !important;
+                    right: 0px;
+                }
+
                 .container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+
+                .container-dialog {
                     min-height: 150px;
+                }
+
+                paper-spinner {
+                    display:none;
+                    margin-top: 6px;
+                    margin-bottom: 28px;
+                    --paper-spinner-color: var(--accent-color);
+                    --paper-spinner-layer-1-color: var(--accent-color);
+                    --paper-spinner-layer-2-color: var(--accent-color);
+                    --paper-spinner-layer-3-color: var(--accent-color);
+                    --paper-spinner-layer-4-color: var(--accent-color);
                 }
   
             </style>
-            <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>
-            <paper-tooltip id="paperTooltip" for="paperRestore" position="left">{{localize('run-restore')}}</paper-tooltip>
+            <div class="container">
+                <paper-spinner id="spinner"></paper-spinner>
+                <paper-icon-button id="paperRestore" icon="restore" title="{{label}}" on-tap="openDialog"></paper-icon-button>
+                <div style="font-size: 16px;">Restore</div>
+            </div>
             <paper-dialog id="restoreDialog" auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
-                <div class="container">
-                    <paper-input-file id="restoreFile" files="{{files}}" accept="application/zip"></paper-input-file>
+                <div class="container-dialog">
+                    <paper-input-file id="restoreFile" files="{{files}}" is-directory="true"></paper-input-file>
                     <paper-button id="importButton" on-tap="restore" disabled>{{localize('import')}}</paper-button>
                 </div>
             </paper-dialog>
@@ -94,6 +143,7 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
             return;
         }
 
+        archiveService.addEventListener('star-progress-extract', this._progress.bind(this));
         archiveService.addEventListener('close-extract', this._close.bind(this));
         archiveService.addEventListener('error-extract', this._close.bind(this));
     }
@@ -115,8 +165,14 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
      */
     restore(evt) {
 
-        this._startHtmlBackup();
-        this._archive.restore(this.files[0].path)
+        this.$.restoreDialog.close();
+
+        let path = this.files[0].path;
+        if (this.files.length > 1) {
+            path = this.files[0].path.replace(this.files[0].name, '')
+        } 
+
+        this._archive.restore(path)
             .then((data) => {
                 console.log('Restore ok', data)
             })
@@ -136,32 +192,32 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
      * @param evt
      * @private
      */
+    _progress(evt) {
+        this._working(true);
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
     _close(evt) {
-        this._stoptHtmlBackup();
+        this._working(false);
     }
 
     /**
-     * @private
+     * @param {bool} isWorking 
      */
-    _startHtmlBackup() {
-        this.$.paperRestore.disabled = true;
-        this.$.paperTooltip.innerHTML = this.localize('in-progress');
-        // TODO REFACTOR
-        setTimeout(
-            () => {
-                this.$.restoreFile.reset();
-            },
-            500
-        );
-        this.$.restoreDialog.close();
-    }
-
-    /**
-     * @private
-     */
-    _stoptHtmlBackup() {
-        this.$.paperRestore.disabled = false;
-        this.$.paperTooltip.innerHTML = this.localize('run-backup');
+    _working(isWorking) {
+        if (isWorking) {
+            this.$.paperRestore.style.display = 'none';
+            this.$.spinner.active = true;
+            this.$.spinner.style.display = 'block';
+            this.$.restoreFile.reset();
+        } else {
+            this.$.spinner.style.display = 'none';
+            this.$.spinner.active = false;
+            this.$.paperRestore.style.display = 'block';
+        }
     }
 }
 

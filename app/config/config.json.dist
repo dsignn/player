@@ -41,18 +41,6 @@
       }
     }
   },
-  "p2p": {
-    "identifier": "player-3333",
-    "udpOption": {
-      "portListening": 4000,
-      "portSender": 4000,
-      "transmissionTimeout": 2000
-    },
-    "clientOption": {
-      "type": "tcp",
-      "port": 4500
-    }
-  },
   "module": [
     {
       "id": null,
@@ -422,7 +410,7 @@
             "name": "paper-timeslot-tags-data",
             "path": {
               "nameFile": "paper-timeslot-tags-data",
-              "directory": "timeslot/element/widget/paper-timeslot-tags-data",
+              "directory": "timeslot/element/widget/paper-timeslot-tags",
               "extension": "js"
             }
           }
@@ -442,10 +430,10 @@
             }
           },
           "webComponentData": {
-            "name": "paper-timeslot-tags-data",
+            "name": "paper-timeslot-monitors-data",
             "path": {
               "nameFile": "paper-timeslot-monitors-data",
-              "directory": "timeslot/element/widget/paper-timeslot-monitors-data",
+              "directory": "timeslot/element/widget/paper-timeslot-monitors",
               "extension": "js"
             }
           }

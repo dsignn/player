@@ -8,7 +8,8 @@ export const lang = {
     "insert-video-panel-resource": "Aggiungi risorsa quadro video",
     "edit-video-panel-resource": "Aggiorna risorsa quadro video",
     "insert-video-panel": "Inserisci quedro video",
-    "back" : "Indietro"
+    "back" : "Indietro",
+    "name": "Nome",
   },
   "en": {
     "video-panel": "Video panel",
@@ -19,6 +20,7 @@ export const lang = {
     "insert-video-panel-resource": "Add video panel resource",
     "update-video-panel-resource": "Update video panel resource",
     "insert-video-panel": "Insert video panel",
-     "back" : "Back"
+    "back" : "Back",
+    "name": "Name",
   }
 };

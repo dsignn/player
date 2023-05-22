@@ -1,0 +1,192 @@
+<head> 
+      <style>
+
+        :root {
+            --color-wc: #000000;
+        }
+        @font-face {
+            font-family: digital;
+            src: url(digital-7.ttf);
+        }
+
+        @font-face {
+            font-family: roboto;
+            src: url(Roboto-Regular.ttf);
+        }
+  
+        #scoreboard {
+                display: flex;
+                flex-direction: row;
+                height: 100%;
+            }
+
+            #homeContainer {
+                flex-basis: 20%;
+            }
+
+            #data {
+                flex: 1;
+            }
+
+            #guestContainer {
+                flex-basis: 20%;
+            }
+
+            #header {
+                display: flex;
+                height: 33%;
+                margin-left: 50px;
+                margin-right: 50px;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .teamContainer {
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                font-size: 16em;
+            }
+
+            .score {
+                height: 100%;
+                flex-basis: 35%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .logo {
+                height: 100%;
+                flex-basis: 65%;
+                background-position: center center;
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+
+
+            .divider {
+                width: 60px; 
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+
+            .line {
+                width: 48%;
+                height: 70%;
+                border-right: 3px solid var(--color-wc);
+            }
+
+            #metdata {
+                margin-top: 50px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #time {
+                font-family: digital;
+                font-size: 8em;
+                font-weight: 500;
+                display: flex;
+            }
+
+            .number {
+                width: 130px;
+                text-align:center;
+            }
+
+            .timeDivider {
+                line-height: 60px;
+            }
+
+            .player {
+                padding: 10px;
+                font-size: 2em;
+                font-weight: 500;
+                display: flex;
+                flex-direction: row;
+                color: var(--color-wc);
+            }
+
+            .player .number {
+                width: 50px;
+            font-weight: 600;
+            }
+
+            .tx-l {
+                text-align: left;
+            }
+
+            .tx-r {
+                text-align: right;
+            }
+
+            .jc-l {
+                justify-content: left;
+            }
+
+            .jc-r {
+                justify-content: right;
+            }
+
+            .coach {
+                height: 100%;
+            }
+
+            @media (min-width: 1280px) and (max-width: 1480px) {
+
+                .player {
+                    font-size: 1.6em;
+                }
+            }
+
+            @media (min-width: 600px) and (max-width: 1271px) {
+
+                #homeContainer, #guestContainer {
+                    display: none;
+                }
+            }
+       
+    </style>
+
+</head>
+<body>
+    <div id="scoreboard">
+        <div id="homeContainer">
+                           <div class="player jc-l">
+                            <div class="number tx-l">9</div>
+                    <div class="name">Simone inzaghi</div>
+                </div>
+            
+        </div>
+        <div id="data">
+            <div id="header">
+                <div class="teamContainer">
+                    <div class="logo inter">&nbsp</div>
+                    <div id="homeScore" class="score">5</div>
+                </div>
+                <div class="divider">
+                    <div class="line"></div>
+                </div>
+                <div class="teamContainer">
+                    <div id="guestScore" class="score">3</div>
+                    <div class="logo milan">&nbsp</div>
+                </div>
+            </div>
+            <div id="metdata">
+                <div id="time">23:00</div>
+            </div>
+        </div>
+        <div id="guestContainer">
+            
+                      <div class="player jc-r">
+                <div class="name">Simone inzaghi</div>
+                <div class="number tx-r">9</div>
+            </div>
+            
+        </div>
+    </div>
+</body>

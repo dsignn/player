@@ -131,7 +131,9 @@ export async function Repository() {
              * create schema
              */
             var generateSchema = () => {
-                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(this.getContainer().get('Config')['media-device']['media-device'].hydrator['name-storage-service']);
+                let hydrator = this.getContainer().get('HydratorContainerAggregate').get(
+                    this.getContainer().get('ModuleConfig')['media-device']['media-device'].hydrator['name-storage-service']
+                );
                 hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
     
                 const adapter = new DexieTimeslotAdapter(dexieManager, collection);

@@ -34,7 +34,7 @@
                         margin-bottom: 4px;
                     }
                     
-                    #leftSection {
+                    #left-section {
                         width: 80px;
                         min-height: 120px;
                         background-size: cover;
@@ -102,7 +102,7 @@
         
                 </style>
                 <paper-card>
-                    <div id="leftSection"></div>
+                    <div id="left-section"></div>
                     <div id="fastAction">
                         <div class="action">
                         </div>
@@ -153,12 +153,19 @@
                  */
                 services : {
                     value : {
+                        _application: 'Application',
                         _localizeService: 'Localize',
                         _resourceService : "ResourceService",
                         StorageContainerAggregate: {
                             "_storage":"ResourceStorage"
                         }
                     }
+                },
+
+                _application: {
+                    type: Object,
+                    readOnly: true,
+                    observer: '_applicationChanged'
                 },
 
                 /**
@@ -179,7 +186,19 @@
             }
         }
 
-            /**
+        /**
+         * @param {Application} service 
+         * @returns 
+         */
+        _applicationChanged(service) {
+            if (!service) {
+                return;
+            }
+
+            this.$['left-section'].style.backgroundImage =  `url("${service.getAdditionalModulePath()}/ice-hockey/element/paper-ice-hockey/img/cover.png")`;
+        }
+
+        /**
          * @param evt
          * @private
          */

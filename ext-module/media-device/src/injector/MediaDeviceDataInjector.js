@@ -31,9 +31,7 @@ const MediaDeviceDataInjector = (async () => {
 
                 this.storage.get(data.id).then(function(data) {
 
-                    let obj = {};
-                    obj[this.serviceNamespace] = data;
-                    resolve(obj);
+                    resolve(data);
                 }.bind(this)).catch((err) => {
                     reject(err);
                 })
