@@ -28,7 +28,7 @@
     "@fluidnext-polymer/paper-chip": "github:fluidnext/paper-chip#develop",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
     "@fluidnext-polymer/paper-input-color": "^3.1.0",
-    "@fluidnext-polymer/paper-input-file": "^3.0.0",
+    "@fluidnext-polymer/paper-input-file": "git@github.com:fluidnext/paper-input-file.git#3.2.0",
     "@fluidnext-polymer/paper-pagination": "^3.0.0",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",

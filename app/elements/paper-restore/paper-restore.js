@@ -92,7 +92,7 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
             </div>
             <paper-dialog id="restoreDialog" auto-fit-on-attach always-on-top horizontal-align="center" vertical-align="top">
                 <div class="container-dialog">
-                    <paper-input-file id="restoreFile" files="{{files}}" accept="application/zip"></paper-input-file>
+                    <paper-input-file id="restoreFile" files="{{files}}" is-directory="true"></paper-input-file>
                     <paper-button id="importButton" on-tap="restore" disabled>{{localize('import')}}</paper-button>
                 </div>
             </paper-dialog>
@@ -166,7 +166,13 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
     restore(evt) {
 
         this.$.restoreDialog.close();
-        this._archive.restore(this.files[0].path)
+
+        let path = this.files[0].path;
+        if (this.files.length > 1) {
+            path = this.files[0].path.replace(this.files[0].name, '')
+        } 
+
+        this._archive.restore(path)
             .then((data) => {
                 console.log('Restore ok', data)
             })
