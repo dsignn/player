@@ -8,7 +8,7 @@ jobs:
     resource_class: large
     docker:
       # specify the version you desire here
-      - image: circleci/node:17.2.0-stretch-browsers-legacy
+      - image: cimg/node:20.2.0
 
     working_directory: ~/repo
 
@@ -19,12 +19,7 @@ jobs:
       # Install wine32
       - run:
           name: Install wine32 to publish
-          command: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine32
-
-      # Install rsync
-      - run:
-          name: Rsync install
-          command: sudo apt-get install rsync
+          command: sudo apt-get update && sudo apt-get install wine32 rsync
 
       # Set Up Project
       - run:
