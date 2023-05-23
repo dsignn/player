@@ -19,7 +19,12 @@ jobs:
       # Install wine32
       - run:
           name: Install wine32 to publish
-          command: sudo apt-get update && sudo apt-get install wine32 rsync
+          command: sudo dpkg --add-architecture i386 && sudo apt-get update && sudo apt-get install wine
+
+      # Install rsync
+      - run:
+          name: Rsync install
+          command: sudo apt-get install rsync
 
       # Set Up Project
       - run:
