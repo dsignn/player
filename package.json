@@ -42,8 +42,7 @@
     "publish": {
       "provider": "github",
       "releaseType": "release",
-      "vPrefixedTagName": false,
-      "token": "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"
+      "vPrefixedTagName": false
     },
     "directories": {
       "output": "releases",
