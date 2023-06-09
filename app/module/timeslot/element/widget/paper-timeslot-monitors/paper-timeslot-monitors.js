@@ -1,14 +1,14 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
-import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
-import {StorageListMixin} from "@dsign/polymer-mixin/storage/list-mixin";
-import {lang} from './language';
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixin";
+import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
+import { StorageListMixin } from "@dsign/polymer-mixin/storage/list-mixin";
+import { lang } from './language';
 import "../../paper-timeslot/paper-timeslot";
 
 /**
  *
  */
-export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))  {
+export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
 
     static get template() {
         return html`
@@ -19,13 +19,13 @@ export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(Servic
         `;
     }
 
-    static get properties () {
+    static get properties() {
         return {
 
             /**
              *
              */
-            data : {
+            data: {
                 observer: "_changedData"
             },
 
@@ -39,8 +39,8 @@ export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(Servic
             /**
              * @type object
              */
-            services : {
-                value : {
+            services: {
+                value: {
                     _localizeService: 'Localize',
                     StorageContainerAggregate: {
                         _storage: "TimeslotStorage"
@@ -59,6 +59,39 @@ export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(Servic
         };
     }
 
+    static get observers() {
+        return [
+            // Observer method name, followed by a list of dependencies, in parenthesis
+            'observeList(_storage, filter)'
+        ]
+    }
+
+    /**
+ * @param {StorageInterface} storage
+ * @param {Array} filter
+ */
+    observeList(storage, filter) {
+
+        if (!storage || !filter) {
+            return;
+        }
+
+        this._updateList();
+    }
+
+    /**
+     * @private
+     */
+    _updateList() {
+        this._storage.getAll(this.filter)
+            .then((timeslots) => {
+                this.entities = timeslots;
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+    }
+
     constructor() {
         super();
         this.resources = lang;
@@ -72,10 +105,10 @@ export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(Servic
         let compare = -1;
         switch (true) {
             case ele1.status === "idle" && ele1 !== ele2:
-                compare =  1;
+                compare = 1;
                 break;
             case ele1.status === "pause" && ele1 !== ele2 && ele2.status !== "idle":
-                compare =  1;
+                compare = 1;
                 break;
         }
         return compare
@@ -90,9 +123,9 @@ export class PaperTimeslotMonitors extends StorageListMixin(LocalizeMixin(Servic
         if (!newValue) {
             return;
         }
-
+ 
         this.filter = {
-            'parentId' : newValue
+            'parentId': newValue
         };
     }
 

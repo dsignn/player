@@ -17,6 +17,7 @@ export class DexieTimeslotAdapter extends DexieAdapter {
 
                 switch (property) {
                     case 'tags':
+                  
                         for (let cont = 0; filter[property].length > cont; cont++) {
                             if (cont === 0) {
                                 collection = this.manager.table(this.getNameCollection()).where(property).equals(filter[property][cont]);
@@ -29,6 +30,7 @@ export class DexieTimeslotAdapter extends DexieAdapter {
                         collection = this.manager.table(this.getNameCollection()).where(property).startsWithIgnoreCase(filter[property]);
                         break;
                     case 'parentId':
+             
                         let attribute = 'monitorContainerReference.id';
                         switch (true) {
                             case Array.isArray(filter[property]) === true:

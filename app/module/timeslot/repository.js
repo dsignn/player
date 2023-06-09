@@ -74,6 +74,7 @@ export class Repository extends ContainerAware {
                 "status", 
                 "duration", 
                 "monitorContainerReference.id", 
+                //"monitorContainerReference.parentId", 
                 "resources.id",
                 "*tags", 
                 "rotation",
