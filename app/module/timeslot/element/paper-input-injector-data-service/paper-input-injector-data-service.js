@@ -219,7 +219,11 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
                     };
                     console.log('TODO check the correct funzionality', newValue[cont].name);
                     if (this.element._injectorServices.get(this.service.name).hasData) {
-                        obj.name = data[this.element._injectorServices.get(this.service.name).serviceNamespace].name;
+                        if (data.name) {
+                            obj.name = data.name;
+                          } else {
+                            obj.name = data[this.element._injectorServices.get(this.service.name).serviceNamespace].name;
+                          }
                     }
 
                     this.element.push('paperItemsData', obj);
@@ -317,7 +321,11 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
                 };
 
                 if (this._injectorServices.get(injector.name).hasData) {
-                    obj.name = data[this._injectorServices.get(injector.name).serviceNamespace].name;
+                    if (data.name) {
+                        obj.name = data.name;
+                      } else {
+                        obj.name = data[this.element._injectorServices.get(this.service.name).serviceNamespace].name;
+                      }
                 }
 
                 this.push('paperItemsData', obj);
