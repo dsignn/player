@@ -13,7 +13,9 @@ const TcpSourceService = (async () => {
      */
     class TcpSourceService extends EventManagerAware {
 
-        static get REQUEST_ERROR() { return 'request-error'; }
+        static get REQUEST_ERROR_EVT() { return 'request-error'; }
+
+        static get UPDATE_TCP_SOURCE_EVT() { return 'tcpSource'; }
 
         constructor(sender, timer) {
             super();
@@ -38,16 +40,18 @@ const TcpSourceService = (async () => {
                 .then((body) => {
 
                     source.status  = TcpSourceEntity.RUNNING;
-                    console.log('Request', body);
+                    this.getEventManager()
+                    .emit(
+                        TcpSourceService.UPDATE_TCP_SOURCE_EVT, body
+                    );
                 })
                 .catch((error) => {
 
                     source.status  = TcpSourceEntity.ERROR;
                     this.getEventManager()
                         .emit(
-                            TcpSourceService.REQUEST_ERROR, 
-                            {'error': error, 'entity': source}
-                        );
+                            TcpSourceService.REQUEST_ERROR_EVT, {'error': error, 'entity': source}
+                    );
                 }); 
         }
 
@@ -84,6 +88,7 @@ const TcpSourceService = (async () => {
             }
 
             this._runningTcpSource[source.getId()] = source;
+            source.status = TcpSourceEntity.RUNNING;
             this._request(source);
 
             this.getEventManager().emit(
@@ -108,30 +113,6 @@ const TcpSourceService = (async () => {
                 TcpSourceEntity.IDLE, 
                 source
             );
-        }
-
-        /**
-         *
-         * @param {string} type
-         * @param {TimeslotEntity} timeslot
-         * @param {Object} data
-         * @private
-         */
-        _send(type, timeslot, data = null) {
-
-            let message = {
-                event : type,
-                data : {
-                    timeslot : timeslot
-                }
-
-            };
-
-            if(data) {
-                message.data.data = data;
-            }
-            console.log('SOURCE SEND',message);
-            this.sender.send('proxy', message);
         }
     }
 

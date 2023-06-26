@@ -9,6 +9,9 @@
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/localize/localize-mixin.js`));
     const { StorageEntityMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/storage/entity-mixin.js`));
+    const { TcpSourceService } = await import(`${container.get('Application').getAdditionalModulePath()}/tcp-source/src/TcpSourceService.js`);
+    const { TcpSourceEntity } = await import(`${container.get('Application').getAdditionalModulePath()}/tcp-source/src/entity/TcpSourceEntity.js`);
+
     const { lang } = await import('./language.js');
  
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/iron-flex-layout/iron-flex-layout.js`));
@@ -274,9 +277,9 @@
 
         _tcpSourceServiceChanged(service) {
  
-            service.getEventManager().on('request-error', this._errorTcpSourceService.bind(this));
-            service.getEventManager().on('running', this._startTcpSourceService.bind(this));
-            service.getEventManager().on('idle', this._stopTcpSourceService.bind(this));
+            service.getEventManager().on(TcpSourceService.REQUEST_ERROR_EVT, this._errorTcpSourceService.bind(this));
+            service.getEventManager().on(TcpSourceEntity.RUNNING, this._startTcpSourceService.bind(this));
+            service.getEventManager().on(TcpSourceEntity.IDLE, this._stopTcpSourceService.bind(this));
         }
 
         /**

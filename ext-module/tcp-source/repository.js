@@ -3,8 +3,14 @@ export async function Repository() {
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/container/ContainerAware.js`));
     const { MapPropertyStrategy } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/strategy/proprerty/MapPropertyStrategy.js`));
+    const { EventManager } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/event/EventManager.js`));
+    const { EventManagerAggregate } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/event/EventManagerAggregate.js`));     
     const { PropertyHydrator } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/hydrator/PropertyHydrator.js`));    
+    const { ProxyEventManager } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/event/electron/ProxyEventManager.js`));        
     const { MongoIdGenerator } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/library/src/storage/util/MongoIdGenerator.js`));   
     const { Store } = await import(require('path').normalize(
@@ -30,6 +36,7 @@ export async function Repository() {
             this.initEntity();
             this.initHydrator();
             this.initDexieStorage();
+            this.iniTcpSourceCommunicator();
             this.initService();
         }   
         
@@ -139,6 +146,47 @@ export async function Repository() {
         /**
          *
          */
+        iniTcpSourceCommunicator() {
+            this.getContainer()
+                .get('SenderContainerAggregate')
+                .set(this._getModuleConfig().tcpSourceCommunicator,
+                        require('electron').ipcRenderer
+                );
+        }
+
+
+        initService() {
+                
+            let eventManagerAggregate = new EventManagerAggregate();
+            /**
+             * Local event manager
+             */
+            let eventManager = new EventManager();
+            /**
+             * ipc event mangager
+             */
+            let proxyEventManager = new ProxyEventManager( 
+                this.getContainer().get('SenderContainerAggregate').get(
+                    this._getModuleConfig().tcpSourceCommunicator
+                ));
+
+            eventManagerAggregate
+                .addEventManager(proxyEventManager)
+                .addEventManager(eventManager);
+
+            let service = new TcpSourceService(
+                    this.getContainer().get('SenderContainerAggregate').get(this._getModuleConfig().timeslotSender),
+                    this.getContainer().get('Timer')
+                );
+
+            service.setEventManager(eventManagerAggregate);
+
+            this.getContainer().set(this._getModuleConfig().tcpSourceService, service);
+        }
+
+        /**
+         *
+         */
         initHydrator() {
             this.getContainer()
                 .get('HydratorContainerAggregate')
@@ -185,18 +233,6 @@ export async function Repository() {
                 .enableHydrateProperty('ip')
 
             return hydrator;
-        }
-        
-
-        initService() {
-            this.getContainer()
-                .set(
-                    'TcpSourceService',
-                    new TcpSourceService(
-                        this.getContainer().get('SenderContainerAggregate').get(this._getModuleConfig().timeslotSender),
-                        this.getContainer().get('Timer')
-                    )
-                );
         }
 
         /**

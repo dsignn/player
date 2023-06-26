@@ -23,7 +23,9 @@ export const config = {
             },
             "acl": {
                 "resource": 'tcp-source'
-            }
+            },
+            'tcpSourceCommunicator': 'TcpSourceCommunicator',
+            'tcpSourceService': 'TcpSourceService'
         }
     }
 }

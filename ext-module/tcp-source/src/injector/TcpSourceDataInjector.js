@@ -68,7 +68,7 @@ const TcpSourceDataInjector = (async () => {
         }
 
         get serviceNamespace() {
-            return 'tcp-source';
+            return 'tcpSource';
         }
     }
 
