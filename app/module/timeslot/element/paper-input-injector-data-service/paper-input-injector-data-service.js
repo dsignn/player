@@ -286,6 +286,7 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
 
         this.$.serviceInput.value.getServiceData(evt.detail.value.text)
             .then((data) => {
+                console.log('DATA', data);
                 evt.detail.target.suggestions(data)
             });
     }

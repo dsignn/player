@@ -71,8 +71,8 @@ class TimeslotViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeM
                 }
             </style>
             <slot name="header"></slot>
-                <div id="empty">{{localize('empty-timeslot')}}</div>
-                <div id="list">
+            <div id="empty">{{localize('empty-timeslot')}}</div>
+            <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="timeslot">
                     <paper-timeslot entity="{{timeslot}}" 
                         on-play="play"
