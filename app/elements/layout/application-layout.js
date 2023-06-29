@@ -335,6 +335,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             paperIconBtn.style.color = '#015b63';
         });
 
+        
+
+        if (value == 'dashboard') {
+            this._adjustDashboardIndex();
+        }
+
         let paperIconBtn = this.shadowRoot.querySelector('#' + value);
         if (paperIconBtn)  {
             paperIconBtn.style.color = 'white';
@@ -345,7 +351,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     let paperIconBtn = this.shadowRoot.querySelector('#' + value);
 
                     if (!paperIconBtn) {
-                        console.log('suca', value);
                         this.$.menu.render();
                         paperIconBtn = this.shadowRoot.querySelector('#' + value);
                     }
@@ -356,6 +361,14 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 2000
             );
         }
+    }
+
+    _adjustDashboardIndex() {
+        console.log('suca');
+        document.querySelector('application-layout')
+            .shadowRoot.querySelector('#content')
+            .querySelector('dashboard-index')
+            .$.grid._adjustToWindow();
     }
 }
 

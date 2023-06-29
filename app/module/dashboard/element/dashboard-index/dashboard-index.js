@@ -231,21 +231,6 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
     }
 
     /**
-     * @inheritDoc
-     */
-    connectedCallback () {
-        super.connectedCallback();
-        // TODO workaround
-        setTimeout(
-            () => {
-                this.$.grid._adjustToWindow();
-            },
-            500
-        );
-
-    }
-
-    /**
      * @param {StorageInterface} widgetStorage
      * @private
      */
