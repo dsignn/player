@@ -62,13 +62,38 @@
             }
         },
         {
+            "name": "AudioEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "AudioEntity",
+                "extension": "js"
+            }
+        },
+        {
             "name": "VideoEntity",
             "path": {
                 "directory": "src/entity",
                 "nameFile": "VideoEntity",
                 "extension": "js"
             }
+        },
+        {
+            "name": "MetadataEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MetadataEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MultiMediaEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MultiMediaEntity",
+                "extension": "js"
+            }
         }
+
     ],
     "autoloadsWc": [
         {

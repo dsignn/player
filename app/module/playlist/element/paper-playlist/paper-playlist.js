@@ -26,10 +26,12 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 #left-section {
                     width: 80px;
                     min-height: 140px;
-                    background-size: cover;
+                    background-size: contain;
                     background-position: center;
                     background-repeat: no-repeat;
                     
+                    background-color: #cc66ff;      
+                    background-image: url("./../../module/playlist/element/paper-playlist/img/cover.png");      
                 }
                 
                 #fastAction {

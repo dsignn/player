@@ -1,46 +1,20 @@
 import {FileEntity} from './FileEntity';
+import {DimensionMixin} from './mixin/DimensionMixin';
+import {DurationMixin} from './mixin/DurationMixin';
+import {FpsMixin} from './mixin/FpsMixin';
 
 /**
  * @class VideoEntity
  */
-export class VideoEntity extends FileEntity {
+export class VideoEntity extends FpsMixin(DimensionMixin(DurationMixin(FileEntity))) {
 
     constructor() {
         super();
-
-        /**
-         * @type {Number|null}
-         */
-        this.duration = null;
-
-        /**
-         * @type {Number|null}
-         */
-        this.fps = null;
-
-        /**
-         * @type {Object}
-         */
-        this.dimension = {};
 
         Object.defineProperty(
             this,
             "typeLabel",
             {writable: false, enumerable: true, configurable: true, value: 'video'}
         );
-    }
-
-    /**
-     * @returns {Number}
-     */
-    getWidth() {
-        return this.dimension.width;
-    }
-
-    /**
-     * @returns {Number}
-     */
-    getHeight() {
-        return this.dimension.height;
     }
 }

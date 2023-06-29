@@ -1,6 +1,7 @@
 {
     "title": "Playlist",
     "name": "playlist",
+    "core": true,   
     "icon": "playlist:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {
