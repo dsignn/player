@@ -43,34 +43,10 @@
 	},
 	"module": [
 		{
-			"title": "Admin",
-			"name": "admin",
-			"core": true,
-			"icon": "admin:menu",
-			"configEntryPoint": "repository.js",
-			"entryPoint": {
-				"name": "admin-index",
-				"path": {
-					"directory": "element/admin-index",
-					"nameFile": "admin-index",
-					"extension": "js"
-				}
-			},
-			"autoloadsWc": [
-				{
-					"name": "admin-icons",
-					"path": {
-						"directory": "element/admin-icons",
-						"nameFile": "admin-icons",
-						"extension": "js"
-					}
-				}
-			]
-		},
-		{
 			"title": "Dashboard",
 			"name": "dashboard",
 			"core": true,
+			"sort": 1,
 			"icon": "dashboard:menu",
 			"entryPoint": {
 				"name": "dashboard-index",
@@ -106,6 +82,7 @@
 			"title": "Monitor",
 			"name": "monitor",
 			"core": true,
+			"sort": 2,
 			"icon": "monitor:menu",
 			"entryPoint": {
 				"name": "monitor-index",
@@ -202,68 +179,10 @@
 			]
 		},
 		{
-			"title": "Playlist",
-			"name": "playlist",
-			"core": true,
-			"icon": "playlist:menu",
-			"configEntryPoint": "repository.js",
-			"entryPoint": {
-				"name": "playlist-index",
-				"path": {
-					"directory": "element/playlist-index",
-					"nameFile": "playlist-index",
-					"extension": "js"
-				}
-			},
-			"autoloads": [
-				{
-					"name": "PlaylistService",
-					"path": {
-						"directory": "src",
-						"nameFile": "PlaylistService",
-						"extension": "js"
-					}
-				},
-				{
-					"name": "PlaylistEntity",
-					"path": {
-						"directory": "src/entity",
-						"nameFile": "PlaylistEntity",
-						"extension": "js"
-					}
-				},
-				{
-					"name": "MongoPlaylistAdapter",
-					"path": {
-						"directory": "src/storage/adapter/mongo",
-						"nameFile": "MongoPlaylistAdapter",
-						"extension": "js"
-					}
-				},
-				{
-					"name": "DexiePlaylistAdapter",
-					"path": {
-						"directory": "src/storage/adapter/dexie",
-						"nameFile": "DexiePlaylistAdapter",
-						"extension": "js"
-					}
-				}
-			],
-			"autoloadsWc": [
-				{
-					"name": "playlist-icons",
-					"path": {
-						"directory": "element/playlist-icons",
-						"nameFile": "playlist-icons",
-						"extension": "js"
-					}
-				}
-			]
-		},
-		{
 			"title": "Resource",
 			"name": "resource",
 			"core": true,
+			"sort": 3,
 			"icon": "resource:menu",
 			"configEntryPoint": "repository.js",
 			"entryPoint": {
@@ -376,9 +295,70 @@
 			]
 		},
 		{
+			"title": "Playlist",
+			"name": "playlist",
+			"core": true,
+			"sort": 4,
+			"icon": "playlist:menu",
+			"configEntryPoint": "repository.js",
+			"entryPoint": {
+				"name": "playlist-index",
+				"path": {
+					"directory": "element/playlist-index",
+					"nameFile": "playlist-index",
+					"extension": "js"
+				}
+			},
+			"autoloads": [
+				{
+					"name": "PlaylistService",
+					"path": {
+						"directory": "src",
+						"nameFile": "PlaylistService",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "PlaylistEntity",
+					"path": {
+						"directory": "src/entity",
+						"nameFile": "PlaylistEntity",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "MongoPlaylistAdapter",
+					"path": {
+						"directory": "src/storage/adapter/mongo",
+						"nameFile": "MongoPlaylistAdapter",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "DexiePlaylistAdapter",
+					"path": {
+						"directory": "src/storage/adapter/dexie",
+						"nameFile": "DexiePlaylistAdapter",
+						"extension": "js"
+					}
+				}
+			],
+			"autoloadsWc": [
+				{
+					"name": "playlist-icons",
+					"path": {
+						"directory": "element/playlist-icons",
+						"nameFile": "playlist-icons",
+						"extension": "js"
+					}
+				}
+			]
+		},
+		{
 			"title": "Timeslot",
 			"name": "timeslot",
 			"core": true,
+			"sort": 5,
 			"icon": "timeslot:menu",
 			"configEntryPoint": "repository.js",
 			"entryPoint": {
@@ -518,6 +498,32 @@
 							"nameFile": "paper-timeslot-monitors-data",
 							"extension": "js"
 						}
+					}
+				}
+			]
+		},
+		{
+			"title": "Admin",
+			"name": "admin",
+			"core": true,
+			"icon": "admin:menu",
+			"sort": 6,
+			"configEntryPoint": "repository.js",
+			"entryPoint": {
+				"name": "admin-index",
+				"path": {
+					"directory": "element/admin-index",
+					"nameFile": "admin-index",
+					"extension": "js"
+				}
+			},
+			"autoloadsWc": [
+				{
+					"name": "admin-icons",
+					"path": {
+						"directory": "element/admin-icons",
+						"nameFile": "admin-icons",
+						"extension": "js"
 					}
 				}
 			]

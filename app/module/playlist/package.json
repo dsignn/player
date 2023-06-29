@@ -2,6 +2,7 @@
     "title": "Playlist",
     "name": "playlist",
     "core": true,   
+    "sort": 4,
     "icon": "playlist:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {

@@ -3,6 +3,7 @@
     "name": "admin",
     "core": true,
     "icon": "admin:menu",
+    "sort": 6,
     "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "admin-index",

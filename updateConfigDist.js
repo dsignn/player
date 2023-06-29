@@ -61,22 +61,27 @@ fs.readdir('./app/module', (err, files) => {
             globalConfig.module.push(JSON.parse(config.toString()));
         }
 
-        fs.writeFile('./app/config/config.json.dist', JSON.stringify(globalConfig, null, '\t'), err => {
-            if (err) {
-                console.error(err);
+        globalConfig.module.sort((first, second) => {
+            if( first.sort < second.sort) {
+                return -1
+            } else {
+                1
             }
+        });
 
+        fs.writeFile('./app/config/config.json.dist', JSON.stringify(globalConfig, null, '\t'), err => {
+            if (err) 
+                console.error(err);
+            
             console.log('config dist dei moduli aggiornati');
         });
 
 
         fs.writeFile('./app/config/config-development.json', JSON.stringify(globalConfig, null, '\t'), err => {
-            if (err) {
+            if (err) 
                 console.error(err);
-            }
-
+            
             console.log('config development dei moduli aggiornati');
         });
-        
     }
 })

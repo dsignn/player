@@ -2,6 +2,7 @@
     "title": "Resource",
     "name": "resource",
     "core": true,
+    "sort": 3,
     "icon": "resource:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {
