@@ -24,6 +24,7 @@ export const FpsMixin = (superClass) => {
          */
         setFps(fps) {
             this.fps = fps;
+            return this;
         }
     }   
 };

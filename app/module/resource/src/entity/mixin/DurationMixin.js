@@ -25,6 +25,7 @@ export const DurationMixin = (superClass) => {
          */
         setDuration(duration) {
             this.duration = duration;
+            return this;
         }
     }
        

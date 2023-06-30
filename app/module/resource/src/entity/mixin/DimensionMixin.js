@@ -24,6 +24,7 @@ export const DimensionMixin = (superClass) => {
          */
         setWidth(width) {
             this.dimension.width = width;
+            return this;
         }
 
         /**
@@ -38,6 +39,7 @@ export const DimensionMixin = (superClass) => {
          */
         setHeight(height) {
             this.dimension.height = height;
+            return this;
         }
     }   
 };
