@@ -21,6 +21,8 @@
             "entityServiceImage": "ImageEntity",
             "entityServiceVideo": "VideoEntity",
             "entityServiceAudio": "AudioEntity",
+            "metadataEntity": "MetadataEntity",
+            "multiMediaEntity": "MultiMediaEntity",
             "acl": {
                 "resource": 'resource'
             },

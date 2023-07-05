@@ -13,6 +13,8 @@ import {FileEntity} from "./src/entity/FileEntity";
 import {AudioEntity} from "./src/entity/AudioEntity";
 import {VideoEntity} from "./src/entity/VideoEntity";
 import {ImageEntity} from "./src/entity/ImageEntity";
+import {MetadataEntity} from "./src/entity/MetadataEntity";
+import {MultiMediaEntity} from "./src/entity/MultiMediaEntity";
 import {MongoResourceAdapter} from "./src/storage/adapter/mongo/MongoResourceAdapter";
 import {DexieResourceAdapter} from "./src/storage/adapter/dexie/DexieResourceAdapter";
 
@@ -117,6 +119,22 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig().entityServiceImage, 
                 new ImageEntity()
             );
+
+        this.getContainer()
+            .get('EntityContainerAggregate')
+            .set(
+                this._getModuleConfig().metadataEntity, 
+                new MetadataEntity()
+            );
+
+        this.getContainer()
+            .get('EntityContainerAggregate')
+            .set(
+                this._getModuleConfig().multiMediaEntity, 
+                new MultiMediaEntity()
+            );
+
+            
     }
 
     /**
@@ -442,10 +460,16 @@ export class Repository extends ContainerAware {
             ['video/mp4', 'video/webm']
         ).addHydratorMap(
             Repository.getWebComponentEntityHydrator(container),
-            ['application/zip', 'text/html', 'application/javascript']
+            ['application/zip', 'application/javascript']
         ).addHydratorMap(
             Repository.getAudioEntityHydrator(container),
-            ['audio/mp3']
+            ['audio/mp3', 'audio/ogg']
+        ).addHydratorMap(
+            Repository.getMultiMediaHydrator(container),
+            ['multi/media']
+        ).addHydratorMap(
+            Repository.getFileEntityHydrator(container),
+            ['text/html']
         );
 
         return hydrator;
@@ -466,13 +490,8 @@ export class Repository extends ContainerAware {
         pathHydratorStrategy.setHydrator(Repository.getPathHydrator(container));
 
         hydrator.addValueStrategy('path', pathHydratorStrategy)
-            //.addValueStrategy('id', new MongoIdStrategy())
-            //.addValueStrategy('_id', new MongoIdStrategy())
             
-
         hydrator
-            //.addPropertyStrategy('id', new MapProprertyStrategy('id', '_id'))
-            //.addPropertyStrategy('_id', new MapProprertyStrategy('id', '_id'))
             .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
 
         hydrator.enableHydrateProperty('id')
@@ -482,7 +501,8 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('type')
             .enableHydrateProperty('path')
             .enableHydrateProperty('tags')
-            .enableHydrateProperty('checksum');
+            .enableHydrateProperty('checksum')
+            .enableHydrateProperty('filters');
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('_id')
@@ -491,7 +511,8 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('type')
             .enableExtractProperty('path')
             .enableExtractProperty('tags')
-            .enableExtractProperty('checksum');
+            .enableExtractProperty('checksum')
+            .enableExtractProperty('filters');
 
         return hydrator;
     }
@@ -562,6 +583,41 @@ export class Repository extends ContainerAware {
         return hydrator;
     }
 
+    static getMultiMediaHydrator(container) {
+        let hydrator = new PropertyHydrator(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].multiMediaEntity
+            )
+        );
+
+        hydrator.addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
+
+        /**
+         * Resource strategy
+         */
+        let resourceStrategy = new HydratorStrategy();
+        resourceStrategy.setHydrator(Repository.getResourceReferenceHydrator(container));
+
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('_id')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('resources')
+            .enableHydrateProperty('type')
+            .enableHydrateProperty('tags')
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('_id')
+            .enableExtractProperty('name')
+            .enableExtractProperty('resources')
+            .enableExtractProperty('type')
+            .enableExtractProperty('tags');
+
+        hydrator.addValueStrategy('resources', resourceStrategy);
+
+        return hydrator;
+    }
+
     /**
      * @param container
      * @return AbstractHydrator
@@ -569,10 +625,17 @@ export class Repository extends ContainerAware {
     static getWebComponentEntityHydrator(container) {
 
         let hydrator = Repository.getFileEntityHydrator(container);
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].metadataEntity
+            )
+        );
 
-        hydrator.enableHydrateProperty('wcName');
+        hydrator.enableHydrateProperty('wcName')
+            .enableHydrateProperty('dataReferences');
 
-        hydrator.enableExtractProperty('wcName');
+        hydrator.enableExtractProperty('wcName')
+            .enableExtractProperty('dataReferences');
 
         return hydrator;
     }

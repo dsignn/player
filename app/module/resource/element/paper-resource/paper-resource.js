@@ -11,6 +11,8 @@ import '@polymer/paper-listbox/paper-listbox';
 import '@polymer/paper-menu-button/paper-menu-button';
 import {lang} from './language/language';
 
+import {MultiMediaEntity} from './../../src/entity/MultiMediaEntity';
+
 /**
  * @customElement
  * @polymer
@@ -58,6 +60,9 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                     @apply --layout-flex;
                 }
                 
+                #numberResource {
+                    display: none;
+                }
                           
                 #content {
                     @apply --layout-flex;
@@ -116,8 +121,11 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 <div id="rightSection">
                     <div id="content">
                         <div class="name">{{entity.name}}</div>
-                        <div class="size">
+                        <div id="size" class="size">
                             <div>{{size}} {{sizeLabel}} {{entity.type}}</div>
+                        </div>
+                        <div id="numberResource">
+                         {{localize('preview-resource')}} {{entity.resources.lenght}}
                         </div>
                         <template is="dom-if" if="{{entity.dimension.height}}">
                             <div class="dimension">{{entity.dimension.width}} px {{entity.dimension.height}} px</div>
@@ -208,7 +216,7 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
      * @param newValue
      * @private
      */
-     changeEntity(resourceStorage, storage, entity) {
+    changeEntity(resourceStorage, storage, entity) {
 
         if (!resourceStorage || !storage || !entity) {
             return;
@@ -220,6 +228,18 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
         }
         this._updateSize(entity.size);
         this._updateLeftImageHtml();
+        this.hideNumberResource((entity instanceof MultiMediaEntity))
+    }
+
+    hideNumberResource(hide) {
+
+        if (hide) {
+            this.$.size.style.display = 'none';
+            this.$.numberResource.style.display = 'none';
+        } else {
+            this.$.numberResource.style.display = 'block';
+            this.$.size.style.display = 'block';
+        }
     }
 
     /**

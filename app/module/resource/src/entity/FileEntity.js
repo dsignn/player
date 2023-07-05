@@ -1,9 +1,10 @@
 import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+import {FilterMixin} from './mixin/FilterMixin';
 
 /**
  * @class FileEntity
  */
-export class FileEntity extends EntityIdentifier {
+export class FileEntity extends FilterMixin(EntityIdentifier) {
 
     constructor() {
         super();

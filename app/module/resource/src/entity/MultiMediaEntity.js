@@ -10,10 +10,9 @@ export class MultiMediaEntity extends EntityIdentifier {
 
         this.resources = [];
 
-        Object.defineProperty(
-            this,
-            "typeLabel",
-            {writable: false, enumerable: true, configurable: true, value: 'multimedia'}
-        );
+        /**
+         * @type {Array}
+         */
+        this.tags = [];
     }
 }

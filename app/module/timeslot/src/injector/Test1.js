@@ -75,10 +75,7 @@ export class Test1 extends AbstractInjector {
                     return data.id === element.id;
                 }
             );
-
-            let obj = {};
-            obj[this.serviceNamespace] = dataReturn;
-            resolve(obj);
+            resolve(dataReturn);
         });
     }
 

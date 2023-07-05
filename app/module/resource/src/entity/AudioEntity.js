@@ -8,12 +8,5 @@ export class AudioEntity extends DurationMixin(FileEntity) {
 
     constructor() {
         super();
-
-
-        Object.defineProperty(
-            this,
-            "typeLabel",
-            {writable: false, enumerable: true, configurable: true, value: 'audio'}
-        );
     }
 }

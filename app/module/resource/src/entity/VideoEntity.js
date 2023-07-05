@@ -10,11 +10,5 @@ export class VideoEntity extends FpsMixin(DimensionMixin(DurationMixin(FileEntit
 
     constructor() {
         super();
-
-        Object.defineProperty(
-            this,
-            "typeLabel",
-            {writable: false, enumerable: true, configurable: true, value: 'video'}
-        );
     }
 }
