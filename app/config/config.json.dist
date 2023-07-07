@@ -219,6 +219,14 @@
 					}
 				},
 				{
+					"name": "ResourceSenderEntity",
+					"path": {
+						"directory": "src/entity",
+						"nameFile": "ResourceSenderEntity",
+						"extension": "js"
+					}
+				},
+				{
 					"name": "ImageEntity",
 					"path": {
 						"directory": "src/entity",

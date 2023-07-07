@@ -1,5 +1,5 @@
 /**
- * @class
+ * @class ResourceService
  */
 export class ResourceService {
 

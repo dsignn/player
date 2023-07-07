@@ -3,13 +3,18 @@
  * @class DurationMixin 
  */
 export const DurationMixin = (superClass) => {
-    
+
     return class extends superClass {
 
         constructor() {
             super();
-        
+
             this.duration = 0;
+
+            /**
+             * @type {Boolean}
+             */
+            this.disableAudio = false;
         }
 
         /**
@@ -28,5 +33,5 @@ export const DurationMixin = (superClass) => {
             return this;
         }
     }
-       
+
 };

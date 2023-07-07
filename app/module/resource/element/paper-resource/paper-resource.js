@@ -125,10 +125,10 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                             <div>{{size}} {{sizeLabel}} {{entity.type}}</div>
                         </div>
                         <div id="numberResource">
-                         {{localize('preview-resource')}} {{entity.resources.lenght}}
+                         {{localize('number-resource')}} {{entity.resources.length}}
                         </div>
                         <template is="dom-if" if="{{entity.dimension.height}}">
-                            <div class="dimension">{{entity.dimension.width}} px {{entity.dimension.height}} px</div>
+                            <div class="dimension">{{entity.dimension.width}} px {{entity.dimension.length}} px</div>
                         </template>
                         <template is="dom-if" if="{{entity.fps}}">
                             <div class="video">{{entity.fps}} fps</div>
@@ -235,9 +235,9 @@ class PaperResource extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
 
         if (hide) {
             this.$.size.style.display = 'none';
-            this.$.numberResource.style.display = 'none';
-        } else {
             this.$.numberResource.style.display = 'block';
+        } else {
+            this.$.numberResource.style.display = 'none';
             this.$.size.style.display = 'block';
         }
     }

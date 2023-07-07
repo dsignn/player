@@ -1,22 +1,23 @@
-import {config} from './config';
-import {ContainerAware} from "@dsign/library/src/container/ContainerAware.js";
-import {Store} from "@dsign/library/src/storage/adapter/dexie/Store";
-import {Storage} from "@dsign/library/src/storage/Storage";
-import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/MongoDb";
-import {AggregatePropertyHydrator, PropertyHydrator} from "@dsign/library/src/hydrator/index";
-import {HydratorStrategy, MongoIdStrategy} from "@dsign/library/src/hydrator/strategy/value/index";
-import {MapProprertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/index";
-import {MongoIdGenerator} from "@dsign/library/src/storage/util/MongoIdGenerator";
-import {PathNode} from "@dsign/library/src/path/index";
-import {ResourceService} from "./src/ResourceService";
-import {FileEntity} from "./src/entity/FileEntity";
-import {AudioEntity} from "./src/entity/AudioEntity";
-import {VideoEntity} from "./src/entity/VideoEntity";
-import {ImageEntity} from "./src/entity/ImageEntity";
-import {MetadataEntity} from "./src/entity/MetadataEntity";
-import {MultiMediaEntity} from "./src/entity/MultiMediaEntity";
-import {MongoResourceAdapter} from "./src/storage/adapter/mongo/MongoResourceAdapter";
-import {DexieResourceAdapter} from "./src/storage/adapter/dexie/DexieResourceAdapter";
+import { config } from './config';
+import { ContainerAware } from "@dsign/library/src/container/ContainerAware.js";
+import { Store } from "@dsign/library/src/storage/adapter/dexie/Store";
+import { Storage } from "@dsign/library/src/storage/Storage";
+import { MongoDb } from "@dsign/library/src/storage/adapter/mongo/MongoDb";
+import { AggregatePropertyHydrator, PropertyHydrator } from "@dsign/library/src/hydrator/index";
+import { HydratorStrategy, MongoIdStrategy } from "@dsign/library/src/hydrator/strategy/value/index";
+import { MapProprertyStrategy } from "@dsign/library/src/hydrator/strategy/proprerty/index";
+import { MongoIdGenerator } from "@dsign/library/src/storage/util/MongoIdGenerator";
+import { PathNode } from "@dsign/library/src/path/index";
+import { ResourceService } from "./src/ResourceService";
+import { FileEntity } from "./src/entity/FileEntity";
+import { AudioEntity } from "./src/entity/AudioEntity";
+import { VideoEntity } from "./src/entity/VideoEntity";
+import { ImageEntity } from "./src/entity/ImageEntity";
+import { MetadataEntity } from "./src/entity/MetadataEntity";
+import { MultiMediaEntity } from "./src/entity/MultiMediaEntity";
+import { MongoResourceAdapter } from "./src/storage/adapter/mongo/MongoResourceAdapter";
+import { DexieResourceAdapter } from "./src/storage/adapter/dexie/DexieResourceAdapter";
+import { ResourceSenderService } from "./src/ResourceSenderService";
 
 /**
  * @class Repository
@@ -66,13 +67,13 @@ export class Repository extends ContainerAware {
      * @returns Object
      */
     _getModuleConfig() {
-        return  this.getContainer().get('ModuleConfig')['resource']['resource'];
+        return this.getContainer().get('ModuleConfig')['resource']['resource'];
     }
 
     /**
      * Merge config
      */
-     initConfig() {
+    initConfig() {
         this.getContainer().set(
             'ModuleConfig',
             this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
@@ -95,46 +96,46 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().entityService, 
+                this._getModuleConfig().entityService,
                 new FileEntity()
             );
 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().entityServiceVideo, 
+                this._getModuleConfig().entityServiceVideo,
                 new VideoEntity()
             );
 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().entityServiceAudio, 
+                this._getModuleConfig().entityServiceAudio,
                 new AudioEntity()
             );
 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().entityServiceImage, 
+                this._getModuleConfig().entityServiceImage,
                 new ImageEntity()
             );
 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().metadataEntity, 
+                this._getModuleConfig().metadataEntity,
                 new MetadataEntity()
             );
 
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().multiMediaEntity, 
+                this._getModuleConfig().multiMediaEntity,
                 new MultiMediaEntity()
             );
 
-            
+
     }
 
     /**
@@ -147,15 +148,15 @@ export class Repository extends ContainerAware {
         );
 
         let store = new Store(
-            this._getModuleConfig().storage.adapter.dexie['collection'], 
-            [ 
-                "++id", 
-                "type", 
-                "size", 
-                "name", 
-                "*tags", 
+            this._getModuleConfig().storage.adapter.dexie['collection'],
+            [
+                "++id",
+                "type",
+                "size",
+                "name",
+                "*tags",
                 "dimension.height",
-                "dimension.width" 
+                "dimension.width"
             ]
         );
         dexieManager.addStore(store);
@@ -184,6 +185,16 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig().storage['name-service'],
                 storage
             );
+
+            this.getContainer().set(
+                'ResourceSenderService', 
+                new ResourceSenderService(
+                    storage,
+                    this.getContainer().get('Timer'),
+                    this.getContainer().get('SenderContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].timeslotSender),  
+                    this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
+            ));
+
         });
     }
 
@@ -254,7 +265,7 @@ export class Repository extends ContainerAware {
     }
 
     onPostUpsert(evt) {
-        
+
         this._checkUpdateMetadata(evt.data);
         if (evt.data.resourceToImport) {
             delete evt.data.resourceToImport;
@@ -294,7 +305,7 @@ export class Repository extends ContainerAware {
 
             let fileName = `${fileDirectory}${this.path.sep}${resourceEntity.id}.${resourceEntity.resourceToImport.path.split('.').pop()}`;
             this.fs.copyFileSync(resourceEntity.resourceToImport.path, fileName);
-            
+
             resourceEntity.path = new PathNode();
             resourceEntity.path.nameFile = resourceEntity.id;
             resourceEntity.path.extension = resourceEntity.resourceToImport.path.split('.').pop();
@@ -318,7 +329,7 @@ export class Repository extends ContainerAware {
         let hashSum = crypto.createHash('sha256');
         hashSum.update(fileBuffer);
 
-       return hashSum.digest('hex');
+        return hashSum.digest('hex');
     }
 
     /**
@@ -344,34 +355,32 @@ export class Repository extends ContainerAware {
     _updateMetadata(resourceEntity) {
         if (resourceEntity.resourceToImport && resourceEntity.resourceToImport.path) {
             let command = this.fluentFfmeg(resourceEntity.resourceToImport.path);
-            command.ffprobe(0, function(err, metadata) {
-                    if (err) {
-                        console.error(err);
-                        return;
-                    }
+            command.ffprobe(0, function (err, metadata) {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
 
-                    let storage = this.getContainer().get('StorageContainerAggregate').get(
-                        this._getModuleConfig().storage['name-service'],
-                    );
-                    let entity = storage.getHydrator().hydrate(resourceEntity);
+                let storage = this.getContainer().get('StorageContainerAggregate').get(
+                    this._getModuleConfig().storage['name-service'],
+                );
+                let entity = storage.getHydrator().hydrate(resourceEntity);
 
-                    entity.dimension = {
-                        height: metadata.streams[0].height,
-                        width: metadata.streams[0].width
-                    };
+                entity.dimension = {
+                    height: metadata.streams[0].height,
+                    width: metadata.streams[0].width
+                };
 
-                    if(entity.type.match('video.*')) {
+                if (entity.type.match('video.*')) {
 
-                        entity.fps = metadata.streams[0]['r_frame_rate'];
-                        entity.duration = metadata.format.duration;
-                        entity.aspectRation = metadata.streams[0]['sample_aspect_ratio'];
-                    }
+                    entity.fps = metadata.streams[0]['r_frame_rate'];
+                    entity.duration = metadata.format.duration;
+                    entity.aspectRation = metadata.streams[0]['sample_aspect_ratio'];
+                }
 
-                    console,console.log('FFF MMM CCCC');
-                    storage.update(entity);
-                 
+                storage.update(entity);
 
-                }.bind(this)
+            }.bind(this)
             );
         }
     }
@@ -394,7 +403,7 @@ export class Repository extends ContainerAware {
                 return;
             }
 
-            resourceEntity.path.nameFile = wcConfig.main.split('.').shift() ;
+            resourceEntity.path.nameFile = wcConfig.main.split('.').shift();
             resourceEntity.path.extension = wcConfig.main.split('.').pop();
             resourceEntity.type = 'application/javascript';
             resourceEntity.wcName = wcConfig.name;
@@ -490,7 +499,7 @@ export class Repository extends ContainerAware {
         pathHydratorStrategy.setHydrator(Repository.getPathHydrator(container));
 
         hydrator.addValueStrategy('path', pathHydratorStrategy)
-            
+
         hydrator
             .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
 
@@ -641,6 +650,31 @@ export class Repository extends ContainerAware {
     }
 
     /**
+   * @param container
+   * @return {PropertyHydrator}
+   */
+    static getMonitorContainerReferenceHydrator(container) {
+
+        let hydrator = new PropertyHydrator();
+        hydrator.setTemplateObjectHydration(
+            container.get('EntityContainerAggregate').get('EntityNestedReference')
+        );
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name')
+            .enableHydrateProperty('parentId');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name')
+            .enableExtractProperty('parentId');
+
+        return hydrator;
+    }
+
+    /**
      * @param container
      * @return {PropertyHydrator}
      */
@@ -666,7 +700,7 @@ export class Repository extends ContainerAware {
     static getResourceReferenceHydrator(container) {
 
         let hydrator = new PropertyHydrator();
-        hydrator.setTemplateObjectHydration( 
+        hydrator.setTemplateObjectHydration(
             container.get('EntityContainerAggregate').get('EntityReference')
         );
 
