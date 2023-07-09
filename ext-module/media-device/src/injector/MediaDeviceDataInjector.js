@@ -26,7 +26,7 @@ const MediaDeviceDataInjector = (async () => {
          * @param {Object} data
          * @return Promise
          */
-        getTimeslotData(data) {
+        getData(data) {
             return new Promise((resolve, reject) => {
 
                 this.storage.get(data.id).then(function(data) {

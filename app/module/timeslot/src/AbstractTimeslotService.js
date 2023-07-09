@@ -152,7 +152,7 @@ export class AbstractTimeslotService {
             if (this.dataInjectorManager.has(dataReferences[cont].name)) {
 
                 data[this.dataInjectorManager.get(dataReferences[cont].name).serviceNamespace] =
-                    await this.dataInjectorManager.get(dataReferences[cont].name).getTimeslotData(dataReferences[cont].data);
+                    await this.dataInjectorManager.get(dataReferences[cont].name).getData(dataReferences[cont].data);
 
                 promises.push(data);
             }

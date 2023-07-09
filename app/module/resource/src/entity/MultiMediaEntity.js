@@ -20,7 +20,6 @@ export class MultiMediaEntity extends MonitorPropertyAwareMixin(PlayerPropertyAw
         this.tags = [];
     }
 
-
     /**
      * @return {number}
      */
@@ -33,5 +32,12 @@ export class MultiMediaEntity extends MonitorPropertyAwareMixin(PlayerPropertyAw
             }
         }
         return this.duration;
+    }
+
+    /**
+     * @returns array
+     */
+    getResources() {
+        return this.resources;
     }
 }

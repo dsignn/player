@@ -41,6 +41,30 @@ export const MonitorPropertyAwareMixin = (superClass) => {
              * @type {String}
              */
             this.adjust = this.constructor.SIZE_CONTAIN;
+
+            /**
+             * @type {string}
+             */
+            this.rotation = this.constructor.ROTATION_NO;
+        }
+
+        /**
+         * @returns string
+         */
+        getContext() {
+            return this.context;
+        }
+
+        /**
+         * 
+         * @returns string
+         */
+        getRotation() {
+            return this.rotation;
+        }
+
+        getAdjust() {
+            return this.adjust;
         }
     }
 }

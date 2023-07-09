@@ -1,9 +1,10 @@
-import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+import { EntityIdentifier } from "@dsign/library/src/storage/entity/EntityIdentifier";
+import { BindMixin } from "./mixin/BindMixin";
 
 /**
  * @class ResourceSenderEntity
  */
- export class ResourceSenderEntity extends EntityIdentifier {
+ export class ResourceSenderEntity extends BindMixin(EntityIdentifier) {
 
     constructor() {
         super();

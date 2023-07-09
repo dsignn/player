@@ -3,10 +3,13 @@ import { ContainerAware } from "@dsign/library/src/container/ContainerAware.js";
 import { Store } from "@dsign/library/src/storage/adapter/dexie/Store";
 import { Storage } from "@dsign/library/src/storage/Storage";
 import { MongoDb } from "@dsign/library/src/storage/adapter/mongo/MongoDb";
+import { EventManager } from '@dsign/library/src/event/EventManager';
+import { EventManagerAggregate } from '@dsign/library/src/event/EventManagerAggregate';
 import { AggregatePropertyHydrator, PropertyHydrator } from "@dsign/library/src/hydrator/index";
 import { HydratorStrategy, MongoIdStrategy } from "@dsign/library/src/hydrator/strategy/value/index";
 import { MapProprertyStrategy } from "@dsign/library/src/hydrator/strategy/proprerty/index";
 import { MongoIdGenerator } from "@dsign/library/src/storage/util/MongoIdGenerator";
+import { ProxyEventManager } from '@dsign/library/src/event/electron/ProxyEventManager';
 import { PathNode } from "@dsign/library/src/path/index";
 import { ResourceService } from "./src/ResourceService";
 import { FileEntity } from "./src/entity/FileEntity";
@@ -58,6 +61,7 @@ export class Repository extends ContainerAware {
         this.initConfig();
         this.initAcl();
         this.initEntity();
+        this.initIpcService();
         this.initHydrator();
         this.initDexieStorage();
         this.initService();
@@ -134,8 +138,6 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig().multiMediaEntity,
                 new MultiMediaEntity()
             );
-
-
     }
 
     /**
@@ -186,15 +188,17 @@ export class Repository extends ContainerAware {
                 storage
             );
 
-            this.getContainer().set(
-                'ResourceSenderService', 
-                new ResourceSenderService(
-                    storage,
-                    this.getContainer().get('Timer'),
-                    this.getContainer().get('SenderContainerAggregate').get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].timeslotSender),  
-                    this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
-            ));
+            let resourceSenderService = new ResourceSenderService(
+                storage,
+                this.getContainer().get('Timer'),
+                this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
+            )
 
+            resourceSenderService.setEventManager(
+                this.getEventManagerAggregate()
+            )
+
+            this.getContainer().set('ResourceSenderService', resourceSenderService);
         });
     }
 
@@ -243,6 +247,41 @@ export class Repository extends ContainerAware {
                 loadStorage
             );
         }
+    }
+
+    initIpcService() {
+        this.getContainer().set(
+            this._getModuleConfig().ipcSender,
+            require('electron').ipcRenderer
+        );
+    }
+
+    /**
+     * Event manager for sender resource
+     */
+    getEventManagerAggregate() {
+
+        let eventManagerAggregate = new EventManagerAggregate();
+
+        /**
+           * Local event manager
+           */
+        let eventManager = new EventManager();
+
+        /**
+         * ipc event mangager
+         */
+        let proxyEventManager = new ProxyEventManager(
+            this.getContainer().get(
+                this._getModuleConfig().ipcSender
+            ));
+
+
+        eventManagerAggregate
+            .addEventManager(proxyEventManager)
+            .addEventManager(eventManager);
+
+        return eventManagerAggregate;
     }
 
     /**

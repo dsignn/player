@@ -57,6 +57,10 @@ export const PlayerPropertyAwareMixin = (superClass) => {
             return this;
         }
 
+        getStatus() {
+            return this.status;
+        }
+
         /**
          *
          */

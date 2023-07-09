@@ -19,7 +19,7 @@ export class AbstractInjector {
      * @param {Object} data
      * @return Promise
      */
-    getTimeslotData(data) {
+    getData(data) {
         throw 'method must be override';
     }
 

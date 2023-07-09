@@ -17,6 +17,7 @@
                     }
                 }
             }, 
+            "ipcSender": "IpcSender",
             "entityService": "FileEntity",
             "entityServiceImage": "ImageEntity",
             "entityServiceVideo": "VideoEntity",

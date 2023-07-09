@@ -19,5 +19,12 @@ export const DataReferenceAwareMixin = (superClass) => {
             return this.dataReferences.push(dataReference);
             return this;
         }
+
+        /**
+         * @returns array
+         */
+        getDataReferences() {
+            return this.dataReferences;
+        }
     }   
 };

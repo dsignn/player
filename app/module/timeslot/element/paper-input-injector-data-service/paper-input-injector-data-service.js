@@ -210,7 +210,7 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
         for (let cont = 0; newValue.length > cont; cont++) {
             
             this._injectorServices.get(newValue[cont].name)
-                .getTimeslotData(newValue[cont].data)
+                .getData(newValue[cont].data)
                 .then(function(data) {
 
                     let obj = {
@@ -313,7 +313,7 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
         );
 
         this._injectorServices.get(injector.name)
-            .getTimeslotData(injector.data)
+            .getData(injector.data)
             .then(function(data) {
 
                 let obj = {

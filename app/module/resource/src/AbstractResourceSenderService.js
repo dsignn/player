@@ -54,18 +54,15 @@ export class AbstractResourceSenderService extends EventManagerAware {
    /**
     * @param {Storage} resourceStorage
     * @param {Timer} timer
-    * @param {AbstractSender} sender
     * @param {ContainerAggregate} dataInjectorManager
     */
-   constructor(resourceStorage, timer, sender, dataInjectorManager) {
+   constructor(resourceStorage, timer, dataInjectorManager) {
 
       super();
 
       this.resourceStorage = resourceStorage;
 
       this.timer = timer;
-
-      this.sender = sender;
 
       this.dataInjectorManager = dataInjectorManager;
 
@@ -129,8 +126,8 @@ export class AbstractResourceSenderService extends EventManagerAware {
     * @private
     */
    async _extractDataFromDataReferences(dataReferences) {
+      
       let promises = [];
-      let property;
       let data;
 
       for (let cont = 0; dataReferences.length > cont; cont++) {
@@ -138,7 +135,7 @@ export class AbstractResourceSenderService extends EventManagerAware {
          if (this.dataInjectorManager.has(dataReferences[cont].name)) {
 
             data[this.dataInjectorManager.get(dataReferences[cont].name).serviceNamespace] =
-               await this.dataInjectorManager.get(dataReferences[cont].name).getTimeslotData(dataReferences[cont].data);
+               await this.dataInjectorManager.get(dataReferences[cont].name).getData(dataReferences[cont].data);
 
             promises.push(data);
          }
@@ -150,24 +147,33 @@ export class AbstractResourceSenderService extends EventManagerAware {
    /**
     *
     * @param resourceSenderEntity
-    * @return {Object|null}
+    * @return {array|null}
     * @private
     */
-   async _synchExtractData(resourceSenderEntity) {
+   async _extractData(resourceSenderEntity) {
      
-      let data = null;
+      let arrayData = null;
 
       switch(true) {
          case (resourceSenderEntity.resourceReference instanceof MultiMediaEntity):
-            console.log('MultiMediaEntity');
+            for (let cont = 0; resourceSenderEntity.resourceReference.getResources().length > cont; cont++) {
+               let resource = resourceSenderEntity.resourceReference.getResources()[cont];
+
+               if ((resource instanceof MetadataEntity) && resource.getDataReferences().length > 0) {
+                  if (arrayData === null) {
+                     arrayData = [];
+                  }
+                  arrayData = arrayData.concat(await this._extractDataFromDataReferences(resource.getDataReferences()));
+               }
+            }
+          
             break;
-         case (resourceSenderEntity.resourceReference instanceof MetadataEntity):
-            console.log('MetadataEntity');
+         case (resourceSenderEntity.resourceReference instanceof MetadataEntity && resourceSenderEntity.resourceReference.getDataReferences().length > 0):
+            arrayData = await this._extractDataFromDataReferences(resourceSenderEntity.resourceReference.getDataReferences());
             break;
 
       }
 
-      return data;
+      return arrayData;
    }
-
 }

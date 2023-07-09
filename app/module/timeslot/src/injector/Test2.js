@@ -70,7 +70,7 @@ export class Test2 extends AbstractInjector {
         });
     }
 
-    getTimeslotData(data) {
+    getData(data) {
         return new Promise((resolve, reject) => {
             let dataReturn = this.mockData.find((element) => {
                     return data.id === element.id;

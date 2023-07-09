@@ -7,12 +7,11 @@ export class ResourceSenderService extends AbstractResourceSenderService {
     /**
      * @param {Storage} resourceStorage
      * @param {Timer} timer
-     * @param {AbstractSender} sender
      * @param {ContainerAggregate} dataInjectorManager
      */
-    constructor(resourceStorage, timer, sender, dataInjectorManager) {
+    constructor(resourceStorage, timer, dataInjectorManager) {
 
-        super(resourceStorage, timer, sender, dataInjectorManager);
+        super(resourceStorage, timer, dataInjectorManager);
 
         /**
          * List running resources
@@ -45,12 +44,16 @@ export class ResourceSenderService extends AbstractResourceSenderService {
     _scheduleRunningResources() {
         for (let property in this.runningResources) {
 
+            let resource = this.runningResources[property].resourceReference;
+
             switch (true) {
-                case this.runningResources[property].rotation === FileEntity.ROTATION_LOOP && this.runningResources[property].getDuration() <= this.runningResources[property].getCurrentTime():
+                case resource.getDuration() < 0:
+                    break;
+                case resource.getRotation() === FileEntity.ROTATION_LOOP && resource.getDuration() <= resource.getCurrentTime():
                     this.runningResources[property].reset()
                     this.play(this.runningResources[property]);
                     break;
-                case this.runningResources[property].getDuration() <= this.runningResources[property].getCurrentTime():
+                case resource.getDuration() <= resource.getCurrentTime():
                     this.stop(this.runningResources[property]);
                     break;
             }
@@ -64,9 +67,11 @@ export class ResourceSenderService extends AbstractResourceSenderService {
 
         for (let property in this.runningResources) {
 
-            if (this.runningResources[property].rotation !== FileEntity.ROTATION_INFINITY) {
-                this.runningResources[property].setCurrentTime(
-                    parseFloat(this.runningResources[property].getCurrentTime() + 0.1).toFixed(1)
+            let resource = this.runningResources[property].resourceReference;
+
+            if (resource.getRotation() !== FileEntity.ROTATION_INFINITY || resource.getDuration() > 0) {
+                resource.setCurrentTime(
+                    parseFloat(resource.getCurrentTime() + 0.1).toFixed(1)
                 );
             }
 
@@ -92,12 +97,24 @@ export class ResourceSenderService extends AbstractResourceSenderService {
     }
 
     /**
-     * The resourceReference is the resource entity
+     * The entity.resourceReference is the "ResourceEntity"
      * 
      * @param {ResourceSenderEntity} entity 
      */
     _setRunningResource(entity) {
-        this.runningResources[`${entity.monitorContainerReference.id}-${entity.resourceReference.context}`];
+        this.runningResources[`${entity.monitorContainerReference.id}-${entity.resourceReference.context}`] = entity;
+    }
+
+    /**
+     * The entity.resourceReference is the "ResourceEntity"
+     * 
+     * @param {ResourceSenderEntity} entity 
+     */
+    _removeRunningResource(entity) {
+        let context = [`${entity.monitorContainerReference.id}-${entity.resourceReference.context}`];
+        if (this.runningResources[context] && this.runningResources[context].resourceReference.id === entity.resourceReference.id) {
+            delete this.runningResources[context];
+        }
     }
 
     /**
@@ -106,18 +123,33 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      * @param {ResourceSenderEntity} entity 
      */
     _getRunningResource(entity) {
-        return  this.runningResources[`${entity.monitorContainerReference.id}-${entity.resourceReference.context}`];
+        return this.runningResources[`${entity.monitorContainerReference.id}-${entity.resourceReference.context}`];
+    }
+
+    /**
+     * @param {array} binds 
+     * @param {string} method 
+     */
+    _scheduleBinds(binds, method) {
+        for (let cont = 0; binds.length > cont; cont++) {
+            console.log('BINDSSSSSSSSSSSS', method);
+            this[method](binds[cont])
+                .catch(
+                    (err) => {
+                        console.error('Error bind timeslot service', err)
+                    });
+        }
     }
 
     /**
      * @param {ResourceSenderEntity} entity
      * @return {Promise}
      */
-     async play(entity) {
+    async play(entity) {
 
         // TODO Add xternal option?
         let resource = await this._getResourceFromReference(entity);
-        if (resource) {
+        if (!resource) {
             // TODO warning
             return;
         }
@@ -125,18 +157,116 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         entity.resourceReference = resource;
         let runningResource = this._getRunningResource(entity);
         if (runningResource && runningResource.resourceReference.id !== entity.resourceReference.id) {
-            // TODO PAUSE RESOURCE
+            this.pause(runningResource);
         }
-        
+
         this._setRunningResource(entity);
         entity.resourceReference.status = FileEntity.RUNNING;
         if (entity.resourceReference.getDuration() > 0) {
             entity.resourceReference.setCurrentTime(0);
         }
-
-        console.log(entity);
-        //let data = await this._synchExtractData(entity);
+        /**
+         * Recover metadata
+         */
+        let data = await this._extractData(entity);
+        /**
+         * Binds
+         */
+        if (entity.getBinds().length > 0) {
+            this._scheduleBinds(entity.getBinds(), 'play');
+        }
 
         this.getEventManager().emit(ResourceSenderService.PLAY, entity);
+        //TODO save storage
+    }
+
+    /**
+     * @param {ResourceSenderEntity} entity
+     * @return {Promise}
+     */
+    async pause(entity) {
+
+        // TODO Add xternal option?
+        let resource = await this._getResourceFromReference(entity);
+        if (!resource) {
+            // TODO warning
+            return;
+        }
+
+        entity.resourceReference = resource;
+        this._removeRunningResource(entity);
+        entity.resourceReference.status = FileEntity.IDLE;
+
+        /**
+         * Binds
+         */
+        if (entity.getBinds().length > 0) {
+            this._scheduleBinds(entity.getBinds(), 'pause');
+        }
+
+        this.getEventManager().emit(ResourceSenderService.PAUSE, entity);
+        //TODO save storage
+    }
+
+    /**
+     * @param {ResourceSenderEntity} entity
+     * @return {Promise}
+     */
+    async resume(entity) {
+
+        // TODO Add xternal option?
+        let resource = await this._getResourceFromReference(entity);
+        if (!resource) {
+            // TODO warning
+            return;
+        }
+
+        entity.resourceReference = resource;
+        let runningResource = this._getRunningResource(entity);
+        if (runningResource && runningResource.resourceReference.id !== entity.resourceReference.id) {
+            this.pause(runningResource);
+        }
+        this._setRunningResource(entity);
+        entity.resourceReference.status = FileEntity.RUNNING;
+        /**
+         * Recover metadata
+         */
+        let data = await this._extractData(entity);
+
+        /**
+         * Binds
+         */
+        if (entity.getBinds().length > 0) {
+            this._scheduleBinds(entity.getBinds(), 'resume');
+        }
+
+        this.getEventManager().emit(ResourceSenderService.RESUME, entity);
+    }
+
+    /**
+     * @param {ResourceSenderEntity} entity
+     * @return {Promise}
+     */
+    async resume(entity) {
+
+        // TODO Add xternal option?
+        let resource = await this._getResourceFromReference(entity);
+        if (!resource) {
+            // TODO warning
+            return;
+        }
+
+        entity.resourceReference = resource;
+        this._removeRunningResource(entity);
+        entity.resourceReference.status = FileEntity.IDLE;
+
+        /**
+         * Binds
+         */
+        if (entity.getBinds().length > 0) {
+            this._scheduleBinds(entity.getBinds(), 'resume');
+        }
+
+        this.getEventManager().emit(ResourceSenderService.STOP, entity);
     }
 }
