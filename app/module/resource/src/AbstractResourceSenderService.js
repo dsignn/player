@@ -4,6 +4,13 @@ import { FileEntity } from "./entity/FileEntity";
 import { MultiMediaEntity } from "./entity/MultiMediaEntity";
 import { MetadataEntity } from "./entity/MetadataEntity";
 
+(() => {
+   window.k =  new ResourceSenderEntity();
+   window.k.monitorContainerReference.id = "63ef5d3cd4b0cfc103a6ce05";
+   window.k.resourceReference.id = '648f5d5523e19f1a44548e05';
+
+})()
+
 /**
  * @class AbstractResourceSenderService
  */
@@ -14,28 +21,28 @@ export class AbstractResourceSenderService extends EventManagerAware {
     *
     * @return {string}
     */
-   static get PLAY() { return 'play-resource'; }
+   static get PLAY() { return 'play-timeslot'; }
 
    /**
     * Name of the "message" send from sender when stop resource
     *
     * @return {string}
     */
-   static get STOP() { return 'stop-resource'; }
+   static get STOP() { return 'stop-timeslot'; }
 
    /**
     * Name of the "message" send from sender when pause resource
     *
     * @return {string}
     */
-   static get PAUSE() { return 'pause-resource'; }
+   static get PAUSE() { return 'pause-timeslot'; }
 
    /**
     * Name of the "message" send from sender when resume resource
     *
     * @return {string}
     */
-   static get RESUME() { return 'resume-resource'; }
+   static get RESUME() { return 'resume-timeslot'; }
 
    /**
     * Name of the "message" send from sender when resume resource

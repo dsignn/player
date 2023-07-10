@@ -75,7 +75,8 @@ export class ResourceSenderService extends AbstractResourceSenderService {
                 );
             }
 
-            this.getEventManager().emit(ResourceSenderService.UPDATE_TIME, this.runningResources[property]);
+            console.log(resource.name, resource.type, resource.getCurrentTime(), resource.getDuration());
+            //this.getEventManager().emit(ResourceSenderService.UPDATE_TIME, this.runningResources[property]);
         }
     }
 
@@ -176,7 +177,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'play');
         }
 
-        this.getEventManager().emit(ResourceSenderService.PLAY, entity);
+        this.emitResourceEvt(ResourceSenderService.PLAY, entity);
         //TODO save storage
     }
 
@@ -204,7 +205,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'pause');
         }
 
-        this.getEventManager().emit(ResourceSenderService.PAUSE, entity);
+        this.emitResourceEvt(ResourceSenderService.PAUSE, entity);
         //TODO save storage
     }
 
@@ -240,14 +241,14 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'resume');
         }
 
-        this.getEventManager().emit(ResourceSenderService.RESUME, entity);
+        this.emitResourceEvt(ResourceSenderService.RESUME, entity);
     }
 
     /**
      * @param {ResourceSenderEntity} entity
      * @return {Promise}
      */
-    async resume(entity) {
+    async stop(entity) {
 
         // TODO Add xternal option?
         let resource = await this._getResourceFromReference(entity);
@@ -264,9 +265,27 @@ export class ResourceSenderService extends AbstractResourceSenderService {
          * Binds
          */
         if (entity.getBinds().length > 0) {
-            this._scheduleBinds(entity.getBinds(), 'resume');
+            this._scheduleBinds(entity.getBinds(), 'stop');
         }
 
-        this.getEventManager().emit(ResourceSenderService.STOP, entity);
+        console.log('ResourceSenderService', ResourceSenderService.STOP);
+        this.emitResourceEvt(ResourceSenderService.STOP, entity);
+    }
+
+    /**
+     * @param {*} nameEvt 
+     * @param {*} resourceSenderEntity 
+     */
+    emitResourceEvt(nameEvt, resourceSenderEntity, data) {
+
+        let evtData = {
+            resource: resourceSenderEntity
+        }
+
+        if(data) {
+            evtData.data = data;
+        }
+
+        this.getEventManager().emit(nameEvt, evtData);
     }
 }

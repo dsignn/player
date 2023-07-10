@@ -89,6 +89,14 @@
             }
         },
         {
+            "name": "paper-player-resource",
+            "path": {
+                "directory": "element/paper-player-resource",
+                "nameFile": "paper-player-resource",
+                "extension": "js"
+            }
+        },
+        {
             "name": "paper-monitor-viewer",
             "path": {
                 "directory": "element/paper-monitor-viewer",

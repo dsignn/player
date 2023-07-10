@@ -18,6 +18,7 @@ import { VideoEntity } from "./src/entity/VideoEntity";
 import { ImageEntity } from "./src/entity/ImageEntity";
 import { MetadataEntity } from "./src/entity/MetadataEntity";
 import { MultiMediaEntity } from "./src/entity/MultiMediaEntity";
+import { ResourceSenderEntity } from "./src/entity/ResourceSenderEntity";
 import { MongoResourceAdapter } from "./src/storage/adapter/mongo/MongoResourceAdapter";
 import { DexieResourceAdapter } from "./src/storage/adapter/dexie/DexieResourceAdapter";
 import { ResourceSenderService } from "./src/ResourceSenderService";
@@ -137,6 +138,13 @@ export class Repository extends ContainerAware {
             .set(
                 this._getModuleConfig().multiMediaEntity,
                 new MultiMediaEntity()
+            );
+
+        this.getContainer()
+            .get('EntityContainerAggregate')
+            .set(
+                this._getModuleConfig().resourceSenderEntity,
+                new ResourceSenderEntity()
             );
     }
 
@@ -491,6 +499,36 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig().hydrator['name-storage-service-resource'],
                 Repository.getResourceHydrator(this.getContainer())
             );
+
+        this.getContainer()
+            .get('HydratorContainerAggregate')
+            .set(
+                this._getModuleConfig().hydrator['resource-monitor-service'],
+                Repository.getResourceSenderEntityMonitorHydrator(this.getContainer())
+            );
+
+    }
+
+    static getResourceSenderEntityMonitorHydrator(container) {
+
+        let hydrator = new PropertyHydrator(
+            container.get('EntityContainerAggregate').get(
+                container.get('ModuleConfig')['resource']['resource'].resourceSenderEntity
+            )
+        );
+
+        hydrator.enableHydrateProperty('monitorContainerReference')
+            .enableHydrateProperty('resourceReference');
+
+        hydrator.enableExtractProperty('monitorContainerReference')
+            .enableExtractProperty('resourceReference');
+
+        let resourceStrategyHydrator = new HydratorStrategy();
+        resourceStrategyHydrator.setHydrator(Repository.getResourceHydrator(container));
+
+        hydrator.addValueStrategy('resourceReference', resourceStrategyHydrator);
+
+        return hydrator;
     }
 
     /**

@@ -24,6 +24,7 @@
             "entityServiceAudio": "AudioEntity",
             "metadataEntity": "MetadataEntity",
             "multiMediaEntity": "MultiMediaEntity",
+            "resourceSenderEntity": "ResourceSenderEntity",
             "acl": {
                 "resource": 'resource'
             },
@@ -33,6 +34,7 @@
                 "name-storage-service-video": "VideoEntityHydrator",
                 "name-storage-service-audio": "AudioEntityHydrator",
                 "name-storage-service-resource": "ResourceEntityHydrator",
+                "resource-monitor-service": "ResourceMonitorHydrator",
             }
         }
     }
