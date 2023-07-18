@@ -1,0 +1,32 @@
+export const lang = {
+  "it": {
+    "modify": "Modifica",
+    "delete" : "Elimina",
+    "play-timeslot" : "Play",
+    "stop-timeslot" : "Stop",
+    "pause-timeslot" : "Pausa",
+    "rotation-no" : "Nessuna rotazione",
+    "rotation-loop" : "Rotazione infinita",
+    "rotation-infinity" : "Rotazione fissa",
+    "overlay" : "Livello overlay",
+    "standard" : "Livello standard",
+    "idle": "fermo",
+    "pause": "pausa",
+    "running": "attivo",
+  },
+  "en": {
+    "modify": "Modify",
+    "delete" : "Delete",
+    "play-timeslot" : "Play",
+    "stop-timeslot" : "Stop",
+    "pause-timeslot" : "Pause",
+    "rotation-no" : "Nessuna rotazione",
+    "rotation-loop" : "Rotazione infinita",
+    "rotation-infinity" : "Rotazione fissa",
+    "overlay" : "send-overlay",
+    "standard" : "send-standard",
+    "idle": "idle", 
+    "pause": "pause",
+    "running": "running",
+  }
+};

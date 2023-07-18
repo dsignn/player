@@ -17,6 +17,17 @@
                     }
                 }
             }, 
+            "storage-resource-monitor": {
+                "name-service": "ResourceSenderStorage",
+                "adapter": {
+                    "dexie": {
+                        "collection": "resource-monitor",
+                        "connection-service": "DexieManager"
+                    }
+                }
+            },
+            "resourceSenderService": "ResourceSenderService",
+            "resourceService": "ResourceService",
             "ipcSender": "IpcSender",
             "entityService": "FileEntity",
             "entityServiceImage": "ImageEntity",
@@ -35,6 +46,7 @@
                 "name-storage-service-audio": "AudioEntityHydrator",
                 "name-storage-service-resource": "ResourceEntityHydrator",
                 "resource-monitor-service": "ResourceMonitorHydrator",
+                "resource-monitor-storage-service": "ResourceMonitorStorageHydrator",
             }
         }
     }
