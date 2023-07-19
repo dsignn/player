@@ -13,4 +13,16 @@ import { BindMixin } from "./mixin/BindMixin";
 
         this.resourceReference = {};
     }
+
+    /**
+     * @returns string
+     */
+    getStatus() {
+        let status = null;
+        if (this.resourceReference) {
+            status = this.resourceReference.status;
+        }
+        
+        return status;
+    }
  }

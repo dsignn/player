@@ -3,6 +3,7 @@ import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixi
 import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
 import { StorageEntityMixin } from "@dsign/polymer-mixin/storage/entity-mixin";
 import { DurationMixin } from "../mixin/duration-mixin";
+import { ActionsMixin } from "../mixin/actions-mixin";
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/paper-slider/paper-slider';
@@ -14,7 +15,7 @@ import { ResourceSenderService } from '../../src/ResourceSenderService';
  * @customElement
  * @polymer
  */
-class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
+class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))))) {
 
     static get template() {
         return html`
@@ -200,7 +201,7 @@ class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixi
                             <div class="row center">
                                 <div class="titleEntity">{{entity.name}}</div>
                                 <div id="crud" hidden$="[[removeCrud]]">
-                                    <paper-menu-button id="crudButton" ignore-select horizontal-align="right">
+                                    <paper-menu-button id="crudButton" ignore-select horizontal-align="right" disabled="{{hideCrud}}">
                                         <paper-icon-button icon="v-menu" slot="dropdown-trigger" alt="multi menu"></paper-icon-button>
                                         <paper-listbox slot="dropdown-content" multi>
                                             <paper-item on-click="_update">{{localize('modify')}}</paper-item>
@@ -216,7 +217,7 @@ class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixi
                             <div id="time" class="row center h-18">
                                 <div id="current-duration">{{currentHour}}:{{currentMinute}}:{{currentSecond}}:{{currentSecondTenths}}</div>
                                 <div class="divider">|</div>
-                                <div id="duration">{{hour}}:{{minute}}:{{second}}</div>
+                                <div id="duration">{{hour}}:{{minute}}:{{second}}:{{secondTenths}}</div>
                             </div>  
                         </div>
                         <paper-slider id="slider" pin on-mousedown="sliderDown" on-mouseup="sliderUp" on-mouseout="sliderOut" disabled></paper-slider>
@@ -316,10 +317,28 @@ class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixi
         this.resources = lang;
         this.addEventListener('update-resource', (evt) => {
             this.updateDurationEntity();
-            this.updateStatusClass();
+            this.updateSlider();
+            this.updateStatusHtml();
             this.calcTimeDuration();
-            this.updateIcons();
+            this.calcCurrentTime();
+            this.updateContextIcons();
+            this.updateActionIcons();
         });
+    }
+
+    updateEntityCurrentTimeFromService(evt) {
+        if (this.entity && evt.data.id !== this.entity.id) {
+            return;
+        }
+
+        super.updateEntityCurrentTimeFromService(evt);
+
+        if (this._hasDuration()) {
+            this.$.slider.disabled = false;
+            if (!this.excludeSlider) {
+                this.$.slider.value = this.entity.resourceReference.getCurrentTime();
+            }
+        }
     }
 
     /**
@@ -330,22 +349,11 @@ class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixi
             return;
         }
 
-        service.getEventManager().on(
-            ResourceSenderService.UPDATE_TIME,
-            (data) => {
-                console.log('paper-resource-monitor', evt);
-                /*
-                                if (this.entity.getId() === data.data.getId()) {
-                                    this.entity.currentTime = data.data.currentTime;
-                                    this.currentTime = data.data.currentTime;
-                                    
-                                    if (!this.excludeSlider) {
-                                        this.$.slider.value = this.currentTime;
-                                    }
-                                    this.notifyPath('currentTime')
-                                }
-                                */
-            });
+        service.getEventManager().on(ResourceSenderService.UPDATE_TIME, this.updateEntityCurrentTimeFromService.bind(this));
+        service.getEventManager().on(ResourceSenderService.PLAY, this.updateEntityFromService.bind(this));
+        service.getEventManager().on(ResourceSenderService.STOP, this.updateEntityFromService.bind(this));
+        service.getEventManager().on(ResourceSenderService.PAUSE, this.updateEntityFromService.bind(this));
+        service.getEventManager().on(ResourceSenderService.RESUME, this.updateEntityFromService.bind(this));
     }
 
     /**
@@ -435,34 +443,77 @@ class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixi
     updateDurationEntity() {
         if (this._hasDuration()) {
             this.$.pause.style.display = 'inline-block';
-            this.$.slider.style.display = 'flex';
             this.$.time.style.display = 'flex';
             this.$.rotationIcon.style.display = 'flex';
-
         } else {
             this.$.pause.style.display = 'none';
-            this.$.slider.style.display = 'none';
             this.$.time.style.display = 'none';
             this.$.rotationIcon.style.display = 'none';
         }
     }
 
     /**
-     * Update style status
+     * Update slider
      */
-    updateStatusClass() {
-        if (!this.entity.resourceReference) {
-            return;
-        }
+    updateSlider() {
+        if (this._hasDuration()) {
 
-        this.$.status.className = '';
-        this.$.status.classList.add(this.entity.resourceReference.status);
+            this.$.slider.style.display = 'flex';
+            this.$.slider.max = this.entity.resourceReference.getDuration();
+            if (!this.excludeSlider) {
+                this.$.slider.value = this.entity.resourceReference.getCurrentTime();
+            }
+            this.$.slider.disabled = this.entity.getStatus() === VideoEntity.PLAY ? false : true;
+
+        } else {
+           
+            this.$.slider.style.display = 'none';
+            this.$.slider.disabled = true;
+        }
+    }
+
+    /**
+     * @param {Event} evt
+     */
+    sliderUp(evt) {
+      
+        setTimeout(
+            () => {
+                if (this.entity.getStatus() === VideoEntity.RUNNING ) {
+                    this.dispatchEvent(new CustomEvent(
+                        'timeupdate',
+                        {
+                            detail:  {
+                                resource: this.entity,
+                                time: this.$.slider.value
+                            }
+                        }
+                    ))
+                }
+                this._setExcludeSlider(false);
+            },
+            200
+        )
+    }
+
+    /**
+     * @param {Event} evt
+     */
+    sliderDown(evt) {
+        this._setExcludeSlider(true);
+    }
+
+    /**
+     * @param {Event} evt
+     */
+     sliderOut(evt) {
+        this._setExcludeSlider(false);
     }
 
     /**
      * @private
      */
-    updateIcons() {
+    updateContextIcons() {
         if (!this.entity.resourceReference) {
             return;
         }
@@ -507,34 +558,6 @@ class PaperResourceMonitor extends DurationMixin(StorageEntityMixin(LocalizeMixi
         this.entity.resourceReference.context = this.entity.resourceReference.context === VideoEntity.CONTEXT_STANDARD || !this.entity.resourceReference.context ? VideoEntity.CONTEXT_OVERLAY : VideoEntity.CONTEXT_STANDARD;
         this.dispatchEvent(new CustomEvent('change-context', { detail: this.entity }));
         this.updateIcons();
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _play(evt) {
-        if (this.entity.resourceReference && this.entity.resourceReference.status === 'idle') {
-            this.dispatchEvent(new CustomEvent('play', { detail: this.entity }));
-        } else {
-            this.dispatchEvent(new CustomEvent('resume', { detail: this.entity }));
-        }
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _stop(evt) {
-        this.dispatchEvent(new CustomEvent('stop', { detail: this.entity }));
-    }
-
-    /**
-     * @param evt
-     * @private
-     */
-    _pause(evt) {
-        this.dispatchEvent(new CustomEvent('pause', { detail: this.entity }));
     }
 }
 

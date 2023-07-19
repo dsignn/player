@@ -21,11 +21,6 @@ export const PlayerPropertyAwareMixin = (superClass) => {
             /**
              * @type {integer}
              */
-            this.duration = -1;
-
-            /**
-             * @type {integer}
-             */
             this.currentTime = 0;
 
             /**

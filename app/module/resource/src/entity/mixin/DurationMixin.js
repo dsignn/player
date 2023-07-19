@@ -9,7 +9,7 @@ export const DurationMixin = (superClass) => {
         constructor() {
             super();
 
-            this.duration = 0;
+            this.duration = -1;
 
             /**
              * @type {Boolean}
@@ -21,7 +21,7 @@ export const DurationMixin = (superClass) => {
          * @returns {Number}
          */
         getDuration() {
-            return this.duration;
+            return  Math.round(this.duration * 10) / 10;
         }
 
         /**

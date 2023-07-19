@@ -9,6 +9,12 @@ export const DurationMixin = (superClass) => {
     return class extends superClass {
         static get properties() {
             return {
+
+                secondTenths: {
+                    readOnly: true,
+                    value: 0
+                },
+
                 second: {
                     readOnly: true,
                     value: 0
@@ -48,7 +54,6 @@ export const DurationMixin = (superClass) => {
             };
         }
 
-
         /**
          * @return {Array}
          */
@@ -60,6 +65,15 @@ export const DurationMixin = (superClass) => {
             ];
         }
 
+        updateEntityCurrentTimeFromService(evt) {
+            if (this.entity && evt.data.id !== this.entity.id) {
+                return;
+             }
+ 
+             this.entity = evt.data;
+             this.calcCurrentTime();
+        }
+        
         /**
          * Calc duration
          */
@@ -71,7 +85,21 @@ export const DurationMixin = (superClass) => {
             this._setHour(~~(this.entity.resourceReference.getDuration() / 3600));
             this._setMinute(~~((this.entity.resourceReference.getDuration() % 3600) / 60));
             this._setSecond(~~this.entity.resourceReference.getDuration() % 60);
-            console.log('duration', this.hour, this.minute, this.second)
+
+            let splitter =(this.entity.resourceReference.getDuration() + "").split(".");
+            this._setSecondTenths(parseInt(splitter[1] ? splitter[1].substring(0,1) : 0));
+        }
+
+        /**
+         * Calc current time
+         */
+        calcCurrentTime() {
+            this._setCurrentHour(~~(this.entity.resourceReference.getCurrentTime() / 3600));
+            this._setCurrentMinute(~~((this.entity.resourceReference.getCurrentTime() % 3600) / 60));
+            this._setCurrentSecond(~~this.entity.resourceReference.getCurrentTime() % 60);
+
+            let splitter =(this.entity.resourceReference.getCurrentTime() + "").split(".");
+            this._setCurrentSecondTenths(parseInt(splitter[1] ? splitter[1] : 0));
         }
 
     }

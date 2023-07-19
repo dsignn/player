@@ -195,18 +195,6 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig().storage['name-service'],
                 storage
             );
-
-            let resourceSenderService = new ResourceSenderService(
-                storage,
-                this.getContainer().get('Timer'),
-                this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
-            )
-
-            resourceSenderService.setEventManager(
-                this.getEventManagerAggregate()
-            )
-
-            this.getContainer().set( this._getModuleConfig().resourceSenderService, resourceSenderService);
         });
     }
 
@@ -253,6 +241,40 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig()['storage-resource-monitor']['name-service'],
                 storage
             );
+
+            let resourceSenderService = new ResourceSenderService(
+                this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service']),
+                storage,
+                this.getContainer().get('Timer'),
+                this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
+            )
+
+            resourceSenderService.setEventManager(
+                this.getEventManagerAggregate()
+            )
+
+            resourceSenderService.getEventManager().on(
+                ResourceSenderService.PLAY,
+                resourceSenderService._updateResourceSender.bind(resourceSenderService)
+            );
+
+            resourceSenderService.getEventManager().on(
+                ResourceSenderService.RESUME,
+                resourceSenderService._updateResourceSender.bind(resourceSenderService)
+            );
+
+            resourceSenderService.getEventManager().on(
+                ResourceSenderService.PAUSE,
+                resourceSenderService._updateResourceSender.bind(resourceSenderService)
+            );
+
+            resourceSenderService.getEventManager().on(
+                ResourceSenderService.STOP,
+                resourceSenderService._updateResourceSender.bind(resourceSenderService)
+            );
+
+                
+            this.getContainer().set( this._getModuleConfig().resourceSenderService, resourceSenderService);
         });
     }
 

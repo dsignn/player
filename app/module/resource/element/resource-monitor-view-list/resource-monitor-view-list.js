@@ -78,7 +78,8 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
                         on-play="play"
                         on-resume="resume"
                         on-stop="stop"
-                        on-pause="pause">
+                        on-pause="pause"
+                        on-timeupdate="updateTime">
                     </paper-resource-monitor>
                 </template>
             </div>
@@ -210,6 +211,15 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
     pause(evt) {
         console.log('pause', evt.detail);
         this._resourceSenderService.pause(evt.detail);
+    }
+
+        /**
+     * @param {CustomEvent} evt
+     * @private
+     */
+    updateTime(evt) {
+        console.log('TIME', evt.detail.resource, evt.detail.time);
+        this._resourceSenderService.changeTime(evt.detail.resource, evt.detail.time);
     }
 }
 window.customElements.define('resource-view-monitor-list', ResourceMonitorViewList);

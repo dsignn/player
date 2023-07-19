@@ -53,14 +53,17 @@ export class AbstractResourceSenderService extends EventManagerAware {
 
    /**
     * @param {Storage} resourceStorage
+    * @param {Storage} resourceSenderStorage
     * @param {Timer} timer
     * @param {ContainerAggregate} dataInjectorManager
     */
-   constructor(resourceStorage, timer, dataInjectorManager) {
+   constructor(resourceStorage, resourceSenderStorage, timer, dataInjectorManager) {
 
       super();
 
       this.resourceStorage = resourceStorage;
+
+      this.resourceSenderStorage = resourceSenderStorage;
 
       this.timer = timer;
 

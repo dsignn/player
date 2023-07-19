@@ -9,9 +9,9 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      * @param {Timer} timer
      * @param {ContainerAggregate} dataInjectorManager
      */
-    constructor(resourceStorage, timer, dataInjectorManager) {
+    constructor(resourceStorage, resourceSenderStorage, timer, dataInjectorManager) {
 
-        super(resourceStorage, timer, dataInjectorManager);
+        super(resourceStorage, resourceSenderStorage, timer, dataInjectorManager);
 
         /**
          * List running resources
@@ -27,6 +27,16 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         });
     }
 
+    /**
+     * @param {CustomEvent} evt 
+     */
+    _updateResourceSender(evt) {
+
+        this.resourceSenderStorage.update(evt.data.resource)
+            .then((entity) => {
+                //console.log('service update', evt.name);
+            })
+    }
 
     /**
      * @private
@@ -75,8 +85,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
                 );
             }
 
-            console.log(resource.name, resource.type, resource.getCurrentTime(), resource.getDuration());
-            //this.getEventManager().emit(ResourceSenderService.UPDATE_TIME, this.runningResources[property]);
+            this.getEventManager().emit(ResourceSenderService.UPDATE_TIME, this.runningResources[property]);
         }
     }
 
@@ -125,6 +134,15 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      */
     _getRunningResource(entity) {
         return this.runningResources[`${entity.monitorContainerReference.id}-${entity.resourceReference.context}`];
+    }
+
+    /**
+     * 
+     * @param {ResourceSenderEntity} entity 
+     * @returns bool
+     */
+    _hasRunningResource(entity) {
+        return !!this._getRunningResource(entity);
     }
 
     /**
@@ -187,16 +205,14 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      */
     async pause(entity) {
 
-        // TODO Add xternal option?
-        let resource = await this._getResourceFromReference(entity);
-        if (!resource) {
-            // TODO warning
+
+        let runningResource = this._getRunningResource(entity);
+        if (!runningResource) {
             return;
         }
 
-        entity.resourceReference = resource;
         this._removeRunningResource(entity);
-        entity.resourceReference.status = FileEntity.IDLE;
+        entity.resourceReference.status = FileEntity.PAUSE;
 
         /**
          * Binds
@@ -205,7 +221,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'pause');
         }
 
-        this.emitResourceEvt(ResourceSenderService.PAUSE, entity);
+        this.emitResourceEvt(ResourceSenderService.PAUSE, runningResource);
         //TODO save storage
     }
 
@@ -222,7 +238,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             return;
         }
 
-        entity.resourceReference = resource;
+        entity.resourceReference = Object.assign(resource, entity.resourceReference);
         let runningResource = this._getRunningResource(entity);
         if (runningResource && runningResource.resourceReference.id !== entity.resourceReference.id) {
             this.pause(runningResource);
@@ -268,8 +284,34 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'stop');
         }
 
-        console.log('ResourceSenderService', ResourceSenderService.STOP);
         this.emitResourceEvt(ResourceSenderService.STOP, entity);
+    }
+
+    /**
+     * @param {ResourceSenderEntity} entity
+     * @param {second} second
+     * @returns {Promise<void>}
+     */
+    async changeTime(entity, second) {
+
+        let runningResource = this._getRunningResource(entity);
+
+        if (!runningResource) {
+            console.warn('Resource not running', entity, second);
+            return;
+        }
+
+        if (runningResource.resourceReference.getDuration() <= second) {
+            console.warn('Duration of resource to short', entity, second);
+            return;
+        }
+
+        runningResource.resourceReference.setCurrentTime(second);
+        console.log('CAMBIO TEMPO', runningResource.resourceReference.getCurrentTime());
+        this.emitResourceEvt(
+            ResourceSenderService.CHANGE_TIME,
+            runningResource
+        );
     }
 
     /**
@@ -282,7 +324,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             resource: resourceSenderEntity
         }
 
-        if(data) {
+        if (data) {
             evtData.data = data;
         }
 
