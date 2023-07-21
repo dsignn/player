@@ -10,6 +10,7 @@ import '@polymer/paper-slider/paper-slider';
 import { lang } from './language.js';
 import { VideoEntity } from '../../src/entity/VideoEntity';
 import { ResourceSenderService } from '../../src/ResourceSenderService';
+import { AudioEntity } from '../../src/entity/AudioEntity';
 
 /**
  * @customElement
@@ -189,10 +190,14 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
             <paper-card>
                 <div id="left-section"></div>
                 <div id="fastAction">
-                    <paper-icon-button id="contextIcon" item="{{timeslot}}" class="activePaperButton" on-tap="_tapOverlay"  disabled="{{hideCrud}}"></paper-icon-button>
-                    <paper-tooltip for="contextIcon" position="right">TODO</paper-tooltip>
-                    <paper-icon-button id="rotationIcon" item="{{timeslot}}" class="activePaperButton" on-tap="_tapRotation" disabled="{{hideCrud}}"></paper-icon-button>
-                    <paper-tooltip for="rotationIcon" position="right">TODO</paper-tooltip>
+                    <paper-icon-button id="contextIcon" class="activePaperButton" on-tap="_tapOverlay"  disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-tooltip for="contextIcon" position="right"></paper-tooltip>
+                    <paper-icon-button id="rotationIcon" class="activePaperButton" on-tap="_tapRotation" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-tooltip for="rotationIcon" position="right"></paper-tooltip>
+                    <paper-icon-button id="fitIcon" class="activePaperButton" on-tap="_tapFit" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-tooltip for="fitIcon" position="right"></paper-tooltip>
+                    <paper-icon-button id="volumeIcon" class="activePaperButton" on-tap="_tapVolume" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-tooltip for="volumeIcon" position="right"></paper-tooltip>
                 </div>
                 <div id="right-section">
                    
@@ -526,6 +531,20 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
         let rotation = this.entity.resourceReference.rotation;
         this.$.rotationIcon.icon = `resource:${rotation}`;
         this.root.querySelector('paper-tooltip[for="rotationIcon"]').innerText = this.localize(rotation);
+
+        let adjust = this.entity.resourceReference.adjust;
+        this.$.fitIcon.icon = `resource:${adjust}`;
+        this.root.querySelector('paper-tooltip[for="fitIcon"]').innerText = this.localize(adjust);
+
+        let volume = this.entity.resourceReference.enableAudio;
+        this.$.volumeIcon.icon = `resource:${volume ? 'volume' : 'volume-off'}`;
+        this.root.querySelector('paper-tooltip[for="volumeIcon"]').innerText = this.localize(volume ? 'volume' : 'volume-off');
+
+        if (this._hasDuration()) {
+            this.$.volumeIcon.style.display = 'flex';
+        } else {
+            this.$.volumeIcon.style.display = 'none';
+        }
     }
 
     /**
@@ -543,7 +562,7 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
 
         this.entity.resourceReference.rotation = (index < (PaperResourceMonitor.LIST_ROTATION.length - 1)) ? PaperResourceMonitor.LIST_ROTATION[index + 1] : PaperResourceMonitor.LIST_ROTATION[0];
         this.dispatchEvent(new CustomEvent('change-rotation', { detail: this.entity }));
-        this.updateIcons();
+        this.updateContextIcons();
     }
 
     /**
@@ -555,9 +574,33 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
             return;
         }
 
-        this.entity.resourceReference.context = this.entity.resourceReference.context === VideoEntity.CONTEXT_STANDARD || !this.entity.resourceReference.context ? VideoEntity.CONTEXT_OVERLAY : VideoEntity.CONTEXT_STANDARD;
+        this.entity.resourceReference.context = this.entity.resourceReference.context === VideoEntity.CONTEXT_STANDARD || !this.entity.resourceReference.context ? 
+            VideoEntity.CONTEXT_OVERLAY : VideoEntity.CONTEXT_STANDARD;
         this.dispatchEvent(new CustomEvent('change-context', { detail: this.entity }));
-        this.updateIcons();
+        this.updateContextIcons();
+    }
+
+    _tapFit(evt) {
+        if (!this.entity.resourceReference) {
+            return;
+        }
+
+        this.entity.resourceReference.adjust = this.entity.resourceReference.adjust === VideoEntity.SIZE_CONTAIN ? 
+            VideoEntity.SIZE_NORMAL : VideoEntity.SIZE_CONTAIN;
+        this.dispatchEvent(new CustomEvent('change-adjust', { detail: this.entity }));
+        this.updateContextIcons();
+    }
+
+    _tapVolume(evt) {
+        if (!this.entity.resourceReference) {
+            return;
+        }
+
+
+        this.entity.resourceReference.enableAudio = this.entity.resourceReference.enableAudio ? 
+            false : true;
+        this.dispatchEvent(new CustomEvent('change-volume', { detail: this.entity }));
+        this.updateContextIcons();
     }
 }
 

@@ -75,6 +75,8 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
                         on-update="_showUpdateView"
                         on-change-rotation="_updateEntity"
                         on-change-context="_updateEntity"
+                        on-change-adjust="_updateEntity"
+                        on-change-volume="_updateEntity"
                         on-play="play"
                         on-resume="resume"
                         on-stop="stop"
@@ -185,7 +187,7 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
      * @param evt
      */
      play(evt) {
-        console.log('play', evt.detail);
+        console.log('play', evt.detail.name);
         this._resourceSenderService.play(evt.detail);
     }
 
@@ -193,7 +195,7 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
      * @param evt
      */
     resume(evt) {
-        console.log('resume', evt.detail);
+        console.log('resume', evt.detail.name);
         this._resourceSenderService.resume(evt.detail);
     }
 
@@ -201,7 +203,7 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
      * @param evt
      */
     stop(evt) {
-        console.log('stop', evt.detail);
+        console.log('stop', evt.detail.name);
         this._resourceSenderService.stop(evt.detail);
     }
 
@@ -209,7 +211,7 @@ class ResourceMonitorViewList extends StoragePaginationMixin(StorageCrudMixin(Lo
      * @param evt
      */
     pause(evt) {
-        console.log('pause', evt.detail);
+        console.log('pause', evt.detail.name);
         this._resourceSenderService.pause(evt.detail);
     }
 

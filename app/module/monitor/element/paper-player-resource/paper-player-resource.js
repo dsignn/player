@@ -1,6 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
 
+
 /**
  * @customElement
  * @polymer
@@ -147,59 +148,62 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
 
     _changeResourceEntity(resourceEntity) {
 
-        if(!resourceEntity) {
+        if(!resourceEntity || !resourceEntity.resourceReference) {
             return;
         }
 
         this.resourceId = resourceEntity.id;
-        console.log('APPEND RESOURCE ', resourceEntity);
+       // console.log('APPEND RESOURCE ', resourceEntity);
 
-        /*
-        let ele;
-        for (let cont = 0; this.timeslot.resources.length > cont; cont++) {
+       let element;
+        switch (true) {
+            // TODO add regex on type
+            case resourceEntity.resourceReference instanceof ImageEntity === true:
+                console.log('Arrivato ImageEntity');
 
-            switch (true) {
-                // TODO add regex on type
-                case this.timeslot.resources[cont] instanceof ImageEntity === true:
+                element =  this._creteImage(resourceEntity.resourceReference);
+                this.$.resources.appendChild(element);
+                break;
 
-                    ele =  this._creteImage(this.timeslot.resources[cont], this.timeslot.size);
-                    ele.style.zIndex = cont+1;
-                    console.log('FUORI', cont+1)
-                    this.$.resources.appendChild(ele);
-                    break;
-                case this.timeslot.resources[cont] instanceof VideoEntity === true:
-                    ele = this._createVideo(this.timeslot.resources[cont], this.timeslot.size);
-                    ele.style.zIndex = cont+1;
-                    console.log('FUORI', cont+1)
-                    this.$.resources.appendChild(ele);
-                    break;
-                case this.timeslot.resources[cont] instanceof AudioEntity === true:
-                    ele = this._createAudio(this.timeslot.resources[cont]);
-                    ele.style.zIndex = cont+1;
-                    console.log('FUORI', cont+1)
-                    this.$.resources.appendChild(ele);
-                    break;
-                case this.timeslot.resources[cont] instanceof FileEntity === true:
-                    this._createWebComponent(this.timeslot.resources[cont])
-                        .then(
-                            function(data) {
-                                data.style.zIndex = cont+1;
-                                this.$.resources.appendChild(data);
-                            }.bind(this)
-                        )
-                        .catch(
-                            function(data) {
-                                console.warn(data);
-                            }
-                        );
-                    break;
-                default:
-                    // TODO log error
-                    console.error('Resource type not found', this.timeslot.resource[cont]);
-            }
+            case resourceEntity.resourceReference instanceof VideoEntity === true:
+                console.log('Arrivato VideoEntity');
+            
+                element = this._createVideo(resourceEntity.resourceReference);
+                this.$.resources.appendChild(element);
+                break;
+
+            case resourceEntity.resourceReference instanceof AudioEntity === true:
+                console.log('Arrivato AudioEntity');
+            
+                element = this._createAudio(resourceEntity.resourceReference);
+                this.$.resources.appendChild(element);
+            
+                break;
+
+            case resourceEntity.resourceReference instanceof MetadataEntity === true:
+                console.log('Arrivato MetadataEntity');
+            /*
+                this._createWebComponent(this.timeslot.resources[cont])
+                    .then(
+                        function(data) {
+                            data.style.zIndex = cont+1;
+                            this.$.resources.appendChild(data);
+                        }.bind(this)
+                    )
+                    .catch(
+                        function(data) {
+                            console.warn(data);
+                        }
+                    );
+            */
+                break;
+            case resourceEntity.resourceReference instanceof MultiMediaEntity === true:
+                console.log('Arrivato MultiMediaEntity');
+                break;
+            default:
+                // TODO log error
+                console.error('Resource type not found', resourceEntity.resourceReference);
         }
-
-        */
     }
 
     /**
@@ -223,16 +227,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         for (let cont = 0; images.length > cont; cont++) {
             images[cont].style.backgroundImage = '';
         }
-    }
-
-    /**
-     * @param timeslot
-     * @param context
-     */
-    config(timeslot, context = {}) {
-        this.timeslot = timeslot;
-        this.timeslotId = timeslot.id;
-        this.wrapperTimeslotId = context.serviceId;
     }
 
     /**
@@ -309,22 +303,13 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
-     * TODO remove when add autoload services in player, this.timeslot will be a Timeslot object
-     */
-    _hasResourceType(type)  {
-        return !!this.timeslot.resources.find((resource) => {
-            return resource.type.indexOf(type) > -1;
-        });
-    }
-
-    /**
      * Create image tag
      *
      * @private
      * @param resource
      * @return Element
      */
-    _creteImage(resource, size) {
+    _creteImage(resource) {
 
         let element = document.createElement('div');
 
@@ -335,10 +320,10 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.style.backgroundImage = `url('${url.href}')`;
         } catch(error) {
             element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
-            console.log('PORCO DIO');
+            console.warn(error);
         }
 
-        if (size === 'size-contain') {
+        if (resource.getAdjust() === 'size-contain') {
             element.style.backgroundSize = 'cover';
             element.style.backgroundPosition = 'center';
         } else {
@@ -358,7 +343,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * @param resource
      * @return Element
      */
-    _createVideo(resource, size) {
+    _createVideo(resource) {
 
         // TODO size deve passare sulla risorsa
 
@@ -369,15 +354,16 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.src = `${url.href}`;
         } catch(error) {
             element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+            console.warn(error);
         }
 
         element.setAttribute('preload', null);
         element.autoplay = true;
         element.setAttribute('muted', true); // TODO remove use to debug
-        element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
-        element.muted = !this.timeslot.enableAudio;
+        element.loop = resource.rotation === FileEntity.ROTATION_LOOP ? true : false;
+        element.muted = !resource.enableAudio;
 
-        if (size === 'size-contain') {
+        if (resource.getAdjust() === 'size-contain') {
             element.setAttribute('height', '100%'); // TODO remove use to debug
             element.setAttribute('width', '100%');
         }
@@ -386,7 +372,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.currentTime = this.startAt;
         }
 
-        if (element.rotation !== TimeslotEntity.ROTATION_LOOP) {
+        if (element.rotation !== FileEntity.ROTATION_LOOP) {
             let isRunning = true;
             element.addEventListener('timeupdate', function() {
                 if ((this.currentTime + 0.5) >= this.duration && isRunning) {
@@ -416,12 +402,14 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.src = url.href;
         } catch(error) {
             element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
+            console.warn(error);
         }
        
-        element.loop = this.timeslot.rotation === TimeslotEntity.ROTATION_LOOP ? true : false;
+        element.loop = resource.rotation === FileEntity.ROTATION_LOOP ? true : false;
         if (this.startAt > 0) {
             element.currentTime = this.startAt;
         }
+        element.muted = !resource.enableAudio;
         element.play();
 
         return element;
@@ -520,18 +508,19 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
-     * @param currentTime
+     * @param entity
      */
-    resume(currentTime) {
+    resume(resourceEntity) {
         if (!this.shadowRoot) {
             return;
         }
 
         let tags = this.shadowRoot.querySelectorAll('video, audio');
         for (let cont = 0; tags.length > cont; cont++) {
-            if (currentTime) {
-                console.log('CURRENT TIME', currentTime);
-                tags[cont].currentTime = currentTime;
+            if (resourceEntity) {
+                console.log('CURRENT TIME', resourceEntity);
+                tags[cont].currentTime = resourceEntity.getCurrentTime();
+                tags[cont].muted = !resourceEntity.enableAudio;
             }
             tags[cont].play();
         }

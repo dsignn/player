@@ -13,6 +13,10 @@ export const lang = {
     "idle": "fermo",
     "pause": "pausa",
     "running": "attivo",
+    "size-normal": "dimentisione originale",
+    "size-contain": "dimensione strecciata",
+    "volume": "audio abilitato",
+    "volume-off": "audio disabilitato",
   },
   "en": {
     "modify": "Modify",
@@ -28,5 +32,9 @@ export const lang = {
     "idle": "idle", 
     "pause": "pause",
     "running": "running",
+    "size-normal": "normal fit",
+    "size-contain": "twisted fit",
+    "volume": "volume enable",
+    "volume-off": "volume disable",
   }
 };

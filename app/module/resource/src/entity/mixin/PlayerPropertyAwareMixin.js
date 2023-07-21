@@ -24,9 +24,19 @@ export const PlayerPropertyAwareMixin = (superClass) => {
             this.currentTime = 0;
 
             /**
+             * @type {bool}
+             */
+            this.enableAudio = false;
+
+            /**
              * @type {String}
              */
             this.status = this.constructor.IDLE;
+        }
+
+        setEnableAudio(enableAudio) {
+            this.enableAudio = enableAudio;
+            return this;
         }
 
         /**

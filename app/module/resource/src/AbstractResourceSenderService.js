@@ -14,28 +14,28 @@ export class AbstractResourceSenderService extends EventManagerAware {
     *
     * @return {string}
     */
-   static get PLAY() { return 'play-timeslot'; }
+   static get PLAY() { return 'play-resource'; }
 
    /**
     * Name of the "message" send from sender when stop resource
     *
     * @return {string}
     */
-   static get STOP() { return 'stop-timeslot'; }
+   static get STOP() { return 'stop-resource'; }
 
    /**
     * Name of the "message" send from sender when pause resource
     *
     * @return {string}
     */
-   static get PAUSE() { return 'pause-timeslot'; }
+   static get PAUSE() { return 'pause-resource'; }
 
    /**
     * Name of the "message" send from sender when resume resource
     *
     * @return {string}
     */
-   static get RESUME() { return 'resume-timeslot'; }
+   static get RESUME() { return 'resume-resource'; }
 
    /**
     * Name of the "message" send from sender when resume resource

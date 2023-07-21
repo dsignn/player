@@ -173,7 +173,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             return;
         }
 
-        entity.resourceReference = resource;
+        entity.resourceReference = Object.assign(resource, entity.resourceReference);
         let runningResource = this._getRunningResource(entity);
         if (runningResource && runningResource.resourceReference.id !== entity.resourceReference.id) {
             this.pause(runningResource);
@@ -273,7 +273,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             return;
         }
 
-        entity.resourceReference = resource;
+        entity.resourceReference = Object.assign(resource, entity.resourceReference);
         this._removeRunningResource(entity);
         entity.resourceReference.status = FileEntity.IDLE;
 
@@ -308,6 +308,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
 
         runningResource.resourceReference.setCurrentTime(second);
         console.log('CAMBIO TEMPO', runningResource.resourceReference.getCurrentTime());
+
         this.emitResourceEvt(
             ResourceSenderService.CHANGE_TIME,
             runningResource

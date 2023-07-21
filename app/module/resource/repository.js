@@ -273,6 +273,11 @@ export class Repository extends ContainerAware {
                 resourceSenderService._updateResourceSender.bind(resourceSenderService)
             );
 
+            resourceSenderService.getEventManager().on(
+                ResourceSenderService.CHANGE_TIME,
+                resourceSenderService._updateResourceSender.bind(resourceSenderService)
+            );
+
                 
             this.getContainer().set( this._getModuleConfig().resourceSenderService, resourceSenderService);
         });
@@ -454,7 +459,9 @@ export class Repository extends ContainerAware {
      * @returns 
      */
     _checkUpdateMetadata(resourceEntity) {
+        // TODO REG EX
         switch (resourceEntity.type) {
+            case 'audio/ogg':
             case 'video/mp4':
             case 'video/webm':
             case 'image/jpeg':
@@ -492,6 +499,10 @@ export class Repository extends ContainerAware {
                     entity.fps = metadata.streams[0]['r_frame_rate'];
                     entity.duration = metadata.format.duration;
                     entity.aspectRation = metadata.streams[0]['sample_aspect_ratio'];
+                }
+
+                if (entity.type.match('audio.*')) {
+                    entity.duration = metadata.format.duration;
                 }
 
                 storage.update(entity);
@@ -628,6 +639,7 @@ export class Repository extends ContainerAware {
             'status': true,
             'rotation': true,
             'adjust': true,
+            'enableAudio': true,
             'context': true
         }
 
@@ -677,7 +689,29 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('resourceReference');
 
         let resourceStrategyHydrator = new HydratorStrategy();
-        resourceStrategyHydrator.setHydrator(Repository.getResourceHydrator(container));
+
+        let resourceHydrator = Repository.getResourceHydrator(container);
+
+        resourceStrategyHydrator.setHydrator(resourceHydrator);
+
+        let enableProperties = {
+            'filters': true,
+            'currentTime': true,
+            'status': true,
+            'rotation': true,
+            'adjust': true,
+            'enableAudio': true,
+            'context': true
+        }
+
+        Object.keys(resourceHydrator.hydratorMap).forEach(function(key) {
+
+            Object.keys(enableProperties).forEach(function(keyEnable) {  
+                resourceHydrator.hydratorMap[key].hydrator.enableHydrateProperty(keyEnable);
+                resourceHydrator.hydratorMap[key].hydrator.enableExtractProperty(keyEnable);
+            });
+    
+        });
 
         hydrator.addValueStrategy('resourceReference', resourceStrategyHydrator);
 
