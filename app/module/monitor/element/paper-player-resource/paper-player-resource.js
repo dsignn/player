@@ -1,5 +1,7 @@
 import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
+import { VideoEntity } from '../../../resource/src/entity/VideoEntity';
+import { ImageEntity } from '../../../resource/src/entity/ImageEntity';
 
 
 /**
@@ -147,13 +149,13 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
     }
 
     _changeResourceEntity(resourceEntity) {
-
+        console.log('APPEND RESOURCE ', resourceEntity);
         if(!resourceEntity || !resourceEntity.resourceReference) {
             return;
         }
 
         this.resourceId = resourceEntity.id;
-       // console.log('APPEND RESOURCE ', resourceEntity);
+
 
        let element;
         switch (true) {
@@ -161,26 +163,73 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             case resourceEntity.resourceReference instanceof ImageEntity === true:
                 console.log('Arrivato ImageEntity');
 
-                element =  this._creteImage(resourceEntity.resourceReference);
-                this.$.resources.appendChild(element);
+                this.$.resources.appendChild(this._createElementFromEntityResource(resourceEntity.resourceReference));
+                this.adjust(resourceEntity.resourceReference.adjust);
                 break;
 
             case resourceEntity.resourceReference instanceof VideoEntity === true:
                 console.log('Arrivato VideoEntity');
             
-                element = this._createVideo(resourceEntity.resourceReference);
-                this.$.resources.appendChild(element);
+                this.$.resources.appendChild(this._createElementFromEntityResource(resourceEntity.resourceReference));
+                this.adjust(resourceEntity.resourceReference.adjust);
+                this.muted(!resourceEntity.resourceReference.enableAudio);
                 break;
 
             case resourceEntity.resourceReference instanceof AudioEntity === true:
                 console.log('Arrivato AudioEntity');
-            
-                element = this._createAudio(resourceEntity.resourceReference);
-                this.$.resources.appendChild(element);
-            
+        
+                this.$.resources.appendChild(this._createElementFromEntityResource(resourceEntity.resourceReference));
+                this.muted(!resourceEntity.resourceReference.enableAudio);
                 break;
 
             case resourceEntity.resourceReference instanceof MetadataEntity === true:
+                console.log('Arrivato MetadataEntity');
+            
+                this._createWebComponent(resourceEntity.resourceReference)
+                    .then((data) => {
+                            this.$.resources.appendChild(data);
+                    }).catch((error) => {
+                        console.warn(error);
+                    });
+                break;
+            case resourceEntity.resourceReference instanceof MultiMediaEntity === true:
+                for(let cont = 0; resourceEntity.resourceReference.resources.length > cont; cont++) {
+                    let element = this._createElementFromEntityResource(resourceEntity.resourceReference.resources[cont]);
+                    element.style.zIndex = cont+1;
+                    
+                    this.$.resources.appendChild(element);
+                }
+                this.adjust(resourceEntity.resourceReference.adjust);
+                this.muted(!resourceEntity.resourceReference.enableAudio);
+                break;
+            default:
+                // TODO log error
+                console.error('Resource type not found', resourceEntity.resourceReference);
+        }
+    }
+
+    /**
+     * 
+     * @param {ResourceEntity} entity 
+     * @returns 
+     */
+    _createElementFromEntityResource(entity) {
+        let element;
+        switch (true) {
+            // TODO add regex on type
+            case entity instanceof ImageEntity === true:
+                element =  this._creteImage(entity);
+                break;
+
+            case entity instanceof VideoEntity === true:            
+                element = this._createVideo(entity);
+                break;
+
+            case entity instanceof AudioEntity === true:
+                element = this._createAudio(entity);            
+                break;
+
+            case entity instanceof MetadataEntity === true:
                 console.log('Arrivato MetadataEntity');
             /*
                 this._createWebComponent(this.timeslot.resources[cont])
@@ -197,13 +246,8 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
                     );
             */
                 break;
-            case resourceEntity.resourceReference instanceof MultiMediaEntity === true:
-                console.log('Arrivato MultiMediaEntity');
-                break;
-            default:
-                // TODO log error
-                console.error('Resource type not found', resourceEntity.resourceReference);
-        }
+            }
+        return element
     }
 
     /**
@@ -306,10 +350,10 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * Create image tag
      *
      * @private
-     * @param resource
+     * @param { ImageEntity } resource
      * @return Element
      */
-    _creteImage(resource) {
+    _creteImage(resource, options) {
 
         let element = document.createElement('div');
 
@@ -323,14 +367,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             console.warn(error);
         }
 
-        if (resource.getAdjust() === 'size-contain') {
-            element.style.backgroundSize = 'cover';
-            element.style.backgroundPosition = 'center';
-        } else {
-            element.style.backgroundSize = 'auto';
-            element.style.backgroundPosition = '0 0';
-        }
-
         let container = this._createResourceDiv();
         container.appendChild(element);
         return container;
@@ -340,12 +376,10 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * Create video tag
      *
      * @private
-     * @param resource
+     * @param { VideoEntity } resource
      * @return Element
      */
     _createVideo(resource) {
-
-        // TODO size deve passare sulla risorsa
 
         let element = document.createElement('video');
        
@@ -361,12 +395,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         element.autoplay = true;
         element.setAttribute('muted', true); // TODO remove use to debug
         element.loop = resource.rotation === FileEntity.ROTATION_LOOP ? true : false;
-        element.muted = !resource.enableAudio;
-
-        if (resource.getAdjust() === 'size-contain') {
-            element.setAttribute('height', '100%'); // TODO remove use to debug
-            element.setAttribute('width', '100%');
-        }
 
         if (this.startAt > 0) {
             element.currentTime = this.startAt;
@@ -391,7 +419,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * Create audio tag
      *
      * @private
-     * @param resource
+     * @param { AudioEntity } resource
      * @return Element
      */
     _createAudio(resource) {
@@ -409,7 +437,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         if (this.startAt > 0) {
             element.currentTime = this.startAt;
         }
-        element.muted = !resource.enableAudio;
         element.play();
 
         return element;
@@ -419,7 +446,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * Create webview
      *
      * @private
-     * @param {GenericFile} resource
+     * @param { MetadataEntity } resource
      * @return Element
      */
     async _createWebComponent(resource) {
@@ -427,6 +454,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         let promise = new Promise( function(resolve, reject) {
 
             let entryPoint = this.resourceService.getResourcePath(resource);
+            console.log('WC', resource);
             switch (true) {
                 case customElements.get(resource.wcName) !== undefined:
                     resolve(this._initWebComponent(resource));
@@ -450,6 +478,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
+     * @param { MetadataEntity } resource
      * @return element
      */
     _initWebComponent(resource) {
@@ -458,18 +487,9 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         element.width = this.width;
         element.resource = resource;
 
-        if (Array.isArray(this.data)) {
-            for (let cont = 0; this.data.length > cont; cont++) {
-
-                if (this.data === null || typeof this.data !== 'object') {
-                    console.error('Wrong data for timeslot');
-                    continue;
-                }
-
-                for (let property in this.data[cont]) {
-                    console.log('INJECT IN WC', property, this.data[cont][property]);
-                    element[property] = this.data[cont][property];
-                }
+        if (this.data) {
+            for (const property in this.data) {
+                element[property] = this.data[property];
             }
         }
 
@@ -477,20 +497,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         container.appendChild(element);
 
         return container;
-    }
-
-    /**
-     * @param currentTime
-     */
-    changeTime(currentTime) {
-        if (!this.shadowRoot) {
-            return;
-        }
-
-        let tags = this.shadowRoot.querySelectorAll('video, audio');
-        for (let cont = 0; tags.length > cont; cont++) {
-            tags[cont].currentTime = currentTime;
-        }
     }
 
     /**
@@ -511,18 +517,60 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * @param entity
      */
     resume(resourceEntity) {
-        if (!this.shadowRoot) {
+        if (!this.shadowRoot || !resourceEntity) {
             return;
         }
 
         let tags = this.shadowRoot.querySelectorAll('video, audio');
         for (let cont = 0; tags.length > cont; cont++) {
-            if (resourceEntity) {
-                console.log('CURRENT TIME', resourceEntity);
-                tags[cont].currentTime = resourceEntity.getCurrentTime();
-                tags[cont].muted = !resourceEntity.enableAudio;
-            }
+       
+            tags[cont].currentTime = resourceEntity.getCurrentTime();
             tags[cont].play();
+        }
+    }
+
+    /**
+     * @param {boolean} isMuted 
+     */
+    muted(isMuted) {
+        let tags = this.shadowRoot.querySelectorAll('video, audio');
+        for (let cont = 0; tags.length > cont; cont++) { 
+            tags[cont].muted = isMuted;
+        }
+    } 
+
+    /**
+     * @param {string} adjust 
+     */
+    adjust(adjust) {
+        let tags = this.shadowRoot.querySelectorAll('video, .image');
+
+        for (let cont = 0; tags.length > cont; cont++) { 
+           
+            if (tags[cont].className == 'image') {
+                if(adjust == 'size-normal') {
+                    tags[cont].style.backgroundSize = 'auto';
+                    tags[cont].style.backgroundPosition = '0 0';
+                }
+
+                if(adjust == 'size-contain') {
+                    tags[cont].style.backgroundSize = 'cover';
+                    tags[cont].style.backgroundPosition = 'center center';
+                }
+            }
+
+            if (tags[0].tagName == 'VIDEO') {
+                if(adjust == 'size-normal') {
+                    tags[cont].removeAttribute('height');
+                    tags[cont].removeAttribute('width');
+                }
+
+                if (adjust === 'size-contain') {
+                    tags[cont].setAttribute('height', '100%'); // TODO remove use to debug
+                    tags[cont].setAttribute('width', '100%');
+                }
+        
+            }
         }
     }
 

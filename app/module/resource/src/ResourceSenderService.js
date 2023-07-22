@@ -195,7 +195,8 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'play');
         }
 
-        this.emitResourceEvt(ResourceSenderService.PLAY, entity);
+        console.log('Sender start', entity);
+        this.emitResourceEvt(ResourceSenderService.PLAY, entity, data);
         //TODO save storage
     }
 
@@ -257,7 +258,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'resume');
         }
 
-        this.emitResourceEvt(ResourceSenderService.RESUME, entity);
+        this.emitResourceEvt(ResourceSenderService.RESUME, entity, data);
     }
 
     /**

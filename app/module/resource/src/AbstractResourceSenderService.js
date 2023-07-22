@@ -150,12 +150,12 @@ export class AbstractResourceSenderService extends EventManagerAware {
    /**
     *
     * @param resourceSenderEntity
-    * @return {array|null}
+    * @return {Object}
     * @private
     */
    async _extractData(resourceSenderEntity) {
      
-      let arrayData = null;
+      let data = {};
 
       switch(true) {
          case (resourceSenderEntity.resourceReference instanceof MultiMediaEntity):
@@ -163,20 +163,29 @@ export class AbstractResourceSenderService extends EventManagerAware {
                let resource = resourceSenderEntity.resourceReference.getResources()[cont];
 
                if ((resource instanceof MetadataEntity) && resource.getDataReferences().length > 0) {
-                  if (arrayData === null) {
-                     arrayData = [];
-                  }
-                  arrayData = arrayData.concat(await this._extractDataFromDataReferences(resource.getDataReferences()));
+                  Object.assign(data, this.arrayToObject(await this._extractDataFromDataReferences(resource.getDataReferences())));  
                }
             }
           
             break;
          case (resourceSenderEntity.resourceReference instanceof MetadataEntity && resourceSenderEntity.resourceReference.getDataReferences().length > 0):
-            arrayData = await this._extractDataFromDataReferences(resourceSenderEntity.resourceReference.getDataReferences());
+            Object.assign(data, this.arrayToObject(await this._extractDataFromDataReferences(resourceSenderEntity.resourceReference.getDataReferences()))); 
             break;
 
       }
+      return data;
+   }
 
-      return arrayData;
+   /**
+    * @param {array} arrayData 
+    * @returns object
+    */
+   arrayToObject(arrayData) {
+      let data = {}
+      for (let cont = 0; arrayData.length > cont; cont++) {
+         Object.assign(data, arrayData[cont]);
+      }
+
+      return data;
    }
 }

@@ -255,9 +255,8 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
                     if (monitor.monitors[cont].monitors.length > 0) {
                         nodeMonitors[subCont].updateValueFromMonitor(monitor.monitors[cont]);
-                        console.log('AGGIORNIAMO SUB');
                     }
-                    console.log('MODIFY', nodeMonitors[subCont]);
+
                     nodeMonitors[subCont].removeToDom = false;
                     nodeMonitors.splice(subCont, 1);
 
@@ -313,6 +312,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             setTimeout(
                 function () {
                     this.remove();
+                    console.log('DIO CANE')
                 }.bind(childrenNodes[cont]),
                 50
             );
@@ -362,12 +362,12 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             return;
         }
      
-     
-        let resourceSenderEntity = this._hydrateResourceSender(msg.resource);
+    
+        let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this._createPaperPlayerResource(resourceSenderEntity, msg.data, msg.context);
     
-        console.log('Start resource',  resourceSenderEntity.name);
         this.$[resourceSenderEntity.resourceReference.getContext()].appendChild(element);
+        
       
         this.clearLayerButNotLast(resourceSenderEntity.resourceReference);
     }
@@ -386,7 +386,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             return;
         }
 
-        let resourceSenderEntity = this._hydrateResourceSender(msg.resource);
+        let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
         if (element) {
             console.log('Stop resource', resourceSenderEntity.name);
@@ -407,7 +407,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             return;
         }
 
-        let resourceSenderEntity = this._hydrateResourceSender(msg.resource);
+        let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
         if (element) {
             console.log('Pause resource',  resourceSenderEntity.name);
@@ -427,7 +427,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         if (msg.resource !== undefined && this.identifier !== msg.resource.monitorContainerReference.id) {
             return;
         }
-        let resourceSenderEntity = this._hydrateResourceSender(msg.resource);
+        let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
 
         console.log('resume resource', element, resourceSenderEntity.resourceReference.getCurrentTime());
@@ -435,6 +435,8 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             case element !== null:
                 // TODO pass currentTime to resume
                 element.resume(resourceSenderEntity.resourceReference);
+                element.muted(!resourceSenderEntity.resourceReference.enableAudio);
+                element.adjust(resourceSenderEntity.resourceReference.adjust);
                 break;
             default:
 
@@ -443,6 +445,8 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 this.$[resourceSenderEntity.resourceReference.getContext()].appendChild(element);
                 this.clearLayerButNotLast(resourceSenderEntity.resourceReference);
                 element.resume(resourceSenderEntity.resourceReference);
+                element.muted(!resourceSenderEntity.resourceReference.enableAudio);
+                element.adjust(resourceSenderEntity.resourceReference.adjust)
                 break;
         }
     }
@@ -460,23 +464,19 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             return;
         }
 
-        let resourceSenderEntity = this._hydrateResourceSender(msg.resource);
+        let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
        
-        switch (true) {
-            case element !== null && resourceSenderEntity.id === element.resourceId:
-                // TODO pass currentTime to resume
-                console.log('_changeTimeResource exist', element, resourceSenderEntity);
-                element.resume(resourceSenderEntity.resourceReference);
-                break;
-            default:
-                let paperPlayerResource = this._createPaperPlayerResource(resourceSenderEntity, msg.data, msg.context);
-                this.$[resourceSenderEntity.resourceReference.getContext()].appendChild(element);
-                this.clearLayerButNotLast(resourceSenderEntity.resourceReference);
-              
-                console.log('_changeTimeResource', element, resourceSenderEntity);
-                paperPlayerResource.resume(resourceSenderEntity.resourceReference);
-                break;
+        if (element !== null && resourceSenderEntity.id === element.resourceId) {
+            console.log('_changeTimeResource exist', element, resourceSenderEntity);
+            element.resume(resourceSenderEntity.resourceReference);
+        } else {
+            let element = this._createPaperPlayerResource(resourceSenderEntity, msg.data, msg.context);
+            this.$[resourceSenderEntity.resourceReference.getContext()].appendChild(element);
+            this.clearLayerButNotLast(resourceSenderEntity.resourceReference);
+          
+            console.log('_changeTimeResource', element, resourceSenderEntity);
+            element.resume(resourceSenderEntity.resourceReference);
         }
     }
 
@@ -490,29 +490,14 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     _createPaperPlayerResource(resourceSenderEntity, data, context) {
         let paperPlayerResource = document.createElement('paper-player-resource');
         paperPlayerResource.resourceService = this._resourceService;
+        paperPlayerResource.data = data;
         paperPlayerResource.resourceEntity = resourceSenderEntity;
 
         paperPlayerResource.height = this.height;
         paperPlayerResource.width = this.width;
 
-        paperPlayerResource.data = data;
+
         return paperPlayerResource
-    }
-
-    /**
-     * @param data
-     * @returns { ResourceSenderEntity }
-     * @private
-     */
-    _hydrateResourceSender(data) {
-
-        let resource = this._resourceMonitorHydrator.hydrate(data);
-
-        if (!(resource.resourceReference instanceof MultiMediaEntity) && !(resource.resourceReference instanceof FileEntity)) {
-            console.error('Wrong data resource', resource);
-        }
-
-        return resource;
     }
 
     /**

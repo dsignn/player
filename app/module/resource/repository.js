@@ -689,9 +689,7 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('resourceReference');
 
         let resourceStrategyHydrator = new HydratorStrategy();
-
         let resourceHydrator = Repository.getResourceHydrator(container);
-
         resourceStrategyHydrator.setHydrator(resourceHydrator);
 
         let enableProperties = {
@@ -712,6 +710,21 @@ export class Repository extends ContainerAware {
             });
     
         });
+
+        let multiMediaHydrator = Repository.getResourceHydrator(container);
+        let multiMediaStrategyHydrator = new HydratorStrategy();
+        multiMediaStrategyHydrator.setHydrator(multiMediaHydrator);
+
+        Object.keys(multiMediaHydrator.hydratorMap).forEach(function(key) {
+
+            Object.keys(enableProperties).forEach(function(keyEnable) {  
+                multiMediaHydrator.hydratorMap[key].hydrator.enableHydrateProperty(keyEnable);
+                multiMediaHydrator.hydratorMap[key].hydrator.enableExtractProperty(keyEnable);
+            });
+    
+        });
+
+        resourceHydrator.hydratorMap.MultiMediaEntity.hydrator.addValueStrategy('resources', multiMediaStrategyHydrator)
 
         hydrator.addValueStrategy('resourceReference', resourceStrategyHydrator);
 

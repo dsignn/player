@@ -321,6 +321,7 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
         super();
         this.resources = lang;
         this.addEventListener('update-resource', (evt) => {
+            console.log('fffffffffff');
             this.updateDurationEntity();
             this.updateSlider();
             this.updateStatusHtml();
@@ -372,10 +373,10 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
 
         storageResource.get(entity.resourceReference.id).then((resource) => {
             // TODO hydrate resource
-            entity.resourceReference = Object.assign(resource, entity.resourceReference);
-            this.notifyPath('entity');
-            this.dispatchEvent(new CustomEvent('update-resource', this.resourceReference));
-            if ((resource instanceof MultiMediaEntity)) {
+            this.entity.resourceReference = Object.assign(resource, entity.resourceReference);
+   
+            console.log(this.entity.resourceReference);
+            if ((this.entity.resourceReference instanceof MultiMediaEntity)) {
                 let promises = [];
                 for (let cont = 0; entity.resourceReference.resources.length > cont; cont++) {
                     promises[cont] = storageResource.get(entity.resourceReference.resources[cont].id);
@@ -383,11 +384,14 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
 
                 Promise.all(promises).then((resources) => {
                     for (let cont = 0; resources.length > cont; cont++) {
-                        entity.resourceReference.resources[cont] = resources[cont];
+                        this.entity.resourceReference.resources[cont] = resources[cont];
                     }
                     this.notifyPath('entity');
                     this.dispatchEvent(new CustomEvent('update-resource', this.resourceReference));
                 });
+            } else {
+                this.dispatchEvent(new CustomEvent('update-resource', this.resourceReference));
+                this.notifyPath('entity');
             }
         });
     }
@@ -416,20 +420,19 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
      * @returns bool
      */
     _hasDuration() {
-        var hasPause = true;
+        var hasPause = false;
 
         if (!this.entity.resourceReference) {
-            return false;
+            return hasPause;
         }
 
         switch (true) {
-            case (this.entity.resourceReference instanceof ImageEntity):
-            case (this.entity.resourceReference instanceof MetadataEntity):
-                hasPause = false
+            case (this.entity.resourceReference instanceof VideoEntity):
+            case (this.entity.resourceReference instanceof AudioEntity):
+                hasPause = true
                 break;
             case (this.entity.resourceReference instanceof MultiMediaEntity):
                 for (let cont = 0; this.entity.resourceReference.resources.length > cont; cont++) {
-                    hasPause = false
                     if ((this.entity.resourceReference.resources[cont] instanceof VideoEntity) ||
                         (this.entity.resourceReference.resources[cont] instanceof AudioEntity)) {
 
