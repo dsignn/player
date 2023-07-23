@@ -161,14 +161,6 @@
 					}
 				},
 				{
-					"name": "paper-player-timeslot",
-					"path": {
-						"directory": "element/paper-player-timeslot",
-						"nameFile": "paper-player-timeslot",
-						"extension": "js"
-					}
-				},
-				{
 					"name": "paper-player-resource",
 					"path": {
 						"directory": "element/paper-player-resource",
