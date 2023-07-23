@@ -155,7 +155,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this[method](binds[cont])
                 .catch(
                     (err) => {
-                        console.error('Error bind timeslot service', err)
+                        console.error('Error bind resource service', err)
                     });
         }
     }

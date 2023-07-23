@@ -153,7 +153,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 value: {
                     "_resourceService": "ResourceService",
                     "ReceiverContainerAggregate": {
-                        "_timeslotReceiver": "TimeslotReceiver"
+                        "_resourceReceiver": "ResourceReceiver"
                     },
                     // TODO add storage service on the player
                     "StorageContainerAggregate": {
@@ -176,7 +176,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type ReceiverInterface
              */
-            _timeslotReceiver: {
+            _resourceReceiver: {
                 type: Object,
                 readOnly: true,
                 observer: '_changeResourceReceiver'

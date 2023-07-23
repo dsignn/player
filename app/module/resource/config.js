@@ -4,6 +4,7 @@
  export const config = {
     "resource" : {
         "resource": {
+            "resourceReceiver": "ResourceReceiver",
             "storage": {
                 "name-service": "ResourceStorage",
                 "adapter": {

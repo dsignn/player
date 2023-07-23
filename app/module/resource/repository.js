@@ -67,6 +67,7 @@ export class Repository extends ContainerAware {
         this.initDexieStorage();
         this.initResourceMonitorDexieStorage();
         this.initService();
+        this.initResourceReceiver();
     }
 
     /**
@@ -145,6 +146,18 @@ export class Repository extends ContainerAware {
             .set(
                 this._getModuleConfig().resourceSenderEntity,
                 new ResourceSenderEntity()
+            );
+    }
+
+        /**
+     * @private
+     */
+    initResourceReceiver() {
+        this.getContainer()
+            .get('ReceiverContainerAggregate')
+            .set(
+                this._getModuleConfig().resourceReceiver,
+                require('electron').ipcRenderer
             );
     }
 

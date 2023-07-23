@@ -229,12 +229,12 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
                     </div>
                     
                     <div class="content-action">
-                        <paper-icon-button id="play" icon="timeslot:play" on-click="_play" class="circle-small action"></paper-icon-button>
-                        <paper-tooltip for="play" position="bottom">{{localize('play-timeslot')}}</paper-tooltip>
-                        <paper-icon-button id="stop" icon="timeslot:stop" on-click="_stop" class="circle-small action"></paper-icon-button>
-                        <paper-tooltip for="stop" position="bottom">{{localize('stop-timeslot')}}</paper-tooltip>
-                        <paper-icon-button id="pause" icon="timeslot:pause" on-click="_pause" class="circle-small action"></paper-icon-button>
-                        <paper-tooltip for="pause" position="bottom">{{localize('pause-timeslot')}}</paper-tooltip>
+                        <paper-icon-button id="play" icon="resource:play" on-click="_play" class="circle-small action"></paper-icon-button>
+                        <paper-tooltip for="play" position="bottom">{{localize('play-resource')}}</paper-tooltip>
+                        <paper-icon-button id="stop" icon="resource:stop" on-click="_stop" class="circle-small action"></paper-icon-button>
+                        <paper-tooltip for="stop" position="bottom">{{localize('stop-resource')}}</paper-tooltip>
+                        <paper-icon-button id="pause" icon="resource:pause" on-click="_pause" class="circle-small action"></paper-icon-button>
+                        <paper-tooltip for="pause" position="bottom">{{localize('pause-resource')}}</paper-tooltip>
                     </div>
                 </div>
             </paper-card>

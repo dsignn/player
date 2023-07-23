@@ -10,8 +10,7 @@ export const lang = {
     "width": "Larghezza",
     "type": "Tipologia",
     "size": "Dimensione",
-    "resources": "Risorse",
-    "timeslots": "Timeslots"
+    "resources": "Risorse"
   },
   "en": {
     "list-resource": "List resource",
@@ -25,6 +24,5 @@ export const lang = {
     "type": "Type",
     "size": "Size",
     "resources": "Resources",
-    "timeslots": "Timeslots"
   }
 };
