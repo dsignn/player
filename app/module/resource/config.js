@@ -5,6 +5,7 @@
     "resource" : {
         "resource": {
             "resourceReceiver": "ResourceReceiver",
+            "initInjectorDataResourceContainerAggregate": "initInjectorDataResourceContainerAggregate",
             "storage": {
                 "name-service": "ResourceStorage",
                 "adapter": {

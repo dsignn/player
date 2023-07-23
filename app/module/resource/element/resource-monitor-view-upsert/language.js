@@ -17,7 +17,8 @@ export const lang = {
     "notify-save" : "Risorsa salvata",
     "notify-update" : "Risorsa modificata",
     "enable-multi-media": "Abilita multi media resource",
-    "search-resource": "Cerca risorsa"
+    "search-resource": "Cerca risorsa",
+    "monitor": "Impianto"
   },
   "en": {
     "header": "List monitor",
@@ -37,6 +38,7 @@ export const lang = {
     "notify-save" : "Resource saved",
     "notify-update" : "Resource updated",
     "enable-multi-media": "Enable multi media resource",
-    "search-resource": "Search resource"
+    "search-resource": "Search resource",
+    "monitor": "plant"
   }
 };

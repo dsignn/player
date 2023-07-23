@@ -78,7 +78,7 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
             </style>
             <paper-tabs selected="{{selectedTab}}" tabindex="0">
                 <paper-tab>{{localize('resources')}}</paper-tab>
-                <paper-tab>{{localize('timeslots')}}</paper-tab>
+                <paper-tab>{{localize('monitor-resource')}}</paper-tab>
             </paper-tabs>
             <iron-pages id="index" selected="{{selectedTab}}">
                 <div>

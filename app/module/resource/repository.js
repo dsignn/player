@@ -259,7 +259,7 @@ export class Repository extends ContainerAware {
                 this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service']),
                 storage,
                 this.getContainer().get('Timer'),
-                this.getContainer().get(this.getContainer().get('ModuleConfig')['timeslot']['timeslot'].injectorDataTimeslotAggregate),
+                this.getContainer().get(this._getModuleConfig().initInjectorDataResourceContainerAggregate),
             )
 
             resourceSenderService.setEventManager(
@@ -348,6 +348,18 @@ export class Repository extends ContainerAware {
         this.getContainer().set(
             this._getModuleConfig().ipcSender,
             require('electron').ipcRenderer
+        );
+    }
+
+    initInjectorDataResourceContainerAggregate() {
+        
+        const entityContainerAggregate = new ContainerAggregate();
+        entityContainerAggregate.setPrototipeClass(AbstractInjector);
+        entityContainerAggregate.setContainer(this.getContainer());
+
+        this.getContainer().set(
+            this._getModuleConfig().initInjectorDataResourceContainerAggregate, 
+            entityContainerAggregate
         );
     }
 

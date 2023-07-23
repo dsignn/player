@@ -32,10 +32,12 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
                 #left-section {
                     width: 80px;
                     min-height: 140px;
-                    background-size: cover;
+                    background-size: contain;
+                    background-size: 160%;
                     background-position: center;
                     background-repeat: no-repeat;
-                    background-image: url("./../../module/timeslot/element/paper-timeslot/img/cover.jpg");
+                    background-image: url("./../../module/resource/element/paper-resource-monitor/img/cover.png");
+                    border-right: 1px solid var(--divider-color);
                 }
                 
                 #fastAction {
