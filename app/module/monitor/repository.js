@@ -321,7 +321,7 @@ export class Repository extends ContainerAware {
 
         hydrator.addValueStrategy('monitors', strategy)
             .addValueStrategy('polygonPoints',  new HydratorStrategy(Repository.getPointHydrator(container)))
-            .addValueStrategy('defaultTimeslotReference', new HydratorStrategy(Repository.getTimeslotReferenceHydrator(container)))
+            .addValueStrategy('backgroundResource', new HydratorStrategy(Repository.getEntityReferenceHydrator(container)))
             .addValueStrategy('alwaysOnTop', new HybridStrategy(HybridStrategy.BOOLEAN_TYPE, HybridStrategy.NUMBER_TYPE))
             .addValueStrategy('offsetX', new NumberStrategy())
             .addValueStrategy('offsetY', new NumberStrategy())
@@ -338,7 +338,7 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('polygonPoints')
             .enableExtractProperty('monitors')
             .enableExtractProperty('alwaysOnTop')
-            .enableExtractProperty('defaultTimeslotReference');
+            .enableExtractProperty('backgroundResource');
 
 
         hydrator.enableHydrateProperty('id')
@@ -351,7 +351,7 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('polygonPoints')
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('alwaysOnTop')
-            .enableHydrateProperty('defaultTimeslotReference');
+            .enableHydrateProperty('backgroundResource');
 
         return hydrator;
     }
@@ -406,7 +406,7 @@ export class Repository extends ContainerAware {
      * @return {PropertyHydrator}
      * TODO monitor confi is loaded before
      */
-    static getTimeslotReferenceHydrator(container) {
+    static getEntityReferenceHydrator(container) {
 
         let hydrator = new PropertyHydrator();
         hydrator.setTemplateObjectHydration(

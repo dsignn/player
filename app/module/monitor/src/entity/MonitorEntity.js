@@ -56,7 +56,7 @@ export class MonitorEntity extends EntityIdentifier {
         /**
          * @type {object}
          */
-        this.defaultTimeslotReference = {};
+        this.backgroundResource = {};
     }
 
     /**

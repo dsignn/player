@@ -36,7 +36,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                     background-color: transparent;
                 }
     
-                .backgrond {
+                .background {
                     z-index: 1;
                 }
     
@@ -54,7 +54,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     
             </style>
             <div id="container" class="layers">
-                <div id="backgrond"  class="layer backgrond"></div>
+                <div id="background"  class="layer background"></div>
                 <div id="standard" class="layer standard"></div>
                 <div id="monitors" class="layer monitors"></div>
                 <div id="overlay"  class="layer overlay"></div>
@@ -85,7 +85,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type string
              */
-            defaultTimeslotReference: {
+             backgroundResource: {
                 type: Object,
                 notify: true,
                 value: null
@@ -144,7 +144,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type object
              */
-            timeslotDefault: {},
+            backgroundResource: {},
 
             /**
              * @type object
@@ -157,7 +157,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                     },
                     // TODO add storage service on the player
                     "StorageContainerAggregate": {
-                        "_timeslotStorage": "TimeslotStorage"
+                        "_resourceStorage": "ResourceStorage"
                     },
                     "HydratorContainerAggregate": {
                         "_resourceMonitorHydrator": "ResourceMonitorHydrator"
@@ -185,7 +185,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type StorageInterface
              */
-            _timeslotStorage: {
+            _resourceStorage: {
                 type: Object,
                 readOnly: true
             }
@@ -194,7 +194,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
     static get observers() {
         return [
-            '_changeDefaultResource(defaultTimeslotReference, _timeslotStorage)',
+            '_changeDefaultResource(backgroundResource, _resourceStorage)',
         ]
     }
 
@@ -510,10 +510,10 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         if (!defaultResourceReference || !defaultResourceReference.id || !storage) {
             return;
         } else {
-            this.clearLayer('backgrond');
+            this.clearLayer('background');
         }
 
-        console.log('TODO REFACTOR')
+        console.log('CAMBIA BACKGROUND')
         /*
         storage.get(defaultResourceReference.id)
             .then((resource) => {

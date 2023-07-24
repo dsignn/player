@@ -106,7 +106,8 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
     _appendPaperPlayer(node, monitor) {
 
         let paperPlayerElement = document.createElement("paper-player");
-        paperPlayerElement.defaultTimeslotReference = monitor.defaultTimeslotReference ? monitor.defaultTimeslotReference : null;
+        paperPlayerElement.backgroundResource = monitor.backgroundResource ? monitor.backgroundResource : null;
+        console.log('MONITORRRRRRRRRRR', monitor);
         paperPlayerElement.identifier = monitor.id;
         paperPlayerElement.setStyles(monitor);
 
