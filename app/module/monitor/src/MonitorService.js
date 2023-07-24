@@ -1,5 +1,6 @@
 import { EventManagerAware } from "@dsign/library/src/event";
 import {Storage} from "@dsign/library/src/storage/Storage";
+import {ResourceSenderEntity} from "./../../resource/src/entity/ResourceSenderEntity";
 
 /**
  * @class MonitorService
@@ -90,6 +91,8 @@ export class MonitorService extends EventManagerAware {
          */
         this.enableMonitor = {};
 
+        this.resourceSender = null;
+
         /**
          * @type {boolean}
          */
@@ -129,6 +132,57 @@ export class MonitorService extends EventManagerAware {
     }
 
     /**
+     * @param {ResourceSenderService} resourceSender 
+     */
+    setResourceSender(resourceSender) {
+        this.resourceSender = resourceSender;
+
+        if (this.enableMonitor) {
+            setTimeout(function() {
+                
+                    this._updateResourceBackground();
+                }.bind(this), 
+                10000
+            );
+        }
+    }
+
+    /**
+     * 
+     */
+    _updateResourceBackground() {
+        let monitors = this.enableMonitor.getMonitors({nested:true});
+        for(let cont = 0; monitors.length > cont; cont++) {
+            if (monitors[cont].backgroundResource && monitors[cont].backgroundResource.id) {
+                console.log('METTI BACKGROUND ', monitors[cont].name)
+                this._sendBackgroundResourceMonitor(monitors[cont].backgroundResource, monitors[cont], this.enableMonitor.id);
+            } else {
+                console.log('PILISCI ', monitors[cont].name)
+                this.resourceSender.clearLayer(monitors[cont], 'default');
+            }
+        }
+    }
+
+    /**
+     * @param {*} reference 
+     * @param {*} monitor 
+     * @param {*} idMonitorContainer 
+     */
+    _sendBackgroundResourceMonitor(reference, monitor, idMonitorContainer) {
+        
+        let resourceSenderEntity = new ResourceSenderEntity();
+        resourceSenderEntity.resourceReference = reference;
+        resourceSenderEntity.resourceReference.context = 'default';
+        resourceSenderEntity.resourceReference.rotation = 'rotation-infinity';
+
+        resourceSenderEntity.monitorContainerReference = {};
+        resourceSenderEntity.monitorContainerReference.parentId = idMonitorContainer;
+        resourceSenderEntity.monitorContainerReference.id = monitor.id;
+
+        this.resourceSender.play(resourceSenderEntity);
+    } 
+
+    /**
      * @return {MonitorContainerEntity}
      */
     getEnableMonitor() {
@@ -139,6 +193,8 @@ export class MonitorService extends EventManagerAware {
      * @param evt
      */
     _checkUpdateMonitor(evt) {
+
+
  
         switch (true) {
             case (evt.data.id === this.enableMonitor.id && evt.data.enable === false):
@@ -148,16 +204,21 @@ export class MonitorService extends EventManagerAware {
                 this.enableMonitor = {};
                 break;
             case (evt.data.id === this.enableMonitor.id && evt.data.enable === true):
-                console.log('ENABLE', evt.data.name, this.enableMonitor.name)
+                console.log('ENABLE', evt.data.name, this.enableMonitor)
+
+                this.enableMonitor = evt.data;
                 this.sender.send(MonitorService.UPDATE_MONITOR, evt.data);
                 this.eventManager.emit(MonitorService.UPDATE_MONITOR, evt.data);
+                this._updateResourceBackground();
+              
                 break;
             case (evt.data.enable === true):
                 console.log('CHANGE', evt.data.name, this.enableMonitor.name)
                 this._clearMonitorsEnabled();
+                this.enableMonitor = evt.data;
                 this.sender.send(MonitorService.CHANGE_MONITOR, evt.data);
                 this.eventManager.emit(MonitorService.CHANGE_MONITOR, evt.data);
-                this.enableMonitor = evt.data;
+        
                 break;
         }
     }

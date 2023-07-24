@@ -323,7 +323,6 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
         super();
         this.resources = lang;
         this.addEventListener('update-resource', (evt) => {
-            console.log('fffffffffff');
             this.updateDurationEntity();
             this.updateSlider();
             this.updateStatusHtml();
@@ -377,7 +376,6 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
             // TODO hydrate resource
             this.entity.resourceReference = Object.assign(resource, entity.resourceReference);
    
-            console.log(this.entity.resourceReference);
             if ((this.entity.resourceReference instanceof MultiMediaEntity)) {
                 let promises = [];
                 for (let cont = 0; entity.resourceReference.resources.length > cont; cont++) {

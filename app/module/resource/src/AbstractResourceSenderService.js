@@ -14,6 +14,13 @@ export class AbstractResourceSenderService extends EventManagerAware {
     *
     * @return {string}
     */
+   static get CLEAR_LAYER() { return 'clear-layer'; }
+
+   /**
+    * Name of the "message" send from sender when play resource
+    *
+    * @return {string}
+    */
    static get PLAY() { return 'play-resource'; }
 
    /**

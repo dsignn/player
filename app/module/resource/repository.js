@@ -292,7 +292,9 @@ export class Repository extends ContainerAware {
             );
 
                 
-            this.getContainer().set( this._getModuleConfig().resourceSenderService, resourceSenderService);
+            this.getContainer().set(this._getModuleConfig().resourceSenderService, resourceSenderService);
+            this.getContainer().get('MonitorService')
+                .setResourceSender(resourceSenderService);
         });
     }
 

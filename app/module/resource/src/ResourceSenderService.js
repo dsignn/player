@@ -1,4 +1,5 @@
 import { AbstractResourceSenderService } from "./AbstractResourceSenderService";
+import { FileEntity } from "./entity/FileEntity";
 /**
  * @class ResourceSenderService
  */
@@ -31,6 +32,10 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      * @param {CustomEvent} evt 
      */
     _updateResourceSender(evt) {
+
+        if (evt.data.resource.resourceReference.context === FileEntity.CONTEXT_DEFAULT) {
+            return;
+        }
 
         this.resourceSenderStorage.update(evt.data.resource)
             .then((entity) => {
@@ -161,6 +166,14 @@ export class ResourceSenderService extends AbstractResourceSenderService {
     }
 
     /**
+     * @param {*} monitor 
+     * @param {*} layer 
+     */
+    clearLayer(monitor, layer) {
+        this.emitResourceEvt(ResourceSenderService.CLEAR_LAYER, monitor, {'layer': layer});
+    }
+
+    /**
      * @param {ResourceSenderEntity} entity
      * @return {Promise}
      */
@@ -195,7 +208,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'play');
         }
 
-        console.log('Sender start', entity);
+        //console.log('Sender start', entity);
         this.emitResourceEvt(ResourceSenderService.PLAY, entity, data);
         //TODO save storage
     }
@@ -308,7 +321,6 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         }
 
         runningResource.resourceReference.setCurrentTime(second);
-        console.log('CAMBIO TEMPO', runningResource.resourceReference.getCurrentTime());
 
         this.emitResourceEvt(
             ResourceSenderService.CHANGE_TIME,

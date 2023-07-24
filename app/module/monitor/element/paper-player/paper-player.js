@@ -36,7 +36,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                     background-color: transparent;
                 }
     
-                .background {
+                .default {
                     z-index: 1;
                 }
     
@@ -54,7 +54,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     
             </style>
             <div id="container" class="layers">
-                <div id="background"  class="layer background"></div>
+                <div id="default"  class="layer default"></div>
                 <div id="standard" class="layer standard"></div>
                 <div id="monitors" class="layer monitors"></div>
                 <div id="overlay"  class="layer overlay"></div>
@@ -82,13 +82,8 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 reflectToAttribute: true,
             },
 
-            /**
-             * @type string
-             */
-             backgroundResource: {
-                type: Object,
-                notify: true,
-                value: null
+            entity: {
+
             },
 
             /**
@@ -144,20 +139,11 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             /**
              * @type object
              */
-            backgroundResource: {},
-
-            /**
-             * @type object
-             */
             services: {
                 value: {
                     "_resourceService": "ResourceService",
                     "ReceiverContainerAggregate": {
                         "_resourceReceiver": "ResourceReceiver"
-                    },
-                    // TODO add storage service on the player
-                    "StorageContainerAggregate": {
-                        "_resourceStorage": "ResourceStorage"
                     },
                     "HydratorContainerAggregate": {
                         "_resourceMonitorHydrator": "ResourceMonitorHydrator"
@@ -180,22 +166,8 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 type: Object,
                 readOnly: true,
                 observer: '_changeResourceReceiver'
-            },
-
-            /**
-             * @type StorageInterface
-             */
-            _resourceStorage: {
-                type: Object,
-                readOnly: true
             }
         }
-    }
-
-    static get observers() {
-        return [
-            '_changeDefaultResource(backgroundResource, _resourceStorage)',
-        ]
     }
 
     /**
@@ -207,6 +179,11 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         if (!newValue) {
             return;
         }
+
+        newValue.on(
+            AbstractResourceSenderService.CLEAR_LAYER,
+            this._clearLayer.bind(this)
+        );
 
         newValue.on(
             AbstractResourceSenderService.PLAY,
@@ -234,122 +211,12 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         );
     }
 
-    /**
-     * @param {Monitor} monitor
-     */
-    updateValueFromMonitor(monitor) {
-        this.setStyles(monitor);
-        let nodeMonitors = Array.prototype.slice.call(
-            this.shadowRoot.querySelectorAll('paper-player')
-        );
-
-        for (let cont = 0; monitor.monitors.length > cont; cont++) {
-            monitor.monitors[cont].addToDom = true;
-            for (let subCont = 0; nodeMonitors.length > subCont; subCont++) {
-                if (nodeMonitors[subCont].identifier === monitor.monitors[cont].id) {
-                    /**
-                     * update style
-                     */
-                    nodeMonitors[subCont].setStyles(monitor.monitors[cont]);
-                    monitor.monitors[cont].addToDom = false;
-
-                    if (monitor.monitors[cont].monitors.length > 0) {
-                        nodeMonitors[subCont].updateValueFromMonitor(monitor.monitors[cont]);
-                    }
-
-                    nodeMonitors[subCont].removeToDom = false;
-                    nodeMonitors.splice(subCont, 1);
-
-                }
-            }
+    _clearLayer(evt, msg) {
+        
+        if (msg.resource.id ==  this.identifier ) {
+            console.log('PULISCI', msg.resource.name, msg.data.layer);
+            this.clearLayer(msg.data.layer);
         }
-
-        for (let cont = 0; nodeMonitors.length > cont; cont++) {
-            console.log('REMOVE', nodeMonitors[cont]);
-            nodeMonitors[cont].remove();
-        }
-
-        for (let cont = 0; monitor.monitors.length > cont; cont++) {
-            if (monitor.monitors[cont].addTDom === true) {
-
-                let monitorElement = document.createElement("paper-player");
-                monitorElement.identifier = monitor.monitors[cont].id;
-                monitorElement.setStyles(monitor.monitors[cont]);
-                this.$.monitors.appendChild(monitorElement);
-                console.log('APPEND', monitorElement);
-            }
-        }
-        // TODO add to dom;
-    }
-
-    /**
-     * @param {MonitorEntity} monitor
-     */
-    setStyles(monitor) {
-        this.height = monitor.height;
-        this.width = monitor.width;
-        this.offsetX = monitor.offsetX;
-        this.offsetY = monitor.offsetY;
-        this.backgroundColor = monitor.backgroundColor;
-        // TODO remove?
-        //this.polygonPoints = [];
-        this.polygonPoints = monitor.polygonPoints;
-
-        return this;
-    }
-
-    /**
-     * @param { resourceEntity } resourceEntity
-     */
-    clearLayerButNotLast(resourceEntity) {
-        if (!this.$[resourceEntity.getContext()]) {
-            return;
-        }
-
-        let childrenNodes = this.$[resourceEntity.getContext()].childNodes;
-        // Clear layer
-        for (let cont = childrenNodes.length - 2; cont >= 0; cont--) {
-            setTimeout(
-                function () {
-                    this.remove();
-                    console.log('DIO CANE')
-                }.bind(childrenNodes[cont]),
-                50
-            );
-        }
-    }
-
-    /**
-     * @param layer
-     */
-    clearLayer(layer) {
-        if (!this.$[layer]) {
-            return;
-        }
-
-        let childrenNodes = this.$[layer].childNodes;
-        for (let cont = 0; childrenNodes.length > cont; cont--) {
-            childrenNodes[cont].remove();
-        }
-    }
-
-    /**
-     * @param resource
-     * @params context
-     * @private
-     */
-    getResourceElement(resource, context = {}) {
-
-        let query = '';
-        switch (true) {
-            case context.serviceId !== undefined:
-                query = `paper-player-resource[wrapper-resource-id="${context.serviceId}"]`;
-                break;
-            case resource !== undefined:
-                query = `paper-player-resource[resource-id="${resource.id}"]:not([wrapper-resource-id])`;
-                break;
-        }
-        return this.shadowRoot.querySelector(query);
     }
 
     /**
@@ -507,13 +374,14 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
      */
     _changeDefaultResource(defaultResourceReference, storage) {
 
+        console.log('CAMBIA BACKGROUND', defaultResourceReference, storage)
         if (!defaultResourceReference || !defaultResourceReference.id || !storage) {
             return;
         } else {
-            this.clearLayer('background');
+            this.clearLayer('default');
         }
 
-        console.log('CAMBIA BACKGROUND')
+        console.log('CAMBIA BACKGROUND 2')
         /*
         storage.get(defaultResourceReference.id)
             .then((resource) => {
@@ -607,6 +475,125 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         }
 
         this.style.clipPath = `polygon(${stringPolygon})`;
+    }
+
+
+    /**
+     * @param {Monitor} monitor
+     */
+    updateValueFromMonitor(monitor) {
+        this.setStyles(monitor);
+        let nodeMonitors = Array.prototype.slice.call(
+            this.shadowRoot.querySelectorAll('paper-player')
+        );
+
+        for (let cont = 0; monitor.monitors.length > cont; cont++) {
+            monitor.monitors[cont].addToDom = true;
+            for (let subCont = 0; nodeMonitors.length > subCont; subCont++) {
+                if (nodeMonitors[subCont].identifier === monitor.monitors[cont].id) {
+                    /**
+                     * update style
+                     */
+                    nodeMonitors[subCont].setStyles(monitor.monitors[cont]);
+                    monitor.monitors[cont].addToDom = false;
+
+                    if (monitor.monitors[cont].monitors.length > 0) {
+                        nodeMonitors[subCont].updateValueFromMonitor(monitor.monitors[cont]);
+                    }
+
+                    nodeMonitors[subCont].removeToDom = false;
+                    nodeMonitors.splice(subCont, 1);
+
+                }
+            }
+        }
+
+        for (let cont = 0; nodeMonitors.length > cont; cont++) {
+            console.log('REMOVE', nodeMonitors[cont]);
+            nodeMonitors[cont].remove();
+        }
+
+        for (let cont = 0; monitor.monitors.length > cont; cont++) {
+            if (monitor.monitors[cont].addTDom === true) {
+
+                let monitorElement = document.createElement("paper-player");
+                monitorElement.identifier = monitor.monitors[cont].id;
+                monitorElement.setStyles(monitor.monitors[cont]);
+                this.$.monitors.appendChild(monitorElement);
+                console.log('APPEND', monitorElement);
+            }
+        }
+        // TODO add to dom;
+    }
+
+    /**
+     * @param {MonitorEntity} monitor
+     */
+    setStyles(monitor) {
+        this.height = monitor.height;
+        this.width = monitor.width;
+        this.offsetX = monitor.offsetX;
+        this.offsetY = monitor.offsetY;
+        this.backgroundColor = monitor.backgroundColor;
+        // TODO remove?
+        //this.polygonPoints = [];
+        this.polygonPoints = monitor.polygonPoints;
+
+        return this;
+    }
+
+    /**
+     * @param { resourceEntity } resourceEntity
+     */
+    clearLayerButNotLast(resourceEntity) {
+        if (!this.$[resourceEntity.getContext()]) {
+            return;
+        }
+
+        let childrenNodes = this.$[resourceEntity.getContext()].childNodes;
+        // Clear layer
+        for (let cont = childrenNodes.length - 2; cont >= 0; cont--) {
+            setTimeout(
+                function () {
+                    this.remove();
+                    console.log('DIO CANE')
+                }.bind(childrenNodes[cont]),
+                50
+            );
+        }
+    }
+
+    /**
+     * @param layer
+     */
+    clearLayer(layer) {
+        if (!this.$[layer]) {
+            return;
+        }
+
+        let childrenNodes = this.$[layer].childNodes;
+        for (let cont = 0; childrenNodes.length > cont; cont--) {
+            childrenNodes[cont].remove();
+        }
+    }
+
+    /**
+     * @param resource
+     * @params context
+     * @private
+     */
+    getResourceElement(resource, context = {}) {
+
+        let query = '';
+        switch (true) {
+            case context.serviceId !== undefined:
+                query = `paper-player-resource[wrapper-resource-id="${context.serviceId}"]`;
+                break;
+            case resource !== undefined:
+                query = `paper-player-resource[resource-id="${resource.id}"]:not([wrapper-resource-id])`;
+                break;
+        }
+        return this.shadowRoot.querySelector(query);
     }
 }
 window.customElements.define('paper-player', PaperPlayer);

@@ -107,7 +107,8 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
 
         let paperPlayerElement = document.createElement("paper-player");
         paperPlayerElement.backgroundResource = monitor.backgroundResource ? monitor.backgroundResource : null;
-        console.log('MONITORRRRRRRRRRR', monitor);
+
+        paperPlayerElement.entity = monitor;
         paperPlayerElement.identifier = monitor.id;
         paperPlayerElement.setStyles(monitor);
 
