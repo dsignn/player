@@ -1,21 +1,20 @@
-import {AbstractTimeslotService} from "./../../timeslot/src/AbstractTimeslotService";
+import {AbstractResourceSenderService} from "./../../resource/src/AbstractResourceSenderService";
 import {PlaylistEntity} from "./entity/PlaylistEntity";
 
 /**
  * @class PlaylistService
  */
-export class PlaylistService extends AbstractTimeslotService {
+export class PlaylistService extends AbstractResourceSenderService {
 
     /**
-     * @param {Storage} timeslotStorage
-     * @param {AbstractSender} sender
+     * @param {Storage} resourceStorage
      * @param {Timer} timer
      * @param {ContainerAggregate} dataInjectorManager
      * @param {Storage} playlistStorage
      */
-    constructor(timeslotStorage, sender, timer, dataInjectorManager, playlistStorage) {
+    constructor(resourceStorage, timer, dataInjectorManager, playlistStorage) {
 
-        super(timeslotStorage, sender, timer, dataInjectorManager);
+        super(resourceStorage, timer, dataInjectorManager);
 
         /**
          * @type {Storage}
@@ -197,8 +196,8 @@ export class PlaylistService extends AbstractTimeslotService {
      */
     async resume(playlist) {
 
-        let timeslotPlaylistReference = playlist.current();
-        let timeslot = await this.timeslotStorage.get(timeslotPlaylistReference.id);
+       // let timeslotPlaylistReference = playlist.current();
+       // let timeslot = await this.timeslotStorage.get(timeslotPlaylistReference.id);
         if (!timeslot) {
             // TODO ADD exception????
             return;
@@ -206,7 +205,7 @@ export class PlaylistService extends AbstractTimeslotService {
 
         let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
         let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
-        timeslot.currentTime = timeslotPlaylistReference.currentTime;
+       // timeslot.currentTime = timeslotPlaylistReference.currentTime;
         this._resumePlaylist(playlist, timeslot, dataTimeslot);
         this._executeBids(bindPlaylists, 'resume');
         this.getEventManager().emit(PlaylistService.RESUME, playlist);

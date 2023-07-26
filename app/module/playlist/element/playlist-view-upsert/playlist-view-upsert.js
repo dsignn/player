@@ -13,6 +13,10 @@ import '@polymer/paper-input/paper-input';
 import '@polymer/paper-item/paper-item';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/iron-flex-layout/iron-flex-layout';
+
+import {AudioEntity} from '../../../resource/src/entity/AudioEntity';
+import {VideoEntity} from '../../../resource/src/entity/VideoEntity';
+
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language';
@@ -66,8 +70,8 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                                 label="{{localize('timeslots')}}" 
                                 text-property="name"
                                 value-property="name"
-                                on-autocomplete-selected="_selectTimeslot"
-                                on-autocomplete-change="_searchTimeslot"
+                                on-autocomplete-selected="_selectResource"
+                                on-autocomplete-change="_searchResource"
                                 remote-source>
                                 <template slot="autocomplete-custom-template">
                                     ${autocompleteStyle}
@@ -80,9 +84,28 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                                     </paper-item>
                                 </template>
                             </paper-autocomplete>
-                            <paper-chips id="listTimeslot" items="{{entity.timeslots}}"></paper-chips> 
+                            <paper-chips id="listResource" items="{{entity.resources}}"></paper-chips> 
                             <paper-autocomplete 
-                                id="autocompleteBindTimeslot"
+                                id="autocompleteMonitor"
+                                label="{{localize('monitor')}}" 
+                                text-property="name"
+                                value-property="name"
+                                on-autocomplete-change="_searchMonitor"
+                                value="{{entity.monitorContainerReference}}"
+                                remote-source>
+                                    <template slot="autocomplete-custom-template">
+                                        ${autocompleteStyle}
+                                        <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                            <div index="[[index]]">
+                                                <div class="service-name">[[item.name]]</div>
+                                                <div class="service-description">{{localize('duration')}}[[item.height]] x [[item.width]]</div>
+                                            </div>
+                                            <paper-ripple></paper-ripple>
+                                        </paper-item>
+                                    </template>
+                            </paper-autocomplete>   
+                            <paper-autocomplete 
+                                id="autocompleteBindPlaylist"
                                 label="{{localize('bind-playlist')}}" 
                                 text-property="name"
                                 value-property="name"
@@ -150,8 +173,9 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                     },
                     StorageContainerAggregate : {
                         _storage :"PlaylistStorage",
-                        _timeslotStorage:"TimeslotStorage",
-                    }
+                        _resourceStorage:"ResourceStorage",
+                    },
+                    _monitorService: "MonitorService",
                 }
             },
 
@@ -166,7 +190,7 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
             /**
              * @type StorageInterface
              */
-            _timeslotStorage: {
+            _resourceStorage: {
                 type: Object,
                 readOnly: true
             }
@@ -202,13 +226,15 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @param evt
      * @private
      */
-    _searchTimeslot(evt) {
+    _searchResource(evt) {
         // TODO filter fot monitor id
-        this._timeslotStorage.getAll({name : evt.detail.value.text})
-            .then((timeslots) => {
+        this._resourceStorage.getAll({name : evt.detail.value.text})
+            .then((resources) => {
 
                 evt.detail.target.suggestions(
-                    timeslots
+                    resources.filter((resource) => {
+                        return ((resource instanceof VideoEntity) || (resource instanceof AudioEntity))
+                    })
                 );
             });
     }
@@ -217,19 +243,56 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
      * @param evt
      * @private
      */
-    _selectTimeslot(evt) {
+    _selectResource(evt) {
+        let search = 
 
-        this.entity.appendTimeslot(evt.detail.value);
-        // this.set('entity.timeslots', this.entity.timeslots);
-        //this.$.listTimeslot.notifyPath('items');
+        this.entity.appendResource(evt.detail.value);
+     
         // TODO better solution.
-        this.$.listTimeslot.shadowRoot.querySelector('dom-repeat').render();
+        this.$.listResource.shadowRoot.querySelector('dom-repeat').render();
 
         setTimeout(
             function () {
                 this.clear();
             }.bind(evt.target),
             300
+        );
+    }
+
+    /**
+     *
+     * @param evt
+     * @private
+     */
+    _searchMonitor(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._monitorService || !evt.detail.value) {
+            return;
+        }
+
+        let enableMonitor = this._monitorService.getEnableMonitor();
+        let monitors = enableMonitor.id ? enableMonitor.getMonitors({nested: true}) : [];
+
+        let filter = monitors.filter(
+            element => {
+                return element.name.search(new RegExp(evt.detail.value.text, 'i')) > -1;
+            }
+        );
+
+        let reference;
+        for (let cont =  0; filter.length > cont; cont++) {
+            reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
+            reference.setCollection('monitor');
+            reference.setId(filter[cont].id);
+            reference.height = filter[cont].height;
+            reference.width = filter[cont].width;
+            reference.setParentId(this._monitorService.getEnableMonitor().getId());
+            reference.name = filter[cont].name;
+            filter[cont] = reference;
+        }
+
+        evt.detail.target.suggestions(
+            filter
         );
     }
 

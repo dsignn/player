@@ -10,9 +10,11 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      * @param {Timer} timer
      * @param {ContainerAggregate} dataInjectorManager
      */
-    constructor(resourceStorage, resourceSenderStorage, timer, dataInjectorManager) {
+    constructor(resourceStorage, timer, dataInjectorManager, resourceSenderStorage) {
 
-        super(resourceStorage, resourceSenderStorage, timer, dataInjectorManager);
+        super(resourceStorage, timer, dataInjectorManager);
+
+        this.resourceSenderStorage = resourceSenderStorage;
 
         /**
          * List running resources

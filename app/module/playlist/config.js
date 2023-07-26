@@ -18,7 +18,6 @@
                 }
             }, 
             "entityService": "PlaylistEntity",
-            "entityServiceTimeslotRef": "TimeslotPlaylistReference",
             "acl": {
                 "resource": 'playlist'
             },

@@ -372,7 +372,6 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('name')
             .enableHydrateProperty('parentId');
 
-
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('collection')
             .enableExtractProperty('name')

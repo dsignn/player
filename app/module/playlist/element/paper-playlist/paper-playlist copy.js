@@ -215,9 +215,7 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
             /**
              * @type PlaylistEntity
              */
-            entity : {
-                observer: '_entityChanged'
-            },
+            entity : {  },
 
             /**
              * @type number
@@ -271,16 +269,76 @@ class PaperPlaylist extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixi
                 value : {
                     _localizeService: 'Localize',
                     StorageContainerAggregate: {
-                        _storage: "PlaylistStorage"
+                        _storage: "PlaylistStorage",
+                        _resourceStorage: "ResourceStorage"
                     }
                 }
             },
         }
     }
 
+    static get observers() {
+        return [
+            'changeEntity(entity, _resourceStorage)'
+        ]
+    }
+
     constructor() {
         super();
-        this.resources = lang;
+        this.resources = lang;   
+        this.addEventListener('update-resource', (evt) => {
+            console.log('update');
+          
+            this.status = this.entity.status;
+            this.duration = this.entity.getDuration();
+            
+            this.currentTime = this.entity.getCurrentTimeString();
+            this._updateActionHtml();
+            this._updateContextHtml();
+            this._updateRotationHtml();
+            this._clearStatusClass(this.entity.status);
+    
+            this.$.slider.max =  this.duration;
+            this.$.slider.disabled = this.entity.status === 'running' ? false : true;
+    
+            if (!this.excludeSlider) {
+                this.$.slider.value = this.currentTime;
+            }
+    
+            if (this.entity.status === 'idle') {
+                this.$.slider.dispatchEvent(new Event('mouseup'));
+                this.$.slider.value = this.entity.currentTime;
+                this.$.slider.disabled = true;
+            }
+    
+            if (this.entity.status === 'running' || this.entity.status === 'pause') {
+                this.$.crudButton.disabled = true;
+            } else {
+                this.$.crudButton.disabled = false;
+            }
+        });
+    }
+
+    /**
+     * @param {PlayerEntity} entity 
+     * @param {StorageInterface} storage 
+     */
+    changeEntity(entity, storage) {
+        if (!storage || !entity || !this.entity.resources || this.entity.resources.length < 1) {
+            return;
+        }
+
+        var resourceLoaded = 0;
+        for(let cont = 0; this.entity.resources.length > cont; cont++) {
+            this._resourceStorage.get(this.entity.resources[cont].id)
+                .then((resource) => {
+                    this.entity.resources[cont] = Object.assign(resource, this.entity.resources[cont]);
+                    resourceLoaded++
+                    if (this.entity.resources.length == resourceLoaded) {
+                        this.dispatchEvent(new CustomEvent('update-resource', this.entity));
+                    }
+                });
+        }
     }
 
     /**

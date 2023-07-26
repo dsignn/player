@@ -13,15 +13,15 @@ export const BindMixin = (superClass) => {
         }
 
         /**
-         * @param {ResourceSenderEntity} resourceSenderEntity
-         * @return {DurationMixin}
+         * @param {ReferenceEntity} referenceEntity
+         * @return {BindMixin}
          */
-        removeBind(resourceSenderEntity) {
+        removeBind(referenceEntity) {
 
             let index = this.binds.findIndex(
                 (element) => {
-                    return element.resourceReference.id === resourceSenderEntity.resourceReference.id && 
-                        element.monitorContainerReference.id === resourceSenderEntity.monitorContainerReference.id;
+                    return element.resourceReference.id === referenceEntity.resourceReference.id && 
+                        element.monitorContainerReference.id === referenceEntity.monitorContainerReference.id;
                 }
             );
 
@@ -34,11 +34,11 @@ export const BindMixin = (superClass) => {
 
         /**
          * 
-         * @param {ResourceSenderEntity} resourceSenderEntity 
+         * @param {ReferenceEntity} referenceEntity 
          */
-        appendBind(resourceSenderEntity) {
+        appendBind(referenceEntity) {
                         
-            this.binds.push(resourceSenderEntity);
+            this.binds.push(referenceEntity);
             return this;
         }
 

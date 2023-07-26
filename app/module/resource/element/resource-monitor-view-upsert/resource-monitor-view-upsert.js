@@ -179,12 +179,12 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
             });
     }
 
-        /**
+    /**
      *
      * @param evt
      * @private
      */
-        _searchMonitor(evt) {
+    _searchMonitor(evt) {
         // TODO cotroll papar autocomplete
         if (!this._monitorService || !evt.detail.value) {
             return;

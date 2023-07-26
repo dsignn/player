@@ -18,8 +18,8 @@ import {Test2} from "./src/injector/Test2";
 import {TimeslotEntity} from "./src/entity/TimeslotEntity"
 import {MongoTimeslotAdapter} from "./src/storage/adapter/mongo/MongoTimeslotAdapter";
 import {DexieTimeslotAdapter} from "./src/storage/adapter/dexie/DexieTimeslotAdapter";
-import {Repository as ResourceRepository} from "../resource/repository";
-import {Repository as MonitorRepository} from "../monitor/repository";
+import {Repository as ResourceRepository} from "../app/module/resource/repository";
+import {Repository as MonitorRepository} from "../app/module/monitor/repository";
 
 /**
  * @class Repository

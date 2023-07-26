@@ -5,10 +5,11 @@ export const lang = {
     "name" : "Nome",
     "working-only-video": "si attiva solo sulle risorse audio",
     "bind-playlist": "Aggancia playlist",
-    "timeslots" : "Timeslots",
+    "timeslots" : "Seziona risorsa",
     "save": "Salva",
     "notify-save" : "Playlist saved",
-    "notify-update" : "Playlist updated"
+    "notify-update" : "Playlist updated",
+    "monitor": "Cerca monitor"
   },
   "en": {
     "header": "List playlist",
@@ -16,9 +17,10 @@ export const lang = {
     "name" : "Name",
     "working-only-video": "working only on video resource",
     "bind-playlist": "Bind playlist",
-    "timeslots" : "Timeslots",
+    "timeslots" : "Resource",
     "save": "Save",
     "notify-save" : "Playlist salvata",
-    "notify-update" : "Playlist aggiornata"
+    "notify-update" : "Playlist aggiornata",
+    "monitor": "Search monitor"
   }
 };

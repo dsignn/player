@@ -1,5 +1,6 @@
 import { config } from './config';
 import { ContainerAware } from "@dsign/library/src/container/ContainerAware.js";
+import { ContainerAggregate } from "@dsign/library/src/container/ContainerAggregate";
 import { Store } from "@dsign/library/src/storage/adapter/dexie/Store";
 import { Storage } from "@dsign/library/src/storage/Storage";
 import { MongoDb } from "@dsign/library/src/storage/adapter/mongo/MongoDb";
@@ -22,6 +23,7 @@ import { ResourceSenderEntity } from "./src/entity/ResourceSenderEntity";
 import { MongoResourceAdapter } from "./src/storage/adapter/mongo/MongoResourceAdapter";
 import { DexieResourceAdapter } from "./src/storage/adapter/dexie/DexieResourceAdapter";
 import { ResourceSenderService } from "./src/ResourceSenderService";
+import { AbstractInjector } from "./src/injector/AbstractInjector";
 
 /**
  * @class Repository
@@ -64,6 +66,7 @@ export class Repository extends ContainerAware {
         this.initEntity();
         this.initIpcService();
         this.initHydrator();
+        this.initInjectorDataResourceContainerAggregate();
         this.initDexieStorage();
         this.initResourceMonitorDexieStorage();
         this.initService();
@@ -255,11 +258,14 @@ export class Repository extends ContainerAware {
                 storage
             );
 
+            storage.getEventManager()
+                .on(Storage.BEFORE_SAVE, this.onBeforeSave.bind(this))
+
             let resourceSenderService = new ResourceSenderService(
                 this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service']),
-                storage,
                 this.getContainer().get('Timer'),
-                this.getContainer().get(this._getModuleConfig().initInjectorDataResourceContainerAggregate),
+                this.getContainer().get(this._getModuleConfig().resourceDataContainerAggregate),
+                storage,
             )
 
             resourceSenderService.setEventManager(
@@ -360,7 +366,7 @@ export class Repository extends ContainerAware {
         entityContainerAggregate.setContainer(this.getContainer());
 
         this.getContainer().set(
-            this._getModuleConfig().initInjectorDataResourceContainerAggregate, 
+            this._getModuleConfig().resourceDataContainerAggregate, 
             entityContainerAggregate
         );
     }
