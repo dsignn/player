@@ -359,9 +359,11 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         paperPlayerResource.resourceService = this._resourceService;
         paperPlayerResource.data = data;
         paperPlayerResource.resourceEntity = resourceSenderEntity;
+        paperPlayerResource.wrapperResourceId = context ? context.serviceId : null;
 
         paperPlayerResource.height = this.height;
         paperPlayerResource.width = this.width;
+        
 
 
         return paperPlayerResource

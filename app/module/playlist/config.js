@@ -24,7 +24,8 @@
             "hydrator": {
                 "name-storage-service": "PlaylistEntityHydrator",
             },
-            "playlistService": "PlaylistService"
+            "playlistService": "PlaylistService",
+            "ipcSender": "IpcSender",
         }
     }
 }

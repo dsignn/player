@@ -1,5 +1,6 @@
-import {AbstractResourceSenderService} from "./../../resource/src/AbstractResourceSenderService";
-import {PlaylistEntity} from "./entity/PlaylistEntity";
+import { AbstractResourceSenderService } from "./../../resource/src/AbstractResourceSenderService";
+import { PlaylistEntity } from "./entity/PlaylistEntity";
+import { ResourceSenderEntity } from "./../../resource/src/entity/ResourceSenderEntity";
 
 /**
  * @class PlaylistService
@@ -27,10 +28,22 @@ export class PlaylistService extends AbstractResourceSenderService {
          */
         this.runningPlaylist = {};
 
-        this.timer.addEventListener('secondTenthsUpdated', (evt)  => {
+        this.timer.addEventListener('secondTenthsUpdated', (evt) => {
             this._schedule();
         });
     }
+
+    /**
+     * @param {CustomEvent} evt 
+     */
+    _updateResourceSender(evt) {
+            
+        this.playlistStorage.update(evt.data.context.entity)
+            .then((entity) => {
+                console.log('Update service playlist', entity.name);
+            })
+    }
+    
 
     /**
      * @private
@@ -38,405 +51,277 @@ export class PlaylistService extends AbstractResourceSenderService {
     _schedule() {
 
         this._scheduleRunningPlaylist();
-        this._updateRunnintPlaylist();
-    }
-    /**
-     *
-     * @param {PlaylistEntity} playlist
-     * @return {boolean}
-     */
-    isRunning(playlist) {
-
-        let isRunning = false;
-        switch (true) {
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`].id === playlist.id:
-                isRunning = true;
-                break;
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`].id === playlist.id:
-                isRunning = true;
-                break;
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`].id === playlist.id:
-                isRunning = true;
-                break;
-        }
-        return isRunning;
+        this._updateRunningPlaylist();
     }
 
-    /**
-     * @param {PlaylistEntity}  playlist
-     * @returns {PlaylistEntity}
-     */
-    getPlaylist(playlist) {
-        let running = null;
-        switch (true) {
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`].id === playlist.id:
-                running = this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`];
-                break;
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`].id === playlist.id:
-                running = this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`];
-                break;
-            case this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`] !== undefined &&
-            this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`].id === playlist.id:
-                running = this.runningPlaylist[`${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_DEFAULT}`].id === playlist;
-                break;
-        }
-        return running
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     */
-    setRunningPlaylist(playlist) {
-        if (!(typeof playlist.getMonitorId === 'function')) {
-            return;
-        }
-        this.runningPlaylist[`${playlist.getMonitorId()}-${playlist.context}`] = playlist;
-    }
-
-    /**
-     *
-     * @param {string} monitorId
-     * @param {string} context
-     * @return {string} context
-     */
-    getRunningPlaylist(monitorId, context) {
-        return this.runningPlaylist[`${monitorId}-${context}`];
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @private
-     */
-    _removeRunningPlaylist(playlist) {
-
-        let nameContext = `${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_OVERLAY}`;
-        if (this.runningPlaylist[nameContext] && this.runningPlaylist[nameContext].id === playlist.id) {
-            delete this.runningPlaylist[nameContext];
-        }
-
-        nameContext = `${playlist.getMonitorId()}-${PlaylistEntity.CONTEXT_STANDARD}`;
-        if (this.runningPlaylist[nameContext] && this.runningPlaylist[nameContext].id === playlist.id) {
-            delete this.runningPlaylist[nameContext];
-        }
-    }
-
-    /**
-     * @private
-     */
-    _scheduleRunningPlaylist() {
+    async _scheduleRunningPlaylist() {
         for (let property in this.runningPlaylist) {
 
-            let timeslotPlaylistRef = this.runningPlaylist[property].current();
+            let resource = this.runningPlaylist[property].current();
+            let playlist = this.runningPlaylist[property];
+            let data;
+
             switch (true) {
-                /**
-                 * Loop playlist
-                 */
-                case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === PlaylistEntity.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime() && this.runningPlaylist[property].rotation === PlaylistEntity.ROTATION_LOOP:
-                    console.log('LOOP playlist', this.runningPlaylist[property].name);
-                    this.runningPlaylist[property].reset();
-                    this._sendNextTimeslot(this.runningPlaylist[property], this.runningPlaylist[property].first());
+                // LOOP PLAYLIST
+                case playlist.hasNext() === false && playlist.getStatus() === PlaylistEntity.RUNNING && resource.getDuration() <= resource.getCurrentTime() && playlist.getRotation() === PlaylistEntity.ROTATION_LOOP:
+
+                    playlist.reset();
+                    // TODO SEND RESOURCE
+                    data = await this._extractData(playlist.current());
+                    this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
                     break;
-                /**
-                 * Next item in the playlist
-                 */
-                case this.runningPlaylist[property].hasNext() === true && this.runningPlaylist[property].status === PlaylistEntity.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
-                    console.log('NEXT playlist', this.runningPlaylist[property].name);
-                    timeslotPlaylistRef.currentTime = 0;
-                    this._sendNextTimeslot(this.runningPlaylist[property], this.runningPlaylist[property].next());
+                // NEXT PLAYLIST
+                case playlist.hasNext() === true && playlist.getStatus() === PlaylistEntity.RUNNING && resource.getDuration() <= resource.getCurrentTime():
+                    resource.currentTime = 0;
+                    playlist.next();
+                    // TODO SEND RESOURCE
+                    data = await this._extractData(playlist.current());
+                    this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
                     break;
-                /**
-                 * Stop playlist
-                 */
-                case this.runningPlaylist[property].hasNext() === false && this.runningPlaylist[property].status === PlaylistEntity.RUNNING && timeslotPlaylistRef.getDuration() <= timeslotPlaylistRef.getCurrentTime():
-                    console.log('STOP playlist', this.runningPlaylist[property].name);
-                    this._stopPlaylist( this.runningPlaylist[property]);
+                // STOP PLAYLIST
+                case playlist.hasNext() === false && playlist.getStatus() === PlaylistEntity.RUNNING && resource.getDuration() <= resource.getCurrentTime():
+
+                    this.stop(playlist);
+                    this.emitResourceEvt(PlaylistService.STOP, playlist);
+                    // TODO SEND RESOURCE
                     break;
             }
         }
     }
 
-    /**
-     * @param {PlaylistEntity} playlist
-     * @return {Promise}
-     */
-    async play(playlist) {
-        let timeslot = await this.timeslotStorage.get(playlist.first().getId());
-        if (!timeslot) {
-            // TODO ADD exception????
-            return;
-        }
-
-        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
-        let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-        this._playPlaylist(playlist, timeslot, dataTimeslot);
-        this._executeBids(bindPlaylists, 'play');
-        this.getEventManager().emit(PlaylistService.PLAY, playlist);
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @return {Promise}
-     */
-    async stop(playlist) {
-
-        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
-        this._stopPlaylist(playlist);
-        this._executeBids(bindPlaylists, 'stop');
-        this.getEventManager().emit(PlaylistService.STOP, playlist);
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @return {Promise}
-     */
-    async resume(playlist) {
-
-       // let timeslotPlaylistReference = playlist.current();
-       // let timeslot = await this.timeslotStorage.get(timeslotPlaylistReference.id);
-        if (!timeslot) {
-            // TODO ADD exception????
-            return;
-        }
-
-        let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
-       // timeslot.currentTime = timeslotPlaylistReference.currentTime;
-        this._resumePlaylist(playlist, timeslot, dataTimeslot);
-        this._executeBids(bindPlaylists, 'resume');
-        this.getEventManager().emit(PlaylistService.RESUME, playlist);
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @return {Promise}
-     */
-    async pause(playlist) {
-
-        let bindPlaylists = playlist.isBind !== true ? await this.getPlaylistFromArrayReference(playlist.binds) : [];
-        this._pausePlaylist(playlist);
-        this._executeBids(bindPlaylists, 'pause');
-        this.getEventManager().emit(PlaylistService.PAUSE, playlist);
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @param {second} second
-     * @returns {Promise<void>}
-     */
-    async changeTime(playlist, second) {
-        if (!this.isRunning(playlist)) {
-            return;
-        }
-
-        let running = this.getPlaylist(playlist);
-
-        if (!running) {
-            console.warn('Playlist not running', playlist, second);
-            return;
-        }
-
-        if (running.getDuration() <= second) {
-            console.warn('Playlist too long', playlist, second);
-            return;
-        }
-
-        playlist.setSecond(second);
-        let timeslot = await this.timeslotStorage.get(playlist.current().getId());
-        timeslot.currentTime = playlist.current().currentTime;
-
-        let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-        // TODO synch if there are bind playlist
-        this._changeTimeTimeslot(playlist, timeslot, dataTimeslot);
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @param {EntityReference} refTimeslotPlaylist
-     * @private
-     */
-    async _sendNextTimeslot(playlist, refTimeslotPlaylist) {
-        let timeslot = await this.timeslotStorage.get(refTimeslotPlaylist.id);
-        if (!timeslot) {
-            // TODO ADD exception????
-            return;
-        }
-
-        //this._executeBids(playlist, 'resume');
-        let dataTimeslot = await this._synchExtractTimeslotData(timeslot);
-        timeslot.currentTime = 0;
-        this._injectDataFromPlaylist(timeslot, playlist);
-        this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
-        this.getEventManager().emit(PlaylistService.PLAY, playlist);
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @param {TimeslotEntity} timeslot
-     * @param {Object} dataTimeslot
-     * @private
-     */
-    _playPlaylist(playlist, timeslot, dataTimeslot = null) {
-
-        let runningPlaylist = this.getRunningPlaylist(playlist.getMonitorId(), playlist.context);
-        if (runningPlaylist) {
-            this.pause(runningPlaylist);
-        }
-
-        this.setRunningPlaylist(playlist);
-        playlist.status = PlaylistEntity.RUNNING;
-
-        timeslot.currentTime = 0;
-        this._injectDataFromPlaylist(timeslot, playlist);
-        this._send(PlaylistService.PLAY, playlist, timeslot, dataTimeslot);
-        this.playlistStorage.update(playlist)
-            .then((data) => { console.log('PLAY playlist EVT')})
-            .catch((err) => { console.error(err)});
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @param {TimeslotEntity} timeslot
-     * @param {Object} dataTimeslot
-     * @private
-     */
-    _resumePlaylist(playlist, timeslot, dataTimeslot = null) {
-
-        let runningPlaylist = this.getRunningPlaylist(playlist.getMonitorId(), playlist.context);
-        if (runningPlaylist) {
-            this.pause(runningPlaylist);
-        }
-
-        this.setRunningPlaylist(playlist);
-        playlist.status = PlaylistEntity.RUNNING;
-        this._injectDataFromPlaylist(timeslot, playlist);
-        this._send(PlaylistService.RESUME, playlist, timeslot, dataTimeslot);
-        this.playlistStorage.update(playlist)
-            .then((data) => { console.log('RESUME playlist EVT')})
-            .catch((err) => { console.error(err)});
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @private
-     */
-    _pausePlaylist(playlist) {
-        playlist.status = PlaylistEntity.PAUSE;
-        this._removeRunningPlaylist(playlist);
-        this._send(PlaylistService.PAUSE, playlist, playlist.current());
-        this.playlistStorage.update(playlist)
-            .then((data) => { console.log('PAUSE playlist EVT')})
-            .catch((err) => { console.error(err)});
-
-    }
-
-    /**
-     * @param {PlaylistEntity} playlist
-     * @private
-     */
-    _stopPlaylist(playlist) {
-        playlist.status = PlaylistEntity.IDLE;
-        this._send(PlaylistService.STOP, playlist, playlist.current());
-        playlist.reset();
-        this.playlistStorage.update(playlist)
-            .then((data) => { console.log('STOP playlist EVT')})
-            .catch((err) => { console.error(err)});
-        this._removeRunningPlaylist(playlist);
-    }
-
-    /**
-     * @private
-     */
-    _changeTimeTimeslot(playlist, timeslot, dataTimeslot) {
-
-        this._injectDataFromPlaylist(timeslot, playlist);
-        this._send(PlaylistService.CHANGE_TIME, playlist, timeslot, dataTimeslot);
-        this.playlistStorage.update(playlist)
-            .then((data) => { console.log('CHANGE_TIME playlist EVT')})
-            .catch((err) => { console.error(err)});
-    }
-
-    /**
-     * @private
-     */
-    _updateRunnintPlaylist() {
+    _updateRunningPlaylist() {
 
         for (let property in this.runningPlaylist) {
 
             let playlist = this.runningPlaylist[property];
-            let timeslotPlaylistRef = playlist.current();
-
-            timeslotPlaylistRef.currentTime = parseFloat(timeslotPlaylistRef.getCurrentTime() + 0.1).toFixed(1);
-            this.playlistStorage.update(playlist)
-                .then((data) => {})
-                .catch((err) => { console.log(err) });
+            let resource = playlist.current();
+            
+            resource.setCurrentTime(
+                parseFloat(resource.getCurrentTime() + 0.1).toFixed(1)
+            );
+            
+           /*
+            resource.setCurrentTime(
+                resource.getCurrentTime() + 1
+            );
+*/
+            //console.log('Playlist time', playlist.name, resource.name, resource.currentTime);
+            this.getEventManager().emit(PlaylistService.UPDATE_TIME, playlist);
         }
     }
 
     /**
-     * @param {Array} playlists
-     * @param {String} method
-     * @private
+     * @param {PlaylistEntity} entity 
      */
-    _executeBids(playlists, method) {
-        for (let cont = 0; playlists.length > cont; cont++) {
-            playlists[cont].isBind = true;
-            this[method](playlists[cont])
-                .catch((err) => {console.error('Error bind timeslot service', err)});
-        }
+    _setRunningPlaylist(playlist) {
+        let context = `${playlist.monitorContainerReference.id}-${playlist.context}`;
+        this.runningPlaylist[context] = playlist;
     }
 
     /**
-     *
-     * @param {string} type
-     * @param {PlaylistEntity} playlist
-     * @param {TimeslotEntity} timeslot
-     * @param {Object} data
-     * @private
+     * @param {PlaylistEntity} playlist 
      */
-    _send(type, playlist, timeslot = null, data = null) {
-
-        let message = {
-            event : type,
-            data : {
-                timeslot : timeslot,
-                context : {
-                    serviceId: playlist.id
-                }
-            }
-
-        };
-
-        if(data) {
-            message.data.data = data;
+    _removeRunningPlaylist(playlist) {
+        let context = `${playlist.monitorContainerReference.id}-${playlist.context}`;
+        if (this.runningPlaylist[context] && this.runningPlaylist[context].id === playlist.id) {
+            delete this.runningPlaylist[context];
         }
-        console.log('PLAYLIST', message);
-        this.sender.send('proxy', message);
     }
 
     /**
-     * @param {Array<EntityReference>} references
+     * @param {PlaylistEntity} playlist 
+     */
+    _getRunningPlaylist(playlist) {
+        let context = `${playlist.monitorContainerReference.id}-${playlist.context}`;
+        return this.runningPlaylist[context] ? this.runningPlaylist[context] : null;
+    }
+
+    /**
+     * @param {PlaylistEntity} entity
      * @return {Promise}
      */
-    getPlaylistFromArrayReference(references) {
-        let playlists = [];
-        for (let cont = 0; references.length > cont; cont++) {
-            playlists.push(this.playlistStorage.get(references[cont].getId()));
+    async play(playlist) {
+        console.log('PLAY');
+        playlist = await this._loadResources(playlist);
+
+        // TODO PAUSE RUNNING PLAYLIST
+        let runningPlaylist = this._getRunningPlaylist(playlist);
+        if (runningPlaylist) {
+            this.pause(runningPlaylist);
         }
-        return Promise.all(playlists);
+
+        this._setRunningPlaylist(playlist);
+        playlist.status = PlaylistEntity.RUNNING;
+
+        /**
+         * Recover metadata
+         */
+        let data = await this._extractData(playlist.current());
+
+        /**
+         * Binds
+         */
+        if (playlist.getBinds().length > 0) {
+            this._scheduleBinds(entity.getBinds(), 'play');
+        }
+
+        this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
     }
 
     /**
-     * @param {TimeslotEntity} timeslot
-     * @param {PlaylistEntity} playlist
-     * @private
+     * @param {PlaylistEntity} entity
+     * @return {Promise}
      */
-    _injectDataFromPlaylist(timeslot, playlist) {
-        timeslot.enableAudio = playlist.enableAudio;
-        timeslot.context = playlist.context;
+    async resume(playlist) {
+        console.log('RESUME');
+        playlist = await this._loadResources(playlist);
+
+        let runningPlaylist = this._getRunningPlaylist(playlist);
+        if (runningPlaylist) {
+            this.pause(runningPlaylist);
+        }
+
+        this._setRunningPlaylist(playlist);
+        playlist.status = PlaylistEntity.RUNNING;
+
+        /**
+         * Recover metadata
+         */
+        let data = await this._extractData(playlist.current());
+
+        /**
+         * Binds
+         */
+        if (playlist.getBinds().length > 0) {
+            this._scheduleBinds(entity.getBinds(), 'resume');
+        }
+
+
+        this.emitResourceEvt(PlaylistService.RESUME, playlist, data);
+    }
+
+    /**
+     * @param {PlaylistEntity} entity
+     * @return {Promise}
+     */
+    async pause(playlist) {
+        console.log('PAUSE');
+        let runningPlaylist = this._getRunningPlaylist(playlist);
+        if (!runningPlaylist) {
+            return;
+        }
+
+        this._removeRunningPlaylist(playlist);
+        runningPlaylist.status = PlaylistEntity.PAUSE;
+
+        /**
+         * Binds
+         */
+        if (runningPlaylist.getBinds().length > 0) {
+            this._scheduleBinds(runningPlaylist.getBinds(), 'pause');
+        }
+
+        this.emitResourceEvt(PlaylistService.PAUSE, playlist);
+    }
+
+    /**
+     * @param {PlaylistEntity} entity
+     * @return {Promise}
+     */
+    async stop(playlist) {
+        console.log('STOP');
+
+        let runningPlaylist = this._getRunningPlaylist(playlist);
+        if (!runningPlaylist) {
+            playlist.status = PlaylistEntity.IDLE;
+            playlist.reset();
+            this.emitResourceEvt(PlaylistService.STOP, playlist);
+            return;
+        }
+
+        this._removeRunningPlaylist(playlist);
+        runningPlaylist.status = PlaylistEntity.IDLE;
+        runningPlaylist.reset();
+
+        /**
+         * Binds
+         */
+        if (runningPlaylist.getBinds().length > 0) {
+            this._scheduleBinds(runningPlaylist.getBinds(), 'stop');
+        }
+
+        this.emitResourceEvt(PlaylistService.STOP, runningPlaylist);
+    }
+
+    /**
+     * @param {array} binds 
+     * @param {string} method 
+     */
+    _scheduleBinds(binds, method) {
+        for (let cont = 0; binds.length > cont; cont++) {
+            console.log('BINDSSSSSSSSSSSS', method, binds[cont]);
+            this[method](binds[cont])
+                .catch(
+                    (err) => {
+                        console.error('Error bind resource service', err)
+                    });
+        }
+    }
+
+    async _loadResources(playlist) {
+        let promises = [];
+
+        for (let cont = 0; playlist.resources.length > cont; cont++) {
+            promises.push(this.resourceStorage.get(playlist.resources[cont].id));
+        }
+
+        let resources = await Promise.all(promises);
+
+        for (let cont = 0; resources.length > cont; cont++) {
+            let index = playlist.resources.findIndex((ele) => {
+                return ele.id === resources[cont];
+            });
+
+            if (index > -1) {
+                playlist.resources[index] = Object.assign(resources[cont], playlist.resources[index]);
+            }
+
+        }
+
+        return playlist;
+    }
+
+    /**
+     * @param {*} nameEvt 
+     * @param {*} playlist 
+     */
+    emitResourceEvt(nameEvt, playlist, data) {
+
+        let resourceSenderEntity = new ResourceSenderEntity();
+        resourceSenderEntity.monitorContainerReference = playlist.monitorContainerReference;
+        resourceSenderEntity.resourceReference = playlist.current();
+
+        let evtData = {
+            resource: resourceSenderEntity,
+            context : {
+                serviceId: playlist.id,
+                entity: playlist
+            }
+        }
+
+        if (data) {
+            evtData.data = data;
+        }
+
+        this.getEventManager().emit(nameEvt, evtData);
+    }
+
+    async changeTime(entity, second) {
+        let runningPlaylist = this._getRunningPlaylist(playlist);
+
+        if (!runningPlaylist) {
+            console.warn('Playlist not running', entity, second);
+            return;
+        }
     }
 }

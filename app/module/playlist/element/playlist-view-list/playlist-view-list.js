@@ -145,7 +145,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     play(evt) {
-        console.log('play');
         this._playlistService.play(evt.detail);
     }
 
@@ -153,7 +152,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     resume(evt) {
-        console.log('resume');
         this._playlistService.resume(evt.detail);
     }
 
@@ -161,7 +159,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     stop(evt) {
-        console.log('stop');
         this._playlistService.stop(evt.detail);
     }
 
@@ -169,7 +166,6 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
      * @param evt
      */
     pause(evt) {
-        console.log('pause');
         this._playlistService.pause(evt.detail);
     }
 

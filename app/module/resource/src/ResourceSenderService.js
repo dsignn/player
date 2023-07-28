@@ -114,7 +114,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
     }
 
     /**
-     * The entity.resourceReference is the "ResourceEntity"
+     * The ResourceSenderEntity
      * 
      * @param {ResourceSenderEntity} entity 
      */
@@ -158,7 +158,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      */
     _scheduleBinds(binds, method) {
         for (let cont = 0; binds.length > cont; cont++) {
-            console.log('BINDSSSSSSSSSSSS', method);
+            console.log('BINDSSSSSSSSSSSS', method, binds[cont]);
             this[method](binds[cont])
                 .catch(
                     (err) => {
@@ -202,7 +202,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         /**
          * Recover metadata
          */
-        let data = await this._extractData(entity);
+        let data = await this._extractData(entity.resourceReference);
         /**
          * Binds
          */
@@ -210,7 +210,6 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             this._scheduleBinds(entity.getBinds(), 'play');
         }
 
-        //console.log('Sender start', entity);
         this.emitResourceEvt(ResourceSenderService.PLAY, entity, data);
         //TODO save storage
     }
@@ -228,7 +227,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         }
 
         this._removeRunningResource(entity);
-        entity.resourceReference.status = FileEntity.PAUSE;
+        runningResource.resourceReference.status = FileEntity.PAUSE;
 
         /**
          * Binds
@@ -264,7 +263,7 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         /**
          * Recover metadata
          */
-        let data = await this._extractData(entity);
+        let data = await this._extractData(entity.resourceReference);
 
         /**
          * Binds
@@ -282,25 +281,24 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      */
     async stop(entity) {
 
-        // TODO Add xternal option?
-        let resource = await this._getResourceFromReference(entity);
-        if (!resource) {
-            // TODO warning
+        let runningResource = this._getRunningResource(entity);
+        if (!runningResource) {
+            entity.resourceReference.status = FileEntity.IDLE;
+            this.emitResourceEvt(ResourceSenderService.STOP, entity);
             return;
         }
 
-        entity.resourceReference = Object.assign(resource, entity.resourceReference);
         this._removeRunningResource(entity);
-        entity.resourceReference.status = FileEntity.IDLE;
+        runningResource.resourceReference.status = FileEntity.IDLE;
 
         /**
          * Binds
          */
         if (entity.getBinds().length > 0) {
-            this._scheduleBinds(entity.getBinds(), 'stop');
+            this._scheduleBinds(runningResource.getBinds(), 'stop');
         }
 
-        this.emitResourceEvt(ResourceSenderService.STOP, entity);
+        this.emitResourceEvt(ResourceSenderService.STOP, runningResource);
     }
 
     /**
@@ -328,22 +326,5 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             ResourceSenderService.CHANGE_TIME,
             runningResource
         );
-    }
-
-    /**
-     * @param {*} nameEvt 
-     * @param {*} resourceSenderEntity 
-     */
-    emitResourceEvt(nameEvt, resourceSenderEntity, data) {
-
-        let evtData = {
-            resource: resourceSenderEntity
-        }
-
-        if (data) {
-            evtData.data = data;
-        }
-
-        this.getEventManager().emit(nameEvt, evtData);
     }
 }

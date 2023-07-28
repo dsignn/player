@@ -2,14 +2,17 @@ export const lang = {
   "it": {
     "modify": "Modifica",
     "delete" : "Elimina",
-    "play-timeslot" : "Lancia il timeslot sul monitor",
-    "stop-timeslot" : "Ferma il timeslot",
-    "pause-timeslot" : "Metti in pausa il timeslot",
+    "play-timeslot" : "Play playlist",
+    "stop-timeslot" : "Stop playlist",
+    "pause-timeslot" : "Pause playlist",
     "send-standalone" : "send-standalone",
     "send-loop" : "send-loop",
     "send-imfinity" : "send-imfinity",
     "send-overlay" : "send-overlay",
-    "send-standard" : "send-standard"
+    "send-standard" : "send-standard",
+    "idle": "fermo",
+    "pause": "pausa",
+    "running": "attivo",
   },
   "en": {
     "modify": "Modify",
@@ -21,6 +24,9 @@ export const lang = {
     "send-loop" : "send-loop",
     "send-imfinity" : "send-imfinity",
     "send-overlay" : "send-overlay",
-    "send-standard" : "send-standard"
+    "send-standard" : "send-standard",
+    "idle": "idle", 
+    "pause": "pause",
+    "running": "running",
   }
 };

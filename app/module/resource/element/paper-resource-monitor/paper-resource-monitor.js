@@ -228,8 +228,7 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
                             </div>  
                         </div>
                         <paper-slider id="slider" pin on-mousedown="sliderDown" on-mouseup="sliderUp" on-mouseout="sliderOut" disabled></paper-slider>
-                    </div>
-                    
+                    </div>       
                     <div class="content-action">
                         <paper-icon-button id="play" icon="resource:play" on-click="_play" class="circle-small action"></paper-icon-button>
                         <paper-tooltip for="play" position="bottom">{{localize('play-resource')}}</paper-tooltip>

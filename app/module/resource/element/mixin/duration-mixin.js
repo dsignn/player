@@ -66,12 +66,13 @@ export const DurationMixin = (superClass) => {
         }
 
         updateEntityCurrentTimeFromService(evt) {
+
             if (this.entity && evt.data.id !== this.entity.id) {
                 return;
-             }
- 
-             this.entity = evt.data;
-             this.calcCurrentTime();
+            }
+           
+            this.entity = evt.data;
+            this.calcCurrentTime();
         }
         
         /**

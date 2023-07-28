@@ -40,20 +40,6 @@ export class PlaylistEntity extends ListAwareMixin(DurationMixin(BindMixin(Playe
     }
 
     /**
-     * @return boolean
-     */
-    hasMonitorContainer() {
-        return this.resources.length > 0;
-    }
-
-    /**
-     * @return boolean
-     */
-    getMonitorContainer() {
-        return this.resources.length > 0 ? this.resources.monitorContainerReference : null;
-    }
-
-    /**
      * @param {ResourceEntity} resource
      * @return {PlaylistEntity}
      */
@@ -136,27 +122,21 @@ export class PlaylistEntity extends ListAwareMixin(DurationMixin(BindMixin(Playe
     }
 
     /**
-     * @return {string|null}
+     * @returns float
      */
-    getMonitorId() {
-        let monitorId = null;
-        if (this.resources.length > 0) {
-            monitorId = this.resources[0].monitorContainerReference.id;
-        }
-        return monitorId
-    }
+    getCurrentTime() {
 
-    /**
-     *
-     * @param name
-     * @return {*}
-     */
-    getOption(name) {
-        let option = null;
-        if (this.options && typeof this.options === 'object' && this.options[name]) {
-            option = this.options[name];
+        let currentTime = 0;
+        for(let cont = 0; this.resources.length > cont ; cont++) {
+            if (cont === this.currentIndex) {
+                currentTime = currentTime + this.resources[cont].getCurrentTime();
+                break;
+            } else {
+                currentTime = currentTime + this.resources[cont].getDuration();
+            }
         }
-        return option;
+
+        return currentTime;
     }
 
     /**

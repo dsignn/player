@@ -134,7 +134,7 @@ export class AbstractResourceSenderService extends EventManagerAware {
     * @private
     */
    async _extractDataFromDataReferences(dataReferences) {
-      
+
       let promises = [];
       let data;
 
@@ -154,27 +154,27 @@ export class AbstractResourceSenderService extends EventManagerAware {
 
    /**
     *
-    * @param resourceSenderEntity
+    * @param resource
     * @return {Object}
     * @private
     */
-   async _extractData(resourceSenderEntity) {
-     
+   async _extractData(resource) {
+
       let data = {};
 
-      switch(true) {
-         case (resourceSenderEntity.resourceReference instanceof MultiMediaEntity):
-            for (let cont = 0; resourceSenderEntity.resourceReference.getResources().length > cont; cont++) {
-               let resource = resourceSenderEntity.resourceReference.getResources()[cont];
+      switch (true) {
+         case (resource instanceof MultiMediaEntity):
+            for (let cont = 0; resource.getResources().length > cont; cont++) {
+               let tmpResource = resource.getResources()[cont];
 
-               if ((resource instanceof MetadataEntity) && resource.getDataReferences().length > 0) {
-                  Object.assign(data, this.arrayToObject(await this._extractDataFromDataReferences(resource.getDataReferences())));  
+               if ((tmpResource instanceof MetadataEntity) && tmpResource.getDataReferences().length > 0) {
+                  Object.assign(data, this.arrayToObject(await this._extractDataFromDataReferences(tmpResource.getDataReferences())));
                }
             }
-          
+
             break;
-         case (resourceSenderEntity.resourceReference instanceof MetadataEntity && resourceSenderEntity.resourceReference.getDataReferences().length > 0):
-            Object.assign(data, this.arrayToObject(await this._extractDataFromDataReferences(resourceSenderEntity.resourceReference.getDataReferences()))); 
+         case (resource instanceof MetadataEntity && resource.getDataReferences().length > 0):
+            Object.assign(data, this.arrayToObject(await this._extractDataFromDataReferences(resource.getDataReferences())));
             break;
 
       }
@@ -192,5 +192,22 @@ export class AbstractResourceSenderService extends EventManagerAware {
       }
 
       return data;
+   }
+
+   /**
+    * @param {*} nameEvt 
+    * @param {*} resourceSenderEntity 
+    */
+   emitResourceEvt(nameEvt, resourceSenderEntity, data) {
+
+      let evtData = {
+         resource: resourceSenderEntity
+      }
+
+      if (data) {
+         evtData.data = data;
+      }
+
+      this.getEventManager().emit(nameEvt, evtData);
    }
 }

@@ -14,6 +14,7 @@ export const ActionsMixin = (superClass) => {
          */
         updateEntityFromService(evt) {
            
+            console.log('UPDATE FROPM SERVICE', evt.data);
             if (this.entity && evt.data.resource.id !== this.entity.id) {
                return;
             }

@@ -1,21 +1,24 @@
-import {config} from './config';
-import {ContainerAggregate, ContainerAware} from "@dsign/library/src/container/index";
-import {Store} from "@dsign/library/src/storage/adapter/dexie/Store";
-import {Storage} from "@dsign/library/src/storage/Storage";
-import {MongoDb} from "@dsign/library/src/storage/adapter/mongo/MongoDb";
-import {PropertyHydrator} from "@dsign/library/src/hydrator/index";
+import { config } from './config';
+import { ContainerAggregate, ContainerAware } from "@dsign/library/src/container/index";
+import { Store } from "@dsign/library/src/storage/adapter/dexie/Store";
+import { Storage } from "@dsign/library/src/storage/Storage";
+import { MongoDb } from "@dsign/library/src/storage/adapter/mongo/MongoDb";
+import { EventManager } from '@dsign/library/src/event/EventManager';
+import { EventManagerAggregate } from '@dsign/library/src/event/EventManagerAggregate';
+import { ProxyEventManager } from '@dsign/library/src/event/electron/ProxyEventManager';
+import { PropertyHydrator } from "@dsign/library/src/hydrator/index";
 import {
     HybridStrategy,
     HydratorStrategy,
     MongoIdStrategy,
     NumberStrategy
 } from "@dsign/library/src/hydrator/strategy/value/index";
-import {MapPropertyStrategy} from "@dsign/library/src/hydrator/strategy/proprerty/MapPropertyStrategy";
-import {MongoPlaylistAdapter} from "./src/storage/adapter/mongo/MongoPlaylistAdapter";
+import { MapPropertyStrategy } from "@dsign/library/src/hydrator/strategy/proprerty/MapPropertyStrategy";
+import { MongoPlaylistAdapter } from "./src/storage/adapter/mongo/MongoPlaylistAdapter";
 import { MongoIdGenerator } from "@dsign/library/src/storage/util/MongoIdGenerator";
-import {DexiePlaylistAdapter} from "./src/storage/adapter/dexie/DexiePlaylistAdapter";
-import {PlaylistService} from "./src/PlaylistService";
-import {PlaylistEntity} from "./src/entity/PlaylistEntity";
+import { DexiePlaylistAdapter } from "./src/storage/adapter/dexie/DexiePlaylistAdapter";
+import { PlaylistService } from "./src/PlaylistService";
+import { PlaylistEntity } from "./src/entity/PlaylistEntity";
 //import {Test1} from "./src/injector/Test1";
 //import {Test2} from "./src/injector/Test2";
 //import {MongoTimeslotAdapter} from "./src/storage/adapter/mongo/MongoTimeslotAdapter";
@@ -27,10 +30,10 @@ import {PlaylistEntity} from "./src/entity/PlaylistEntity";
  * @class Repository
  */
 export class Repository extends ContainerAware {
-     /**
-         *
-         */
-      init() {
+    /**
+        *
+        */
+    init() {
         this.initConfig();
         this.initAcl();
         this.initEntity();
@@ -42,7 +45,7 @@ export class Repository extends ContainerAware {
      * @returns Object
      */
     _getModuleConfig() {
-        return  this.getContainer().get('ModuleConfig')['playlist']['playlist'];
+        return this.getContainer().get('ModuleConfig')['playlist']['playlist'];
     }
 
     /**
@@ -84,10 +87,10 @@ export class Repository extends ContainerAware {
             hydrator.addPropertyStrategy('_id', new MapPropertyStrategy('id', 'id'));
 
             const adapter = new DexiePlaylistAdapter(
-                dexieManager, 
+                dexieManager,
                 this._getModuleConfig().storage.adapter.dexie['collection']
             );
-            
+
             const storage = new Storage(adapter);
             storage.setHydrator(hydrator);
             storage.getEventManager()
@@ -104,7 +107,7 @@ export class Repository extends ContainerAware {
             this.initPlaylistService();
         }
 
-        if(dexieManager.isOpen()) {
+        if (dexieManager.isOpen()) {
             let version = dexieManager.upgradeSchema();
             this.getContainer().get('Config').storage.adapter.dexie.version = version._cfg.version;
             this.getContainer().get('StorageContainerAggregate')
@@ -113,8 +116,8 @@ export class Repository extends ContainerAware {
                 .then((data) => {
                     this.getContainer().get('SenderContainerAggregate')
                         .get('Ipc')
-                        .send('proxy', {event:'relaunch', data: {}}
-                    );
+                        .send('proxy', { event: 'relaunch', data: {} }
+                        );
                 });
         } else {
             dexieManager.on("ready", (data) => {
@@ -131,7 +134,7 @@ export class Repository extends ContainerAware {
         let loadStorage = () => {
 
             const adapter = new MongoPlaylistAdapter(
-                this.getContainer().get('MongoDb'), 
+                this.getContainer().get('MongoDb'),
                 this._getModuleConfig().storage.adapter.mongo['collection']
             );
 
@@ -169,9 +172,9 @@ export class Repository extends ContainerAware {
         this.getContainer()
             .get('EntityContainerAggregate')
             .set(
-                this._getModuleConfig().entityService, 
+                this._getModuleConfig().entityService,
                 new PlaylistEntity()
-        );
+            );
     }
 
     /**
@@ -187,18 +190,80 @@ export class Repository extends ContainerAware {
     }
 
     /**
+     * Event manager for sender resource
+     */
+    getEventManagerAggregate() {
+
+        let eventManagerAggregate = new EventManagerAggregate();
+
+        /**
+           * Local event manager
+           */
+        let eventManager = new EventManager();
+
+        /**
+         * ipc event mangager
+         */
+        let proxyEventManager = new ProxyEventManager(
+            this.getContainer().get(
+                this._getModuleConfig().ipcSender
+            ));
+
+
+        eventManagerAggregate
+            .addEventManager(proxyEventManager)
+            .addEventManager(eventManager);
+
+        return eventManagerAggregate;
+    }
+
+    /**
      *
      */
     initPlaylistService() {
+
+        let playlistService = new PlaylistService(
+            this.getContainer().get('StorageContainerAggregate').get('ResourceStorage'),
+            this.getContainer().get('Timer'),
+            this.getContainer().get('resourceDataContainerAggregate'),
+            this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service'])
+        );
+
+        playlistService.setEventManager(
+            this.getEventManagerAggregate()
+        )
+
+
+        playlistService.getEventManager().on(
+            PlaylistService.PLAY,
+            playlistService._updateResourceSender.bind(playlistService)
+        );
+
+        playlistService.getEventManager().on(
+            PlaylistService.RESUME,
+            playlistService._updateResourceSender.bind(playlistService)
+        );
+
+        playlistService.getEventManager().on(
+            PlaylistService.PAUSE,
+            playlistService._updateResourceSender.bind(playlistService)
+        );
+
+        playlistService.getEventManager().on(
+            PlaylistService.STOP,
+            playlistService._updateResourceSender.bind(playlistService)
+        );
+
+        playlistService.getEventManager().on(
+            PlaylistService.CHANGE_TIME,
+            playlistService._updateResourceSender.bind(playlistService)
+        );
+
+
         this.getContainer()
             .set(
                 this._getModuleConfig().playlistService,
-                new PlaylistService(
-                    this.getContainer().get('StorageContainerAggregate').get('ResourceStorage'),
-                    this.getContainer().get('Timer'),
-                    this.getContainer().get('resourceDataContainerAggregate'),
-                    this.getContainer().get('StorageContainerAggregate').get(this._getModuleConfig().storage['name-service'])
-                )
+                playlistService
             );
     }
 
@@ -240,7 +305,7 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('currentIndex')
             .enableExtractProperty('binds')
             .enableExtractProperty('resources');
-            
+
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('_id')
             .enableHydrateProperty('name')
