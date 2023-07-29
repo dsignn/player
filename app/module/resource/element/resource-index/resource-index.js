@@ -201,7 +201,7 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
              * @type number
              */
             selectedTab: {
-                value: 1
+                value: 0
             },
 
             selected: {

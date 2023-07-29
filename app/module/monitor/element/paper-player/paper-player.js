@@ -333,8 +333,10 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
         let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
-       
-        if (element !== null && resourceSenderEntity.id === element.resourceId) {
+       console.log('CHANGE', element.resourceEntity.resourceReference.id, resourceSenderEntity.resourceReference.id);
+        if (element !== null 
+            && resourceSenderEntity.id === element.resourceId 
+            && element.resourceEntity.resourceReference.id === resourceSenderEntity.resourceReference.id) {
             console.log('_changeTimeResource exist', element, resourceSenderEntity);
             element.resume(resourceSenderEntity.resourceReference);
         } else {

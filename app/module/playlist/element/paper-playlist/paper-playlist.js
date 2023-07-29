@@ -334,7 +334,7 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
 
     updateEntityCurrentTimeFromService(evt) {
         super.updateEntityCurrentTimeFromService(evt);;
-        this.updateSlider()
+        this.updateSlider();
     }
 
     updateEntityFromService(evt) {
@@ -347,6 +347,7 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
         this.updateStatusHtml();
         this.updateActionIcons();
         this.calcCurrentTime();
+        this.updateSlider();
     }
 
     /**
@@ -449,7 +450,7 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
         this._setCurrentSecond(~~this.entity.getCurrentTime() % 60);
 
         let splitter = (this.entity.getCurrentTime() + "").split(".");
-        this._setCurrentSecondTenths(parseInt(splitter[1] ? splitter[1] : 0));
+        this._setCurrentSecondTenths(parseInt(splitter[1] ? splitter[1].substring(0, 1) : 0));
     }
 
     /**

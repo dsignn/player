@@ -122,6 +122,25 @@ export class PlaylistEntity extends ListAwareMixin(DurationMixin(BindMixin(Playe
     }
 
     /**
+     * @param {number} seconds 
+     */
+    setCurrentTime(seconds) {
+        for(let cont = 0; this.resources.length > cont; cont++) {
+            this.resources[cont].setCurrentTime(0);
+        }
+
+        for(let cont = 0; this.resources.length > cont; cont++) {
+            if (seconds > this.resources[cont].getDuration()) {
+                seconds = seconds - this.resources[cont].getDuration()
+            } else {
+                this.currentIndex = cont;
+                this.resources[cont].setCurrentTime(seconds);
+                break;
+            }
+        }
+    }
+
+    /**
      * @returns float
      */
     getCurrentTime() {

@@ -99,6 +99,8 @@ export class PlaylistService extends AbstractResourceSenderService {
             resource.setCurrentTime(
                 parseFloat(resource.getCurrentTime() + 0.1).toFixed(1)
             );
+
+           
             
            /*
             resource.setCurrentTime(
@@ -316,12 +318,24 @@ export class PlaylistService extends AbstractResourceSenderService {
         this.getEventManager().emit(nameEvt, evtData);
     }
 
-    async changeTime(entity, second) {
+    async changeTime(playlist, second) {
         let runningPlaylist = this._getRunningPlaylist(playlist);
 
         if (!runningPlaylist) {
-            console.warn('Playlist not running', entity, second);
+            console.warn('Playlist not running', playlist, second);
             return;
         }
+
+        if (runningPlaylist.getDuration() <= second) {
+            console.warn('Duration of playlist to short', runningPlaylist, second);
+            return;
+        }
+
+        runningPlaylist.setCurrentTime(second);
+
+        this.emitResourceEvt(
+            PlaylistService.CHANGE_TIME,
+            runningPlaylist
+        );
     }
 }
