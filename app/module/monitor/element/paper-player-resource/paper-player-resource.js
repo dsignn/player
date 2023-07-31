@@ -73,7 +73,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             },
 
             /**
-             * Is the of the Object that may contain the timeslot EX. playlist
+             * Id of the other service
              * @type string
              */
             wrapperResourceId: {
@@ -148,7 +148,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         super.connectedCallback();
     }
 
-    _changeResourceEntity(resourceEntity) {
+    async _changeResourceEntity(resourceEntity) {
         console.log('APPEND RESOURCE ', resourceEntity);
         if(!resourceEntity || !resourceEntity.resourceReference) {
             return;
@@ -185,16 +185,11 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             case resourceEntity.resourceReference instanceof MetadataEntity === true:
                 console.log('Arrivato MetadataEntity');
             
-                this._createWebComponent(resourceEntity.resourceReference)
-                    .then((data) => {
-                            this.$.resources.appendChild(data);
-                    }).catch((error) => {
-                        console.warn(error);
-                    });
+                this.$.resources.appendChild(await this._createWebComponent(resourceEntity.resourceReference));
                 break;
             case resourceEntity.resourceReference instanceof MultiMediaEntity === true:
                 for(let cont = 0; resourceEntity.resourceReference.resources.length > cont; cont++) {
-                    let element = this._createElementFromEntityResource(resourceEntity.resourceReference.resources[cont]);
+                    let element = await this._createElementFromEntityResource(resourceEntity.resourceReference.resources[cont]);
                     element.style.zIndex = cont+1;
                     
                     this.$.resources.appendChild(element);
@@ -213,7 +208,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
      * @param {ResourceEntity} entity 
      * @returns 
      */
-    _createElementFromEntityResource(entity) {
+    async _createElementFromEntityResource(entity) {
         let element;
         switch (true) {
             // TODO add regex on type
@@ -230,21 +225,8 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
                 break;
 
             case entity instanceof MetadataEntity === true:
-                console.log('Arrivato MetadataEntity');
-            /*
-                this._createWebComponent(this.timeslot.resources[cont])
-                    .then(
-                        function(data) {
-                            data.style.zIndex = cont+1;
-                            this.$.resources.appendChild(data);
-                        }.bind(this)
-                    )
-                    .catch(
-                        function(data) {
-                            console.warn(data);
-                        }
-                    );
-            */
+                console.log('Arrivato MetadataEntity dentro');
+                element = await this._createWebComponent(entity);
                 break;
             }
         return element
@@ -573,17 +555,5 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             }
         }
     }
-
-
-    /**
-     * For debug
-     *
-     * @private
-     */
-    _intervalDebug() {
-        this._timeInterval = this._timeInterval == this.timeslot.duration ? 1 : this._timeInterval + 1;
-        console.log('interval', this._timeInterval, this);
-    }
-
 }
 window.customElements.define('paper-player-resource', PaperPlayerResource);

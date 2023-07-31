@@ -51,11 +51,10 @@ export class PlaylistEntity extends ListAwareMixin(DurationMixin(BindMixin(Playe
 
     /**
      *
-     * @param {ResourceEntity} timeslot
+     * @param {ResourceEntity} resource
      * @return {boolean}
      */
     removeResource(resource) {
-        //  TODO remove all timeslot with this id
         let index = this.resources.findIndex(element => element.id === resource.id);
         if (index > -1) {
             this.resources.splice(index, 1);

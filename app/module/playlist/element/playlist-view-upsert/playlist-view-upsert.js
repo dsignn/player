@@ -67,7 +67,7 @@ class PlaylistViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
                             <paper-checkbox checked="{{entity.enableAudio}}" style="padding-top: 20px;">{{localize('enable-audio')}} <i>({{localize('working-only-video')}})</i></paper-checkbox>
                             <paper-autocomplete 
                                 id="autocompleteMonitor"
-                                label="{{localize('timeslots')}}" 
+                                label="{{localize('resources')}}" 
                                 text-property="name"
                                 value-property="name"
                                 on-autocomplete-selected="_selectResource"

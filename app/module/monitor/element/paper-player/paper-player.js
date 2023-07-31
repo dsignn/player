@@ -372,31 +372,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     }
 
     /**
-     * @param defaultResourceReference
-     * @param storage
-     * @private
-     */
-    _changeDefaultResource(defaultResourceReference, storage) {
-
-        console.log('CAMBIA BACKGROUND', defaultResourceReference, storage)
-        if (!defaultResourceReference || !defaultResourceReference.id || !storage) {
-            return;
-        } else {
-            this.clearLayer('default');
-        }
-
-        console.log('CAMBIA BACKGROUND 2')
-        /*
-        storage.get(defaultResourceReference.id)
-            .then((resource) => {
-                // TODO how retrive data?
-                let element = this._createPaperPlayerResource(resource, {}, 'backgrond');
-                this.appendTimeslot('backgrond', element);
-            });
-            */
-    }
-
-    /**
      * @param newValue
      * @param oldValue
      * @private

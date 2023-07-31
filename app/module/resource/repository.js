@@ -24,6 +24,7 @@ import { MongoResourceAdapter } from "./src/storage/adapter/mongo/MongoResourceA
 import { DexieResourceAdapter } from "./src/storage/adapter/dexie/DexieResourceAdapter";
 import { ResourceSenderService } from "./src/ResourceSenderService";
 import { AbstractInjector } from "./src/injector/AbstractInjector";
+import { Test1 } from "./src/injector/Test1";
 
 /**
  * @class Repository
@@ -364,6 +365,11 @@ export class Repository extends ContainerAware {
         const entityContainerAggregate = new ContainerAggregate();
         entityContainerAggregate.setPrototipeClass(AbstractInjector);
         entityContainerAggregate.setContainer(this.getContainer());
+
+        entityContainerAggregate.set(
+            'Test1',
+            new Test1()
+        );
 
         this.getContainer().set(
             this._getModuleConfig().resourceDataContainerAggregate, 

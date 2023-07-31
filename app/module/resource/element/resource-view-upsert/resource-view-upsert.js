@@ -16,10 +16,10 @@ import '@polymer/paper-tooltip/paper-tooltip';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language';
+import '../paper-input-injector-data-service/paper-input-injector-data-service';
 
 import {MultiMediaEntity} from './../../src/entity/MultiMediaEntity';
 import {MetadataEntity} from './../../src/entity/MetadataEntity';
-
 
 /**
  * @customElement
@@ -288,7 +288,6 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
         } else {
             this.$.dataService.style.display = 'none';
         }
-
     }
 
     updateEntityPrototypeEvt(evt) {
