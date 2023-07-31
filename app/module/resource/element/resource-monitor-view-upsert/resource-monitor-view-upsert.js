@@ -1,7 +1,7 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
-import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
-import {StorageEntityMixin} from "@dsign/polymer-mixin/storage/entity-mixin";
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixin";
+import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
+import { StorageEntityMixin } from "@dsign/polymer-mixin/storage/entity-mixin";
 import '@polymer/paper-input/paper-input';
 import '@fluidnext-polymer/paper-autocomplete/paper-autocomplete';
 import '@fluidnext-polymer/paper-chip/paper-chips';
@@ -13,12 +13,13 @@ import '@polymer/paper-card/paper-card';
 import '@fluidnext-polymer/paper-input-file/icons/paper-input-file-icons';
 import '@fluidnext-polymer/paper-input-file/paper-input-file';
 import '@polymer/paper-tooltip/paper-tooltip';
-import {flexStyle} from '../../../../style/layout-style';
-import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
-import {lang} from './language';
+import { flexStyle } from '../../../../style/layout-style';
+import { autocompleteStyle } from '../../../../style/autocomplete-custom-style';
+import { lang } from './language';
 
-import {MultiMediaEntity} from '../../src/entity/MultiMediaEntity';
-import {MetadataEntity} from '../../src/entity/MetadataEntity';
+import { EntityReference } from "@dsign/library/src/storage/entity/EntityReference";
+import { MultiMediaEntity } from '../../src/entity/MultiMediaEntity';
+import { MetadataEntity } from '../../src/entity/MetadataEntity';
 
 
 /**
@@ -56,6 +57,7 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
                                     on-autocomplete-change="_searchResource"
                                     on-autocomplete-selected="_selectResource"
                                     on-autocomplete-reset-blur="_clearResource"
+                                    require
                                     remote-source>
                                         <template slot="autocomplete-custom-template">
                                             ${autocompleteStyle}
@@ -73,6 +75,7 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
                                     value-property="name"
                                     on-autocomplete-change="_searchMonitor"
                                     value="{{entity.monitorContainerReference}}"
+                                    require
                                     remote-source>
                                         <template slot="autocomplete-custom-template">
                                             ${autocompleteStyle}
@@ -86,6 +89,26 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
                                         </template>
                                 </paper-autocomplete>          
                             </div>
+                            <paper-autocomplete 
+                                id="autocompleteBindTimeslot"
+                                label="{{localize('bind-resource')}}" 
+                                text-property="name"
+                                value-property="name"
+                                on-autocomplete-change="_searchBindResource"
+                                on-autocomplete-selected="_selectBindResource"
+                                remote-source>
+                                <template slot="autocomplete-custom-template">
+                                    ${autocompleteStyle}
+                                    <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
+                                        <div index="[[index]]">
+                                            <div class="service-name">[[item.name]]</div>
+                                            <div class="service-description">[[item.type]]</div>
+                                        </div>
+                                        <paper-ripple></paper-ripple>
+                                    </paper-item>
+                                </template>
+                            </paper-autocomplete>
+                            <paper-chips id="bindChips" items="{{entity.binds}}"></paper-chips>     
                             <div>
                                 <div class="flex flex-horizontal-end" style="margin-top: 20px;">
                                     <paper-button on-tap="submitResourceButton">{{localize(labelAction)}}</paper-button>
@@ -97,7 +120,7 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
         `;
     }
 
-    static get properties () {
+    static get properties() {
         return {
 
             /**
@@ -118,16 +141,16 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
             /**
              * @type object
              */
-            services : {
-                value : {
-                    _notify : "Notify",
+            services: {
+                value: {
+                    _notify: "Notify",
                     _localizeService: 'Localize',
-                    "HydratorContainerAggregate" : {
-                        _resourceHydrator : "ResourceMonitorStorageHydrator"
+                    "HydratorContainerAggregate": {
+                        _resourceHydrator: "ResourceMonitorStorageHydrator"
                     },
-                    StorageContainerAggregate : {
-                        _storage :"ResourceSenderStorage",
-                        _storageResource :"ResourceStorage"
+                    StorageContainerAggregate: {
+                        _storage: "ResourceSenderStorage",
+                        _storageResource: "ResourceStorage"
                     },
                     _monitorService: "MonitorService",
                 }
@@ -162,15 +185,15 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
 
         if (!newValue) {
             return;
-        }  
+        }
 
         if (newValue.id) {
             this.labelAction = 'update';
         }
     }
 
-    _searchResource(evt) {    
-        this._storageResource.getAll({name : evt.detail.value.text})
+    _searchResource(evt) {
+        this._storageResource.getAll({ name: evt.detail.value.text })
             .then((resources) => {
                 console.log('_searchResource', resources);
                 evt.detail.target.suggestions(
@@ -191,7 +214,7 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
         }
 
         let enableMonitor = this._monitorService.getEnableMonitor();
-        let monitors = enableMonitor.id ? enableMonitor.getMonitors({nested: true}) : [];
+        let monitors = enableMonitor.id ? enableMonitor.getMonitors({ nested: true }) : [];
 
         let filter = monitors.filter(
             element => {
@@ -200,7 +223,7 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
         );
 
         let reference;
-        for (let cont =  0; filter.length > cont; cont++) {
+        for (let cont = 0; filter.length > cont; cont++) {
             reference = new (require("@dsign/library").storage.entity.EntityNestedReference)();
             reference.setCollection('monitor');
             reference.setId(filter[cont].id);
@@ -213,6 +236,50 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
 
         evt.detail.target.suggestions(
             filter
+        );
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _searchBindResource(evt) {
+        // TODO cotroll papar autocomplete
+        if (!this._storage || !evt.detail.value) {
+            return;
+        }
+
+        this._storage.getAll({ name: evt.detail.value.text })
+            .then((resources) => {
+
+                evt.detail.target.suggestions(
+                    resources.filter(
+                        (element) => {
+                            return element.id !== this.entity.id
+                        }
+                    )
+                );
+            })
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _selectBindResource(evt) {
+
+        let reference = new EntityReference();
+        reference.setCollection('resource-monitor');
+        reference.setId(evt.detail.value.id);
+        reference.name = evt.detail.value.name;
+
+        this.push('entity.binds', reference);
+
+        setTimeout(
+            function () {
+                this.clear();
+            }.bind(evt.target),
+            300
         );
     }
 
@@ -240,15 +307,15 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
         evt.preventDefault();
 
         let method = this.getStorageUpsertMethod();
-               
+
         this._storage[method](this.entity)
             .then((data) => {
 
                 if (method === 'save') {
-                    this.entity = this._storage.getHydrator().hydrate({type: "text/html"});
+                    this.entity = this._storage.getHydrator().hydrate({ type: "text/html" });
                     this.$.formResource.reset();
                 }
-                
+
                 this._notify.notify(this.localize(method === 'save' ? 'notify-save' : 'notify-update'));
             });
 

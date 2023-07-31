@@ -163,14 +163,14 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             case resourceEntity.resourceReference instanceof ImageEntity === true:
                 console.log('Arrivato ImageEntity');
 
-                this.$.resources.appendChild(this._createElementFromEntityResource(resourceEntity.resourceReference));
+                this.$.resources.appendChild(await this._createElementFromEntityResource(resourceEntity.resourceReference));
                 this.adjust(resourceEntity.resourceReference.adjust);
                 break;
 
             case resourceEntity.resourceReference instanceof VideoEntity === true:
                 console.log('Arrivato VideoEntity');
             
-                this.$.resources.appendChild(this._createElementFromEntityResource(resourceEntity.resourceReference));
+                this.$.resources.appendChild(await this._createElementFromEntityResource(resourceEntity.resourceReference));
                 this.adjust(resourceEntity.resourceReference.adjust);
                 this.muted(!resourceEntity.resourceReference.enableAudio);
                 break;
@@ -178,7 +178,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             case resourceEntity.resourceReference instanceof AudioEntity === true:
                 console.log('Arrivato AudioEntity');
         
-                this.$.resources.appendChild(this._createElementFromEntityResource(resourceEntity.resourceReference));
+                this.$.resources.appendChild(await this._createElementFromEntityResource(resourceEntity.resourceReference));
                 this.muted(!resourceEntity.resourceReference.enableAudio);
                 break;
 
