@@ -63,6 +63,10 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
             <div id="list">
                 <template is="dom-repeat" items="[[entities]]" as="playlist">
                     <paper-playlist entity="{{playlist}}" 
+                        on-change-rotation="_updateEntity"
+                        on-change-context="_updateEntity"
+                        on-change-adjust="_updateEntity"
+                        on-change-volume="_updateEntity"
                         on-play="play"
                         on-resume="resume"
                         on-stop="stop"

@@ -49,22 +49,51 @@ export const MonitorPropertyAwareMixin = (superClass) => {
         }
 
         /**
-         * @returns string
+         * @returns {string}
          */
         getContext() {
             return this.context;
         }
 
         /**
-         * 
-         * @returns string
+         * @param {string} context 
+         * @returns {MonitorPropertyAwareMixin}
+         */
+        setContext(context) {
+            this.context = context;
+            return this;
+        }
+
+        /**
+         * @returns {string}
          */
         getRotation() {
             return this.rotation;
         }
 
+        /**
+         * @param {string} rotation 
+         * @returns {MonitorPropertyAwareMixin}
+         */
+        setRotation(rotation) {
+            this.rotation = rotation;
+            return this;
+        }
+
+        /**
+         * @returns {string}
+         */
         getAdjust() {
             return this.adjust;
+        }
+
+        /**
+         * @param {string} adjust 
+         * @returns {MonitorPropertyAwareMixin}
+         */
+        setAdjust(adjust) {
+            this.adjust = adjust;
+            return this;
         }
     }
 }

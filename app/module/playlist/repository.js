@@ -299,6 +299,7 @@ export class Repository extends ContainerAware {
             .enableExtractProperty('name')
             .enableExtractProperty('status')
             .enableExtractProperty('context')
+            .enableExtractProperty('adjust')
             .enableExtractProperty('monitorContainerReference')
             .enableExtractProperty('rotation')
             .enableExtractProperty('enableAudio')
@@ -311,6 +312,7 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('name')
             .enableHydrateProperty('status')
             .enableHydrateProperty('context')
+            .enableHydrateProperty('adjust')
             .enableHydrateProperty('monitorContainerReference')
             .enableHydrateProperty('rotation')
             .enableHydrateProperty('enableAudio')
@@ -403,6 +405,7 @@ export class Repository extends ContainerAware {
             // TODO add method on service
             aclService.addResource(this._getModuleConfig().acl.resource);
             aclService.allow('guest', this._getModuleConfig().acl.resource);
+            aclService.allow('admin', this._getModuleConfig().acl.resource);
         }
     }
 }

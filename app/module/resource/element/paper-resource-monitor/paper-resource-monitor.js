@@ -598,9 +598,7 @@ class PaperResourceMonitor extends ActionsMixin(DurationMixin(StorageEntityMixin
             return;
         }
 
-
-        this.entity.resourceReference.enableAudio = this.entity.resourceReference.enableAudio ? 
-            false : true;
+        this.entity.resourceReference.enableAudio = this.entity.resourceReference.enableAudio ? false : true;
         this.dispatchEvent(new CustomEvent('change-volume', { detail: this.entity }));
         this.updateContextIcons();
     }

@@ -100,13 +100,6 @@ export class PlaylistService extends AbstractResourceSenderService {
                 parseFloat(resource.getCurrentTime() + 0.1).toFixed(1)
             );
 
-           
-            
-           /*
-            resource.setCurrentTime(
-                resource.getCurrentTime() + 1
-            );
-*/
             //console.log('Playlist time', playlist.name, resource.name, resource.currentTime);
             this.getEventManager().emit(PlaylistService.UPDATE_TIME, playlist);
         }
@@ -302,6 +295,11 @@ export class PlaylistService extends AbstractResourceSenderService {
         let resourceSenderEntity = new ResourceSenderEntity();
         resourceSenderEntity.monitorContainerReference = playlist.monitorContainerReference;
         resourceSenderEntity.resourceReference = playlist.current();
+
+        resourceSenderEntity.resourceReference.adjust = playlist.getAdjust();
+        resourceSenderEntity.resourceReference.context = playlist.getContext();
+        resourceSenderEntity.resourceReference.rotation = playlist.getRotation();
+        resourceSenderEntity.resourceReference.enableAudio = playlist.getEnableAudio();
 
         let evtData = {
             resource: resourceSenderEntity,

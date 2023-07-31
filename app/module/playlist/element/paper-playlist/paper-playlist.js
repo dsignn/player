@@ -178,10 +178,14 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
             <paper-card>
                 <div id="left-section"></div>
                 <div id="fastAction">
-                    <paper-icon-button id="contextIcon" item="{{timeslot}}" class="activePaperButton" on-tap="_tapOverlay" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-icon-button id="contextIcon" class="activePaperButton" on-tap="_tapOverlay"  disabled="{{hideCrud}}"></paper-icon-button>
                     <paper-tooltip for="contextIcon" position="right"></paper-tooltip>
-                    <paper-icon-button id="rotationIcon" item="{{timeslot}}" class="activePaperButton" on-tap="_tapRotation" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-icon-button id="rotationIcon" class="activePaperButton" on-tap="_tapRotation" disabled="{{hideCrud}}"></paper-icon-button>
                     <paper-tooltip for="rotationIcon" position="right"></paper-tooltip>
+                    <paper-icon-button id="fitIcon" class="activePaperButton" on-tap="_tapFit" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-tooltip for="fitIcon" position="right"></paper-tooltip>
+                    <paper-icon-button id="volumeIcon" class="activePaperButton" on-tap="_tapVolume" disabled="{{hideCrud}}"></paper-icon-button>
+                    <paper-tooltip for="volumeIcon" position="right"></paper-tooltip>
                 </div>
                 <div id="right-section">
                     <div class="content">
@@ -314,9 +318,8 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
             this.duration = this.entity.getDuration();
             this.calcTimeDuration();
             this.calcCurrentTime();
+            this.updateContextIcons();
             this.updateActionIcons();
-
-
         });
     }
 
@@ -469,6 +472,88 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
     _delete(evt) {
         this.dispatchEvent(new CustomEvent('delete', { detail: this.entity }));
         this.$.crudButton.close();
+    }
+
+    /**
+ * @private
+ */
+    updateContextIcons() {
+        if (!this.entity) {
+            return;
+        }
+
+        let context = this.entity.context;
+
+        this.$.contextIcon.icon = `resource:${context}`;
+        this.root.querySelector('paper-tooltip[for="contextIcon"]').innerText = this.localize(context);
+
+        let rotation = this.entity.rotation;
+        this.$.rotationIcon.icon = `resource:${rotation}`;
+        this.root.querySelector('paper-tooltip[for="rotationIcon"]').innerText = this.localize(rotation);
+
+        let adjust = this.entity.adjust;
+        this.$.fitIcon.icon = `resource:${adjust}`;
+        this.root.querySelector('paper-tooltip[for="fitIcon"]').innerText = this.localize(adjust);
+
+        let volume = this.entity.enableAudio;
+        this.$.volumeIcon.icon = `resource:${volume ? 'volume' : 'volume-off'}`;
+        this.root.querySelector('paper-tooltip[for="volumeIcon"]').innerText = this.localize(volume ? 'volume' : 'volume-off');
+    }
+
+    /**
+     * @param evt
+     * @private
+     */
+    _tapRotation(evt) {
+        if (!this.entity) {
+            return;
+        }
+
+        let index = PaperResourceMonitor.LIST_ROTATION.findIndex((items) => {
+            return items === this.entity.rotation;
+        });
+
+        this.entity.rotation = (index < (PaperResourceMonitor.LIST_ROTATION.length - 1)) ? PaperResourceMonitor.LIST_ROTATION[index + 1] : PaperResourceMonitor.LIST_ROTATION[0];
+        this.dispatchEvent(new CustomEvent('change-rotation', { detail: this.entity }));
+        this.updateContextIcons();
+    }
+
+    /**
+    * @param evt
+    * @private
+    */
+    _tapOverlay(evt) {
+        if (!this.entity) {
+            return;
+        }
+
+        this.entity.context = (this.entity.context === PlaylistEntity.CONTEXT_STANDARD) ?
+            PlaylistEntity.CONTEXT_OVERLAY : PlaylistEntity.CONTEXT_STANDARD;
+        this.dispatchEvent(new CustomEvent('change-context', { detail: this.entity }));
+        this.updateContextIcons();
+    }
+
+    _tapFit(evt) {
+        if (!this.entity) {
+            return;
+        }
+        console.log('prima', this.entity.adjust);
+        this.entity.adjust = this.entity.adjust === PlaylistEntity.SIZE_CONTAIN ?
+            PlaylistEntity.SIZE_NORMAL : PlaylistEntity.SIZE_CONTAIN;
+        this.dispatchEvent(new CustomEvent('change-adjust', { detail: this.entity }));
+        console.log('dopo', this.entity.adjust);
+        this.updateContextIcons();
+    }
+
+    _tapVolume(evt) {
+        if (!this.entity) {
+            return;
+        }
+
+
+        this.entity.enableAudio = this.entity.enableAudio ? false : true;
+        this.dispatchEvent(new CustomEvent('change-volume', { detail: this.entity }));
+        this.updateContextIcons();
     }
 }
 

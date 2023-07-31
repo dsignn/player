@@ -36,7 +36,7 @@ export class Repository extends ContainerAware {
         let resource = this.getContainer().get('ModuleConfig')['admin']['admin'].acl.resource;
 
         aclService.addResource(resource);
-        aclService.allow('guest', resource);
+        aclService.allow('admin', resource);
         // guest
     }
 }

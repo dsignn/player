@@ -1037,6 +1037,7 @@ export class Repository extends ContainerAware {
 
             aclService.addResource(this._getModuleConfig().acl.resource);
             aclService.allow('guest', this._getModuleConfig().acl.resource);
+            aclService.allow('admin', this._getModuleConfig().acl.resource);
         }
     }
 }

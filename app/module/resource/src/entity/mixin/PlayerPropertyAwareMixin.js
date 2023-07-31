@@ -39,6 +39,10 @@ export const PlayerPropertyAwareMixin = (superClass) => {
             return this;
         }
 
+        getEnableAudio() {
+            return this.enableAudio;
+        }
+
         /**
          * @return {number}
          */
