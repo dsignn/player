@@ -18,17 +18,7 @@ import './../module/monitor/element/paper-player-manager/paper-player-manager';
 import './../module/resource/element/resource-index/resource-index';
 import './../module/resource/element/resource-icons/resource-icons';
 import './../module/resource/element/wc-resource/wc-resource-test';
-/**
- * start timeslot
- */
-import './../module/timeslot/element/timeslot-index/timeslot-index';
-import './../module/timeslot/element/timeslot-icons/timeslot-icons';
-import './../module/timeslot/element/timeslot-style/timeslot-style';
 
-import './../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags';
-import './../module/timeslot/element/widget/paper-timeslot-tags/paper-timeslot-tags-data';
-import './../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors';
-import './../module/timeslot/element/widget/paper-timeslot-monitors/paper-timeslot-monitors-data';
 /**
  * start playlist
  */

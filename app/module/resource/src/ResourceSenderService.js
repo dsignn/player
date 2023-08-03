@@ -158,10 +158,13 @@ export class ResourceSenderService extends AbstractResourceSenderService {
      */
     _scheduleBinds(binds, method) {
         for (let cont = 0; binds.length > cont; cont++) {
-            console.log('BINDSSSSSSSSSSSS', method, binds[cont]);
-            this[method](binds[cont])
-                .catch(
-                    (err) => {
+
+            this.resourceSenderStorage.get(binds[cont].id)
+                .then((resourceSender) => {
+                    console.log('DIO CANE', resourceSender);
+                    this[method](resourceSender);
+                })
+                .catch((err) => {
                         console.error('Error bind resource service', err)
                     });
         }
@@ -284,12 +287,14 @@ export class ResourceSenderService extends AbstractResourceSenderService {
         let runningResource = this._getRunningResource(entity);
         if (!runningResource) {
             entity.resourceReference.status = FileEntity.IDLE;
+            entity.resourceReference.setCurrentTime(0);
             this.emitResourceEvt(ResourceSenderService.STOP, entity);
             return;
         }
 
         this._removeRunningResource(entity);
         runningResource.resourceReference.status = FileEntity.IDLE;
+        runningResource.resourceReference.setCurrentTime(0);
 
         /**
          * Binds
@@ -317,6 +322,15 @@ export class ResourceSenderService extends AbstractResourceSenderService {
 
         if (runningResource.resourceReference.getDuration() <= second) {
             console.warn('Duration of resource to short', entity, second);
+           
+            runningResource.resourceReference.setCurrentTime(
+                runningResource.resourceReference.getDuration()
+            );
+
+            this.emitResourceEvt(
+                ResourceSenderService.CHANGE_TIME,
+                runningResource
+            );
             return;
         }
 
@@ -326,5 +340,17 @@ export class ResourceSenderService extends AbstractResourceSenderService {
             ResourceSenderService.CHANGE_TIME,
             runningResource
         );
+
+        for (let cont = 0; runningResource.binds.length > cont; cont++) {
+
+            this.resourceSenderStorage.get(runningResource.binds[cont].id)
+                .then((resourceSender) => {
+                    console.log('DIO CANE', resourceSender);
+                    this.changeTime(resourceSender ,second);
+                })
+                .catch((err) => {
+                        console.error('Error bind resource service', err)
+                    });
+        }
     }
 }

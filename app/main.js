@@ -439,10 +439,11 @@ class Application {
      */
     createApi() {
 
+        /*
         let express = require('express');
         this.api = express();
 
-        this.api.get('/timeslot', (req, res) => res.send('Hello World!'));
+        this.api.get('', (req, res) => res.send('Hello World!'));
 
         this.api.listen(3001 , () => console.log(`Example app listening on port ${3001}!`, this.api ));
         let mainWindow = new BrowserWindow({
@@ -455,6 +456,7 @@ class Application {
         mainWindow.loadURL('http://localhost:3001/');
         mainWindow.focus();
         mainWindow.hide();
+        */
     }
 
     /**

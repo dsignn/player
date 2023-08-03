@@ -153,9 +153,9 @@ export class Repository extends ContainerAware {
             );
     }
 
-        /**
-     * @private
-     */
+    /**
+ * @private
+ */
     initResourceReceiver() {
         this.getContainer()
             .get('ReceiverContainerAggregate')
@@ -298,7 +298,7 @@ export class Repository extends ContainerAware {
                 resourceSenderService._updateResourceSender.bind(resourceSenderService)
             );
 
-                
+
             this.getContainer().set(this._getModuleConfig().resourceSenderService, resourceSenderService);
             this.getContainer().get('MonitorService')
                 .setResourceSender(resourceSenderService);
@@ -361,7 +361,7 @@ export class Repository extends ContainerAware {
     }
 
     initInjectorDataResourceContainerAggregate() {
-        
+
         const entityContainerAggregate = new ContainerAggregate();
         entityContainerAggregate.setPrototipeClass(AbstractInjector);
         entityContainerAggregate.setContainer(this.getContainer());
@@ -372,7 +372,7 @@ export class Repository extends ContainerAware {
         );
 
         this.getContainer().set(
-            this._getModuleConfig().resourceDataContainerAggregate, 
+            this._getModuleConfig().resourceDataContainerAggregate,
             entityContainerAggregate
         );
     }
@@ -643,6 +643,14 @@ export class Repository extends ContainerAware {
             )
         );
 
+        /**
+         * Resource sender bind strategy
+         */
+        let bindResourceStrategy = new HydratorStrategy();
+        bindResourceStrategy.setHydrator(Repository.getResourceHydrator(container));
+
+        hydrator.addValueStrategy('binds', bindResourceStrategy)
+
         hydrator
             .addPropertyStrategy('_id', new MapProprertyStrategy('id', 'id'));
 
@@ -650,16 +658,18 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('monitorContainerReference')
-            .enableHydrateProperty('resourceReference');
+            .enableHydrateProperty('resourceReference')
+            .enableHydrateProperty('binds');
 
         hydrator.enableExtractProperty('_id')
             .enableExtractProperty('id')
             .enableExtractProperty('name')
             .enableExtractProperty('monitorContainerReference')
-            .enableExtractProperty('resourceReference');
+            .enableExtractProperty('resourceReference')
+            .enableExtractProperty('binds');
 
         let resourceHydrator = Repository.getResourceHydrator(container);
-        
+
         let disableProperties = {
             'dimension': true,
             'checksum': true,
@@ -671,7 +681,7 @@ export class Repository extends ContainerAware {
             'aspectRation': true,
             'fps': true
         };
-         
+
         let enableProperties = {
             'filters': true,
             'currentTime': true,
@@ -682,19 +692,19 @@ export class Repository extends ContainerAware {
             'context': true
         }
 
-       
-        Object.keys(resourceHydrator.hydratorMap).forEach(function(key) {
 
-            Object.keys(disableProperties).forEach(function(keyDisable) {  
+        Object.keys(resourceHydrator.hydratorMap).forEach(function (key) {
+
+            Object.keys(disableProperties).forEach(function (keyDisable) {
                 resourceHydrator.hydratorMap[key].hydrator.disableExtractProperty(keyDisable);
                 resourceHydrator.hydratorMap[key].hydrator.disableHydrateProperty(keyDisable);
-                
+
             });
-            Object.keys(enableProperties).forEach(function(keyEnable) {  
+            Object.keys(enableProperties).forEach(function (keyEnable) {
                 resourceHydrator.hydratorMap[key].hydrator.enableHydrateProperty(keyEnable);
                 resourceHydrator.hydratorMap[key].hydrator.enableExtractProperty(keyEnable);
             });
-    
+
         });
 
         let resourceStrategyHydrator = new HydratorStrategy();
@@ -717,15 +727,25 @@ export class Repository extends ContainerAware {
             )
         );
 
+        /**
+         * Resource sender bind strategy
+         */
+        let bindResourceStrategy = new HydratorStrategy();
+        bindResourceStrategy.setHydrator(Repository.getResourceHydrator(container));
+
+        hydrator.addValueStrategy('binds', bindResourceStrategy)
+
         hydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
             .enableHydrateProperty('monitorContainerReference')
-            .enableHydrateProperty('resourceReference');
+            .enableHydrateProperty('resourceReference')
+            .enableHydrateProperty('binds');
+
 
         hydrator.enableExtractProperty('id')
-            .enableExtractProperty('name')   
+            .enableExtractProperty('name')
             .enableExtractProperty('monitorContainerReference')
-            .enableExtractProperty('resourceReference');
+            .enableExtractProperty('binds');
 
         let resourceStrategyHydrator = new HydratorStrategy();
         let resourceHydrator = Repository.getResourceHydrator(container);
@@ -741,26 +761,26 @@ export class Repository extends ContainerAware {
             'context': true
         }
 
-        Object.keys(resourceHydrator.hydratorMap).forEach(function(key) {
+        Object.keys(resourceHydrator.hydratorMap).forEach(function (key) {
 
-            Object.keys(enableProperties).forEach(function(keyEnable) {  
+            Object.keys(enableProperties).forEach(function (keyEnable) {
                 resourceHydrator.hydratorMap[key].hydrator.enableHydrateProperty(keyEnable);
                 resourceHydrator.hydratorMap[key].hydrator.enableExtractProperty(keyEnable);
             });
-    
+
         });
 
         let multiMediaHydrator = Repository.getResourceHydrator(container);
         let multiMediaStrategyHydrator = new HydratorStrategy();
         multiMediaStrategyHydrator.setHydrator(multiMediaHydrator);
 
-        Object.keys(multiMediaHydrator.hydratorMap).forEach(function(key) {
+        Object.keys(multiMediaHydrator.hydratorMap).forEach(function (key) {
 
-            Object.keys(enableProperties).forEach(function(keyEnable) {  
+            Object.keys(enableProperties).forEach(function (keyEnable) {
                 multiMediaHydrator.hydratorMap[key].hydrator.enableHydrateProperty(keyEnable);
                 multiMediaHydrator.hydratorMap[key].hydrator.enableExtractProperty(keyEnable);
             });
-    
+
         });
 
         resourceHydrator.hydratorMap.MultiMediaEntity.hydrator.addValueStrategy('resources', multiMediaStrategyHydrator)
@@ -921,7 +941,7 @@ export class Repository extends ContainerAware {
          * Resource strategy
          */
         let resourceStrategy = new HydratorStrategy();
-        resourceStrategy.setHydrator(Repository.getResourceReferenceHydrator(container));
+        resourceStrategy.setHydrator(Repository.getEntityReferenceHydrator(container));
 
 
         hydrator.enableHydrateProperty('id')
@@ -1013,7 +1033,7 @@ export class Repository extends ContainerAware {
      * @param container
      * @return {PropertyHydrator}
      */
-    static getResourceReferenceHydrator(container) {
+    static getEntityReferenceHydrator(container) {
 
         let hydrator = new PropertyHydrator();
         hydrator.setTemplateObjectHydration(

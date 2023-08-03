@@ -40,4 +40,13 @@ export class MultiMediaEntity extends MonitorPropertyAwareMixin(PlayerPropertyAw
     getResources() {
         return this.resources;
     }
+
+    /**
+     * @param {*} currentTime 
+     */
+    setCurrentTime(currentTime) {
+        for (let cont = 0; this.resources.length > cont; cont++) {
+            this.resources[cont].setCurrentTime(currentTime);
+        }
+    }
 }

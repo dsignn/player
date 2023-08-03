@@ -90,7 +90,7 @@ class ResourceMonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(Service
                                 </paper-autocomplete>          
                             </div>
                             <paper-autocomplete 
-                                id="autocompleteBindTimeslot"
+                                id="autocompleteBind"
                                 label="{{localize('bind-resource')}}" 
                                 text-property="name"
                                 value-property="name"
