@@ -305,8 +305,7 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
         super();
         this.resources = lang;
         this.addEventListener('update-resource', (evt) => {
-            console.log('update PLAYLIST');
-
+    
             this.status = this.entity.status;
             this.notifyPath('entity.status');
             this.duration = this.entity.getDuration();
@@ -411,7 +410,6 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
     updateSlider() {
 
         this.$.slider.max = this.entity.getDuration();
-        console.log('toni', this.entity.getStatus() === PlaylistEntity.PLAY, this.entity.getStatus(), PlaylistEntity.RUNNING);
         this.$.slider.disabled = this.entity.getStatus() === PlaylistEntity.RUNNING ? false : true;
         if (!this.excludeSlider) {
             this.$.slider.value = this.entity.getCurrentTime();
@@ -531,11 +529,9 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
         if (!this.entity) {
             return;
         }
-        console.log('prima', this.entity.adjust);
         this.entity.adjust = this.entity.adjust === PlaylistEntity.SIZE_CONTAIN ?
             PlaylistEntity.SIZE_NORMAL : PlaylistEntity.SIZE_CONTAIN;
         this.dispatchEvent(new CustomEvent('change-adjust', { detail: this.entity }));
-        console.log('dopo', this.entity.adjust);
         this.updateContextIcons();
     }
 

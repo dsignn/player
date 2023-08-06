@@ -40,7 +40,7 @@ export class PlaylistService extends AbstractResourceSenderService {
             
         this.playlistStorage.update(evt.data.context.entity)
             .then((entity) => {
-                console.log('Update service playlist', entity.name);
+                //console.log('Update service playlist', entity.name);
             })
     }
     
@@ -99,7 +99,7 @@ export class PlaylistService extends AbstractResourceSenderService {
             resource.setCurrentTime(
                 parseFloat(resource.getCurrentTime() + 0.1).toFixed(1)
             );
-
+          
             //console.log('Playlist time', playlist.name, resource.name, resource.currentTime);
             this.getEventManager().emit(PlaylistService.UPDATE_TIME, playlist);
         }
@@ -136,9 +136,8 @@ export class PlaylistService extends AbstractResourceSenderService {
      * @return {Promise}
      */
     async play(playlist) {
-        console.log('PLAY');
+      
         playlist = await this._loadResources(playlist);
-
         // TODO PAUSE RUNNING PLAYLIST
         let runningPlaylist = this._getRunningPlaylist(playlist);
         if (runningPlaylist) {
@@ -157,9 +156,11 @@ export class PlaylistService extends AbstractResourceSenderService {
          * Binds
          */
         if (playlist.getBinds().length > 0) {
-            this._scheduleBinds(entity.getBinds(), 'play');
+            this._scheduleBinds(playlist.getBinds(), 'play');
         }
 
+        
+       
         this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
     }
 
@@ -188,7 +189,7 @@ export class PlaylistService extends AbstractResourceSenderService {
          * Binds
          */
         if (playlist.getBinds().length > 0) {
-            this._scheduleBinds(entity.getBinds(), 'resume');
+            this._scheduleBinds(playlist.getBinds(), 'resume');
         }
 
 
@@ -200,7 +201,7 @@ export class PlaylistService extends AbstractResourceSenderService {
      * @return {Promise}
      */
     async pause(playlist) {
-        console.log('PAUSE');
+       
         let runningPlaylist = this._getRunningPlaylist(playlist);
         if (!runningPlaylist) {
             return;
@@ -254,12 +255,20 @@ export class PlaylistService extends AbstractResourceSenderService {
      */
     _scheduleBinds(binds, method) {
         for (let cont = 0; binds.length > cont; cont++) {
-            console.log('BINDSSSSSSSSSSSS', method, binds[cont]);
-            this[method](binds[cont])
-                .catch(
-                    (err) => {
-                        console.error('Error bind resource service', err)
-                    });
+                       
+            this.playlistStorage.get(binds[cont].id)
+                .then((playlist) => {
+
+                    let runningPlaylist = this._getRunningPlaylist(playlist);
+                    if (runningPlaylist) {
+                        this[method](runningPlaylist);
+                    } else {
+                        this[method](playlist);
+                    }
+                })
+                .catch((err) => {
+                    console.error('Error bind playlist', err)
+                });            
         }
     }
 
@@ -271,12 +280,11 @@ export class PlaylistService extends AbstractResourceSenderService {
         }
 
         let resources = await Promise.all(promises);
-
         for (let cont = 0; resources.length > cont; cont++) {
             let index = playlist.resources.findIndex((ele) => {
-                return ele.id === resources[cont];
+                return ele.id === resources[cont].id;
             });
-
+           
             if (index > -1) {
                 playlist.resources[index] = Object.assign(resources[cont], playlist.resources[index]);
             }
@@ -301,6 +309,7 @@ export class PlaylistService extends AbstractResourceSenderService {
         resourceSenderEntity.resourceReference.rotation = playlist.getRotation();
         resourceSenderEntity.resourceReference.enableAudio = playlist.getEnableAudio();
 
+        console.log(nameEvt, playlist.name, resourceSenderEntity);
         let evtData = {
             resource: resourceSenderEntity,
             context : {
@@ -335,5 +344,38 @@ export class PlaylistService extends AbstractResourceSenderService {
             PlaylistService.CHANGE_TIME,
             runningPlaylist
         );
+
+        for (let cont = 0; runningPlaylist.binds.length > cont; cont++) {
+            this.playlistStorage.get(runningPlaylist.binds[cont].id)
+                .then((playlist) => {
+                
+                    this._loadResources(playlist)
+                        .then((playlistLoaded) => {
+
+                            let runningBindPlaylist = this._getRunningPlaylist(playlistLoaded);
+                            console.log('palylist bindato');
+                           
+
+                            if (runningBindPlaylist) {
+                                runningBindPlaylist.setCurrentTime(second);
+
+                                if (runningBindPlaylist.getDuration() < second) {
+                                    this.stop(runningBindPlaylist);
+                                } else {
+                                    this.emitResourceEvt(
+                                        PlaylistService.CHANGE_TIME,
+                                        runningBindPlaylist
+                                    );
+                                }
+                            } else {
+                                if (playlist.getDuration() < second) { 
+                                    return;
+                                }
+                                playlist.setCurrentTime(second);
+                                this.resume(playlist);
+                            }
+                        });
+                });
+        }
     }
 }

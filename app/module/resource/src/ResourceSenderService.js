@@ -345,12 +345,22 @@ export class ResourceSenderService extends AbstractResourceSenderService {
 
             this.resourceSenderStorage.get(runningResource.binds[cont].id)
                 .then((resourceSender) => {
-                    console.log('DIO CANE', resourceSender);
-                    this.changeTime(resourceSender ,second);
+                    let runningResourceSender = this._getRunningResource(resourceSender);
+                    if (runningResourceSender) {
+                        
+                        runningResourceSender.resourceReference.setCurrentTime(second);
+                        this.emitResourceEvt(
+                            ResourceSenderService.CHANGE_TIME,
+                            runningResourceSender
+                        );
+                    } else {
+                        resourceSender.resourceReference.currentTime = second;
+                        this.resume(resourceSender);
+                    }
                 })
                 .catch((err) => {
-                        console.error('Error bind resource service', err)
-                    });
+                    console.error('Error bind resource service', err)
+                });
         }
     }
 }

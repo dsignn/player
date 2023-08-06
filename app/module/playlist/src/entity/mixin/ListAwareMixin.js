@@ -71,6 +71,7 @@ export const ListAwareMixin = (superClass) => {
          * @return {ListAwareMixin}
          */
         reset() {
+            console.log('reset');
             this.currentIndex = 0;
             for (let cont = 0; this.resources.length > cont; cont++) {
                 this.resources[cont].currentTime = 0;
