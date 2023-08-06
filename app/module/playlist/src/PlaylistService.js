@@ -159,8 +159,6 @@ export class PlaylistService extends AbstractResourceSenderService {
             this._scheduleBinds(playlist.getBinds(), 'play');
         }
 
-        
-       
         this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
     }
 
@@ -173,7 +171,7 @@ export class PlaylistService extends AbstractResourceSenderService {
         playlist = await this._loadResources(playlist);
 
         let runningPlaylist = this._getRunningPlaylist(playlist);
-        if (runningPlaylist) {
+        if (runningPlaylist.id !== playlist.id) {
             this.pause(runningPlaylist);
         }
 
@@ -204,7 +202,7 @@ export class PlaylistService extends AbstractResourceSenderService {
        
         let runningPlaylist = this._getRunningPlaylist(playlist);
         if (!runningPlaylist) {
-            return;
+            runningPlaylist = playlist;
         }
 
         this._removeRunningPlaylist(playlist);
@@ -229,11 +227,8 @@ export class PlaylistService extends AbstractResourceSenderService {
 
         let runningPlaylist = this._getRunningPlaylist(playlist);
         if (!runningPlaylist) {
-            playlist.status = PlaylistEntity.IDLE;
-            playlist.reset();
-            this.emitResourceEvt(PlaylistService.STOP, playlist);
-            return;
-        }
+            runningPlaylist = playlist;
+        } 
 
         this._removeRunningPlaylist(playlist);
         runningPlaylist.status = PlaylistEntity.IDLE;
@@ -243,6 +238,7 @@ export class PlaylistService extends AbstractResourceSenderService {
          * Binds
          */
         if (runningPlaylist.getBinds().length > 0) {
+            console.log('sucaaaaaaaaaaaaa')
             this._scheduleBinds(runningPlaylist.getBinds(), 'stop');
         }
 
