@@ -94,39 +94,15 @@ export class PlaylistEntity extends ListAwareMixin(DurationMixin(BindMixin(Playe
     }
 
     /**
-     * @param {Number} second
-     * @return {PlaylistEntity}
-     */
-    setSecond(second) {
-        if(second < 1 || second > this.getDuration()) {
-            return;
-        }
-
-        let index = 0;
-
-        for (let cont = 0; this.resources.length > cont; cont++) {
-            let durationResource = this.resources[cont].duration;
-            if (second > durationResource) {
-                second = second - durationResource;
-                index++;
-            } else {
-
-                this.current().reset();
-                this.resources[cont].currentTime = second;
-                this.currentIndex = index;
-                break;
-            }
-        }
-        return this;
-    }
-
-    /**
      * @param {number} seconds 
      */
     setCurrentTime(seconds) {
-        for(let cont = 0; this.resources.length > cont; cont++) {
-            this.resources[cont].setCurrentTime(0);
+
+        if(seconds < 1 || seconds > this.getDuration()) {
+            return;
         }
+
+        this.reset();
 
         for(let cont = 0; this.resources.length > cont; cont++) {
             if (seconds > this.resources[cont].getDuration()) {

@@ -313,6 +313,7 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
             this.calcCurrentTime();
             this.updateContextIcons();
             this.updateActionIcons();
+            this.updateSlider();
         });
     }
 
@@ -410,7 +411,7 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
 
         this.$.slider.max = this.entity.getDuration();
         this.$.slider.disabled = this.entity.getStatus() === PlaylistEntity.RUNNING ? false : true;
-        if (!this.excludeSlider) {
+        if (!this.excludeSlider || this.entity.status === PlaylistEntity.PAUSE) {
             this.$.slider.value = this.entity.getCurrentTime();
         }
     }
