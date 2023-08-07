@@ -390,7 +390,6 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
         setTimeout(
             () => {
                 if (this.entity.getStatus() === PlaylistEntity.RUNNING) {
-                    console.log('MODIFICA TEMPO');
                     this.dispatchEvent(new CustomEvent(
                         'timeupdate',
                         {

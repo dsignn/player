@@ -167,11 +167,10 @@ export class PlaylistService extends AbstractResourceSenderService {
      * @return {Promise}
      */
     async resume(playlist) {
-        console.log('RESUME');
         playlist = await this._loadResources(playlist);
 
         let runningPlaylist = this._getRunningPlaylist(playlist);
-        if (runningPlaylist.id !== playlist.id) {
+        if (runningPlaylist && runningPlaylist.id !== playlist.id) {
             this.pause(runningPlaylist);
         }
 
@@ -223,8 +222,7 @@ export class PlaylistService extends AbstractResourceSenderService {
      * @return {Promise}
      */
     async stop(playlist) {
-        console.log('STOP');
-
+ 
         let runningPlaylist = this._getRunningPlaylist(playlist);
         if (!runningPlaylist) {
             runningPlaylist = playlist;
@@ -238,7 +236,6 @@ export class PlaylistService extends AbstractResourceSenderService {
          * Binds
          */
         if (runningPlaylist.getBinds().length > 0) {
-            console.log('sucaaaaaaaaaaaaa')
             this._scheduleBinds(runningPlaylist.getBinds(), 'stop');
         }
 
@@ -305,7 +302,7 @@ export class PlaylistService extends AbstractResourceSenderService {
         resourceSenderEntity.resourceReference.rotation = playlist.getRotation();
         resourceSenderEntity.resourceReference.enableAudio = playlist.getEnableAudio();
 
-        console.log(nameEvt, playlist.name, resourceSenderEntity);
+        //console.log(nameEvt, playlist.name, resourceSenderEntity);
         let evtData = {
             resource: resourceSenderEntity,
             context : {
@@ -348,9 +345,7 @@ export class PlaylistService extends AbstractResourceSenderService {
                     this._loadResources(playlist)
                         .then((playlistLoaded) => {
 
-                            let runningBindPlaylist = this._getRunningPlaylist(playlistLoaded);
-                            console.log('palylist bindato');
-                           
+                            let runningBindPlaylist = this._getRunningPlaylist(playlistLoaded);                           
 
                             if (runningBindPlaylist) {
                                 runningBindPlaylist.setCurrentTime(second);
@@ -367,6 +362,7 @@ export class PlaylistService extends AbstractResourceSenderService {
                                 if (playlist.getDuration() < second) { 
                                     return;
                                 }
+                                console.log('RESUME');
                                 playlist.setCurrentTime(second);
                                 this.resume(playlist);
                             }
