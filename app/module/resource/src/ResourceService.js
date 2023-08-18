@@ -1,16 +1,21 @@
+
 /**
  * @class ResourceService
  */
 export class ResourceService {
 
     /**
-     *
-     * @param localPath
-     * @param {PathNode} path
+     * @param {*} localPath 
+     * @param {*} fs 
+     * @param {*} mime 
      */
-    constructor(localPath, path) {
+    constructor(localPath, fs, mime) {
 
         this.localPath = localPath;
+
+        this.fs = fs;
+        
+        this.mime = mime;
     }
 
     /**
@@ -48,5 +53,44 @@ export class ResourceService {
         }
 
         return `${resourceEntity.path.nameFile}.${resourceEntity.path.extension}`;
+    }
+
+    getFileFromPath(path) {
+        
+        return new Promise((resolve, reject) => {
+            var file = {};
+            file.path = path;
+            this.fs.promises.access(path, this.fs.constants.F_OK)
+                .then((data) => {                    
+                    this.fs.promises.stat(path)
+                        .then((stats) => {
+                            file.size = stats.size; 
+                            file.type = this.mime.getType(path);
+                            file.name = ResourceService.getFilename(path);
+                            console.log('FILE', file);
+                            resolve(file);
+                        })
+                        .catch((error) => {
+                            reject(error);
+                        });
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+            
+        });
+    }
+
+    /**
+     * @param {string} path 
+     * @param {bool} withExtension 
+     * @returns 
+     */
+    static getFilename(path, withExtension) {
+        let name = path.split('\\').pop().split('/').pop();
+        if (withExtension) {
+            name = name.replace(/\.[^/.]+$/, "");
+        }
+        return name;
     }
 }

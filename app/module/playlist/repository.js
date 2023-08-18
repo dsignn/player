@@ -1,4 +1,5 @@
 import { config } from './config';
+import { Application } from "@dsign/library/src/core/Application";
 import { ContainerAggregate, ContainerAware } from "@dsign/library/src/container/index";
 import { Store } from "@dsign/library/src/storage/adapter/dexie/Store";
 import { Storage } from "@dsign/library/src/storage/Storage";
@@ -18,6 +19,7 @@ import { MongoPlaylistAdapter } from "./src/storage/adapter/mongo/MongoPlaylistA
 import { MongoIdGenerator } from "@dsign/library/src/storage/util/MongoIdGenerator";
 import { DexiePlaylistAdapter } from "./src/storage/adapter/dexie/DexiePlaylistAdapter";
 import { PlaylistService } from "./src/PlaylistService";
+import { PlaylistAutoCreationService } from "./src/PlaylistAutoCreationService";
 import { PlaylistEntity } from "./src/entity/PlaylistEntity";
 //import {Test1} from "./src/injector/Test1";
 //import {Test2} from "./src/injector/Test2";
@@ -35,6 +37,8 @@ export class Repository extends ContainerAware {
         this.initEntity();
         this.initHydrator();
         this.initDexieStorage();
+        this.initUsbAutoCreation();
+        this.initPlaylistAutoCreationService()
     }
 
     /**
@@ -52,6 +56,17 @@ export class Repository extends ContainerAware {
             'ModuleConfig',
             this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
         );
+    }
+
+    initUsbAutoCreation() {
+
+        const dexieManager = this.getContainer().get(
+            this._getModuleConfig().storage.adapter.dexie['connection-service']
+        );
+        
+        dexieManager.on("ready", (data) => {
+            document.body.appendChild(document.createElement('playlist-usb-creation'));
+        });
     }
 
     /**
@@ -211,6 +226,18 @@ export class Repository extends ContainerAware {
             .addEventManager(eventManager);
 
         return eventManagerAggregate;
+    }
+
+    initPlaylistAutoCreationService() {
+
+        let service = new PlaylistAutoCreationService(
+            require('fs')
+        );
+
+        this.getContainer().set(
+            'PlaylistAutoCreationService',
+            service
+        );
     }
 
     /**

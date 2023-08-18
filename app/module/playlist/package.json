@@ -55,6 +55,14 @@
                 "nameFile": "playlist-icons",
                 "extension": "js"
             }
+        },
+        {
+            "name": "playlist-usb-creation",
+            "path": {
+                "directory": "element/playlist-usb-creation",
+                "nameFile": "playlist-usb-creation",
+                "extension": "js"
+            }
         }
     ]
 }

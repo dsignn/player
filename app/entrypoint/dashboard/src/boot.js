@@ -20,7 +20,12 @@ import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManage
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
 import {ChronoService} from './../../../src/ChronoService';
+
 import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
+
+const {usb} = require('usb');
+const drivelist = require('drivelist').list;
+import {UsbService} from './../../../src/usb/UsbService';
 
 process.env.APP_ENVIRONMENT = process.env.APP_ENVIRONMENT === undefined ? 'production' : process.env.APP_ENVIRONMENT;
 
@@ -361,13 +366,21 @@ async function boot() {
 
         });
 
+    
+    /***********************************************************************************************************************
+     CHRONO SERVICE
+    **********************************************************************************************************************/
 
     container.set('ChronoService',
         function(sm) {
             return new ChronoService(sm.get('Timer'))
         });
         
+     /***********************************************************************************************************************
+     USB SERVICE
+    **********************************************************************************************************************/
 
+    container.set('UsbService', new UsbService(usb, drivelist));
 
     /**
      * Load application in global scope

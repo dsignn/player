@@ -98,7 +98,11 @@ export class Repository extends ContainerAware {
 
         this.getContainer().set(
             this._getModuleConfig().resourceService,
-            new ResourceService(this.getContainer().get('Application').getResourcePath())
+            new ResourceService(
+                this.getContainer().get('Application').getResourcePath(),
+                require('fs'),
+                require('mime')
+            )
         );
     }
 
@@ -802,7 +806,7 @@ export class Repository extends ContainerAware {
             ['image/jpeg', 'image/png']
         ).addHydratorMap(
             Repository.getVideoEntityHydrator(container),
-            ['video/mp4', 'video/webm']
+            ['video/mp4', 'video/webm', 'video/mpeg']
         ).addHydratorMap(
             Repository.getWebComponentEntityHydrator(container),
             ['application/zip', 'application/javascript']

@@ -26,7 +26,7 @@ import {lang} from './language/language.js';
  * @polymer
  */
 class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
-// class="iron-selected"
+
     static get template() {
         return html`
              ${flexStyle}

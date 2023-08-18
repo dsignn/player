@@ -9,7 +9,7 @@ export const FpsMixin = (superClass) => {
         constructor() {
             super();
         
-            this.fps = {};
+            this.fps = null;
         }
 
         /**

@@ -63,13 +63,16 @@
     "@polymer/polymer": "^3.5.1",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "app-module-path": "^2.2.0",
+    "decompress": "4.2.1",
     "dexie": "~3.2.2",
+    "drivelist": "11.1.0",
     "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v3.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "js-acl": "^1.0.0",
     "paper-collapse-item": "^4.0.5",
+    "usb": "2.9.0",
     "web-animations-js": "^2.3.1",
-    "decompress": "4.2.1"
+    "mime": "3.0.0"
   },
   "keywords": [
     "polymer 3",
