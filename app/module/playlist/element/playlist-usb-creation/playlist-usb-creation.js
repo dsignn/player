@@ -5,6 +5,7 @@ import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/paper-button/paper-button';
 import { lang } from './language';
+import { EntityNestedReference } from "@dsign/library/src/storage/entity/EntityNestedReference";
 import { PlaylistEntity } from './../../src/entity/PlaylistEntity';
 
 /**
@@ -56,8 +57,10 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                     _usbService: 'UsbService',
                     _resourceService: 'ResourceService',
                     _playlistAutoCreationService: 'PlaylistAutoCreationService',
+                    _monitorService: 'MonitorService',
                     StorageContainerAggregate : {
-                        _storage :"ResourceStorage"
+                        _storage :"ResourceStorage",
+                        _storagePlaylist :"PlaylistStorage"
                     }
 
                 }
@@ -93,6 +96,11 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
     submitUsb(evt) {
         evt.preventDefault();
 
+        if (!this._monitorService.getEnableMonitor()) {
+            // TODO ERROR
+            return;
+        }
+
         let promises = [];
         for (let cont = 0; this.files.length > cont; cont++) {
            
@@ -108,7 +116,7 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                     let promises = [];
             
                     for (let cont = 0; files.length > cont; cont++) {
-                        let entity = {}Pla
+                        let entity = {};
                         entity = this._storage.hydrator.hydrate(files[cont]);
                         entity.resourceToImport = files[cont];                        
                         promises.push(this._storage.save(entity));
@@ -117,8 +125,30 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                     Promise.all(promises)
                         .then((resources) => {
                             console.log('RESOURCES', resources);
+                            
                             let playlist = new PlaylistEntity();
                             playlist.name = this.$.name.value;
+
+                            let monitor = this._monitorService.getEnableMonitor();
+                            let container = monitor.getMonitors()[0];
+
+                            let monitorReference = new EntityNestedReference();
+                            monitorReference.setId(container.getId());
+                            monitorReference.setParentId(monitor.getId());
+                            monitorReference.setCollection('monitor');
+                            monitorReference.name = monitor.name;
+                           
+                            playlist.monitorContainerReference = monitorReference;
+
+                            for(let cont = 0; resources.length > cont; cont++) {
+                                playlist.appendResource(resources[cont])
+                            }
+
+                            this._storagePlaylist.save(playlist)
+                                .then((playlist) => {
+                                    console.log('playlist', playlist);
+                                    this.close();
+                                });
                         }) 
     
                 });

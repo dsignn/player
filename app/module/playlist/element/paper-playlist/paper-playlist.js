@@ -8,7 +8,6 @@ import '@polymer/iron-flex-layout/iron-flex-layout';
 import '@polymer/paper-tooltip/paper-tooltip';
 import { PlaylistService } from './../../src/PlaylistService'
 
-
 import { lang } from './language/language';
 import { PlaylistEntity } from '../../src/entity/PlaylistEntity';
 
@@ -501,11 +500,11 @@ class PaperPlaylist extends DurationMixin(ActionsMixin(StorageEntityMixin(Locali
             return;
         }
 
-        let index = PaperResourceMonitor.LIST_ROTATION.findIndex((items) => {
+        let index = PaperPlaylist.LIST_ROTATION.findIndex((items) => {
             return items === this.entity.rotation;
         });
 
-        this.entity.rotation = (index < (PaperResourceMonitor.LIST_ROTATION.length - 1)) ? PaperResourceMonitor.LIST_ROTATION[index + 1] : PaperResourceMonitor.LIST_ROTATION[0];
+        this.entity.rotation = (index < (PaperPlaylist.LIST_ROTATION.length - 1)) ? PaperPlaylist.LIST_ROTATION[index + 1] : PaperPlaylist.LIST_ROTATION[0];
         this.dispatchEvent(new CustomEvent('change-rotation', { detail: this.entity }));
         this.updateContextIcons();
     }

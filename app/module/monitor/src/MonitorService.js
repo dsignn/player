@@ -199,8 +199,6 @@ export class MonitorService extends EventManagerAware {
      * @param evt
      */
     _checkUpdateMonitor(evt) {
-
-
  
         switch (true) {
             case (this.enableMonitor != null  && evt.data.id === this.enableMonitor.id && evt.data.enable === false):

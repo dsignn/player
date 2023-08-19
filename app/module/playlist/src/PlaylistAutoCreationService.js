@@ -14,7 +14,7 @@ export class PlaylistAutoCreationService {
         this.mimeTypes = [
             'webm',
             'mp4',
-            'mpeg'
+            'video/quicktime'
         ]
     }
 

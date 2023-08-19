@@ -806,7 +806,7 @@ export class Repository extends ContainerAware {
             ['image/jpeg', 'image/png']
         ).addHydratorMap(
             Repository.getVideoEntityHydrator(container),
-            ['video/mp4', 'video/webm', 'video/mpeg']
+            ['video/mp4', 'video/webm', 'video/mpeg', 'video/quicktime']
         ).addHydratorMap(
             Repository.getWebComponentEntityHydrator(container),
             ['application/zip', 'application/javascript']
