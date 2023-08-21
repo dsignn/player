@@ -679,6 +679,9 @@ ipcMain.on('proxy', (event, message) => {
     }
 
     switch (message.event) {
+        case 'load-plant':
+            application.dashboard.send('load-plant', message.data);
+            break;
         case 'paper-player-disable':
             application.closePlayerBrowserWindows(); 
             application.config.enableMonitor = new MonitorContainerEntity();  

@@ -79,12 +79,16 @@ export class MonitorService extends EventManagerAware {
             this.eventManager.emit(MonitorService.LOAD_MONITOR, {});
         });
 
+        this.receiver.on('load-plant', (event, data) => {
+            this._updateResourceBackground();
+        });
+
         this.receiver.on('loading-player-windows-finish', (event, data) => {
             this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
         });
 
 
-        this.sender.send('monitors', {'mock': 'mock'});
+        //this.sender.send('monitors', {'mock': 'mock'});
 
         /**
          * @type {MonitorContainerEntity}
@@ -136,15 +140,6 @@ export class MonitorService extends EventManagerAware {
      */
     setResourceSender(resourceSender) {
         this.resourceSender = resourceSender;
-
-        if (this.enableMonitor) {
-            setTimeout(function() {
-                
-                    this._updateResourceBackground();
-                }.bind(this), 
-                10000
-            );
-        }
     }
 
     /**
@@ -152,7 +147,7 @@ export class MonitorService extends EventManagerAware {
      */
     _updateResourceBackground() {
 
-        if (!this.getEnableMonitor()) {
+        if (!this.getEnableMonitor() || !this.resourceSender) {
             return;
         }
 
@@ -163,7 +158,6 @@ export class MonitorService extends EventManagerAware {
                 console.log('METTI BACKGROUND ', monitors[cont].name)
                 this._sendBackgroundResourceMonitor(monitors[cont].backgroundResource, monitors[cont], this.enableMonitor.id);
             } else {
-                console.log('PILISCI ', monitors[cont].name)
                 this.resourceSender.clearLayer(monitors[cont], 'default');
             }
         }

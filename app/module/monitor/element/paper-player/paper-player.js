@@ -170,6 +170,13 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         }
     }
 
+    connectedCallback() {
+        super.connectedCallback();
+        
+        let readyEvt = new CustomEvent("ready-monitor", {});
+        this.dispatchEvent(readyEvt);
+    }
+
     /**
      * @param newValue
      * @private
@@ -214,7 +221,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
     _clearLayer(evt, msg) {
         
         if (msg.resource.id ==  this.identifier ) {
-            console.log('PULISCI', msg.resource.name, msg.data.layer);
             this.clearLayer(msg.data.layer);
         }
     }
@@ -247,7 +253,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
      * @private
      */
     _stopResource(evt, msg) {
-        console.log('stop');
+
         // Check if the message is not broadcast and not this monitor
         if (msg.resource !== null && this.identifier !== msg.resource.monitorContainerReference.id) {
             return;
@@ -256,7 +262,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
         if (element) {
-            console.log('Stop resource', resourceSenderEntity.name);
             element.remove();
         }
     }
@@ -269,7 +274,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
      * @private
      */
     _pauseResource(evt, msg) {
-        console.log('pause');
         if (msg.resource !== null && this.identifier !== msg.resource.monitorContainerReference.id) {
             return;
         }
@@ -277,7 +281,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
         if (element) {
-            console.log('Pause resource',  resourceSenderEntity.name);
             element.pause();
         }
     }
@@ -290,14 +293,13 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
      * @private
      */
     _resumeResource(evt, msg) {
-        console.log('resume');
+     
         if (msg.resource !== undefined && this.identifier !== msg.resource.monitorContainerReference.id) {
             return;
         }
         let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
 
-        console.log('resume resource', element, resourceSenderEntity.resourceReference.getCurrentTime());
         switch (true) {
             case element !== null:
                 // TODO pass currentTime to resume
@@ -490,7 +492,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
         }
 
         for (let cont = 0; nodeMonitors.length > cont; cont++) {
-            console.log('REMOVE', nodeMonitors[cont]);
             nodeMonitors[cont].remove();
         }
 

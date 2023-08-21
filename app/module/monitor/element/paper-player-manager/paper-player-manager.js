@@ -11,6 +11,10 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
     static get properties () {
         return {
 
+            counterMonitor: {
+                value: 0
+            },
+
             /**
              * @type MonitorEntity
              */
@@ -29,6 +33,9 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
                     "HydratorContainerAggregate": {
                         // TODO add storage service on the player
                         "_monitorEntityHydrator": "MonitorEntityHydrator"
+                    },
+                    SenderContainerAggregate: {
+                        _monitorSender: "MonitorSender"
                     }
                 }
             },
@@ -106,18 +113,36 @@ class PaperPlayerManager extends ServiceInjectorMixin(PolymerElement) {
     _appendPaperPlayer(node, monitor) {
 
         let paperPlayerElement = document.createElement("paper-player");
+        paperPlayerElement.addEventListener('ready-monitor', this._updateCounter.bind(this));
+
         paperPlayerElement.backgroundResource = monitor.backgroundResource ? monitor.backgroundResource : null;
 
         paperPlayerElement.entity = monitor;
         paperPlayerElement.identifier = monitor.id;
         paperPlayerElement.setStyles(monitor);
 
-        this._getNodeToAppend(node).appendChild(paperPlayerElement);
+        this._getNodeToAppend(node).appendChild(paperPlayerElement);     
 
         if (monitor.monitors && Array.isArray(monitor.monitors) && monitor.monitors.length > 0) {
             for (let cont = 0; monitor.monitors.length > cont; cont++) {
                 this._appendPaperPlayer(paperPlayerElement, monitor.monitors[cont]);
             }
+        }
+    }
+
+    _updateCounter(evt) {
+          this.counterMonitor = this.counterMonitor + 1;
+        if (this.counterMonitor >= this.monitor.getMonitors({nested: true}).length) {
+
+            if (!this._monitorSender) {
+                console.warn('Monitor sender not uploaded');
+                return;
+            }
+            console.log('load-plant');
+            this._monitorSender.send(
+                'load-plant',
+                this.monitor
+            )
         }
     }
 
