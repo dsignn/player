@@ -98,14 +98,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             },
 
             /**
-             * @type number
-             */
-            startAt: {
-                type: Number,
-                value : 0
-            },
-
-            /**
              * @type object
              */
             filters: {
@@ -149,7 +141,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
     }
 
     async _changeResourceEntity(resourceEntity) {
-        console.log('APPEND RESOURCE ', resourceEntity);
         if(!resourceEntity || !resourceEntity.resourceReference) {
             return;
         }
@@ -161,14 +152,12 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         switch (true) {
             // TODO add regex on type
             case resourceEntity.resourceReference instanceof ImageEntity === true:
-                console.log('Arrivato ImageEntity');
 
                 this.$.resources.appendChild(await this._createElementFromEntityResource(resourceEntity.resourceReference));
                 this.adjust(resourceEntity.resourceReference.adjust);
                 break;
 
             case resourceEntity.resourceReference instanceof VideoEntity === true:
-                console.log('Arrivato VideoEntity');
             
                 this.$.resources.appendChild(await this._createElementFromEntityResource(resourceEntity.resourceReference));
                 this.adjust(resourceEntity.resourceReference.adjust);
@@ -176,14 +165,12 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
                 break;
 
             case resourceEntity.resourceReference instanceof AudioEntity === true:
-                console.log('Arrivato AudioEntity');
         
                 this.$.resources.appendChild(await this._createElementFromEntityResource(resourceEntity.resourceReference));
                 this.muted(!resourceEntity.resourceReference.enableAudio);
                 break;
 
             case resourceEntity.resourceReference instanceof MetadataEntity === true:
-                console.log('Arrivato MetadataEntity');
             
                 this.$.resources.appendChild(await this._createWebComponent(resourceEntity.resourceReference));
                 break;
@@ -225,7 +212,6 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
                 break;
 
             case entity instanceof MetadataEntity === true:
-                console.log('Arrivato MetadataEntity dentro');
                 element = await this._createWebComponent(entity);
                 break;
             }
@@ -346,7 +332,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.style.backgroundImage = `url('${url.href}')`;
         } catch(error) {
             element.style.backgroundImage = `url('${this.resourceService.getResourcePath(resource)}?${Date.now()}')`;
-            console.warn(error);
+            //console.warn(error);
         }
 
         let container = this._createResourceDiv();
@@ -370,7 +356,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.src = `${url.href}`;
         } catch(error) {
             element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
-            console.warn(error);
+            //console.warn(error);
         }
 
         element.setAttribute('preload', null);
@@ -378,8 +364,9 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         element.setAttribute('muted', true); // TODO remove use to debug
         element.loop = resource.rotation === FileEntity.ROTATION_LOOP ? true : false;
 
-        if (this.startAt > 0) {
-            element.currentTime = this.startAt;
+        console.log('CURRENTE TIME', resource.currentTime);
+        if (resource.currentTime > 0) {
+            element.currentTime = resource.currentTime;
         }
 
         if (element.rotation !== FileEntity.ROTATION_LOOP) {
@@ -412,12 +399,12 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
             element.src = url.href;
         } catch(error) {
             element.src = `${this.resourceService.getResourcePath(resource)}?${Date.now()}`;
-            console.warn(error);
+            //console.warn(error);
         }
        
         element.loop = resource.rotation === FileEntity.ROTATION_LOOP ? true : false;
-        if (this.startAt > 0) {
-            element.currentTime = this.startAt;
+        if (resource.currentTime > 0) {
+            element.currentTime = resource.currentTime;
         }
         element.play();
 
@@ -436,7 +423,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         let promise = new Promise( function(resolve, reject) {
 
             let entryPoint = this.resourceService.getResourcePath(resource);
-            console.log('WC', resource);
+            //console.log('WC', resource);
             switch (true) {
                 case customElements.get(resource.wcName) !== undefined:
                     resolve(this._initWebComponent(resource));
