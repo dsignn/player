@@ -57,6 +57,7 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                     _usbService: 'UsbService',
                     _resourceService: 'ResourceService',
                     _playlistAutoCreationService: 'PlaylistAutoCreationService',
+                    _playlistService: 'PlaylistService',
                     _monitorService: 'MonitorService',
                     StorageContainerAggregate : {
                         _storage :"ResourceStorage",
@@ -128,6 +129,7 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                             
                             let playlist = new PlaylistEntity();
                             playlist.name = this.$.name.value;
+                            playlist.setRotation(PlaylistEntity.ROTATION_LOOP);
 
                             let monitor = this._monitorService.getEnableMonitor();
                             let container = monitor.getMonitors()[0];
@@ -141,12 +143,23 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                             playlist.monitorContainerReference = monitorReference;
 
                             for(let cont = 0; resources.length > cont; cont++) {
-                                playlist.appendResource(resources[cont])
+                                let reference = {};
+                                reference.id = resources[cont].id;
+                                reference.name = resources[cont].name;
+                                playlist.appendResource(reference)
                             }
 
                             this._storagePlaylist.save(playlist)
                                 .then((playlist) => {
-                                    console.log('playlist', playlist);
+                                   
+                                    // TODO GESTIRE STATI PER IL PROCESAMENTO RISORSE
+                                    setTimeout(
+                                        () => {
+                                            this._playlistService.play(playlist);
+                                        },
+                                        3000
+                                    );
+                                   
                                     this.close();
                                 });
                         }) 

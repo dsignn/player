@@ -38,7 +38,8 @@ export class Repository extends ContainerAware {
         this.initHydrator();
         this.initDexieStorage();
         this.initUsbAutoCreation();
-        this.initPlaylistAutoCreationService()
+        this.initPlaylistAutoCreationService();
+        this.initAutoStartPlaylist();
     }
 
     /**
@@ -288,6 +289,41 @@ export class Repository extends ContainerAware {
                 this._getModuleConfig().playlistService,
                 playlistService
             );
+    }
+
+    initAutoStartPlaylist() {
+
+        const dexieManager = this.getContainer().get(
+            this._getModuleConfig().storage.adapter.dexie['connection-service']
+        );
+
+        var autostartPlaylist = function() {
+            let playlistStorage = this.getContainer().get('StorageContainerAggregate').get('PlaylistStorage');
+            let playlistService = this.getContainer().get('PlaylistService');
+
+            playlistStorage.getAll({status: 'running'})
+                .then((playlists) => {
+                   
+                    for(let cont = 0; playlists.length > cont; cont++) {
+                        console.log('autostart playlist', playlists[cont]);
+
+                        playlistService.play(playlists[cont]);
+                    }
+                });
+          
+        }.bind(this)
+
+        dexieManager.on("ready", (data) => {
+
+            if (this.getContainer().get('MonitorService').loadPlant) {
+                autostartPlaylist();
+            } else {
+                this.getContainer().get('MonitorService').receiver.on('load-plant', (event, data) => {
+                    autostartPlaylist();
+                });
+            }
+        });
+       
     }
 
     /**

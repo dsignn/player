@@ -52,6 +52,8 @@ export class MonitorService extends EventManagerAware {
     constructor(monitorStorage, sender, receiver, alwaysOnTopDashboard, resourcePath) {
         super();
 
+        this.loadPlant = false;
+
         /**
          * @type {Storage}
          */
@@ -61,7 +63,6 @@ export class MonitorService extends EventManagerAware {
          * @type {AbstractSender}
          */
         this.sender = sender;
-
 
         /**
          * @type Ipc
@@ -80,13 +81,13 @@ export class MonitorService extends EventManagerAware {
         });
 
         this.receiver.on('load-plant', (event, data) => {
+            this.loadPlant = true;
             this._updateResourceBackground();
         });
 
         this.receiver.on('loading-player-windows-finish', (event, data) => {
             this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
         });
-
 
         //this.sender.send('monitors', {'mock': 'mock'});
 
