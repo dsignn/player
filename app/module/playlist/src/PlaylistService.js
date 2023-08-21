@@ -63,7 +63,10 @@ export class PlaylistService extends AbstractResourceSenderService {
 
             switch (true) {
                 // LOOP PLAYLIST
-                case playlist.hasNext() === false && playlist.getStatus() === PlaylistEntity.RUNNING && resource.getDuration() <= resource.getCurrentTime() && playlist.getRotation() === PlaylistEntity.ROTATION_LOOP:
+                case playlist.hasNext() === false && 
+                    playlist.getStatus() === PlaylistEntity.RUNNING && 
+                    resource.getDuration() <= resource.getCurrentTime() && 
+                    playlist.getRotation() === PlaylistEntity.ROTATION_LOOP:
 
                     playlist.reset();
                     // TODO SEND RESOURCE
@@ -71,7 +74,9 @@ export class PlaylistService extends AbstractResourceSenderService {
                     this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
                     break;
                 // NEXT PLAYLIST
-                case playlist.hasNext() === true && playlist.getStatus() === PlaylistEntity.RUNNING && resource.getDuration() <= resource.getCurrentTime():
+                case playlist.hasNext() === true && 
+                    playlist.getStatus() === PlaylistEntity.RUNNING && 
+                    resource.getDuration() <= resource.getCurrentTime():
                     resource.setCurrentTime(0);
                     playlist.next();
                     // TODO SEND RESOURCE
@@ -79,8 +84,9 @@ export class PlaylistService extends AbstractResourceSenderService {
                     this.emitResourceEvt(PlaylistService.PLAY, playlist, data);
                     break;
                 // STOP PLAYLIST
-                case playlist.hasNext() === false && playlist.getStatus() === PlaylistEntity.RUNNING && resource.getDuration() <= resource.getCurrentTime():
-
+                case playlist.hasNext() === false && 
+                    playlist.getStatus() === PlaylistEntity.RUNNING && 
+                    resource.getDuration() <= resource.getCurrentTime():
                     this.stop(playlist);
                     this.emitResourceEvt(PlaylistService.STOP, playlist);
                     // TODO SEND RESOURCE

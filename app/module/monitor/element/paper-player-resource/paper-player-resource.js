@@ -506,6 +506,7 @@ class PaperPlayerResource extends ServiceInjectorMixin(PolymerElement) {
         let tags = this.shadowRoot.querySelectorAll('video, audio');
         for (let cont = 0; tags.length > cont; cont++) {
        
+            console.log('change time', resourceEntity.getCurrentTime());
             tags[cont].currentTime = resourceEntity.getCurrentTime();
             tags[cont].play();
         }

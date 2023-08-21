@@ -333,18 +333,20 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
 
         let resourceSenderEntity = this._resourceMonitorHydrator.hydrate(msg.resource);
         let element = this.getResourceElement(resourceSenderEntity, msg.context);
-        //console.log('CHANGE', element.resourceEntity.resourceReference.id, resourceSenderEntity.resourceReference.id);
+     
+     
         if (element !== null 
             && resourceSenderEntity.id === element.resourceId 
             && element.resourceEntity.resourceReference.id === resourceSenderEntity.resourceReference.id) {
-            console.log('_changeTimeResource exist', element, resourceSenderEntity);
+          //  console.log('_changeTimeResource exist', element, resourceSenderEntity);
             element.resume(resourceSenderEntity.resourceReference);
         } else {
             let element = this._createPaperPlayerResource(resourceSenderEntity, msg.data, msg.context);
             this.$[resourceSenderEntity.resourceReference.getContext()].appendChild(element);
             this.clearLayerButNotLast(resourceSenderEntity.resourceReference);
           
-            console.log('_changeTimeResource', element, resourceSenderEntity);
+           // console.log('_changeTimeResource', element, resourceSenderEntity);
+            
             element.resume(resourceSenderEntity.resourceReference);
         }
     }
@@ -499,7 +501,7 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
                 monitorElement.identifier = monitor.monitors[cont].id;
                 monitorElement.setStyles(monitor.monitors[cont]);
                 this.$.monitors.appendChild(monitorElement);
-                console.log('APPEND', monitorElement);
+                // console.log('APPEND', monitorElement);
             }
         }
         // TODO add to dom;
@@ -535,7 +537,6 @@ class PaperPlayer extends ServiceInjectorMixin(PolymerElement) {
             setTimeout(
                 function () {
                     this.remove();
-                    console.log('DIO CANE')
                 }.bind(childrenNodes[cont]),
                 50
             );
