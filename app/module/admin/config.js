@@ -12,6 +12,7 @@ export const config = {
                     },
                 }
             },
+            machineService: "MachineService",
             "acl": {
                 "resource": 'admin'
             }

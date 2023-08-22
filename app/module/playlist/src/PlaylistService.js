@@ -288,7 +288,7 @@ export class PlaylistService extends AbstractResourceSenderService {
             let index = playlist.resources.findIndex((ele) => {
                 return ele.id === resources[cont].id;
             });
-           console.log('DURATION', resources[index].getDuration())
+          
             if (index > -1) {
                 playlist.resources[index] = Object.assign(resources[cont], playlist.resources[index]);
             }

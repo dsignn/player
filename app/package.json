@@ -72,7 +72,8 @@
     "paper-collapse-item": "^4.0.5",
     "usb": "2.9.0",
     "web-animations-js": "^2.3.1",
-    "mime": "3.0.0"
+    "mime": "3.0.0",
+    "node-machine-id": "1.1.12"
   },
   "keywords": [
     "polymer 3",

@@ -2,6 +2,8 @@
  * Monitor repository
  */
 import {ContainerAware} from "@dsign/library/src/container/ContainerAware.js";
+import {OsUtilsService} from "../../src/os/OsUtilsService.js"
+import {machineId} from 'node-machine-id';
 import {config} from './config';
 
 /**
@@ -14,7 +16,15 @@ export class Repository extends ContainerAware {
      */
     init() {
         this.loadConfig();
+        this.initMachineService();
         this.initAcl();
+    }
+
+    /**
+     * @returns Object
+     */
+    _getModuleConfig() {
+        return  this.getContainer().get('ModuleConfig')['admin']['admin'];
     }
 
     /**
@@ -25,6 +35,17 @@ export class Repository extends ContainerAware {
             'ModuleConfig',
             this.getContainer().get('merge').merge(this.getContainer().get('ModuleConfig'), config)
         );
+    }
+
+
+    initMachineService() {
+        this.getContainer()
+            .set( 
+                this._getModuleConfig().machineService,
+                new OsUtilsService(
+                    require('os'),
+                    machineId)
+            );
     }
 
     /**
