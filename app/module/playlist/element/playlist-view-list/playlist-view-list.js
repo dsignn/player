@@ -1,18 +1,18 @@
-import {html, PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {ServiceInjectorMixin} from "@dsign/polymer-mixin/service/injector-mixin";
-import {LocalizeMixin} from "@dsign/polymer-mixin/localize/localize-mixin";
-import {StoragePaginationMixin} from "@dsign/polymer-mixin/storage/pagination-mixin";
-import {StorageCrudMixin} from "@dsign/polymer-mixin/storage/crud-mixin";
+import { html, PolymerElement } from '@polymer/polymer/polymer-element.js';
+import { ServiceInjectorMixin } from "@dsign/polymer-mixin/service/injector-mixin";
+import { LocalizeMixin } from "@dsign/polymer-mixin/localize/localize-mixin";
+import { StoragePaginationMixin } from "@dsign/polymer-mixin/storage/pagination-mixin";
+import { StorageCrudMixin } from "@dsign/polymer-mixin/storage/crud-mixin";
 import "@fluidnext-polymer/paper-pagination/paper-pagination";
 import "@fluidnext-polymer/paper-pagination/icons/paper-pagination-icons";
 import "../paper-playlist/paper-playlist";
-import {lang} from './language';
+import { lang } from './language';
 
 /**
  * @customElement
  * @polymer
  */
-class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
+class PlaylistViewList extends StoragePaginationMixin(StorageCrudMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement)))) {
 
     static get template() {
         return html`
@@ -88,7 +88,7 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
         this.resources = lang;
     }
 
-    static get properties () {
+    static get properties() {
         return {
 
             /**
@@ -110,11 +110,11 @@ class PlaylistViewList extends  StoragePaginationMixin(StorageCrudMixin(Localize
             /**
              * @type object
              */
-            services : {
-                value : {
-                    _notify : "Notify",
+            services: {
+                value: {
+                    _notify: "Notify",
                     _localizeService: "Localize",
-                    _playlistService : "PlaylistService",
+                    _playlistService: "PlaylistService",
                     StorageContainerAggregate: {
                         _storage: "PlaylistStorage"
                     }

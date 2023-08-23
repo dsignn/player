@@ -98,6 +98,7 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
         evt.preventDefault();
 
         if (!this._monitorService.getEnableMonitor()) {
+            console.warn('No default monitor selected');
             // TODO ERROR
             return;
         }
@@ -197,9 +198,11 @@ class PaperUsbCreation extends LocalizeMixin(ServiceInjectorMixin(PolymerElement
                 if (files.length > 0) {
                     this.files = files;
                     this.path = path;
-                    console.log(path, files);
                     this.open();
                 }
+            })
+            .catch((error) => {
+                console.error(error);
             });
     }
 }

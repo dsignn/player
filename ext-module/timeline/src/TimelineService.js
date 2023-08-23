@@ -1,13 +1,12 @@
 const TimelineService = (async () => {        
 
-    const { AbstractTimeslotService } = await import(`${container.get('Application').getBasePath()}module/timeslot/src/AbstractTimeslotService.js`);
-    const { TimeslotEntity } = await import(`${container.get('Application').getBasePath()}module/timeslot/src/entity/TimeslotEntity.js`);
+    const { AbstractResourceSenderService } = await import(`${container.get('Application').getBasePath()}module/resource/src/AbstractResourceSenderService`);
     const { TimelineEntity } = await import(`./entity/TimelineEntity.js`);
     const { Time } = await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));
     /**
      * @class TimelineService
      */
-    class TimelineService extends AbstractTimeslotService {
+    class TimelineService extends AbstractResourceSenderService {
 
         /**
          * @param {Storage} timeslotStorage
@@ -117,19 +116,19 @@ const TimelineService = (async () => {
                 // TODO reimpost loop
                 switch (true) {
                     // Loop controll
-                    case this.runningTimelines[property].status === TimeslotEntity.RUNNING &&
+                    case this.runningTimelines[property].status === TimelineEntity.RUNNING &&
                          this.runningTimelines[property].currentTime > this.runningTimelines[property].getDuration() &&
-                         this.runningTimelines[property].rotation === TimeslotEntity.ROTATION_LOOP:
+                         this.runningTimelines[property].rotation === TimelineEntity.ROTATION_LOOP:
                         this.runningTimelines[property].timer.reset();
                         this._checkTimeslotToStart(this.runningTimelines[property]);
                         break;
                     // Stop controll
-                    case this.runningTimelines[property].status === TimeslotEntity.RUNNING &&
+                    case this.runningTimelines[property].status === TimelineEntity.RUNNING &&
                          this.runningTimelines[property].currentTime > this.runningTimelines[property].getDuration() :
                         // TODO event
                         this._stopTimeline( this.runningTimelines[property]);
                         break;
-                    case this.runningTimelines[property].status === TimeslotEntity.RUNNING:
+                    case this.runningTimelines[property].status === TimelineEntity.RUNNING:
                         this._checkTimeslotToStart(this.runningTimelines[property]);
                         break;
                 }
@@ -198,7 +197,7 @@ const TimelineService = (async () => {
          */
         _playTimeline(timeline, timeslot) {
            
-            timeline.status = TimeslotEntity.RUNNING;
+            timeline.status = TimelineEntity.RUNNING;
             timeline.currentTime = 0;
             if (this.isRunning(timeline) === false) {
                 this._addRunningTimeline(timeline);
@@ -230,7 +229,7 @@ const TimelineService = (async () => {
          */
         _stopTimeline(timeline) {
             // TODO add event timeline
-            timeline.status = TimeslotEntity.IDLE;
+            timeline.status = TimelineEntity.IDLE;
             timeline.currentTime = 0;
             this._send(TimelineService.STOP, timeline);
             this.timelineStorage.update(timeline)
@@ -261,7 +260,7 @@ const TimelineService = (async () => {
          */
         _pauseTimeline(timeline) {
 
-            timeline.status = TimeslotEntity.PAUSE;
+            timeline.status = TimelineEntity.PAUSE;
             this._send(TimelineService.PAUSE, timeline);
             this.timelineStorage.update(timeline)
                 .then((data) => {
@@ -291,9 +290,9 @@ const TimelineService = (async () => {
          */
          _resumeTimeline(timeline, event) {
 
-            timeline.status = TimeslotEntity.RUNNING;
+            timeline.status = TimelineEntity.RUNNING;
             let item = timeline.getCurrentTimePreviuosItem();
-            // TODO control time timeslot in timeline
+            // TODO control timeexport const TimelineAwareMixin = (superClass) => { timeslot in timeline
             let time = new Time();
             time.sumSeconds(timeline.currentTime);
             this._runTimelineItem(event, timeline, item, item.time.getDiffSecond(time));
@@ -390,7 +389,7 @@ const TimelineService = (async () => {
         }
 
         /**
-         * @param {TimeslotEntity} timeslot
+         * @param {TimelineEntity} timeslot
          * @param {TimelineEntity} timeline
          * @private
          */

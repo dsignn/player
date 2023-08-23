@@ -63,17 +63,19 @@
     "@polymer/polymer": "^3.5.1",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "app-module-path": "^2.2.0",
+    "ckeditor5": "39.0.1",
+    "ckeditor5-webcomponent": "^2.0.5",
     "decompress": "4.2.1",
     "dexie": "~3.2.2",
     "drivelist": "11.1.0",
     "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v3.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "js-acl": "^1.0.0",
+    "mime": "3.0.0",
+    "node-machine-id": "1.1.12",
     "paper-collapse-item": "^4.0.5",
     "usb": "2.9.0",
-    "web-animations-js": "^2.3.1",
-    "mime": "3.0.0",
-    "node-machine-id": "1.1.12"
+    "web-animations-js": "^2.3.1"
   },
   "keywords": [
     "polymer 3",
