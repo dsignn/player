@@ -364,7 +364,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
     }
 
     _adjustDashboardIndex() {
-        console.log('suca');
+
         document.querySelector('application-layout')
             .shadowRoot.querySelector('#content')
             .querySelector('dashboard-index')
