@@ -21,6 +21,7 @@ import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
 import {ChronoService} from './../../../src/ChronoService';
 import {Messages} from './../../../src/Messages';
+import {Connection} from './../../../src/Connection';
 
 import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
 
@@ -338,7 +339,37 @@ async function boot() {
                                                 MESSAGE SERVICE
     **********************************************************************************************************************/
 
-    container.set('Messages', new Messages());
+    let message = new Messages();
+    container.set('Messages', message);
+
+    /***********************************************************************************************************************
+                                                CONNECTION SERVICE
+    **********************************************************************************************************************/
+
+    let connection = new Connection();
+    if (connection.getStatus() === Connection.OFFLINE) {
+     
+        message.appendMessage(
+            'connection-error',
+            'Nessuna connessione a internet'
+        );
+    }
+
+    connection.getEventManager().on(
+        Connection.CHANGE_STATUS,
+        (evt) => {
+            if (connection.getStatus() === Connection.ONLINE) {
+                message.removeMessage('connection-error');
+            } else {
+                message.appendMessage(
+                    'connection-error',
+                    'Nessuna connessione a internet'
+                );
+            }
+        }
+    );
+
+    container.set('Connection', connection);
 
     /***********************************************************************************************************************
                                                 ARCHIVE SERVICE

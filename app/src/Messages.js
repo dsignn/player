@@ -11,16 +11,8 @@ export class Messages extends EventManagerAware {
 
     constructor() {
         super();
-        this.messages = [
-            {
-                'id': 'test',
-                'message': 'Sono un bel messaggio'
-            },
-            {
-                'id': 'test2',
-                'message': 'Sono un bel messaggio'
-            },
-        ];
+        
+        this.messages = [];
     }
 
     /**
@@ -62,12 +54,12 @@ export class Messages extends EventManagerAware {
      */
     removeMessage(key) {
         
-        let search = this.messages.find((element) => {
+        let search = this.messages.findIndex((element) => {
             return element.id === key;
         });
 
         if (search > -1) {
-            let ele = array.splice(search, 1);
+            let ele = this.messages.splice(search, 1);
             this.getEventManager().emit(
                 Messages.APPEND_MESSAGE,
                 ele
