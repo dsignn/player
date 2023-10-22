@@ -18,6 +18,7 @@ import '../paper-backup/paper-backup';
 import '../paper-restore/paper-restore';
 import '../paper-always-on-top/paper-always-on-top';
 import '../paper-gpu-setting/paper-gpu-setting';
+import '../paper-info/paper-info';
 import {flexStyle} from '../../style/layout-style';
 import {lang} from './language/language.js';
 
@@ -100,7 +101,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     z-index: 103;
                     width: 331px;
                     max-width: 331px;
-                    right: -32px;
+                    right: 28px;
                     border-radius: 6px;
                 }
 
@@ -118,6 +119,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                         <div main-title>{{localize('nameApp')}}</div>
                         <paper-select-language></paper-select-language>
                         <paper-icon-button icon="menu" on-tap="openApp" raised></paper-icon-button>
+                        <paper-info></paper-info>
                         <!--
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
                         -->

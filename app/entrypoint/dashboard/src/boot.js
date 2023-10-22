@@ -20,6 +20,7 @@ import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManage
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
 import {ChronoService} from './../../../src/ChronoService';
+import {Messages} from './../../../src/Messages';
 
 import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
 
@@ -332,6 +333,12 @@ async function boot() {
             paperToast.open();
         }
     });
+
+    /***********************************************************************************************************************
+                                                MESSAGE SERVICE
+    **********************************************************************************************************************/
+
+    container.set('Messages', new Messages());
 
     /***********************************************************************************************************************
                                                 ARCHIVE SERVICE

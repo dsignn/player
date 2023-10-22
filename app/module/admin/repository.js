@@ -58,6 +58,7 @@ export class Repository extends ContainerAware {
 
         aclService.addResource(resource);
         aclService.allow('admin', resource);
+        aclService.allow('guest', resource);
         // guest
     }
 }
