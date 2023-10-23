@@ -16,7 +16,7 @@ import { Listener } from '@dsign/library/src/event';
  * @customElement
  * @polymer
  */
-class ModuleConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
+class AdminConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -179,4 +179,4 @@ class ModuleConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         return this._application.isCore(item1) ? -1 : 1;
     }
 }
-window.customElements.define("module-config", ModuleConfig);
+window.customElements.define("admin-config", AdminConfig);

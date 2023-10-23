@@ -6,7 +6,6 @@ import '@polymer/paper-tabs/paper-tabs';
 import '@polymer/paper-input/paper-input';
 import '@fluidnext-polymer/paper-input-file/paper-input-file';
 import "../paper-module/paper-module";
-import "./../module-config/module-config";
 import { lang } from './language';
 import { Application } from '@dsign/library/src/core/Application';
 import { Listener } from '@dsign/library/src/event';
@@ -25,7 +24,13 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             
             paper-tabs {
                 margin-bottom: 8px;
-                max-width: 250px;
+            }
+
+            paper-tab {
+                text-transform: uppercase;
+                font-size: 16px;
+                font-weight: bold;
+                width: fit-content;
             }
 
             #fileUpload {
@@ -58,13 +63,11 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             }
     
         </style>
-        <paper-tabs selected="{{selectedTab}}" tabindex="0">
-            <paper-tab>{{localize('general')}}</paper-tab>
+        <paper-tabs id="tabs" selected="{{selectedTab}}" tabindex="0" scrollable>
+           
         </paper-tabs>
         <iron-pages id="ironPages" selected="{{selectedTab}}">
-            <div>
-               <module-config><module-config>
-            </div>
+       
         </iron-pages>
         `;
     }
@@ -83,10 +86,15 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             /**
              * @type object
              */
-               services: {
+            services: {
                 value: {
-                    _localizeService: 'Localize'
+                    _localizeService: 'Localize',
+                    _application: "Application",
                 }
+            },
+
+            _application: {
+                observer: 'changeApplication',
             },
         };
     }
@@ -94,6 +102,32 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
     constructor() {
         super();
         this.resources = lang;
+    }
+
+    changeApplication(newValue) {
+        if (!newValue) {
+            return;
+        }
+
+        let modules = newValue.getModules();
+        for (let cont = 0; modules.length > cont; cont++) {
+            let components = modules[cont].getAdminViewComponent();
+            if (components.length > 0) {
+               
+                let ele = document.createElement('paper-tab');
+                let title = this.localize(modules[cont].getName()) ? this.localize(modules[cont].getName()) : `Config ${modules[cont].getName()}`
+                ele.innerHTML = title;
+                this.$.tabs.append(ele);
+
+                let container = document.createElement('div');
+                container.setAttribute("id", modules[cont].getName());
+                for (let cont = 0; components.length > cont; cont++) {
+                    container.append(document.createElement(components[cont].getName()));
+                }
+
+                this.$.ironPages.append(container);
+            }
+        }
     }
 }
 window.customElements.define("admin-index", AdminIndex);
