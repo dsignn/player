@@ -158,8 +158,8 @@ export class Repository extends ContainerAware {
     }
 
     /**
- * @private
- */
+     * @private
+     */
     initResourceReceiver() {
         this.getContainer()
             .get('ReceiverContainerAggregate')

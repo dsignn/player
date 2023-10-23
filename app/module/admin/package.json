@@ -22,5 +22,16 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "adminViewComponent": [
+        {
+            "name": "module-config",
+            "path": {
+                "directory": "element/module-config",
+                "nameFile": "module-config",
+                "extension": "js"
+            }
+        }
+    ],
+    "shortcutComponent": []
 }

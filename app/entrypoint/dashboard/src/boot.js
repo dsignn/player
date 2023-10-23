@@ -61,6 +61,8 @@ var getModuleHydrator = () => {
     moduleHydrator.addValueStrategy('autoloadsWc', new HydratorStrategy(webComponentHydrator));
     moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
     moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
+    moduleHydrator.addValueStrategy('shortcutComponent', new HydratorStrategy(webComponentHydrator));
+    moduleHydrator.addValueStrategy('adminViewComponent', new HydratorStrategy(webComponentHydrator));
 
     let widgetHydrator = new PropertyHydrator(new Widget());
     widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));

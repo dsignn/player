@@ -32,5 +32,7 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "adminViewComponent": [],
+    "shortcutComponent": []
 }

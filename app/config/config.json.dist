@@ -76,7 +76,9 @@
 						"extension": "js"
 					}
 				}
-			]
+			],
+			"adminViewComponent": [],
+			"shortcutComponent": []
 		},
 		{
 			"title": "Monitor",
@@ -176,7 +178,9 @@
 						"extension": "js"
 					}
 				}
-			]
+			],
+			"adminViewComponent": [],
+			"shortcutComponent": []
 		},
 		{
 			"title": "Resource",
@@ -300,7 +304,9 @@
 						"extension": "js"
 					}
 				}
-			]
+			],
+			"adminViewComponent": [],
+			"shortcutComponent": []
 		},
 		{
 			"title": "Playlist",
@@ -360,7 +366,9 @@
 						"extension": "js"
 					}
 				}
-			]
+			],
+			"adminViewComponent": [],
+			"shortcutComponent": []
 		},
 		{
 			"title": "Admin",
@@ -386,7 +394,18 @@
 						"extension": "js"
 					}
 				}
-			]
+			],
+			"adminViewComponent": [
+				{
+					"name": "module-config",
+					"path": {
+						"directory": "element/module-config",
+						"nameFile": "module-config",
+						"extension": "js"
+					}
+				}
+			],
+			"shortcutComponent": []
 		}
 	]
 }
