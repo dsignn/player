@@ -20,8 +20,8 @@ import {DexieManager} from '@dsign/library/src/storage/adapter/dexie/DexieManage
 import {mergeDeep} from '@dsign/library/src/object/Utils';
 import {Utils} from '@dsign/library/src/core/Utils';
 import {ChronoService} from './../../../src/ChronoService';
-import {Messages} from './../../../src/Messages';
-import {Connection} from './../../../src/Connection';
+import {MessagesService} from '../../../src/MessagesService';
+import {ConnectionService} from '../../../src/ConnectionService';
 
 import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
 
@@ -341,15 +341,15 @@ async function boot() {
                                                 MESSAGE SERVICE
     **********************************************************************************************************************/
 
-    let message = new Messages();
+    let message = new MessagesService();
     container.set('Messages', message);
 
     /***********************************************************************************************************************
                                                 CONNECTION SERVICE
     **********************************************************************************************************************/
 
-    let connection = new Connection();
-    if (connection.getStatus() === Connection.OFFLINE) {
+    let connection = new ConnectionService();
+    if (connection.getStatus() === ConnectionService.OFFLINE) {
      
         message.appendMessage(
             'connection-error',
@@ -358,9 +358,9 @@ async function boot() {
     }
 
     connection.getEventManager().on(
-        Connection.CHANGE_STATUS,
+        ConnectionService.CHANGE_STATUS,
         (evt) => {
-            if (connection.getStatus() === Connection.ONLINE) {
+            if (connection.getStatus() === ConnectionService.ONLINE) {
                 message.removeMessage('connection-error');
             } else {
                 message.appendMessage(

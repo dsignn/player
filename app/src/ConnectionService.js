@@ -1,9 +1,9 @@
 import { EventManagerAware } from "@dsign/library/src/event";
 
 /**
- * @class Connection
+ * @class ConnectionService
  */
-export class Connection extends EventManagerAware {
+export class ConnectionService extends EventManagerAware {
 
     static get ONLINE() { return 'online'; }
 
@@ -14,20 +14,20 @@ export class Connection extends EventManagerAware {
     constructor() {
         super();
 
-        this.status = navigator.onLine ? Connection.ONLINE : Connection.OFFLINE;
+        this.status = navigator.onLine ? ConnectionService.ONLINE : ConnectionService.OFFLINE;
 
         window.addEventListener('online', this.updateOnlineStatus.bind(this));
         window.addEventListener('offline', this.updateOfflineStatus.bind(this)); 
     }
 
     updateOnlineStatus(evt) {
-        this.status =  Connection.ONLINE;
-        this.getEventManager().emit(Connection.CHANGE_STATUS);
+        this.status =  ConnectionService.ONLINE;
+        this.getEventManager().emit(ConnectionService.CHANGE_STATUS);
     }
 
     updateOfflineStatus(evt) {
-        this.status =  Connection.OFFLINE;
-        this.getEventManager().emit(Connection.CHANGE_STATUS);
+        this.status =  ConnectionService.OFFLINE;
+        this.getEventManager().emit(ConnectionService.CHANGE_STATUS);
     }
 
     getStatus() {

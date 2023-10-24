@@ -138,7 +138,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                             </template>
                         </dom-repeat>
                     </div>
-                    <div id="content" class="layout-vertical layout-flex-auto layout-content">
+                    <div id="content" class="layout-vertical layout-flex-auto layout-content" style="width: 500px;">
                         <iron-pages id="pages" selected="{{section}}" attr-for-selected="name"></iron-pages>
                     </div>
                 </div>

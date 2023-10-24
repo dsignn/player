@@ -1,9 +1,9 @@
 import { EventManagerAware } from "@dsign/library/src/event";
 
 /**
- * @class Messages
+ * @class MessagesService
  */
-export class Messages extends EventManagerAware {
+export class MessagesService extends EventManagerAware {
 
     static get APPEND_MESSAGE() { return 'append_message'; }
 
@@ -35,7 +35,7 @@ export class Messages extends EventManagerAware {
       
             es.splice(search, 1, message);
             this.getEventManager().emit(
-                Messages.APPEND_MESSAGE,
+                MessagesService.APPEND_MESSAGE,
                 ele
             )
         } else {
@@ -44,7 +44,7 @@ export class Messages extends EventManagerAware {
 
     
         this.getEventManager().emit(
-            Messages.APPEND_MESSAGE,
+            MessagesService.APPEND_MESSAGE,
             message
         )
     }
@@ -61,7 +61,7 @@ export class Messages extends EventManagerAware {
         if (search > -1) {
             let ele = this.messages.splice(search, 1);
             this.getEventManager().emit(
-                Messages.APPEND_MESSAGE,
+                MessagesService.APPEND_MESSAGE,
                 ele
             )
         } 

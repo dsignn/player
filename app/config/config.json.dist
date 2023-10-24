@@ -403,6 +403,14 @@
 						"nameFile": "module-config",
 						"extension": "js"
 					}
+				},
+				{
+					"name": "token-config",
+					"path": {
+						"directory": "element/token-config",
+						"nameFile": "token-config",
+						"extension": "js"
+					}
 				}
 			],
 			"shortcutComponent": []
