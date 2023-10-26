@@ -8,7 +8,7 @@ const template = html`
 <iron-iconset-svg name="dashboard" size="24">
     <svg>
         <defs>
-          <g id="menu"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"></path></g>         
+          <g id="menu"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"></path></g>         
         </defs>
     </svg>
 </iron-iconset-svg>`;
