@@ -13,6 +13,12 @@
 		"basePath": "http://127.0.0.1:8081/",
 		"moduleRelativePath": "src/module"
 	},
+	"xmlHttpRequest" : {
+		"authOrg": {
+			"path": "http://api.dsign.local",
+			"collection": "my-org"
+		}
+	},
 	"localize": {
 		"defaultLanguage": "it",
 		"languages": [

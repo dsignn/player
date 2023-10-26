@@ -12,6 +12,15 @@ export const config = {
                     },
                 }
             },
+            "deviceStorage": {
+                "name-service": "DeviceStorage",
+                "adapter": {
+                    "xmlHttp": {
+                        "collection": "device",
+                        "url": "http://api.dsign.local",
+                    },
+                }
+            },
             machineService: "MachineService",
             "acl": {
                 "resource": 'admin'

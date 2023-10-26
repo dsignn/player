@@ -5,10 +5,9 @@ export class OsUtilsService {
 
     /**
      * @param {*} os 
-     * @param {*} machineId 
-     * @param {*} dns 
+     * @param {*} machineId
      */
-    constructor(os, machineId, dns) {
+    constructor(os, machineId) {
 
         this.os = os;
 
@@ -26,6 +25,7 @@ export class OsUtilsService {
 
                 let message = {
                     id: id,
+                    userAgent: navigator.userAgent,
                     totalMem: this.os.totalmem(),
                     freeMem: this.os.freemem(),
                     cpu: this.os.cpus(),

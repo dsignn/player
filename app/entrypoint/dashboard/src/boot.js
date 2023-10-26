@@ -11,6 +11,10 @@ import {PathNode} from '@dsign/library/src/path/PathNode';
 import {JsAclAdapter} from '@dsign/library/src/permission/acl/adapter/js-acl/JsAclAdapter';
 import {Acl} from '@dsign/library/src/permission/acl/Acl';
 import {Storage} from '@dsign/library/src/storage/Storage';
+import {XmlhAdapter} from "@dsign/library/src/storage/adapter/xmlh/XmlhAdapter";
+import {JsonDecode} from '@dsign/library/src/data-transform/JsonDecode.js';
+import {JsonEncode} from "@dsign/library/src/data-transform/JsonEncode.js";
+import {DefaultBuilder} from "@dsign/library/src/storage/adapter/xmlh/url/DefaultBuilder";
 import {EntityIdentifier, EntityReference} from '@dsign/library/src/storage/entity/index';
 import {EntityNestedReference} from '@dsign/library/src/storage/entity/EntityNestedReference';
 import {AbstractHydrator, PropertyHydrator} from '@dsign/library/src/hydrator/index';
@@ -22,6 +26,7 @@ import {Utils} from '@dsign/library/src/core/Utils';
 import {ChronoService} from './../../../src/ChronoService';
 import {MessagesService} from '../../../src/MessagesService';
 import {ConnectionService} from '../../../src/ConnectionService';
+import {AuthService} from '../../../src/auth/AuthService';
 
 import {FileSystemAdapter} from '@dsign/library/src/storage/adapter/file-system/FileSystemAdapter';
 
@@ -372,6 +377,30 @@ async function boot() {
     );
 
     container.set('Connection', connection);
+
+    /***********************************************************************************************************************
+                                                Auth xml SERVICE
+    **********************************************************************************************************************/
+
+    let adapterStorage = new XmlhAdapter(
+        config['xmlHttpRequest']['authOrg']['path'],
+        config['xmlHttpRequest']['authOrg']['collection'],
+        new JsonEncode(),
+        new JsonDecode(),
+        new DefaultBuilder()
+    );
+
+    adapterStorage.addHeader('Accept', `application/json`);
+
+    const xmlHttpStorage = new Storage(adapterStorage);
+    container.set('AuthXmlHttpStorage', xmlHttpStorage);
+
+    /***********************************************************************************************************************
+                                                Auth SERVICE
+    **********************************************************************************************************************/
+
+    let auth = new AuthService(configStorage, xmlHttpStorage);
+    container.set('Auth', auth);
 
     /***********************************************************************************************************************
                                                 ARCHIVE SERVICE

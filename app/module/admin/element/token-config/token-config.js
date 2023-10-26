@@ -10,6 +10,7 @@ import "../paper-module/paper-module";
 import { lang } from './language';
 import { Application } from '@dsign/library/src/core/Application';
 import { Listener } from '@dsign/library/src/event';
+import { autoUpdater } from 'electron';
 
 /**
  * Entry point for the module admin
@@ -57,14 +58,12 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             services: {
                 value: {
                     _localizeService: 'Localize',
-                    StorageContainerAggregate: {
-                        "_configStorage":"ConfigStorage"
-                    }
+                    _auth: 'Auth',
                 }
             },
 
-            _configStorage: {
-                observer: 'changeConfigStorage'
+            _auth: {
+                observer: 'changeAuth'
             }
         };
     }
@@ -74,20 +73,12 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         this.resources = lang;
     }
 
-    changeConfigStorage(newValue) {
+    changeAuth(newValue) {
         if (!newValue) {
             return;
         }
 
-        let token = newValue.get('token')
-            .then((data) => {
-                if (data) {
-                    this.$.token.value = data.token;
-                }
-               
-            }).catch((error) => {
-                console.error(error);
-            });
+        this.$.token.value = this._auth.getOrganizationToken();
     }
 
     /**
@@ -95,13 +86,7 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
      */
     _save(evt) {
 
-        //let 
-        let token = {
-            "id": "token",
-            "token": this.$.token.value
-        };
-
-        this._configStorage.save(token)
+        this._auth.setOrganizationToken(this.$.token.value)
             .then((data) => {
                 console.log('SAVE', data);
             }).catch((error) => {
