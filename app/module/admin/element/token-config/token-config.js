@@ -41,6 +41,7 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         </style>
         <div>
             <div class="row margin-b">
+                <paper-input id="name" label="{{localize('name')}}"></paper-input>
                 <paper-textarea id="token" label="Token"></paper-textarea>
                 <div class="action">
                     <paper-button id="fileBtn" on-tap="_save">save</paper-button>
@@ -59,11 +60,18 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 value: {
                     _localizeService: 'Localize',
                     _auth: 'Auth',
+                    StorageContainerAggregate : {
+                        _storage :"ConfigStorage"
+                    }
                 }
             },
 
             _auth: {
                 observer: 'changeAuth'
+            },
+
+            _storage: {
+                observer: 'changeStorage'
             }
         };
     }
@@ -81,10 +89,31 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         this.$.token.value = this._auth.getOrganizationToken();
     }
 
+    changeStorage(newValue) {
+        if (!newValue) {
+            return;
+        }
+
+        newValue.get('name-plant')
+            .then((data) => {
+                if (data) {
+                    console.log('DATAAAAAAAAAAAA', data);
+                    this.$.name.value = data.name;
+                }            
+            });
+    }
+
     /**
      * @param {*} evt 
      */
     _save(evt) {
+
+        let namePlant = {
+            "id": 'name-plant',
+            "name":  this.$.name.value
+        };
+
+        this._storage.save(namePlant);
 
         this._auth.setOrganizationToken(this.$.token.value)
             .then((data) => {

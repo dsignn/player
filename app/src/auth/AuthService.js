@@ -52,19 +52,23 @@ export class AuthService extends EventManagerAware {
      * @param {string} token 
      * @returns 
      */
-    setOrganizationToken(token) {
+    setOrganizationToken(token, name) {
 
         this.token = token;
         if (token) {
             this.xmlHttpStorage.adapter.addHeader('Authorization', `Bearer ${token}`);
         } else {
-            adapter.removeHeader('Authorization');
+            this.xmlHttpStorage.adapter.removeHeader('Authorization');
         }
         
         let tokenObj = {
             "id": AuthService.ORGANIZATION_ID,
             "token": token
         };
+
+        if (name) {
+            tokenObj.name = name;
+        }
 
         this.xmlHttpStorage.get('').then(
             (data) => {

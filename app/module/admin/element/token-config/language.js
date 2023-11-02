@@ -3,12 +3,12 @@ export const lang = {
     "general": "Generale",
     "load-module": "Carica modulo",
     "load": "Carica",
-    "test" : "Test"
+    "name" : "Nome impianto",
   },
   "en": {
     "general": "General",
     "load-module": "Load module",
     "load": "Load",
-    "test" : "Test"
+    "name" : "Name plant",
   }
 };

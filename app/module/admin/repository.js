@@ -105,7 +105,8 @@ export class Repository extends ContainerAware {
             new PingDeviceService(
                 this.getContainer().get('Auth'),
                 this.getContainer().get(this._getModuleConfig().deviceStorage['name-service']),
-                this.getContainer().get(this._getModuleConfig().machineService)
+                this.getContainer().get(this._getModuleConfig().machineService),
+                this.getContainer().get('StorageContainerAggregate').get('ConfigStorage'),
             )
         );
     }
