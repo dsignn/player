@@ -97,7 +97,6 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         newValue.get('name-plant')
             .then((data) => {
                 if (data) {
-                    console.log('DATAAAAAAAAAAAA', data);
                     this.$.name.value = data.name;
                 }            
             });
