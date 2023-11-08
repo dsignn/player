@@ -174,11 +174,22 @@ class DashboardIndex extends StorageListMixin(LocalizeMixin(ServiceInjectorMixin
                 </div>
         
             </paper-card>
-            <div id="gridContainer" style="display: block; width: 100%;">
-              <paper-grid id="grid" col-count="4" row-count="10" cell-margin="6" on-resize="_udpate" on-move="_udpate" row-autogrow col-autogrow draggable resizable animated overlappable auto-adjustment></paper-grid>
-            </div>
-                  
-        `;
+            <paper-grid id="grid" 
+                cell-height="1"
+                cell-width="1"
+                cell-margin="1" 
+                col-count="400" 
+                row-count="1000" 
+                on-resize="_udpate" 
+                on-move="_udpate"
+                row-autogrow 
+                col-autogrow 
+                draggable 
+                resizable 
+                animated 
+                overlappable 
+                auto-adjustment>
+            </paper-grid>`;
     }
 
     static get properties () {

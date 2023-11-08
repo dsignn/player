@@ -65,6 +65,31 @@
             }
         }
     ],
+    "widgets": [
+        {
+            "name": "List playlist",
+            "description": "Widget to view list of playlist",
+            "property": "tags",
+            "label": "tags",
+            "require": true,
+            "webComponent": {
+                "name": "widget-paper-playlist",
+                "path": {
+                    "directory": "playlist/element/widget-paper-playlist",
+                    "nameFile": "widget-paper-playlist",
+                    "extension": "js"
+                }
+            },
+            "webComponentData": {
+                "name": "widget-paper-playlist-data",
+                "path": {
+                    "directory": "playlist/element/widget-paper-playlist",
+                    "nameFile": "widget-paper-playlist-data",
+                    "extension": "js"
+                }
+            }
+        }
+    ],
     "adminViewComponent": [],
     "shortcutComponent": []
 }
