@@ -71,10 +71,16 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                     max-width: 100px;
                 }
 
-                .rotate {
-                    rotate: 180deg;
-                    transition: rotate 1s;
-                }
+                .rotate-up {
+                    transform: rotate(0deg);
+                    transition: transform 1s linear;
+                  }
+                  
+                  .rotate-down {
+                    transform: rotate(180deg);
+                    transition: transform 1s linear;
+                  }
+                
             </style>
             <paper-tabs selected="{{selectedTab}}" tabindex="0">
                 <paper-tab>{{localize('resources')}}</paper-tab>
@@ -107,7 +113,7 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
                                             <paper-input name="height" type="number" class="max-width-100" label="{{localize('height')}}" direction="down">
                                                 <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-tap="toggleDimension"></paper-icon-button>
                                             </paper-input>
-                                            <paper-input name="width" type="number" class="max-width-100" label="{{localize('width')}}"  direction="down">
+                                            <paper-input name="width" type="number" class="max-width-100" label="{{localize('width')}}" direction="down">
                                                 <paper-icon-button slot="suffix" icon="low_arrow" alt="clear" title="clear" class="searchIcon" on-click="toggleDimension"></paper-icon-button>
                                             </paper-input>
                                             <paper-input-list name="tags" label="{{localize('tags')}}"></paper-input-list>
@@ -239,10 +245,10 @@ class ResourceIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) 
         let direction = ele.getAttribute('direction');
         if (direction === 'down') {
             ele.setAttribute('direction', 'up');
-            evt.target.classList.add('rotate');
+            evt.target.className = 'searchIcon rotate-down'; 
         } else {
             ele.setAttribute('direction', 'down');
-            evt.target.classList.remove('rotate');
+            evt.target.className = 'searchIcon rotate-up'; 
         }
 
         if (ele.value) {
