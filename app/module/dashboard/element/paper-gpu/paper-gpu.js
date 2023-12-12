@@ -8,7 +8,7 @@ import {lang} from './language/language';
 /**
  * @class
  */
-export class PaperGpuSetting extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
+export class PaperGpu extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
 
     static get template() {
         return html`
@@ -105,7 +105,7 @@ export class PaperGpuSetting extends LocalizeMixin(ServiceInjectorMixin(PolymerE
     open(evt) {
 
         this._sender.send('proxy', {
-            event : PaperGpuSetting.OPEN,
+            event : PaperGpu.OPEN,
             data: {}
         });
         this.$.paperGpu.disabled = true;
@@ -118,7 +118,7 @@ export class PaperGpuSetting extends LocalizeMixin(ServiceInjectorMixin(PolymerE
         if (!receiverService) {
             return;
         }
-        receiverService.on(PaperGpuSetting.CLOSE, this._enable.bind(this))
+        receiverService.on(PaperGpu.CLOSE, this._enable.bind(this))
     }
 
     /**
@@ -130,4 +130,4 @@ export class PaperGpuSetting extends LocalizeMixin(ServiceInjectorMixin(PolymerE
     }
 }
 
-window.customElements.define('paper-gpu-setting', PaperGpuSetting);
+window.customElements.define('paper-gpu', PaperGpu);

@@ -34,5 +34,14 @@
         }
     ],
     "adminViewComponent": [],
-    "shortcutComponent": []
+    "shortcutComponent": [
+        {
+            "name": "paper-auth",
+            "path": {
+                "directory": "element/paper-auth",
+                "nameFile": "paper-auth",
+                "extension": "js"
+            }
+        }
+    ]
 }

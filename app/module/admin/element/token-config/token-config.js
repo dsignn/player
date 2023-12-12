@@ -42,7 +42,7 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         <div>
             <div class="row margin-b">
                 <paper-input id="name" label="{{localize('name')}}"></paper-input>
-                <paper-textarea id="token" label="Token"></paper-textarea>
+                <paper-textarea id="token" label="{{localize('authorization-token')}}"></paper-textarea>
                 <div class="action">
                     <paper-button id="fileBtn" on-tap="_save">save</paper-button>
                 </div>

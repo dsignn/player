@@ -84,7 +84,48 @@
 				}
 			],
 			"adminViewComponent": [],
-			"shortcutComponent": []
+			"shortcutComponent": [
+				{
+					"name": "paper-auth",
+					"path": {
+						"directory": "element/paper-auth",
+						"nameFile": "paper-auth",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "paper-backup",
+					"path": {
+						"directory": "element/paper-backup",
+						"nameFile": "paper-backup",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "paper-restore",
+					"path": {
+						"directory": "element/paper-restore",
+						"nameFile": "paper-restore",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "paper-gpu",
+					"path": {
+						"directory": "element/paper-gpu",
+						"nameFile": "paper-gpu",
+						"extension": "js"
+					}
+				},
+				{
+					"name": "paper-always-on-top",
+					"path": {
+						"directory": "element/paper-always-on-top",
+						"nameFile": "paper-always-on-top",
+						"extension": "js"
+					}
+				}
+			]
 		},
 		{
 			"title": "Monitor",

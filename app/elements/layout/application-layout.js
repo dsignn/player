@@ -14,10 +14,10 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '../icons/icons';
 import '../paper-select-language/paper-select-language';
-import '../paper-backup/paper-backup';
-import '../paper-restore/paper-restore';
-import '../paper-always-on-top/paper-always-on-top';
-import '../paper-gpu-setting/paper-gpu-setting';
+//import '../paper-backup/paper-backup';
+//import '../paper-restore/paper-restore';
+//import '../paper-always-on-top/paper-always-on-top';
+//import '../paper-gpu-setting/paper-gpu-setting';
 import '../paper-info/paper-info';
 import {flexStyle} from '../../style/layout-style';
 import {lang} from './language/language.js';
@@ -105,7 +105,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     border-radius: 6px;
                 }
 
-                .short-cut-menu {
+                #short-cut-menu {
                     margin: 8px;
                     padding: 0;
                     display: flex;
@@ -150,11 +150,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 <div class="avatar-name">Mario rossi</div>
             </app-drawer>
             <paper-dialog id="alignedDialog" no-overlap horizontal-align="left" vertical-align="top">
-                <div class="short-cut-menu">
-                    <paper-gpu-setting></paper-gpu-setting>
-                    <paper-backup></paper-backup>
-                    <paper-restore></paper-restore>
-                    <paper-always-on-top></paper-always-on-top>      
+                <div id="short-cut-menu">
+                   
                 <div>
             </paper-dialog>
         `;
@@ -274,6 +271,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      */
     loadModules(evt) {
         this.modules = evt.data;
+
+        console.log('DDDDDDDD', this.application.getShortcutComponent());
     }
 
     /**
@@ -323,6 +322,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             let elem = document.createElement(this.modules[cont].getEntryPoint().getName());
             elem.name = this.modules[cont].getName();
             this.$.pages.appendChild(elem);
+
+            let shortcutComponents = this.modules[cont].getShortcutComponent();
+            for (let index = 0; shortcutComponents.length > index; index++) {
+                elem = document.createElement(shortcutComponents[index].getName());
+                this.$['short-cut-menu'].appendChild(elem);
+            }
         }
     }
 
