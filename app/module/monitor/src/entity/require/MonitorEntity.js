@@ -54,7 +54,7 @@ class MonitorEntity extends require("@dsign/library").storage.entity.EntityIdent
         /**
          * @type {object}
          */
-        this.defaultTimeslotReference = {};
+        this.backgroundResource = {};
     }
 
     /**

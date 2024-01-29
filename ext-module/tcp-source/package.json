@@ -1,0 +1,38 @@
+{
+    "title": "Tcp source module",
+    "name": "tcp-source",
+    "icon": "tcp-source:menu",
+    "configEntryPoint": "repository.js",
+    "entryPoint": {
+        "name": "tcp-source-index",
+        "path": {
+            "directory": "element/tcp-source-index",
+            "nameFile": "tcp-source-index",
+            "extension": "js"
+        }
+    },
+    "autoloadsWc": [
+        {
+            "name": "tcp-source-icons",
+            "path": {
+                "directory": "element/tcp-source-icons",
+                "nameFile": "tcp-source-icons",
+                "extension": "js"
+            }
+        }
+    ],
+    "autoloads": [
+        {
+            "name": "TcpSourceEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "TcpSourceEntity",
+                "extension": "js"
+            }
+        }
+    ],
+
+    "scripts": {
+        "zip": "zip -r  ../tcp-source . "
+    }
+}

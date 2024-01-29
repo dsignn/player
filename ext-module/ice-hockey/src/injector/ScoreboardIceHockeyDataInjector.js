@@ -37,7 +37,7 @@ const ScoreboardIceHockeyDataInjector = (async () => {
        * @param {Object} data
        * @return Promise
        */
-        getTimeslotData(data) {
+        getData(data) {
             return new Promise((resolve, reject) => {
 
                 resolve(this.iceHockeyScoreboardService.getMatch());

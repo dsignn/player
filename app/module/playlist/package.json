@@ -1,0 +1,95 @@
+{
+    "title": "Playlist",
+    "name": "playlist",
+    "core": true,   
+    "sort": 4,
+    "icon": "playlist:menu",
+    "configEntryPoint": "repository.js",
+    "entryPoint": {
+        "name": "playlist-index",
+        "path": {
+            "directory": "element/playlist-index",
+            "nameFile": "playlist-index",
+            "extension": "js"
+        }
+    },
+    "autoloads": [
+        {
+            "name": "PlaylistService",
+            "path": {
+                "directory": "src",
+                "nameFile": "PlaylistService",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "PlaylistEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "PlaylistEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MongoPlaylistAdapter",
+            "path": {
+                "directory": "src/storage/adapter/mongo",
+                "nameFile": "MongoPlaylistAdapter",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "DexiePlaylistAdapter",
+            "path": {
+                "directory": "src/storage/adapter/dexie",
+                "nameFile": "DexiePlaylistAdapter",
+                "extension": "js"
+            }
+        }
+    ],
+    "autoloadsWc": [
+        {
+            "name": "playlist-icons",
+            "path": {
+                "directory": "element/playlist-icons",
+                "nameFile": "playlist-icons",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "playlist-usb-creation",
+            "path": {
+                "directory": "element/playlist-usb-creation",
+                "nameFile": "playlist-usb-creation",
+                "extension": "js"
+            }
+        }
+    ],
+    "widgets": [
+        {
+            "name": "List playlist",
+            "description": "Widget to view list of playlist",
+            "property": "tags",
+            "label": "tags",
+            "require": true,
+            "webComponent": {
+                "name": "widget-paper-playlist",
+                "path": {
+                    "directory": "playlist/element/widget-paper-playlist",
+                    "nameFile": "widget-paper-playlist",
+                    "extension": "js"
+                }
+            },
+            "webComponentData": {
+                "name": "widget-paper-playlist-data",
+                "path": {
+                    "directory": "playlist/element/widget-paper-playlist",
+                    "nameFile": "widget-paper-playlist-data",
+                    "extension": "js"
+                }
+            }
+        }
+    ],
+    "adminViewComponent": [],
+    "shortcutComponent": []
+}

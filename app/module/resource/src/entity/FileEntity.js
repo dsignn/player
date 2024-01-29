@@ -1,9 +1,13 @@
 import {EntityIdentifier} from "@dsign/library/src/storage/entity/EntityIdentifier";
+import {FilterMixin} from './mixin/FilterMixin';
+import {PlayerPropertyAwareMixin} from './mixin/PlayerPropertyAwareMixin';
+import {MonitorPropertyAwareMixin} from './../../../monitor/src/entity/mixin/MonitorPropertyAwareMixin';
+
 
 /**
  * @class FileEntity
  */
-export class FileEntity extends EntityIdentifier {
+export class FileEntity extends MonitorPropertyAwareMixin(PlayerPropertyAwareMixin(FilterMixin(EntityIdentifier))) {
 
     constructor() {
         super();

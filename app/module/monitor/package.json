@@ -2,6 +2,7 @@
     "title": "Monitor",
     "name": "monitor",
     "core": true,
+    "sort": 2,
     "icon": "monitor:menu",
     "entryPoint": {
         "name": "monitor-index",
@@ -80,10 +81,10 @@
             }
         },
         {
-            "name": "paper-player-timeslot",
+            "name": "paper-player-resource",
             "path": {
-                "directory": "element/paper-player-timeslot",
-                "nameFile": "paper-player-timeslot",
+                "directory": "element/paper-player-resource",
+                "nameFile": "paper-player-resource",
                 "extension": "js"
             }
         },
@@ -95,5 +96,7 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "adminViewComponent": [],
+    "shortcutComponent": []
 }

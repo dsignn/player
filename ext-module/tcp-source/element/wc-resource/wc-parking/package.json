@@ -1,0 +1,10 @@
+{
+  "name": "wc-parking",
+  "version": "0.1.0",
+  "description": "Parking viewer",
+  "main": "wc-parking.js",
+  "dependencies": {
+    "@polymer/polymer": "^3.3.0",
+    "polymer": "^0.5.0"
+  }
+}

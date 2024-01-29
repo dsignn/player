@@ -12,10 +12,12 @@ export const lang = {
     "save" : "Salva",
     "update" : "Modifica",
     "father-monitor" : "Monitor padre",
-    "search-file" : "Cerca file",
+    "search-file" : "Carica file",
     "tag" : 'Tag',
     "notify-save" : "Risorsa salvata",
-    "notify-update" : "Risorsa modificata"
+    "notify-update" : "Risorsa modificata",
+    "enable-multi-media": "Abilita multi media resource",
+    "search-resource": "Cerca risorsa"
   },
   "en": {
     "header": "List monitor",
@@ -30,9 +32,11 @@ export const lang = {
     "save" : "Save",
     "update" : "Update",
     "father-monitor" : "Father monitor",
-    "search-file" : "Search file",
+    "search-file" : "Load file",
     "tag" : 'Tag',
     "notify-save" : "Resource saved",
-    "notify-update" : "Resource updated"
+    "notify-update" : "Resource updated",
+    "enable-multi-media": "Enable multi media resource",
+    "search-resource": "Search resource"
   }
 };

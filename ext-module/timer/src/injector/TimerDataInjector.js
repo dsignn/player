@@ -31,7 +31,7 @@ export class TimerDataInjector extends AbstractInjector {
      * @param {Object} data
      * @return Promise
      */
-    getTimeslotData(data) {
+    getData(data) {
         return new Promise((resolve, reject) => {
 
             if (this.timerService && this.timerService.hasRunningTimer(data.id)) {

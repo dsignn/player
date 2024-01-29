@@ -2,6 +2,7 @@
     "title": "Dashboard",
     "name": "dashboard",
     "core": true,
+    "sort": 1,
     "icon": "dashboard:menu",
     "entryPoint": {
         "name": "dashboard-index",
@@ -28,6 +29,17 @@
             "path": {
                 "directory": "element/dashboard-icons",
                 "nameFile": "dashboard-icons",
+                "extension": "js"
+            }
+        }
+    ],
+    "adminViewComponent": [],
+    "shortcutComponent": [
+        {
+            "name": "paper-auth",
+            "path": {
+                "directory": "element/paper-auth",
+                "nameFile": "paper-auth",
                 "extension": "js"
             }
         }

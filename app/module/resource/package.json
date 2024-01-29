@@ -2,6 +2,7 @@
     "title": "Resource",
     "name": "resource",
     "core": true,
+    "sort": 3,
     "icon": "resource:menu",
     "configEntryPoint": "repository.js",
     "entryPoint": {
@@ -38,6 +39,14 @@
             }
         },
         {
+            "name": "ResourceSenderEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "ResourceSenderEntity",
+                "extension": "js"
+            }
+        },
+        {
             "name": "ImageEntity",
             "path": {
                 "directory": "src/entity",
@@ -62,13 +71,38 @@
             }
         },
         {
+            "name": "AudioEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "AudioEntity",
+                "extension": "js"
+            }
+        },
+        {
             "name": "VideoEntity",
             "path": {
                 "directory": "src/entity",
                 "nameFile": "VideoEntity",
                 "extension": "js"
             }
+        },
+        {
+            "name": "MetadataEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MetadataEntity",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "MultiMediaEntity",
+            "path": {
+                "directory": "src/entity",
+                "nameFile": "MultiMediaEntity",
+                "extension": "js"
+            }
         }
+
     ],
     "autoloadsWc": [
         {
@@ -87,5 +121,7 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "adminViewComponent": [],
+    "shortcutComponent": []
 }

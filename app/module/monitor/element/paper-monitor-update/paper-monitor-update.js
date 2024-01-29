@@ -13,7 +13,7 @@ import '@fluidnext-polymer/paper-input-color/icons/paper-input-color-icons'
 import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
-import {lang} from './language/language';
+import {lang} from './language';
 
 /**
  * @customElement
@@ -93,8 +93,8 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                     <div class="layout horizontal">
                         <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}"></paper-input>
                         <paper-autocomplete
-                            id="defaultTimeslot"
-                            label="{{localize('default-timeslot')}}"
+                            id="backgroundResource"
+                            label="{{localize('background')}}"
                             text-property="name"
                             value-property="name"
                             remote-source
@@ -153,7 +153,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 value : {
                     _localizeService: 'Localize',
                     StorageContainerAggregate: {
-                        _timeslotStorage: "TimeslotStorage"
+                        _resourceStorage: "ResourceStorage"
                     },
                     EntityContainerAggregate: {
                         _entityReference : "EntityReference"
@@ -177,7 +177,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                 observer: 'changeMonitor'
             },
 
-            _timeslotStorage: {
+            _resourceStorage: {
                 readOnly: true
             },
 
@@ -201,12 +201,11 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      * @private
      */
     _defaultChanged(evt) {
-        if (!this._timeslotStorage) {
+        if (!this._resourceStorage) {
             return;
         }
 
-        this._timeslotStorage
-            .getAll({name: evt.detail.value.text})
+        this._resourceStorage.getAll({name: evt.detail.value.text})
             .then(
                 (data) => {
                     evt.detail.target.suggestions(data);
@@ -223,9 +222,9 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         let entityReference = new this._entityReference.constructor();
 
         entityReference.setId(evt.detail.value.id);
-        entityReference.setCollection('timeslot');
+        entityReference.setCollection('resource');
         entityReference.name = evt.detail.value.name;
-        this.entity.defaultTimeslotReference = entityReference;
+        this.entity.backgroundResource = entityReference;
     }
 
     /**
@@ -234,7 +233,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
      */
     _removeDefault(evt) {
 
-        this.set('entity.defaultTimeslotReference', {});
+        this.set('entity.backgroundResource', {});
     }
 
     /**
@@ -246,7 +245,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
         }
 
         this.identifier = newValue.id;
-        this.$.defaultTimeslot.value = newValue.defaultTimeslotReference
+        this.$.backgroundResource.value = newValue.backgroundResource
     }
 
     /**

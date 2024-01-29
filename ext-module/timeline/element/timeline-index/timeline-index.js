@@ -13,8 +13,8 @@
     await import(`${container.get('Application').getBasePath()}elements/paper-filter-storage/paper-filter-storage.js`);
     await import(require('path').normalize(`${container.get('Application').getNodeModulePath()}/@polymer/iron-pages/iron-pages.js`));
    
+    await import('./../timeline-view-upsert/timeline-view-upsert.js');
     await import('./../timeline-view-list/timeline-view-list.js');
-    await import('./../timeline-view-upsert/timeline-view-upsert.js');  
 
     /**
      * Entry point for the module timeline

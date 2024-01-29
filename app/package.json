@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": "antonino.visalli@gmail.com",
   "name": "dsign-player",
   "description": "Polymer 3 in an electron application",
@@ -16,7 +16,7 @@
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
-    "electron": "^24.1.0",
+    "electron": "^28.2.0",
     "extract-zip": "2.0.1",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.9.10"
@@ -28,7 +28,7 @@
     "@fluidnext-polymer/paper-chip": "github:fluidnext/paper-chip#develop",
     "@fluidnext-polymer/paper-grid": "github:fluidnext/paper-grid",
     "@fluidnext-polymer/paper-input-color": "^3.1.0",
-    "@fluidnext-polymer/paper-input-file": "git@github.com:fluidnext/paper-input-file.git#3.2.0",
+    "@fluidnext-polymer/paper-input-file": "git@github.com:fluidnext/paper-input-file.git#3.3.0",
     "@fluidnext-polymer/paper-pagination": "^3.0.0",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",
@@ -63,13 +63,19 @@
     "@polymer/polymer": "^3.5.1",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "app-module-path": "^2.2.0",
+    "ckeditor5": "39.0.1",
+    "ckeditor5-webcomponent": "^2.0.5",
+    "decompress": "4.2.1",
     "dexie": "~3.2.2",
+    "drivelist": "11.1.0",
     "easytimer.js": "git+ssh://git@github.com/albert-gonzalez/easytimer.js.git#v3.1.0",
     "fluent-ffmpeg": "^2.1.2",
     "js-acl": "^1.0.0",
+    "mime": "3.0.0",
+    "node-machine-id": "1.1.12",
     "paper-collapse-item": "^4.0.5",
-    "web-animations-js": "^2.3.1",
-    "decompress": "4.2.1"
+    "usb": "2.9.0",
+    "web-animations-js": "^2.3.1"
   },
   "keywords": [
     "polymer 3",

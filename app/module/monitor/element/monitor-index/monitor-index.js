@@ -28,6 +28,12 @@ class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                     margin-bottom: 8px;
                     max-width: 450px;
                 }
+
+                paper-tab {
+                    text-transform: uppercase;
+                    font-size: 18px;
+                    font-weight: bold;
+                }
             
                 paper-icon-button.circle {
                     @apply --paper-icon-button-action;
