@@ -4,6 +4,8 @@
  export const config = {
     "resource" : {
         "resource": {
+            "resourceReceiver": "ResourceReceiver",
+            "resourceDataContainerAggregate": "resourceDataContainerAggregate",
             "storage": {
                 "name-service": "ResourceStorage",
                 "adapter": {
@@ -17,10 +19,25 @@
                     }
                 }
             }, 
+            "storage-resource-monitor": {
+                "name-service": "ResourceSenderStorage",
+                "adapter": {
+                    "dexie": {
+                        "collection": "resource-monitor",
+                        "connection-service": "DexieManager"
+                    }
+                }
+            },
+            "resourceSenderService": "ResourceSenderService",
+            "resourceService": "ResourceService",
+            "ipcSender": "IpcSender",
             "entityService": "FileEntity",
             "entityServiceImage": "ImageEntity",
             "entityServiceVideo": "VideoEntity",
             "entityServiceAudio": "AudioEntity",
+            "metadataEntity": "MetadataEntity",
+            "multiMediaEntity": "MultiMediaEntity",
+            "resourceSenderEntity": "ResourceSenderEntity",
             "acl": {
                 "resource": 'resource'
             },
@@ -30,6 +47,8 @@
                 "name-storage-service-video": "VideoEntityHydrator",
                 "name-storage-service-audio": "AudioEntityHydrator",
                 "name-storage-service-resource": "ResourceEntityHydrator",
+                "resource-monitor-service": "ResourceMonitorHydrator",
+                "resource-monitor-storage-service": "ResourceMonitorStorageHydrator",
             }
         }
     }

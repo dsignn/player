@@ -3,6 +3,7 @@
     "name": "admin",
     "core": true,
     "icon": "admin:menu",
+    "sort": 6,
     "configEntryPoint": "repository.js",
     "entryPoint": {
         "name": "admin-index",
@@ -21,5 +22,24 @@
                 "extension": "js"
             }
         }
-    ]
+    ],
+    "adminViewComponent": [
+        {
+            "name": "module-config",
+            "path": {
+                "directory": "element/module-config",
+                "nameFile": "module-config",
+                "extension": "js"
+            }
+        },
+        {
+            "name": "token-config",
+            "path": {
+                "directory": "element/token-config",
+                "nameFile": "token-config",
+                "extension": "js"
+            }
+        }
+    ],
+    "shortcutComponent": []
 }

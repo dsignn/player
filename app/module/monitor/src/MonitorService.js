@@ -1,5 +1,6 @@
 import { EventManagerAware } from "@dsign/library/src/event";
 import {Storage} from "@dsign/library/src/storage/Storage";
+import {ResourceSenderEntity} from "./../../resource/src/entity/ResourceSenderEntity";
 
 /**
  * @class MonitorService
@@ -51,6 +52,8 @@ export class MonitorService extends EventManagerAware {
     constructor(monitorStorage, sender, receiver, alwaysOnTopDashboard, resourcePath) {
         super();
 
+        this.loadPlant = false;
+
         /**
          * @type {Storage}
          */
@@ -60,7 +63,6 @@ export class MonitorService extends EventManagerAware {
          * @type {AbstractSender}
          */
         this.sender = sender;
-
 
         /**
          * @type Ipc
@@ -78,17 +80,23 @@ export class MonitorService extends EventManagerAware {
             this.eventManager.emit(MonitorService.LOAD_MONITOR, {});
         });
 
+        this.receiver.on('load-plant', (event, data) => {
+            this.loadPlant = true;
+            this._updateResourceBackground();
+        });
+
         this.receiver.on('loading-player-windows-finish', (event, data) => {
             this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
         });
 
-
-        this.sender.send('monitors', {'mock': 'mock'});
+        //this.sender.send('monitors', {'mock': 'mock'});
 
         /**
          * @type {MonitorContainerEntity}
          */
-        this.enableMonitor = {};
+        this.enableMonitor = null;
+
+        this.resourceSender = null;
 
         /**
          * @type {boolean}
@@ -129,6 +137,53 @@ export class MonitorService extends EventManagerAware {
     }
 
     /**
+     * @param {ResourceSenderService} resourceSender 
+     */
+    setResourceSender(resourceSender) {
+        this.resourceSender = resourceSender;
+    }
+
+    /**
+     * 
+     */
+    _updateResourceBackground() {
+
+        if (!this.getEnableMonitor() || !this.resourceSender) {
+            return;
+        }
+
+        let monitors = this.enableMonitor.getMonitors({nested:true});
+
+        for(let cont = 0; monitors.length > cont; cont++) {
+            if (monitors[cont].backgroundResource && monitors[cont].backgroundResource.id) {
+                console.log('METTI BACKGROUND ', monitors[cont].name)
+                this._sendBackgroundResourceMonitor(monitors[cont].backgroundResource, monitors[cont], this.enableMonitor.id);
+            } else {
+                this.resourceSender.clearLayer(monitors[cont], 'default');
+            }
+        }
+    }
+
+    /**
+     * @param {*} reference 
+     * @param {*} monitor 
+     * @param {*} idMonitorContainer 
+     */
+    _sendBackgroundResourceMonitor(reference, monitor, idMonitorContainer) {
+        
+        let resourceSenderEntity = new ResourceSenderEntity();
+        resourceSenderEntity.resourceReference = reference;
+        resourceSenderEntity.resourceReference.context = 'default';
+        resourceSenderEntity.resourceReference.rotation = 'rotation-infinity';
+
+        resourceSenderEntity.monitorContainerReference = {};
+        resourceSenderEntity.monitorContainerReference.parentId = idMonitorContainer;
+        resourceSenderEntity.monitorContainerReference.id = monitor.id;
+
+        this.resourceSender.play(resourceSenderEntity);
+    } 
+
+    /**
      * @return {MonitorContainerEntity}
      */
     getEnableMonitor() {
@@ -141,23 +196,28 @@ export class MonitorService extends EventManagerAware {
     _checkUpdateMonitor(evt) {
  
         switch (true) {
-            case (evt.data.id === this.enableMonitor.id && evt.data.enable === false):
+            case (this.enableMonitor != null  && evt.data.id === this.enableMonitor.id && evt.data.enable === false):
                 console.log('DISABLE', evt.data.name, this.enableMonitor.name)
                 this.sender.send(MonitorService.DISABLE_MONITOR, evt.data);
                 this.eventManager.emit(MonitorService.DISABLE_MONITOR, evt.data);
-                this.enableMonitor = {};
+                this.enableMonitor = null;
                 break;
-            case (evt.data.id === this.enableMonitor.id && evt.data.enable === true):
-                console.log('ENABLE', evt.data.name, this.enableMonitor.name)
+            case (this.enableMonitor != null && evt.data.id === this.enableMonitor.id && evt.data.enable === true):
+                console.log('ENABLE', evt.data.name, this.enableMonitor)
+
+                this.enableMonitor = evt.data;
                 this.sender.send(MonitorService.UPDATE_MONITOR, evt.data);
                 this.eventManager.emit(MonitorService.UPDATE_MONITOR, evt.data);
+                this._updateResourceBackground();
+              
                 break;
             case (evt.data.enable === true):
-                console.log('CHANGE', evt.data.name, this.enableMonitor.name)
+                console.log('CHANGE', evt.data.name)
                 this._clearMonitorsEnabled();
+                this.enableMonitor = evt.data;
                 this.sender.send(MonitorService.CHANGE_MONITOR, evt.data);
                 this.eventManager.emit(MonitorService.CHANGE_MONITOR, evt.data);
-                this.enableMonitor = evt.data;
+        
                 break;
         }
     }

@@ -35,7 +35,7 @@ const TcpSourceDataInjector = (async () => {
        * @param {Object} data
        * @return Promise
        */
-        getTimeslotData(data) {
+        getData(data) {
             return this.storage.get(data.id);
         }
 

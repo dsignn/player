@@ -29,10 +29,11 @@ class PaperMonitor extends StorageEntityMixin(LocalizeMixin(ServiceInjectorMixin
                 #left-section {
                     width: 80px;
                     min-height: 120px;
-                    background-size: cover;
+                    background-size: contain;
                     background-position: center;
                     background-repeat: no-repeat;
                     background-image: url("./../../module/monitor/element/paper-monitor/img/cover.png");      
+                    background-color: #FFF557;
                 }
                 
                 #fastAction {

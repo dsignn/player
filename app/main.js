@@ -11,6 +11,7 @@ const { AutoLoadClass } = require('@dsign/library/commonjs/core/autoload/AutoLoa
 const { WebComponent } = require('@dsign/library/commonjs/core/webcomponent');
 const { Widget } = require('@dsign/library/commonjs/core/widget/Widget');
 const PropertyHydrator = require('@dsign/library').hydrator.PropertyHydrator;
+const EntityReference = require('@dsign/library').storage.entity.EntityReference;
 const HydratorStrategy = require('@dsign/library').hydrator.strategy.value.HydratorStrategy;
 const NumberStrategy = require('@dsign/library').hydrator.strategy.value.NumberStrategy;
 const FileSystemAdapter = require('@dsign/library').storage.adapter.fileSystem.FileSystemAdapter;
@@ -273,6 +274,8 @@ class Application {
         moduleHydrator.addValueStrategy('autoloadsWc', new HydratorStrategy(webComponentHydrator));
         moduleHydrator.addValueStrategy('entryPoint', new HydratorStrategy(webComponentHydrator));
         moduleHydrator.addValueStrategy('autoloads', new HydratorStrategy(autoLoadClassHydrator));
+        moduleHydrator.addValueStrategy('adminViewComponent', new HydratorStrategy(webComponentHydrator));
+        moduleHydrator.addValueStrategy('shortcutComponent', new HydratorStrategy(webComponentHydrator));
     
         let widgetHydrator = new PropertyHydrator(new Widget());
         widgetHydrator.addValueStrategy('webComponent', new HydratorStrategy(webComponentHydrator));
@@ -349,10 +352,15 @@ class Application {
 
         let strategy = new HydratorStrategy();
         strategy.setHydrator(monitorEntityHydrator);
+
         monitorEntityHydrator.addValueStrategy(
             'monitors',
             strategy
         );
+
+        let backgroundStrategy = new HydratorStrategy();
+        backgroundStrategy.setHydrator(Application.getResourceReferenceHydrator());
+
 
         monitorEntityHydrator.enableExtractProperty('id')
             .enableExtractProperty('name')
@@ -364,7 +372,7 @@ class Application {
             .enableExtractProperty('polygonPoints')
             .enableExtractProperty('monitors')
             .enableExtractProperty('alwaysOnTop')
-            .enableExtractProperty('defaultTimeslotReference');
+            .enableExtractProperty('backgroundResource');
 
         monitorEntityHydrator.enableHydrateProperty('id')
             .enableHydrateProperty('name')
@@ -376,7 +384,7 @@ class Application {
             .enableHydrateProperty('polygonPoints')
             .enableHydrateProperty('monitors')
             .enableHydrateProperty('alwaysOnTop')
-            .enableHydrateProperty('defaultTimeslotReference');
+            .enableHydrateProperty('backgroundResource');
 
         monitorEntityHydrator.addValueStrategy('width', new NumberStrategy())
             .addValueStrategy('height', new NumberStrategy())
@@ -387,6 +395,28 @@ class Application {
         this.monitorEntityHydrator = monitorEntityHydrator;
 
         return this.monitorEntityHydrator;
+    }
+
+    /**
+     * @returns HydratorInterface
+     */
+    static getResourceReferenceHydrator() {
+
+        let hydrator = new PropertyHydrator();
+        hydrator.setTemplateObjectHydration(
+            new EntityReference()
+        );
+
+        hydrator.enableHydrateProperty('id')
+            .enableHydrateProperty('collection')
+            .enableHydrateProperty('name');
+
+
+        hydrator.enableExtractProperty('id')
+            .enableExtractProperty('collection')
+            .enableExtractProperty('name');
+
+        return hydrator;
     }
 
     /**
@@ -411,10 +441,11 @@ class Application {
      */
     createApi() {
 
+        /*
         let express = require('express');
         this.api = express();
 
-        this.api.get('/timeslot', (req, res) => res.send('Hello World!'));
+        this.api.get('', (req, res) => res.send('Hello World!'));
 
         this.api.listen(3001 , () => console.log(`Example app listening on port ${3001}!`, this.api ));
         let mainWindow = new BrowserWindow({
@@ -427,6 +458,7 @@ class Application {
         mainWindow.loadURL('http://localhost:3001/');
         mainWindow.focus();
         mainWindow.hide();
+        */
     }
 
     /**
@@ -649,6 +681,9 @@ ipcMain.on('proxy', (event, message) => {
     }
 
     switch (message.event) {
+        case 'load-plant':
+            application.dashboard.send('load-plant', message.data);
+            break;
         case 'paper-player-disable':
             application.closePlayerBrowserWindows(); 
             application.config.enableMonitor = new MonitorContainerEntity();  

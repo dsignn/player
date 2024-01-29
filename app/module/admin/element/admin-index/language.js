@@ -1,14 +1,15 @@
 export const lang = {
   "it": {
-    "general": "Generale",
     "load-module": "Carica modulo",
     "load": "Carica",
-    "test" : "Test"
+    "test" : "Test",
+    "admin" : "Configurazione generale",
   },
   "en": {
     "general": "General",
     "load-module": "Load module",
     "load": "Load",
-    "test" : "Test"
+    "test" : "Test",
+    "admin" : "General config"
   }
 };

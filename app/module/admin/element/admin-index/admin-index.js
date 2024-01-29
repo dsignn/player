@@ -24,7 +24,13 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             
             paper-tabs {
                 margin-bottom: 8px;
-                max-width: 250px;
+            }
+
+            paper-tab {
+                text-transform: uppercase;
+                font-size: 16px;
+                font-weight: bold;
+                width: fit-content;
             }
 
             #fileUpload {
@@ -57,23 +63,11 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             }
     
         </style>
-        <paper-tabs selected="{{selectedTab}}" tabindex="0">
-            <paper-tab>{{localize('general')}}</paper-tab>
+        <paper-tabs id="tabs" selected="{{selectedTab}}" tabindex="0" scrollable>
+           
         </paper-tabs>
         <iron-pages id="ironPages" selected="{{selectedTab}}">
-            <div>
-                <div class="row margin-b">
-                    <paper-input-file id="fileUpload" label="{{localize('load-module')}}" accept="application/zip" value="{{fileValue}}"></paper-input-file>
-                    <paper-button id="fileBtn" on-tap="importModule" disabled>{{localize('load')}}</paper-button>
-                </div>
-                <div>
-                    <dom-repeat id="modules" items="{{modules}}" as="module" sort="sortModule">
-                        <template>
-                            <paper-module module="{{module}}" direction="horizontal" on-delete="deleteModule"></paper-module>
-                        </template>
-                    </dom-repeat>
-                <div>        
-            </div>
+       
         </iron-pages>
         `;
     }
@@ -89,32 +83,19 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
                 value: 0
             },
 
-            fileValue: {
-                notify: true,
-                observer: 'changeFileValue'
-            },
-
             /**
              * @type object
              */
             services: {
                 value: {
-                    config: "Config",
-                    _application: "Application",
                     _localizeService: 'Localize',
-                    StorageContainerAggregate: {
-                        "_configStorage":"ConfigStorage"
-                    }
+                    _application: "Application",
                 }
             },
 
-            modules: {
-                notify: true,
-            },
-
             _application: {
-                observer: 'applicationChange'
-            }
+                observer: 'changeApplication',
+            },
         };
     }
 
@@ -123,67 +104,30 @@ class AdminIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         this.resources = lang;
     }
 
-    changeFileValue(value) {
-        if (value) {
-            this.$.fileBtn.disabled = false;
-        } else {
-            this.$.fileBtn.disabled = true;
-        }
-    }
-
-    /**
-     * @param {Event} evt 
-     */
-    importModule(evt) {
-        let t = this._application.addModule(this.$.fileUpload.files[0].path, container);
-        console.log('ddddddddddddddddddd', t);
-    }
-
-    /**
-     * @param {Event} evt 
-     */
-    deleteModule(evt) {
-        this._application.deleteModule(evt.target.module);
-    }
-
-    /**
-     * @param {Application} application 
-     */
-    applicationChange(application) {
-        if (!application) {
+    changeApplication(newValue) {
+        if (!newValue) {
             return;
         }
 
-        this.modules = application.getModules();
+        let modules = newValue.getModules();
+        for (let cont = 0; modules.length > cont; cont++) {
+            let components = modules[cont].getAdminViewComponent();
+            if (components.length > 0) {
+               
+                let ele = document.createElement('paper-tab');
+                let title = this.localize(modules[cont].getName()) ? this.localize(modules[cont].getName()) : `Config ${modules[cont].getName()}`
+                ele.innerHTML = title;
+                this.$.tabs.append(ele);
 
-        application.getEventManager().on(
-            Application.IMPORT_MODULE,
-            new Listener(this._updateModule.bind(this))
-        );
+                let container = document.createElement('div');
+                container.setAttribute("id", modules[cont].getName());
+                for (let cont = 0; components.length > cont; cont++) {
+                    container.append(document.createElement(components[cont].getName()));
+                }
 
-        application.getEventManager().on(
-            Application.DELETE_MODULE,
-            new Listener(this._updateModule.bind(this))
-        );
-    }
-
-    /**
-     * @param evt
-     */
-    _updateModule(evt) {
-        this.modules = this._application.getModules();
-        this.config.module = this._application.getModules();
-        this._configStorage.update(this.config)
-            .then((data) => {
-                this.$.modules.render();
-            })
-            .catch((err) => {
-                console.error(err);
-            });
-    }
-
-    sortModule(item1, item2) {
-        return this._application.isCore(item1) ? -1 : 1;
+                this.$.ironPages.append(container);
+            }
+        }
     }
 }
 window.customElements.define("admin-index", AdminIndex);

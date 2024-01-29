@@ -156,6 +156,7 @@ export class Repository extends ContainerAware {
             // TODO add method on service
             aclService.addResource('dashboard');
             aclService.allow('guest', 'dashboard');
+            aclService.allow('admin', 'dashboard');
         }
     }
 }

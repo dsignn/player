@@ -7,7 +7,7 @@ import { Time } from "@dsign/library/src/date/Time";
 export class ChronoService extends EventManagerAware {
 
     /**
-     * TYPE
+     * TYPEChronoService
      */
     static get TYPE_COUNTDOWN() { return 'countdown'; }
 

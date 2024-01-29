@@ -190,7 +190,7 @@ export async function Repository() {
                     storage
                 );
 
-                this.initTimelineService();
+                //this.initTimelineService();
             }
 
             if(dexieManager.isOpen()) {

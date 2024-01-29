@@ -9,7 +9,9 @@ export const lang = {
     "height": "Altezza",
     "width": "Larghezza",
     "type": "Tipologia",
-    "size": "Dimensione"
+    "size": "Dimensione",
+    "resources": "Risorse",
+    "monitor-resource": "Media monitor"
   },
   "en": {
     "list-resource": "List resource",
@@ -21,6 +23,8 @@ export const lang = {
     "height": "Height",
     "width": "Width",
     "type": "Type",
-    "size": "Size"
+    "size": "Size",
+    "resources": "Resources",
+    "monitor-resource": "Media monitor"
   }
 };

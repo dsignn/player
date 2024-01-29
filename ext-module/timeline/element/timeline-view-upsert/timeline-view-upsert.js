@@ -8,6 +8,8 @@
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/localize/localize-mixin.js`));
     const { StorageEntityMixin } = await import(require('path').normalize(
         `${container.get('Application').getNodeModulePath()}/@dsign/polymer-mixin/storage/entity-mixin.js`));
+    const { Time } = await import(require('path').normalize(
+        `${container.get('Application').getNodeModulePath()}/@dsign/library/src/date/Time.js`));
     const { flexStyle } = await import(`${container.get('Application').getBasePath()}style/layout-style.js`);
     const { autocompleteStyle } = await import(`${container.get('Application').getBasePath()}style/autocomplete-custom-style.js`);
     const { lang } = await import('./language.js');
@@ -84,12 +86,12 @@
                                     <div class="pd-r"></div>
                                     <paper-autocomplete
                                                 class="layout-flex"
-                                                id="autocompleteTimeslot"
+                                                id="autocompleteResource"
                                                 label="{{localize('timeslot')}}"
                                                 text-property="name"
                                                 value-property="name"
                                                 remote-source
-                                                on-autocomplete-change="_searchTimeslot">
+                                                on-autocomplete-change="_searchResource">
                                         <template slot="autocomplete-custom-template">
                                             ${autocompleteStyle}
                                             <paper-item class="account-item" on-tap="_onSelect" role="option" aria-selected="false">
@@ -153,7 +155,7 @@
                 time: {
                     type: Object,
                     readOnly: true,
-                    value: new (require("@dsign/library").date.Time)()
+                    value: new Time()
                 },
 
                 /**
@@ -170,7 +172,7 @@
                         _localizeService: 'Localize',
                         StorageContainerAggregate : {
                             _storage : "TimelineStorage",
-                            _timeslotStorage: "TimeslotStorage"
+                            _resourceStorage: "ResourceStorage"
                         },
                         EntityContainerAggregate: {
                             _entityReference : "EntityReference"
@@ -189,7 +191,7 @@
                 /**
                  * @type StorageInterface
                  */
-                _timeslotStorage: {
+                 _resourceStorage: {
                     type: Object,
                     readOnly: true
                 },
@@ -285,12 +287,12 @@
          * @param evt
          * @private
          */
-        async _searchTimeslot(evt) {
+        async _searchResource(evt) {
 
             let search = {};
             search.name = evt.detail.value.text;
 
-            this._timeslotStorage
+            this._resourceStorage
                 .getAll(search)
                 .then((data) => {
                     evt.detail.target.suggestions(data);
@@ -318,16 +320,16 @@
         addToTimeline(evt) {
 
 
-            if (!this.$.autocompleteTimeslot.value) {
+            if (!this.$.autocompleteResource.value) {
                 return;
             }
 
-            let timeslotReference = new this._entityReference.constructor();
-            timeslotReference.id = this.$.autocompleteTimeslot.value.id;
-            timeslotReference.setCollection('timeslot');
-            timeslotReference.name = this.$.autocompleteTimeslot.value.name;
-            timeslotReference.duration = this.$.autocompleteTimeslot.value.duration;
-            this.entity.addItem(this.time.clone(), timeslotReference);
+            let resourceReference = new this._entityReference.constructor();
+            resourceReference.id = this.$.autocompleteResource.value.id;
+            resourceReference.setCollection('resource');
+            resourceReference.name = this.$.autocompleteResource.value.name;
+            resourceReference.duration = this.$.autocompleteResource.value.duration;
+            this.entity.addItem(this.time.clone(), resourceReference);
 
             let list = this.entity.timelineItems;
             this.entity.timelineItems = [];
@@ -335,8 +337,8 @@
             this.entity.timelineItems = list;
             this.$.timelineItems.render();
 
-            this.$.autocompleteTimeslot.clear();
-            this.$.autocompleteTimeslot._selectedOption = null;
+            this.$.autocompleteResource.clear();
+            this.$.autocompleteResource._selectedOption = null;
             this._updateTimelineTimeWc(this.time);
         }
 

@@ -14,10 +14,11 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '../icons/icons';
 import '../paper-select-language/paper-select-language';
-import '../paper-backup/paper-backup';
-import '../paper-restore/paper-restore';
-import '../paper-always-on-top/paper-always-on-top';
-import '../paper-gpu-setting/paper-gpu-setting';
+//import '../paper-backup/paper-backup';
+//import '../paper-restore/paper-restore';
+//import '../paper-always-on-top/paper-always-on-top';
+//import '../paper-gpu-setting/paper-gpu-setting';
+import '../paper-info/paper-info';
 import {flexStyle} from '../../style/layout-style';
 import {lang} from './language/language.js';
 
@@ -26,7 +27,7 @@ import {lang} from './language/language.js';
  * @polymer
  */
 class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(PolymerElement))) {
-// class="iron-selected"
+
     static get template() {
         return html`
              ${flexStyle}
@@ -100,11 +101,11 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     z-index: 103;
                     width: 331px;
                     max-width: 331px;
-                    right: -32px;
+                    right: 28px;
                     border-radius: 6px;
                 }
 
-                .short-cut-menu {
+                #short-cut-menu {
                     margin: 8px;
                     padding: 0;
                     display: flex;
@@ -118,6 +119,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                         <div main-title>{{localize('nameApp')}}</div>
                         <paper-select-language></paper-select-language>
                         <paper-icon-button icon="menu" on-tap="openApp" raised></paper-icon-button>
+                        <paper-info></paper-info>
                         <!--
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
                         -->
@@ -136,7 +138,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                             </template>
                         </dom-repeat>
                     </div>
-                    <div id="content" class="layout-vertical layout-flex-auto layout-content">
+                    <div id="content" class="layout-vertical layout-flex-auto layout-content" style="width: 500px;">
                         <iron-pages id="pages" selected="{{section}}" attr-for-selected="name"></iron-pages>
                     </div>
                 </div>
@@ -148,11 +150,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 <div class="avatar-name">Mario rossi</div>
             </app-drawer>
             <paper-dialog id="alignedDialog" no-overlap horizontal-align="left" vertical-align="top">
-                <div class="short-cut-menu">
-                    <paper-gpu-setting></paper-gpu-setting>
-                    <paper-backup></paper-backup>
-                    <paper-restore></paper-restore>
-                    <paper-always-on-top></paper-always-on-top>      
+                <div id="short-cut-menu">
+                   
                 <div>
             </paper-dialog>
         `;
@@ -164,7 +163,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             section: {
                 type: String,
                 notify: true,
-                value : 'timeslot',
+                value : 'playlist',
                 observer: 'changeSection'
             },
 
@@ -272,6 +271,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      */
     loadModules(evt) {
         this.modules = evt.data;
+
+        console.log('DDDDDDDD', this.application.getShortcutComponent());
     }
 
     /**
@@ -321,6 +322,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             let elem = document.createElement(this.modules[cont].getEntryPoint().getName());
             elem.name = this.modules[cont].getName();
             this.$.pages.appendChild(elem);
+
+            let shortcutComponents = this.modules[cont].getShortcutComponent();
+            for (let index = 0; shortcutComponents.length > index; index++) {
+                elem = document.createElement(shortcutComponents[index].getName());
+                this.$['short-cut-menu'].appendChild(elem);
+            }
         }
     }
 
@@ -335,6 +342,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             paperIconBtn.style.color = '#015b63';
         });
 
+        
+
+        if (value == 'dashboard') {
+            this._adjustDashboardIndex();
+        }
+
         let paperIconBtn = this.shadowRoot.querySelector('#' + value);
         if (paperIconBtn)  {
             paperIconBtn.style.color = 'white';
@@ -345,7 +358,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                     let paperIconBtn = this.shadowRoot.querySelector('#' + value);
 
                     if (!paperIconBtn) {
-                        console.log('suca', value);
                         this.$.menu.render();
                         paperIconBtn = this.shadowRoot.querySelector('#' + value);
                     }
@@ -356,6 +368,14 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 2000
             );
         }
+    }
+
+    _adjustDashboardIndex() {
+
+        document.querySelector('application-layout')
+            .shadowRoot.querySelector('#content')
+            .querySelector('dashboard-index')
+            .$.grid._adjustToWindow();
     }
 }
 

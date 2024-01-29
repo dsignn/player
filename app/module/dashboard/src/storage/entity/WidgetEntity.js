@@ -19,11 +19,11 @@ export class WidgetEntity  extends EntityIdentifier  {
         /**
          * @type {number}
          */
-        this.height = 3;
+        this.height = 160;
         /**
          * @type {number}
          */
-        this.width = 4;
+        this.width = 120;
         /**
          * @type {string}
          */
