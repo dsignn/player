@@ -27,11 +27,6 @@ export class PaperRestore extends LocalizeMixin(ServiceInjectorMixin(PolymerElem
                         font-size: 16px;
                     }
                     
-                    --paper-button : {
-                        background-color: var(--accent-color);
-                        background:  var(--accent-color);
-                    };
-                    
                     --paper-button-disabled : {
                         background-color: var(--divider-color);
                         background:  var(--divider-color);
