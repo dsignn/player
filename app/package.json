@@ -1,8 +1,8 @@
 {
-  "version": "1.0.0",
+  "version": "0.1.0",
   "author": "antonino.visalli@gmail.com",
   "name": "dsign-player",
-  "description": "Polymer 3 in an electron application",
+  "description": "Dsign player to run content on monitors",
   "repository": "git@github.com:dsignn/player.git",
   "license": "BSD-3-Clause",
   "devDependencies": {
