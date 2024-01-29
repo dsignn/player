@@ -38,12 +38,13 @@
     "productName": "Dsign player",
     "asar": false,
     "electronVersion": "28.2.0",
+    "buildVersion": "0.1.0-beta",
     "npmRebuild": false,
     "publish": {
       "provider": "github",
       "releaseType": "release",
       "vPrefixedTagName": false,
-      "token": "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"
+      "token": "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"
     },
     "directories": {
       "output": "releases",
