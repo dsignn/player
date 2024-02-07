@@ -19,6 +19,7 @@ import '../paper-select-language/paper-select-language';
 //import '../paper-always-on-top/paper-always-on-top';
 //import '../paper-gpu-setting/paper-gpu-setting';
 import '../paper-info/paper-info';
+import '../paper-auth/paper-auth';
 import {flexStyle} from '../../style/layout-style';
 import {lang} from './language/language.js';
 
@@ -120,9 +121,9 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                         <paper-select-language></paper-select-language>
                         <paper-icon-button icon="menu" on-tap="openApp" raised></paper-icon-button>
                         <paper-info></paper-info>
-                        <!--
+                        
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
-                        -->
+                        
                     </app-toolbar>
                 </app-header>
                 <div class="layout-container layout-horizontal">
@@ -144,10 +145,21 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 </div>
             </app-header-layout>
             <app-drawer id="settingDrawer" align="right" swipe-open>
-                <div class="avatar-image">
-                    <iron-icon icon="icons:account-circle"></iron-icon>
+                <div style="padding: 4px;">
+                    <paper-tabs selected="{{identitySelect}}">
+                        <paper-tab>Login</paper-tab>
+                        <paper-tab>Impianto</paper-tab>
+                    </paper-tabs>
+                    <iron-pages selected="{{identitySelect}}">
+                        <div> 
+                            <paper-auth selected="{{selected}}"></paper-auth>
+                        </div>
+                        <div> 
+                            <token-config></token-config>
+                        </div>
+                  </iron-pages>
+                    
                 </div>
-                <div class="avatar-name">Mario rossi</div>
             </app-drawer>
             <paper-dialog id="alignedDialog" no-overlap horizontal-align="left" vertical-align="top">
                 <div id="short-cut-menu">
@@ -165,6 +177,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 notify: true,
                 value : 'playlist',
                 observer: 'changeSection'
+            },
+
+            identitySelect: {
+                type: Number,
+                notify: true,
+                value : 0,
             },
 
             modules: {
@@ -271,8 +289,6 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
      */
     loadModules(evt) {
         this.modules = evt.data;
-
-        console.log('DDDDDDDD', this.application.getShortcutComponent());
     }
 
     /**
