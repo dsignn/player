@@ -24,6 +24,10 @@ class TokenConfig extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
         return html`
         <style>
 
+            paper-textarea {
+                line-break: anywhere;
+            }
+
             .action {
                 display: flex;
                 justify-content: flex-end;

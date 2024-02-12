@@ -21,7 +21,7 @@ import '../paper-select-language/paper-select-language';
 import '../paper-info/paper-info';
 import '../paper-auth/paper-auth';
 import {flexStyle} from '../../style/layout-style';
-import {lang} from './language/language.js';
+import {lang} from './language.js';
 
 /**
  * @customElement
@@ -36,6 +36,8 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 :host {
                     display: block;
                     height: 100%;
+                    --app-drawer-width: 500px;
+
                 }
           
                 app-toolbar {
@@ -121,9 +123,7 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                         <paper-select-language></paper-select-language>
                         <paper-icon-button icon="menu" on-tap="openApp" raised></paper-icon-button>
                         <paper-info></paper-info>
-                        
                         <paper-icon-button id="buttonDrawer" icon="user" on-click="_tapDrawer"></paper-icon-button>
-                        
                     </app-toolbar>
                 </app-header>
                 <div class="layout-container layout-horizontal">
@@ -147,12 +147,12 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             <app-drawer id="settingDrawer" align="right" swipe-open>
                 <div style="padding: 4px;">
                     <paper-tabs selected="{{identitySelect}}">
-                        <paper-tab>Login</paper-tab>
+                        <paper-tab>{{localize(labelIdentity)}}</paper-tab>
                         <paper-tab>Impianto</paper-tab>
                     </paper-tabs>
                     <iron-pages selected="{{identitySelect}}">
                         <div> 
-                            <paper-auth selected="{{selected}}"></paper-auth>
+                            <paper-auth selected="{{identitySelect}}" identity="{{identity}}"></paper-auth>
                         </div>
                         <div> 
                             <token-config></token-config>
@@ -172,6 +172,10 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
     static get properties() {
         return {
 
+            identity: {
+                observer: 'changeIdentity'
+            },
+
             section: {
                 type: String,
                 notify: true,
@@ -179,10 +183,13 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
                 observer: 'changeSection'
             },
 
+            labelIdentity: {
+                value : 'login',
+            },
+
             identitySelect: {
                 type: Number,
                 notify: true,
-                value : 0,
             },
 
             modules: {
@@ -212,6 +219,15 @@ class ApplicationLayout extends AclMixin(LocalizeMixin(ServiceInjectorMixin(Poly
             _configStorage: {
                 readOnly: true
             }
+        }
+    }
+
+    changeIdentity(newValue) {
+      
+        if (newValue) {
+            this.labelIdentity = 'user';
+        } else {
+            this.labelIdentity = 'login';
         }
     }
 

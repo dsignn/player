@@ -44,7 +44,10 @@ const template = html`
             --paper-autocomplete-main-color : var(--default-primary-color);
             --paper-input-font-color        : var(--primary-text-color);
 
-
+            --paper-button-disabled : {
+                color: var(--disabled-text-color);
+                background: #f8f7fa;
+            }
             
             /* paper-tooltup */
             --paper-tooltip-background: var(--default-primary-color);

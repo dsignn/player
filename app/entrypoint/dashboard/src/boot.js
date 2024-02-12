@@ -14,6 +14,7 @@ import {Storage} from '@dsign/library/src/storage/Storage';
 import {XmlhAdapter} from "@dsign/library/src/storage/adapter/xmlh/XmlhAdapter";
 import {JsonDecode} from '@dsign/library/src/data-transform/JsonDecode.js';
 import {JsonEncode} from "@dsign/library/src/data-transform/JsonEncode.js";
+import {FormDataEncode} from "@dsign/library/src/data-transform/FormDataEncode";
 import {DefaultBuilder} from "@dsign/library/src/storage/adapter/xmlh/url/DefaultBuilder";
 import {EntityIdentifier, EntityReference} from '@dsign/library/src/storage/entity/index';
 import {EntityNestedReference} from '@dsign/library/src/storage/entity/EntityNestedReference';
@@ -385,21 +386,27 @@ async function boot() {
     let adapterStorage = new XmlhAdapter(
         config['xmlHttpRequest']['authOrg']['path'],
         config['xmlHttpRequest']['authOrg']['collection'],
-        new JsonEncode(),
+        new FormDataEncode(),
         new JsonDecode(),
         new DefaultBuilder()
     );
 
     adapterStorage.addHeader('Accept', `application/json`);
 
-    const xmlHttpStorage = new Storage(adapterStorage);
-    container.set('AuthXmlHttpStorage', xmlHttpStorage);
+    //const xmlHttpStorage = new Storage(adapterStorage);
+    //container.set('AuthXmlHttpStorage', xmlHttpStorage);
 
     /***********************************************************************************************************************
                                                 Auth SERVICE
     **********************************************************************************************************************/
 
-    let auth = new AuthService(configStorage, xmlHttpStorage);
+    let auth = new AuthService(
+        configStorage, 
+        adapterStorage,
+        config['xmlHttpRequest']['authOrg']['clientId'],
+        config['xmlHttpRequest']['authOrg']['clientSecret']
+    );
+
     container.set('Auth', auth);
 
     /***********************************************************************************************************************

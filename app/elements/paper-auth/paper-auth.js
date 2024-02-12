@@ -23,17 +23,27 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
                     display: flex;
                     flex-direction: column;
                 }
+
+                #logged {
+                    padding-top: 8px;
+                    display: none;
+                }
   
             </style>
 
             <div class="container">
-                <iron-form id="formMonitorContainer">
+                <iron-form id="formLogin">
                     <form method="post" action="">
-                        <paper-input id="username" label="{{localize('username')}}"></paper-input>
-                        <paper-input id="password" label="{{localize('password')}}"></paper-input>
+                        <paper-input id="username" label="{{localize('username')}}" required></paper-input>
+                        <paper-input id="password" type="password" label="{{localize('password')}}" required></paper-input>
                     </form>
-                    <paper-button id="loginBtn" on-tap="login">{{localize('login')}}</paper-button>
+                    <paper-button id="loginBtn" on-tap="loginButton">{{localize('login')}}</paper-button>
                 </iron-form>
+                <div id="logged">
+                    <div>{{identity.name}}</div>
+                    <div>{{identity.lastName}}</div>
+                    <paper-button id="logoutBtn" on-tap="logout">{{localize('logout')}}</paper-button>
+                </div>
             </div>`
     }
 
@@ -41,6 +51,11 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
 
         
         return {
+
+            identity: {
+                notify: true,
+                value: null
+            },
 
             _auth : {
                 type: Object,
@@ -56,7 +71,8 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
             },
 
             selected: {
-                value: 1
+                value: 1,
+                notify: true
             }
         }
     }
@@ -66,6 +82,30 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
         this.resources = lang;
     }
 
+    ready() {
+        super.ready();
+        this.$.formLogin.addEventListener('iron-form-presubmit', this.submitLogin.bind(this));
+    }
+
+    loginButton(evt) {
+        this.$.formLogin.submit();
+    }
+
+    /**
+     * @param evt
+     */
+    submitLogin(evt) {
+
+        this._auth.login(this.$.username.value, this.$.password.value).then((data) => {
+                console.log(data);
+            }).catch((error) => {
+                console.log(error);
+            });
+    }
+
+    logout() {
+        this._auth.logout();
+    }
 
     /**
      * @param {Archive} archiveService
@@ -88,14 +128,45 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
                 this.isAuth(false);
                 this.selected = 1;
             });
+
+        authService.getEventManager().on(  
+            AuthService.LOAD_IDENTITY_EVT,
+            (evt) => {
+           
+                this.identity = evt.data;
+                this.hasIdentity(true);
+            });
+
+        authService.getEventManager().on(  
+            AuthService.LOGOUT,
+            (evt) => {
+            
+                this.identity = null;
+                this.hasIdentity(false);
+            });
+     
             
         if (authService.getOrganization()) {
             this.isAuth(true);
         } else {
             this.isAuth(false);
         }
+
+        if (authService.getIdentity()) {
+            this.identity = authService.getIdentity();
+            this.hasIdentity(true);
+        }
     }
 
+    hasIdentity(hasIdentity) {
+        if (hasIdentity) {
+            this.$.logged.style.display = 'block';
+            this.$.formLogin.style.display = 'none';
+        } else {
+            this.$.logged.style.display = 'none';
+            this.$.formLogin.style.display = 'block';
+        }
+    }
 
     isAuth(isAuth) {
         if (isAuth) {

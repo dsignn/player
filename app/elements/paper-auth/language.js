@@ -2,11 +2,13 @@ export const lang = {
   "it": {
     "username": "Username",
     "password" :"Password",
-    "login":  "Login"
+    "login":  "Login",
+    "logout": "Logout"
   },
   "en": {
     "username": "Username",
     "password" :"Password",
-    "login":  "Login"
+    "login":  "Login",
+    "logout": "Logout"
   }
 };
