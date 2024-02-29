@@ -11,26 +11,43 @@ export class ConnectionService extends EventManagerAware {
 
     static get CHANGE_STATUS() { return 'change'; }
 
-    constructor() {
+    constructor(interval) {
         super();
 
-        this.status = navigator.onLine ? ConnectionService.ONLINE : ConnectionService.OFFLINE;
+        this.status = ConnectionService.OFFLINE;
 
-        window.addEventListener('online', this.updateOnlineStatus.bind(this));
-        window.addEventListener('offline', this.updateOfflineStatus.bind(this)); 
-    }
+        this.interval = interval ? interval : 2000;
 
-    updateOnlineStatus(evt) {
-        this.status =  ConnectionService.ONLINE;
-        this.getEventManager().emit(ConnectionService.CHANGE_STATUS);
-    }
-
-    updateOfflineStatus(evt) {
-        this.status =  ConnectionService.OFFLINE;
-        this.getEventManager().emit(ConnectionService.CHANGE_STATUS);
+        setInterval(
+            () => {
+                this._sendPing();
+            },
+            this.interval
+        );
+      
     }
 
     getStatus() {
         return this.status;
+    }
+
+    _sendPing() {
+        
+        fetch('https://www.google.com').then(
+            (response) => {
+                if (this.status != ConnectionService.ONLINE) {
+                    this.status = ConnectionService.ONLINE;
+                    this.getEventManager().emit(ConnectionService.CHANGE_STATUS, this.status);
+                    console.log('si');
+                }
+            }
+        ).catch((error) => {
+            if (this.status != ConnectionService.OFFLINE) {
+                this.status = ConnectionService.OFFLINE;
+                this.getEventManager().emit(ConnectionService.CHANGE_STATUS, this.status);
+                console.log('no');
+            }
+        });
+    
     }
 }

@@ -24,9 +24,37 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
                     flex-direction: column;
                 }
 
+                .row {
+                    display: flex;
+                    flex-direction: row;
+                }
+
                 #logged {
                     padding-top: 8px;
                     display: none;
+                }
+
+                .avatar {
+                    height: 80px;
+                    width: 80px;
+                    display:flex;
+                }
+
+                . margin-16 {
+                    margin-bottom: 16px;
+                }
+
+                .data-auth {
+                    flex: 1;
+                    display:flex;
+                    padding-left: 8px;
+                    font-size:18px;
+                    text-transform: capitalize;
+                }
+
+                #avatarIcon {
+                    --iron-icon-height: 80px;
+                    --iron-icon-width: 80px;
                 }
   
             </style>
@@ -40,8 +68,14 @@ export class PaperAuth extends  LocalizeMixin(ServiceInjectorMixin(PolymerElemen
                     <paper-button id="loginBtn" on-tap="loginButton">{{localize('login')}}</paper-button>
                 </iron-form>
                 <div id="logged">
-                    <div>{{identity.name}}</div>
-                    <div>{{identity.lastName}}</div>
+                    <div class="row margin-16;">
+                        <div class="avatar">
+                            <iron-icon icon="user" id=avatarIcon></iron-icon>
+                        </div>
+                        <div class="data-auth">
+                            <div>{{identity.lastName}} {{identity.name}}</div>
+                        </div>
+                    </div>
                     <paper-button id="logoutBtn" on-tap="logout">{{localize('logout')}}</paper-button>
                 </div>
             </div>`

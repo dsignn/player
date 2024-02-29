@@ -348,7 +348,7 @@ class PaperInputInjectorDataService extends LocalizeMixin(ServiceInjectorMixin(P
      * @private
      */
     _deleteChip(evt) {
-        console.log('dai toni');
+
         let removeElement = this.splice('paperItemsData', evt.target.index, 1)[0];
         let findIndexValue = this.value.findIndex((element) => {
             return element.name === removeElement.serviceName;
