@@ -11,12 +11,14 @@ export class ConnectionService extends EventManagerAware {
 
     static get CHANGE_STATUS() { return 'change'; }
 
-    constructor(interval) {
+    constructor(interval, url) {
         super();
 
         this.status = ConnectionService.OFFLINE;
 
-        this.interval = interval ? interval : 2000;
+        this.url = url ? url : 'https://dns.google/';
+
+        this.interval = interval ? interval : 4000;
 
         setInterval(
             () => {
@@ -33,19 +35,17 @@ export class ConnectionService extends EventManagerAware {
 
     _sendPing() {
         
-        fetch('https://www.google.com').then(
+        fetch(this.url).then(
             (response) => {
                 if (this.status != ConnectionService.ONLINE) {
                     this.status = ConnectionService.ONLINE;
                     this.getEventManager().emit(ConnectionService.CHANGE_STATUS, this.status);
-                    console.log('si');
                 }
             }
         ).catch((error) => {
             if (this.status != ConnectionService.OFFLINE) {
                 this.status = ConnectionService.OFFLINE;
                 this.getEventManager().emit(ConnectionService.CHANGE_STATUS, this.status);
-                console.log('no');
             }
         });
     

@@ -16,7 +16,7 @@
     "acl": "^0.4.11",
     "babel-polyfill": "^6.26.0",
     "devtron": "^1.4.0",
-    "electron": "^28.2.0",
+    "electron": "^29.1.0",
     "extract-zip": "2.0.1",
     "polymer-cli": "^1.9.9",
     "typescript": "^3.9.10"

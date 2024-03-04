@@ -63,7 +63,7 @@ export class PaperInternetStatus extends LocalizeMixin(ServiceInjectorMixin(Poly
             </style>
             <div class="container">
                 <paper-spinner id="spinner"></paper-spinner>
-                <paper-icon-button id="paperInternetStatus" icon="internet" title="{{label}}" class="offline"></paper-icon-button>
+                <paper-icon-button id="paperInternetStatus" icon="internet" class="offline"></paper-icon-button>
                 <paper-tooltip for="paperInternetStatus" position="bottom">{{localize(label)}}</paper-tooltip>
                 <div style="font-size: 16px;">Status</div>
             </div>

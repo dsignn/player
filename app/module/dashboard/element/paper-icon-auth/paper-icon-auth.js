@@ -81,7 +81,8 @@ export class PaperIconAuth extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
             <div class="container">
                 <paper-spinner id="spinner"></paper-spinner>
                 <div class="relative">
-                    <paper-icon-button id="paperBackup" icon="dashboard:auth" title="{{label}}" on-tap="backup"></paper-icon-button>
+                    <paper-icon-button id="paperBackup" icon="dashboard:auth" on-tap="backup"></paper-icon-button>
+                    <paper-tooltip for="paperBackup" position="bottom">{{localize(label)}}</paper-tooltip>
                     <div id="auth" class="not-auth"></div>
                 </div>
                 <div style="font-size: 14px;">{{localize('auth')}}</div>
@@ -99,6 +100,11 @@ export class PaperIconAuth extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
                 type: Object,
                 readOnly: true,
                 observer: 'changeAuth'
+            },
+
+            label: {
+                notify: true,
+                value: 'no-auth'
             },
 
             /**
@@ -130,12 +136,14 @@ export class PaperIconAuth extends LocalizeMixin(ServiceInjectorMixin(PolymerEle
             AuthService.LOADED_ORGANIZATION_FROM_TOKEN,
             (evt) => {
                 this.isAuth(true);
+                this.label = 'org-auth';
             });
 
         authService.getEventManager().on(  
             AuthService.RESET_ORGANIZATION_FROM_TOKEN,
             (evt) => {
                 this.isAuth(false);
+                this.label = 'no-auth';
             });
             
         if (authService.getOrganization()) {
