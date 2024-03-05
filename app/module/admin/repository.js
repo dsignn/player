@@ -59,32 +59,29 @@ export class Repository extends ContainerAware {
             new DefaultBuilder()
         );
 
-
         adapterStorage.addHeader('Content-Type', 'application/json')
             .addHeader('Accept', 'application/json');
 
-        //this.injectAuthHeader(adapterStorage);
-        if (this.getContainer().get('Auth').getOrganizationToken()) {
+        if (this.getContainer().get('Auth') && this.getContainer().get('Auth').getOrganizationToken()) {
             adapterStorage.addHeader('Authorization', `Bearer ${this.getContainer().get('Auth').getOrganizationToken()}`);
+
+
+            this.getContainer().get('Auth').getEventManager().on(
+                AuthService.LOADED_ORGANIZATION_FROM_TOKEN, 
+                () => {
+                    adapterStorage.addHeader('Authorization', `Bearer ${this.getContainer().get('Auth').getOrganizationToken()}`);
+                }
+            )
+    
+            this.getContainer().get('Auth').getEventManager().on(
+                AuthService.RESET_ORGANIZATION_FROM_TOKEN, 
+                () => {
+                    adapterStorage.removeHeader('Authorization');
+                }
+            )
         }
 
-        this.getContainer().get('Auth').getEventManager().on(
-            AuthService.LOADED_ORGANIZATION_FROM_TOKEN, 
-            () => {
-                adapterStorage.addHeader('Authorization', `Bearer ${this.getContainer().get('Auth').getOrganizationToken()}`);
-            }
-        )
-
-        this.getContainer().get('Auth').getEventManager().on(
-            AuthService.RESET_ORGANIZATION_FROM_TOKEN, 
-            () => {
-                adapterStorage.removeHeader('Authorization');
-            }
-        )
-
         let storage = new Storage(adapterStorage);
-       // storage.setHydrator(this.getContainer().get('HydratorContainerAggregate').get('PlaylistHydrator'));
-
         this.getContainer().set(this._getModuleConfig().deviceStorage['name-service'], storage);
     }
 
@@ -100,6 +97,13 @@ export class Repository extends ContainerAware {
     }
 
     initPingService() {
+
+        // TODO aggiungere caricamento dei servizi per i diversi contesti dashboard e player
+
+        if(!this.getContainer().get('Auth')) {
+            return;
+        }
+
         this.getContainer().set(
             'PingDeviceService',
             new PingDeviceService(

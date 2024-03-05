@@ -224,9 +224,7 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
         }
     }
 
-    _searchResource(evt) {
-        console.log('_searchResource');
-    
+    _searchResource(evt) {    
         this._storage.getAll({name : evt.detail.value.text})
             .then((resources) => {
 
@@ -237,8 +235,6 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
     }
 
     _selectResource(evt) {
-        console.log('_selectResource');
-
         this.push('entity.resources', evt.detail.value);
 
         setTimeout(
@@ -250,7 +246,7 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
     }
 
     _clearResource(evt) {
-        console.log('_clearResource');
+
     }
 
 
@@ -291,8 +287,6 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
     }
 
     updateEntityPrototypeEvt(evt) {
-        console.log('evt', evt);
-
         if (evt.detail.length == 1) {
             this.updateEntityPrototype(evt.detail[0]);
         } else {
@@ -333,7 +327,7 @@ class ResourceViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjecto
         if (!(this.entity instanceof MultiMediaEntity)) {
             this.entity.resourceToImport = this.$.fileUpload.files[0];
         }
-        
+
         this._storage[method](this.entity)
             .then((data) => {
 

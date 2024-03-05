@@ -432,7 +432,7 @@ export class Repository extends ContainerAware {
 
         this._checkUpdateMetadata(evt.data);
         if (evt.data.resourceToImport) {
-            delete evt.data.resourceToImport;
+           // delete evt.data.resourceToImport;
         }
     }
 
@@ -460,6 +460,7 @@ export class Repository extends ContainerAware {
      */
     _checkFileResource(resourceEntity) {
 
+        console.log('_checkFileResource', resourceEntity);
         if (resourceEntity.resourceToImport) {
 
             let fileDirectory = `${this.getContainer().get('Application').getResourcePath()}${this.path.sep}${resourceEntity.id}`;
@@ -502,6 +503,7 @@ export class Repository extends ContainerAware {
      * @returns 
      */
     _checkUpdateMetadata(resourceEntity) {
+        console.log('_checkUpdateMetadata', resourceEntity);
         // TODO REG EX
         switch (resourceEntity.type) {
             case 'audio/ogg':
@@ -519,6 +521,7 @@ export class Repository extends ContainerAware {
      * @private
      */
     _updateMetadata(resourceEntity) {
+
         if (resourceEntity.resourceToImport && resourceEntity.resourceToImport.path) {
             let command = this.fluentFfmeg(resourceEntity.resourceToImport.path);
             command.ffprobe(0, function (err, metadata) {
@@ -526,6 +529,8 @@ export class Repository extends ContainerAware {
                     console.error(err);
                     return;
                 }
+
+                console.log('ENTITY', resourceEntity, metadata);
 
                 let storage = this.getContainer().get('StorageContainerAggregate').get(
                     this._getModuleConfig().storage['name-service'],
@@ -851,7 +856,8 @@ export class Repository extends ContainerAware {
             .enableHydrateProperty('path')
             .enableHydrateProperty('tags')
             .enableHydrateProperty('checksum')
-            .enableHydrateProperty('filters');
+            .enableHydrateProperty('filters')
+            .enableHydrateProperty('resourceToImport');
 
         hydrator.enableExtractProperty('id')
             .enableExtractProperty('_id')

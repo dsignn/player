@@ -38,7 +38,7 @@ export class PingDeviceService extends EventManagerAware {
                             if (container.services.Auth.organization.id !== '653d18c9423b6b423a7f8336' ) {
                                 data.id = data.id + '234';
                             }
-
+/*
                             this.deviceStorage.save(data).then(
                                 (device) => {
                                     
@@ -46,6 +46,8 @@ export class PingDeviceService extends EventManagerAware {
                             ).catch((error) => {
                                 console.error(error);
                             });
+
+                            */
                         });
                 });
         }
