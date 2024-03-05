@@ -89,7 +89,11 @@ export class MonitorService extends EventManagerAware {
             this.eventManager.emit(MonitorService.LOADING_MONITOR_FINISH, {});
         });
 
-        //this.sender.send('monitors', {'mock': 'mock'});
+
+        this.receiver.on('change-screens', (event, data) => {
+            this.screen = data;
+            this.eventManager.emit('change-screens', this.screen);
+        });
 
         /**
          * @type {MonitorContainerEntity}

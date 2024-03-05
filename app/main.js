@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain, screen, globalShortcut} = require('electron');
+const {app, BrowserWindow, ipcMain, screen, globalShortcut} = require('electron/main');
 const fs = require('fs');
 const url = require('url');
 const path = require('path')
@@ -86,6 +86,23 @@ class Application {
 
         app.whenReady().then(() => {
             this.displays = screen.getAllDisplays();
+
+            screen.on('display-added', (evt) => {
+                this.displays = screen.getAllDisplays();
+                this.dashboard.send('change-screens', this.displays);
+            });
+
+            screen.on('display-removed', (evt) => {
+                this.displays = screen.getAllDisplays();
+                this.dashboard.send('change-screens', this.displays);
+            });
+
+            screen.on('display-metrics-changed', (evt) => {
+                this.displays = screen.getAllDisplays();
+                this.dashboard.send('change-screens', this.displays);
+            });
+            
+          
             this.loadShortcut();
         });
 
@@ -182,6 +199,16 @@ class Application {
             this.dashboard = null;
             app.quit();
         });
+
+        this.dashboard.webContents.on('did-finish-load', () => {
+            setTimeout(
+                () => {
+                    this.dashboard.send('change-screens', this.displays);
+                },
+                5000
+            );  
+          
+        });
     }
 
     /**
@@ -218,6 +245,7 @@ class Application {
             setTimeout(
                 () => {
                     browserWindows.send('monitor-id', monitor.getId());
+
                 },
                 5000
             );  
@@ -466,6 +494,7 @@ class Application {
      */
     createPlayerBrowserWindows() {
         this.dashboard.send('loading-player-windows', {});
+
         let monitors = this.monitorsContainerEntity.getMonitors();
         this.loadingCount = monitors.length;
         if (monitors.length > 0) {
@@ -648,7 +677,6 @@ app.on('activate', () => {
  ipcMain.on('require-monitor-config', (event, message) => { 
 
     if (!application.monitorsContainerEntity) {
-        console.log('no monitorsContainerEntity set', message);
         return;
     }
 

@@ -194,14 +194,13 @@ class MonitorIndex extends LocalizeMixin(ServiceInjectorMixin(PolymerElement)) {
             return;
         }
 
-        // TODO make refactor
-        setTimeout(
-            () => {
-                this.set('physicalMonitors', monitorService.getPhysicalMonitor());
-            },
-            1000
-        )
-
+        this.set('physicalMonitors', monitorService.getPhysicalMonitor());
+  
+        monitorService.eventManager.on('change-screens', (evt) => {
+            this.set('physicalMonitors', []);
+            this.set('physicalMonitors', monitorService.getPhysicalMonitor());
+  
+        });
     }
 }
 window.customElements.define('monitor-index', MonitorIndex);
