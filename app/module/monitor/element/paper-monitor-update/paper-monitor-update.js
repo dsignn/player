@@ -117,7 +117,7 @@ class PaperMonitorUpdate extends LocalizeMixin(ServiceInjectorMixin(PolymerEleme
                         <paper-input-color name="backgroundColor" label="{{localize('bg-color')}}" value="{{entity.backgroundColor}}"></paper-input-color>
                     </div>
                    <div>
-                        <paper-input-points position="horizontal" value="{{entity.polygonPoints}}" </paper-input-points>
+                        <paper-input-points position="horizontal" value="{{entity.polygonPoints}}" label-x="{{localize('polygonX')}}" label-y="{{localize('polygonY')}}"> </paper-input-points>
                     </div>    
                 </div>
                 <div class="action">

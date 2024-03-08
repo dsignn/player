@@ -17,6 +17,10 @@ class PaperInputPoints extends PolymerElement {
                     height: 100%;
                     width: 100%;
                 }
+
+                .flex {
+                    display: flex;
+                }
         
                 .vertical {
                     display: flex;
@@ -31,11 +35,19 @@ class PaperInputPoints extends PolymerElement {
                 .padding-left-6 {
                     padding-left: 6px;
                 }
+
+                .divider {
+                    width: 8px;
+                }
     
             </style>
-            <div id="container">
-                <paper-input name="x" type="number" label="{{labelX}}" value="{{x}}"></paper-input>
-                <paper-input name="y" type="number" label="{{labelY}}" value="{{y}}"></paper-input>
+            <div>
+                <div id="container">
+                    <paper-input name="x" type="number" label="{{labelX}}" value="{{x}}"></paper-input>
+                    <div class="divider"></div>
+                    <paper-input name="y" type="number" label="{{labelY}}" value="{{y}}"></paper-input>
+                </div>
+               
                 <paper-button id="add" disabled="{{disabled}}" on-tap="addPoint">{{save}}</paper-button>
                 <paper-chips text-property="x" items="{{value}}" compute-data-fn="{{computePointData}}"></paper-chips>
             </div>
@@ -86,6 +98,8 @@ class PaperInputPoints extends PolymerElement {
                 value: "vertical",
                 observer: 'positionChange'
             }
+
+            
         }
     }
 

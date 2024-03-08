@@ -29,6 +29,14 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                     div#container {
                         margin-top: 8px;
                     }
+
+                    .flex {
+                        display: flex;
+                    }
+
+                    .divider {
+                        width: 8px;
+                    }
                     
                     #monitorUpdate paper-monitor-update {
                       margin-bottom: 4px;
@@ -42,8 +50,8 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                         @apply --paper-card-container;
                     }
                     
-                    iron-icon.info {
-                        @apply --info-cursor;
+                    #content-right {
+                        width: 300px;
                     }
                 
                     @media (max-width: 900px) {
@@ -52,10 +60,6 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                         }
                     
                         #content-left {
-                            @apply --layout-flex;
-                        }
-                        
-                        #content-right {
                             @apply --layout-flex;
                         }
                     }
@@ -68,10 +72,6 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                         #content-left {
                            @apply --layout-flex-8;
                         }
-                        
-                        #content-right {
-                           @apply --layout-flex-4;
-                        }
                     }
                 </style>
                 <slot name="header"></slot>
@@ -81,14 +81,11 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                             <form method="post" action="">
                                 <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
                                 <div id="monitorUpdate">
-
                                     <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
                                         <div>
                                             <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
                                         </div>
                                     </template>
-
-                    
                                 </div>
                                 <paper-button on-tap="submitMonitorContainerButton">{{localize(labelAction)}}</paper-button>
                             </form>
@@ -96,22 +93,28 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                     </div>
                     <div id="content-right">
                         <paper-card class="container">
-                            <iron-icon id="info" icon="info" class="info"></iron-icon>
-                            <paper-tooltip for="info" position="bottom">{{localize('monitor-to-add')}}</paper-tooltip>
+                            <div class="flex">
+                                <div style="font-size: 20px; padding-right: 8px;">Monitor</div>
+                                <iron-icon id="info" icon="info" class="info"></iron-icon>
+                                <paper-tooltip for="info" position="bottom">{{localize('monitor-to-add')}}</paper-tooltip>
+                            </div>
                             <iron-form id="formMonitor">
                                 <form method="post">
+                                    <paper-autocomplete id="parentMonitor" label="{{localize('father-monitor')}}" text-property="name" on-autocomplete-change="_changeMonitor" remote-source></paper-autocomplete>
                                     <paper-input name="name" label="{{localize('name')}}" required></paper-input>
-                                    <paper-input name="height" label="{{localize('height')}}" type="number" required></paper-input>
-                                    <paper-input name="width" label="{{localize('width')}}" type="number" required></paper-input>
-                                    <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" required></paper-input>
-                                    <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" required></paper-input>
-                                    <paper-input-points id="points"></paper-input-points>
-                                    <paper-autocomplete id="parentMonitor" 
-                                        label="{{localize('father-monitor')}}" 
-                                        text-property="name" 
-                                        on-autocomplete-change="_changeMonitor"
-                                        remote-source>
-                                    </paper-autocomplete>
+                                    <div class="flex">
+                                        <paper-input name="height" label="{{localize('height')}}" type="number" required></paper-input>
+                                        <div class="divider"></div>
+                                        <paper-input name="width" label="{{localize('width')}}" type="number" required></paper-input>
+                                    </div>
+                                    <div class="flex">
+                                        <paper-input name="offsetX" label="{{localize('offsetX')}}" type="number" required></paper-input>
+                                        <div class="divider"></div>
+                                        <paper-input name="offsetY" label="{{localize('offsetY')}}" type="number" required></paper-input>
+                                    </div>
+                                   
+                                    <paper-input-points id="points" position="horizontal" label-x="{{localize('polygonX')}}" label-y="{{localize('polygonY')}}"></paper-input-points>
+                                   
                                     <div class="layout-horizontal layout-end-justified">
                                         <paper-button on-tap="submitMonitorButton">{{localize('add')}}</paper-button>
                                     </div>

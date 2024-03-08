@@ -13,7 +13,9 @@ export const lang = {
     "update" : "Modifica",
     "father-monitor" : "Monitor padre",
     "notify-save" : "Monitor saved",
-    "notify-update" : "Monitor updated"
+    "notify-update" : "Monitor updated",
+    "polygonX" : "X del poligono",
+    "polygonY" : "Y del poligono",
   },
   "en": {
     "header": "List monitor",
@@ -29,6 +31,8 @@ export const lang = {
     "update" : "Update",
     "father-monitor" : "Father monitor",
     "notify-save" : "Monitor salvato",
-    "notify-update" : "Monitor aggiornato"
+    "notify-update" : "Monitor aggiornato",
+    "polygonX" : "punto x del poligono",
+    "polygonY" : "punto y del poligono",
   }
 };
