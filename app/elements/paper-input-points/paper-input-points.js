@@ -31,10 +31,6 @@ class PaperInputPoints extends PolymerElement {
                     display: flex;
                     flex-direction: row;
                 }
-                
-                .padding-left-6 {
-                    padding-left: 6px;
-                }
 
                 .divider {
                     width: 8px;
@@ -149,7 +145,6 @@ class PaperInputPoints extends PolymerElement {
 
         this.$.container.className = '';
         this.$.container.classList.add(newValue === 'horizontal' ? 'horizontal' : 'vertical');
-        this._setChildClass(newValue === 'horizontal' ? 'padding-left-6' : '')
     }
 
     /**

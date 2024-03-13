@@ -11,6 +11,7 @@ import '@polymer/paper-card/paper-card';
 import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '../paper-monitor-update/paper-monitor-update';
+import '../paper-monitor-image-viewer/paper-monitor-image-viewer';
 import {MongoIdGenerator} from '@dsign/library/src/storage/util/MongoIdGenerator';
 import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
@@ -34,21 +35,42 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                         display: flex;
                     }
 
+                    .center {
+                        align-items: center;
+                    }
+
+                    paper-input[name]  {
+                        flex: 1; 
+                    }
+
                     .divider {
                         width: 8px;
+                    }
+
+                    .monitor-container {
+
+                    }
+
+                    #imageViewer {
+                        overflow: hidden;
+                    }
+
+                    #tabsMonitors {
+                        margin-bottom: 8px;
                     }
                     
                     #monitorUpdate paper-monitor-update {
                       margin-bottom: 4px;
                     }
+
+                    paper-card.monitor {
+                        width: 300px;
+                        padding: var(--content-padding);
+                    }
                                         
                     #content-left {
                         padding-right: 8px;
-                    }
-                
-                    paper-card.container {
-                        @apply --paper-card-container;
-                    }
+                    }       
                     
                     #content-right {
                         width: 300px;
@@ -79,20 +101,42 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                     <div id="content-left">
                         <iron-form id="formMonitorContainer">
                             <form method="post" action="">
-                                <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
+                                <div class="flex center" style="padding-bottom: 8px;">
+                                    <paper-input name="name" label="{{localize('name')}}" value="{{entity.name}}" required></paper-input>
+                                    <paper-icon-button icon="monitor:monitor-viewer" on-tap="_viewerToggle"></paper-icon-button>
+                                    <paper-button on-tap="submitMonitorContainerButton">{{localize(labelAction)}}</paper-button>
+                                </div>    
                                 <div id="monitorUpdate">
-                                    <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
-                                        <div>
-                                            <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
+                                    <iron-pages id="index" selected="{{viewerSelected}}">
+                                        <div id="textViewer">
+                                            <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
+                                                <div>
+                                                    <paper-monitor-update entity="{{monitor}}" on-toogle-always-on-top-monitor="_toogleAlwaysOnTop" hidden-always-on-top="{{showAlwaysOnTop}}"></paper-monitor-update>   
+                                                </div>
+                                            </template>
                                         </div>
-                                    </template>
+                                        <div id="imageViewer">
+                                            <paper-tabs id="tabsMonitors" selected="{{tabsImageViewer}}">
+                                                <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
+                                                    <paper-tab>{{monitor.name}}</paper-tab>
+                                                </template>
+                                            </paper-tabs>
+                                            <iron-pages selected={{tabsImageViewer}}>
+                                                <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
+                                                    <div>
+                                                        <div class="test"></div>
+                                                        <paper-monitor-image-viewer monitor="{{monitor}}"></paper-monitor-image-viewer>
+                                                    </div>
+                                                </template>
+                                            </iron-pages>
+                                        </div>
+                                    </iron-pages>    
                                 </div>
-                                <paper-button on-tap="submitMonitorContainerButton">{{localize(labelAction)}}</paper-button>
                             </form>
                         </iron-form>
                     </div>
                     <div id="content-right">
-                        <paper-card class="container">
+                        <paper-card class="monitor">
                             <div class="flex">
                                 <div style="font-size: 20px; padding-right: 8px;">Monitor</div>
                                 <iron-icon id="info" icon="info" class="info"></iron-icon>
@@ -150,6 +194,16 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                 value: 0
             },
 
+            viewerSelected: {
+                type: Number,
+                value: 0
+            },
+
+            tabsImageViewer: {
+                type: Number,
+                value: 0
+            },
+
             /**
              * @type string
              */
@@ -198,6 +252,23 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
         this.addEventListener('remove-monitor', this.removeMonitor.bind(this), true)
     }
 
+    connectedCallback() { 
+        super.connectedCallback();
+  
+        this.calcImageViewerWidth();
+        window.addEventListener("resize",  this.calcImageViewerWidth.bind(this));
+    }
+
+    _getViePort() {
+        return Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0)
+    }
+
+    calcImageViewerWidth() {
+        console.log('dio can');
+        let width = this._getViePort() - 96 -300;
+        this.$.imageViewer.style.maxWidth = width + 'px';
+    }
+
     /**
      * @param newValue
      * @private
@@ -211,6 +282,10 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
         if (newValue.id) {
             this.labelAction = 'update';
         }
+    }
+
+    _viewerToggle(evt) {
+        this.viewerSelected = this.viewerSelected ? 0 : 1;
     }
 
     /**
