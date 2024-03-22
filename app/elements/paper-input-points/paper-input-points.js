@@ -58,29 +58,37 @@ class PaperInputPoints extends PolymerElement {
              */
             value: {
                 type: Array,
+                notify: true,
                 value: () => { return []; }
             },
 
             labelX: {
                 type: String,
+                notify: true,
                 value: 'X axis'
             },
 
             labelY: {
                 type: String,
+                notify: true,
                 value: 'Y axis'
             },
 
             save: {
                 type: String,
+                notify: true,
                 value: 'Add'
             },
 
             x: {
+                type: Number,
+                notify: true,
                 observer: 'xChange'
             },
 
             y: {
+                type: Number,
+                notify: true,
                 observer: 'yChange'
             },
 
@@ -107,7 +115,11 @@ class PaperInputPoints extends PolymerElement {
      * @param {CustomEvent} evt
      */
     addPoint(evt) {
-        this.push('value', {x: parseInt(this.x), y: parseInt(this.y)});
+
+        let point = {x: parseInt(this.x), y: parseInt(this.y)};
+       
+        this.dispatchEvent(new CustomEvent('add-point', {detail:point}));
+        this.push('value', point);
         this.x = '';
         this.y = '';
     }

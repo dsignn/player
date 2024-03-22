@@ -56,7 +56,9 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                     }
 
                     #tabsMonitors {
-                        margin-bottom: 8px;
+                        width: fit-content;
+                        min-width: 220px;
+                        font-size: 18px;
                     }
                     
                     #monitorUpdate paper-monitor-update {
@@ -264,7 +266,7 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
     }
 
     calcImageViewerWidth() {
-        console.log('dio can');
+
         let width = this._getViePort() - 96 -300;
         this.$.imageViewer.style.maxWidth = width + 'px';
     }
