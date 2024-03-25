@@ -60,7 +60,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
                 .action {
                     display: flex;
-                    align-items: center;
+                    margin-top: 4px;
                     padding: 6px 12px;
                 }
 
@@ -68,6 +68,8 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     padding: 0 8px ;
                     width: 50px;
                     font-size: 20px;
+                    display: flex;
+                    align-items: center;
                 }
 
                 paper-input {
@@ -78,18 +80,20 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 paper-input-color {
                     margin-right: 4px;
                 }
+
+                paper-icon-button {
+                    margin-top: 34px;
+                }
               
             </style>
             <paper-card class="action">
-                <paper-input-points position="horizontal" value="{{monitor.polygonPoints}}" label-x="{{localize('polygonX')}}" label-y="{{localize('polygonY')}}" on-add-point="addPointEvtHandler"> </paper-input-points>
-
                 <paper-input label="{{localize('height')}}" value="{{monitor.height}}" on-change="changeHeightEvtHandler"></paper-input>
                 <paper-input label="{{localize('width')}}"  value="{{monitor.width}}" on-change="changeWidthEvtHandler"></paper-input>
                 <paper-input-color id="backgroundColor" label="{{localize('bg-color')}}" value="{{monitor.backgroundColor}}" on-change-value="changeColor"></paper-input-color>
                 <div class="zoom">{{zoom}}%</div>
                 <paper-icon-button icon="monitor:add" on-tap="zoomIn"></paper-icon-button>
-                <paper-icon-button icon="monitor:remove" on-tap="zoomOut"</paper-icon-button>
-          
+                <paper-icon-button icon="monitor:remove" on-tap="zoomOut"> </paper-icon-button>
+                <paper-input-points id="points" position="horizontal" value="{{monitor.polygonPoints}}" label-x="{{localize('polygonX')}}" label-y="{{localize('polygonY')}}" on-add-point="addPointEvtHandler"> </paper-input-points>
             </paper-card>
             <div id="scroll-container">
                 <div id="scroll"></div>
@@ -101,8 +105,9 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                             <paper-item-draggable 
                                 x="{{point.x}}" 
                                 y="{{point.y}}"
-                                max-x="{{monitor.height}}"
-                                max-y="{{monitor.width}}">
+                                max-x="{{monitor.width}}"
+                                max-y="{{monitor.height}}"
+                                on-change-points="changePoint">
                             </paper-item-draggable>
                         </template>
                     </dom-repeat>
@@ -139,7 +144,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
              * @type object
              */
             monitor: {
-                observer: '_changMonitor',
+                observer: '_changeMonitor',
             },
 
             zoom: {
@@ -213,7 +218,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         }
     }
 
-    _changMonitor(newValue) {
+    _changeMonitor(newValue) {
         if (!newValue) {
             return;
         }
@@ -268,7 +273,19 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
             return;
         }
 
-        console.log('change polygon')
+         
+    }
+
+    changePoint(evt) {
+       
+        let tmp = this.monitor.polygonPoints;
+        console.log('tmp', tmp);
+        this.monitor.polygonPoints = [];
+        this.notifyPath('monitor.polygonPoints');
+        this.monitor.polygonPoints = tmp;
+        this.notifyPath('monitor.polygonPoints');
+        
+        this.polygon = this.monitor.polygonPoints;
     }
 
     addPointEvtHandler(evt) {
@@ -295,7 +312,8 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
         this.height = this.monitor.height;
         this.width = this.monitor.width;
-        this.backgroundColor = this.monitor.backgroundColor
+        this.backgroundColor = this.monitor.backgroundColor;
+        this.polygon = this.monitor.polygonPoints;
     }
 }
 window.customElements.define('paper-monitor-image-viewer', PaperMonitorImageViewer);

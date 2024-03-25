@@ -8,7 +8,7 @@ const template = html`
     
         :root {
  
-            --dark-primary-color:       #61ad97;
+            --dark-primary-color:       #015b63;
             --default-primary-color:    #015b63;
             --light-primary-color:      #B2DFDB;
             --text-primary-color:       #FFFFFF;
@@ -48,9 +48,6 @@ const template = html`
                 color: var(--disabled-text-color);
                 background: #f8f7fa;
             }
-            
-            /* paper-tooltup */
-            --paper-tooltip-background: var(--default-primary-color);
              
             /* paper-toggle-button */
             --paper-toggle-button-unchecked-button :  {
