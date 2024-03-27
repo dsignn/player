@@ -13,6 +13,7 @@ import '@fluidnext-polymer/paper-input-color/icons/paper-input-color-icons'
 import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
 import  '../../../../elements/paper-item-draggable/paper-item-draggable';
+import '@fluidnext-polymer/paper-chip/paper-chip';
 import {lang} from './language';
 
 /**
@@ -54,6 +55,13 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     position: relative;
                 }
 
+                #imageClip {
+                    
+                    position: absolute;
+                    width:100%;
+                    height: 100%;
+                }
+
                 #scroll {
                     height: 20px;
                 }
@@ -93,7 +101,14 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 <div class="zoom">{{zoom}}%</div>
                 <paper-icon-button icon="monitor:add" on-tap="zoomIn"></paper-icon-button>
                 <paper-icon-button icon="monitor:remove" on-tap="zoomOut"> </paper-icon-button>
-                <paper-input-points id="points" position="horizontal" value="{{monitor.polygonPoints}}" label-x="{{localize('polygonX')}}" label-y="{{localize('polygonY')}}" on-add-point="addPointEvtHandler"> </paper-input-points>
+                <dom-repeat items="{{monitor.polygonPoints}}" as="point">
+                    <template>  
+                        <div class="points" index="{{index}}">
+                            <paper-input name="x" label="x" value="[[point.x]]"></paper-input>
+                            <paper-input name="y" label="y" value="[[point.y]]"></paper-input>
+                        </diV>
+                   </template>
+                </dom-repeat>
             </paper-card>
             <div id="scroll-container">
                 <div id="scroll"></div>
@@ -103,6 +118,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     <dom-repeat items="{{monitor.polygonPoints}}" as="point">
                         <template>
                             <paper-item-draggable 
+                                index={{index}}
                                 x="{{point.x}}" 
                                 y="{{point.y}}"
                                 max-x="{{monitor.width}}"
@@ -252,7 +268,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.monitor.width = newValue;
         this.notifyPath('monitor.width');
         this.$.image.style.width =  newValue + 'px';
-        this.$.scroll.style.width =  (newValue  + 6) + 'px';
+        this.$.scroll.style.width =  (newValue  + 9) + 'px';
     }
 
     changeWidthEvtHandler(evt) {
@@ -272,20 +288,36 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         if (!newValue && newValue != oldValue) {
             return;
         }
+/*
+        let stringPolygon = '';
+        for (let cont = 0; newValue.length > cont; cont++) {
+            stringPolygon += `${newValue[cont].x}px ${newValue[cont].y}px`;
+            if ((cont + 1) < newValue.length) {
+                stringPolygon += ',';
+            }
+        }
 
-         
+        this.$.image.style.clipPath = `polygon(${stringPolygon})`;
+        console.log('_changePolygon', newValue)
+        */
+       console.log('change polygon');
     }
 
     changePoint(evt) {
        
-        let tmp = this.monitor.polygonPoints;
-        console.log('tmp', tmp);
-        this.monitor.polygonPoints = [];
-        this.notifyPath('monitor.polygonPoints');
-        this.monitor.polygonPoints = tmp;
-        this.notifyPath('monitor.polygonPoints');
-        
-        this.polygon = this.monitor.polygonPoints;
+        let nodes = this.shadowRoot.querySelectorAll('.points');
+        let ele;
+        for (let cont = 0; cont <= nodes.length; cont++ ) {
+            if (nodes[cont].index === evt.target.index) {
+                ele = nodes[cont];
+                break;
+            }
+        }
+        console.log('CHANGE', ele, evt.detail.x, evt.detail.y, evt.target.index)
+       
+        ele.querySelector('paper-input[name=x]').value = evt.detail.x;
+        ele.querySelector('paper-input[name=y]').value = evt.detail.y;
+        this.polygon = this.monitor.polygonPoints
     }
 
     addPointEvtHandler(evt) {

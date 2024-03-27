@@ -14,8 +14,8 @@ class PaperItemDraggable extends PolymerElement {
         return html`
              <style>
                :host {
-                    width: 10px;
-                    height: 10px;
+                    width: 16px;
+                    height: 16px;
                     color: black;
                     box-sizing: border-box;
                     font-size: 25px;
@@ -27,12 +27,13 @@ class PaperItemDraggable extends PolymerElement {
                     cursor: move;
                     user-select: none;
                     position: absolute;
+                    z-index:100;
                     background: white;
                }
    
                #draggable {
-                width: 9px;
-                height: 9px;
+                width: 100%;
+                height: 100%;
                }
 
               paper-tooltip {
@@ -100,7 +101,7 @@ class PaperItemDraggable extends PolymerElement {
             return
         }
         
-        this.style.left = (newValue - 5) + 'px';
+        this.style.left = (newValue - (this.offsetWidth / 2)) + 'px';
     }
 
     _changeY(newValue, oldValue) {
@@ -108,7 +109,7 @@ class PaperItemDraggable extends PolymerElement {
             return
         }
 
-        this.style.top = (newValue - 5) + 'px';
+        this.style.top = (newValue - (this.offsetHeight / 2)) + 'px';
     }
 
     filter(e) {
@@ -144,10 +145,10 @@ class PaperItemDraggable extends PolymerElement {
             let top = target.offsetTop + target.distY;
 
             switch(true) {
-                case left < -5:
-                case this.maxX > 0 && left > (this.maxX - 5):     
-                case top < -5:
-                case this.maxY > 0 && left > (this.maxY - 5):     
+                case left < - (target.offsetWidth / 2):
+                case this.maxX > 0 && left > (this.maxX - (target.offsetWidth / 2)):     
+                case top < - (target.offsetHeight / 2):
+                case this.maxY > 0 && left > (this.maxY - (target.offsetHeight / 2)):     
                     console.log('Controllo negativo');
                     return;
                     break;
@@ -157,7 +158,13 @@ class PaperItemDraggable extends PolymerElement {
             target.style.left = left + "px";
             target.style.top = top + "px";
             
-            let evt = new CustomEvent('change-points', target);
+            let evt = new CustomEvent('change-points', {
+                detail: {
+                    x: left,
+                    y: top
+                }
+            });
+
             this.dispatchEvent(evt);
 
         }.bind(this);
@@ -167,8 +174,8 @@ class PaperItemDraggable extends PolymerElement {
 
         function endDrag(evt) {
             if (target.tagName ==   'PAPER-ITEM-DRAGGABLE') {
-                target.x  = parseInt(target.style.left.replace("px", "")) + 5;
-                target.y = parseInt(target.style.top.replace("px", "")) + 5;
+                target.x  = parseInt(target.style.left.replace("px", "")) + (target.offsetWidth / 2);
+                target.y = parseInt(target.style.top.replace("px", "")) + (target.offsetHeight / 2);
             }
           
             target.moving = false;
