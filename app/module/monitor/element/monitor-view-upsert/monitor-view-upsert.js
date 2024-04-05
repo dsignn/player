@@ -120,7 +120,7 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                                         <div id="imageViewer">
                                             <paper-tabs id="tabsMonitors" selected="{{tabsImageViewer}}">
                                                 <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
-                                                    <paper-tab>{{monitor.name}}</paper-tab>
+                                                    <paper-tab on-tap="_tapTab">{{monitor.name}}</paper-tab>
                                                 </template>
                                             </paper-tabs>
                                             <iron-pages selected={{tabsImageViewer}}>
@@ -288,6 +288,26 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
 
     _viewerToggle(evt) {
         this.viewerSelected = this.viewerSelected ? 0 : 1;
+        console.log('aggiorna dimensione');
+        this._updateHeightPaperImageViewer();
+    }
+
+    _tapTab(evt) {
+        console.log('aggiorna dimensione');
+        this._updateHeightPaperImageViewer();
+    }
+
+    _updateHeightPaperImageViewer() {
+
+        setTimeout(
+            () => {
+                let nodes = this.shadowRoot.querySelectorAll('paper-monitor-image-viewer');
+                for (let cont = 0; nodes.length > cont; cont++) {
+                    nodes[cont].resizeImageContainer();
+                }
+            },
+            100
+        );
     }
 
     /**

@@ -84,6 +84,19 @@ class PaperItemDraggable extends PolymerElement {
                 type: Number,
                 observer: '_changeY',
             },
+
+            width: {
+                notify: true,
+                type: Number,
+                value: 16
+            },
+
+            height: {
+                notify: true,
+                type: Number,
+                value: 16
+            },
+
         }
     }
 
@@ -93,22 +106,27 @@ class PaperItemDraggable extends PolymerElement {
         this.addEventListener('mousedown', this.filter.bind(this), false);
         window.addEventListener('mouseup', this.filter.bind(this), false);
 
+        this.style.width = this.width + 'px';
+        this.style.height = this.height + 'px';
+        console.log('cccccc', this.height, this.width)
+        this.style.left = (this.x - (this.height  / 2)) + 'px';
+        this.style.top = (this.y - (this.width / 2)) + 'px';
 
     }
 
     _changeX(newValue, oldValue) {
-        if (!newValue) {
+        if (newValue  === null || newValue === undefined) {
             return
         }
-        
+        console.log('X', newValue, this.offsetWidth, this)
         this.style.left = (newValue - (this.offsetWidth / 2)) + 'px';
     }
 
     _changeY(newValue, oldValue) {
-        if (!newValue) {
+        if (newValue === null || newValue === undefined) {
             return
         }
-
+        console.log('Y', newValue, this.offsetHeight, this)
         this.style.top = (newValue - (this.offsetHeight / 2)) + 'px';
     }
 
@@ -146,22 +164,22 @@ class PaperItemDraggable extends PolymerElement {
 
             switch(true) {
                 case left < - (target.offsetWidth / 2):
-                case this.maxX > 0 && left > (this.maxX - (target.offsetWidth / 2)):     
-                case top < - (target.offsetHeight / 2):
-                case this.maxY > 0 && left > (this.maxY - (target.offsetHeight / 2)):     
-                    console.log('Controllo negativo');
                     return;
-                    break;
+                case this.maxX > 0 && left > (this.maxX - (target.offsetWidth / 2)):  
+                    return;
+                case top < - (target.offsetHeight / 2):
+                    return;
+                case this.maxY > 0 && top > (this.maxY - (target.offsetHeight / 2)):     
+                    return;
             }
       
-            //if(left < -7 || left >)
             target.style.left = left + "px";
             target.style.top = top + "px";
             
             let evt = new CustomEvent('change-points', {
                 detail: {
-                    x: left,
-                    y: top
+                    x: left + (target.offsetWidth / 2),
+                    y: top + (target.offsetHeight / 2)
                 }
             });
 

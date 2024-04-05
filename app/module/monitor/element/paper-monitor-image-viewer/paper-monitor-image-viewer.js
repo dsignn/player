@@ -46,24 +46,41 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     overflow-x: auto;
                     overflow-y: auto;
                     display: block;   
+                    position: relative;
+                    height: 100%;
+
                 }
 
                 #image {
                     border: 1px solid black;
-                    resize: both;
-                    overflow: auto;
-                    position: relative;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                }
+
+                #image:active {
+                    width: 0;
+                    height: 0;
                 }
 
                 #imageClip {
                     
                     position: absolute;
+                    top: 0;
+                    left: 0;
+                    resize: both;
+                    overflow: auto;
                     width:100%;
                     height: 100%;
+                    border: 1px solid black;
                 }
 
                 #scroll {
                     height: 20px;
+                }
+
+                .points {
+                    display: flex;
                 }
 
                 .action {
@@ -89,8 +106,24 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     margin-right: 4px;
                 }
 
+                paper-input[name=x],
+                paper-input[name=y] {
+                    width: 40px;
+                }
+
                 paper-icon-button {
                     margin-top: 34px;
+                }
+
+                paper-icon-button.circle {
+                    padding: 0;
+                    margin-top: 28px;
+                    margin-right: 4px;
+                    border-radius: 50%;
+                    background: var(--accent-color);
+                    width: 24px;
+                    height: 24px;
+                    
                 }
               
             </style>
@@ -101,11 +134,15 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 <div class="zoom">{{zoom}}%</div>
                 <paper-icon-button icon="monitor:add" on-tap="zoomIn"></paper-icon-button>
                 <paper-icon-button icon="monitor:remove" on-tap="zoomOut"> </paper-icon-button>
+                <paper-input type="number" id="addXBtn" label="{{localize('point-x')}}" on-value-changed="changeAddPoint"></paper-input>
+                <paper-input type="number" id="addYBtn" label="{{localize('point-y')}}" on-value-changed="changeAddPoint"></paper-input>
+                <paper-button id="addPointBtn" on-tap="_addPoint" disabled>{{localize('add-point')}}</paper-button>
                 <dom-repeat items="{{monitor.polygonPoints}}" as="point">
                     <template>  
                         <div class="points" index="{{index}}">
-                            <paper-input name="x" label="x" value="[[point.x]]"></paper-input>
-                            <paper-input name="y" label="y" value="[[point.y]]"></paper-input>
+                            <paper-input name="x" label="X" value="[[point.x]]"></paper-input>
+                            <paper-input name="y" label="Y" value="[[point.y]]"></paper-input>
+                            <paper-icon-button icon="monitor:remove" class="circle"></paper-icon-button>
                         </diV>
                    </template>
                 </dom-repeat>
@@ -127,6 +164,8 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                             </paper-item-draggable>
                         </template>
                     </dom-repeat>
+                </div>
+                <div id="imageClip">
                 </div>
             </div>
         `
@@ -214,12 +253,35 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         });
         
         let observer = new ResizeObserver((mutations) => {
-            this.width = parseInt(this.$.image.style.width.replace('px',''));   
-            this.height = parseInt(this.$.image.style.height.replace('px',''));
+          
+            this.width = parseInt(this.$.imageClip.style.width.replace('px',''));   
+            this.height = parseInt(this.$.imageClip.style.height.replace('px',''));
         });
           
       
-        observer.observe(this.$.image);
+        observer.observe(this.$.imageClip);
+       
+        this.resizeImageContainer();
+        window.addEventListener("resize", this.resizeImageContainer.bind(this));
+    }
+
+    changeAddPoint(evt) {
+        if (this.$.addXBtn.value && this.$.addYBtn.value) {
+            this.$.addPointBtn.disabled = false;
+        } else {
+            this.$.addPointBtn.disabled = true;
+        }
+    }
+
+    resizeImageContainer(evt) {
+        let dataContainer = this.$['image-container'].getBoundingClientRect();
+        let dataBody = document.body.getBoundingClientRect();
+
+        if (dataBody.height && dataContainer.top) {
+            let calcHeight = dataBody.height - dataContainer.top - 10;
+        
+            this.$['image-container'].style.height = calcHeight + 'px';
+        }
     }
 
     zoomOut() {
@@ -254,6 +316,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.monitor.height = newValue;
         this.notifyPath('monitor.height');
         this.$.image.style.height =  newValue + 'px';
+        this.$.imageClip.style.height =  newValue + 'px';
     }
 
     changeHeightEvtHandler(evt) {
@@ -268,6 +331,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.monitor.width = newValue;
         this.notifyPath('monitor.width');
         this.$.image.style.width =  newValue + 'px';
+        this.$.imageClip.style.width =  newValue + 'px';
         this.$.scroll.style.width =  (newValue  + 9) + 'px';
     }
 
@@ -277,52 +341,85 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
     _changeBackgroundColor(newValue, oldValue) {
         if (!newValue && newValue != oldValue) {
-            this.$.image.style.backgroundColor = 'transparent';
             return;
         }
 
-        this.$.image.style.backgroundColor = newValue;
+        this._computeBackground();
+    }
+
+    _computeBackground() {
+
+        let background = this.backgroundColor;
+        if(!this.backgroundColor) {
+            background = 'transparent';
+        }
+
+        if(this.polygon.length > 0) {
+            this.$.image.style.backgroundColor = 'transparent';
+            this.$.imageClip.style.backgroundColor = background;
+        } else {
+            this.$.image.style.backgroundColor = background;
+            this.$.imageClip.style.backgroundColor = 'transparent';
+        }
     }
 
     _changePolygon(newValue, oldValue) {
         if (!newValue && newValue != oldValue) {
             return;
         }
-/*
+
+        this._computePolygon(newValue);
+    }
+
+    _computePolygon(polygon) {
+
         let stringPolygon = '';
-        for (let cont = 0; newValue.length > cont; cont++) {
-            stringPolygon += `${newValue[cont].x}px ${newValue[cont].y}px`;
-            if ((cont + 1) < newValue.length) {
+        for (let cont = 0; polygon.length > cont; cont++) {
+            stringPolygon += `${polygon[cont].x}px ${polygon[cont].y}px`;
+            if ((cont + 1) < polygon.length) {
                 stringPolygon += ',';
             }
         }
 
-        this.$.image.style.clipPath = `polygon(${stringPolygon})`;
-        console.log('_changePolygon', newValue)
-        */
-       console.log('change polygon');
+        this.$.imageClip.style.clipPath = `polygon(${stringPolygon})`;
     }
 
     changePoint(evt) {
        
         let nodes = this.shadowRoot.querySelectorAll('.points');
         let ele;
+        let index;
         for (let cont = 0; cont <= nodes.length; cont++ ) {
             if (nodes[cont].index === evt.target.index) {
                 ele = nodes[cont];
+                index = cont;
                 break;
             }
         }
-        console.log('CHANGE', ele, evt.detail.x, evt.detail.y, evt.target.index)
+      
        
         ele.querySelector('paper-input[name=x]').value = evt.detail.x;
         ele.querySelector('paper-input[name=y]').value = evt.detail.y;
-        this.polygon = this.monitor.polygonPoints
+        this.monitor.polygonPoints[index].x = evt.detail.x;
+        this.monitor.polygonPoints[index].y = evt.detail.y;
+        this.polygon = this.monitor.polygonPoints;
+    
+
+        this._computePolygon(this.monitor.polygonPoints);
     }
 
-    addPointEvtHandler(evt) {
+    _addPoint(evt) {
       
-        this.notifyPath('monitor.pol');
+        let point = {};
+        point.x = this.$.addXBtn.value;
+        point.y = this.$.addYBtn.value;
+        
+       // this.notifyPath('monitor.pol');
+        this.push('monitor.polygonPoints', point);
+        this._computePolygon(this.monitor.polygonPoints);
+
+        this.$.addXBtn.value = null;
+        this.$.addYBtn.value = null;
     }
 
     _changeZoom(newValue, oldValue) {
