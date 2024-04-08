@@ -72,6 +72,18 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     overflow: auto;
                     width:100%;
                     height: 100%;
+            
+                }
+
+                #imageResize {
+                    position: absolute;
+                    z-index: blue;
+                    top: 0;
+                    left: 0;
+                    resize: both;
+                    overflow: auto;
+                    width:100%;
+                    height: 100%;
                     border: 1px solid black;
                 }
 
@@ -193,6 +205,8 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 </div>
                 <div id="imageClip">
                 </div>
+                <div id="imageResize">
+                </div>
             </div>
         `
     }
@@ -280,12 +294,12 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         
         let observer = new ResizeObserver((mutations) => {
           
-            this.width = parseInt(this.$.imageClip.style.width.replace('px',''));   
-            this.height = parseInt(this.$.imageClip.style.height.replace('px',''));
+            this.width = parseInt(this.$.imageResize.style.width.replace('px',''));   
+            this.height = parseInt(this.$.imageResize.style.height.replace('px',''));
         });
           
       
-        observer.observe(this.$.imageClip);
+        observer.observe(this.$.imageResize);
        
         this.resizeImageContainer();
         window.addEventListener("resize", this.resizeImageContainer.bind(this));
@@ -343,6 +357,8 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.notifyPath('monitor.height');
         this.$.image.style.height =  newValue + 'px';
         this.$.imageClip.style.height =  newValue + 'px';
+        this.$.imageResize.style.height =  newValue + 'px';
+        
     }
 
     changeHeightEvtHandler(evt) {
@@ -358,6 +374,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.notifyPath('monitor.width');
         this.$.image.style.width =  newValue + 'px';
         this.$.imageClip.style.width =  newValue + 'px';
+        this.$.imageResize.style.width =  newValue + 'px';
         this.$.scroll.style.width =  (newValue  + 9) + 'px';
     }
 
@@ -442,6 +459,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         
        // this.notifyPath('monitor.pol');
         this.push('monitor.polygonPoints', point);
+        this.polygon = this.monitor.polygonPoints;
         this._computePolygon(this.monitor.polygonPoints);
 
         this.$.addXBtn.value = null;
@@ -452,7 +470,9 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
       
 
         this.splice('monitor.polygonPoints', evt.target.parentElement.index, 1);
+        this.polygon = this.monitor.polygonPoints;
         this._computePolygon(this.monitor.polygonPoints);
+        this._computeBackground()
     }
 
     _changeZoom(newValue, oldValue) {
