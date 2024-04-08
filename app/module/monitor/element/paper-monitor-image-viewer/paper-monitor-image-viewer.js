@@ -97,8 +97,19 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     align-items: center;
                 }
 
+                .zoom-action {
+                    display: flex;
+                    flex-direction: column; 
+                    justify-content: space-between;
+                    padding: 4px 8px 4px 4px;
+                }
+
                 paper-input {
-                    width: 80px;
+                    width: 60px;
+                }
+
+                paper-input-color {
+                    width: 120px;
                 }
 
                 paper-input,
@@ -107,23 +118,34 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 }
 
                 paper-input[name=x],
-                paper-input[name=y] {
+                paper-input[name=y],
+                paper-input[name=zoom] {
                     width: 40px;
                 }
 
-                paper-icon-button {
-                    margin-top: 34px;
+                paper-input[disabled] {
+                    --paper-input-container-disabled: {
+                        opacity: 1;
+                    }
+                    
+                    --paper-input-container-underline-disabled: {
+                        border-bottom: 1px solid;
+                    }
                 }
 
                 paper-icon-button.circle {
                     padding: 0;
-                    margin-top: 28px;
-                    margin-right: 4px;
                     border-radius: 50%;
                     background: var(--accent-color);
                     width: 24px;
                     height: 24px;
                     
+                }
+
+                .points paper-icon-button.circle {
+
+                    margin-top: 28px;
+                    margin-right: 4px;
                 }
               
             </style>
@@ -131,9 +153,13 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 <paper-input label="{{localize('height')}}" value="{{monitor.height}}" on-change="changeHeightEvtHandler"></paper-input>
                 <paper-input label="{{localize('width')}}"  value="{{monitor.width}}" on-change="changeWidthEvtHandler"></paper-input>
                 <paper-input-color id="backgroundColor" label="{{localize('bg-color')}}" value="{{monitor.backgroundColor}}" on-change-value="changeColor"></paper-input-color>
-                <div class="zoom">{{zoom}}%</div>
-                <paper-icon-button icon="monitor:add" on-tap="zoomIn"></paper-icon-button>
-                <paper-icon-button icon="monitor:remove" on-tap="zoomOut"> </paper-icon-button>
+                <paper-input name="zoom" label="{{localize('zoom')}}" value="{{zoom}}" disabled>
+                    <div slot="suffix">%</div>
+                </paper-input>       
+                <div class="zoom-action">
+                    <paper-icon-button icon="monitor:add" on-tap="zoomIn" class="circle"></paper-icon-button>
+                    <paper-icon-button icon="monitor:remove" on-tap="zoomOut" class="circle"></paper-icon-button>
+                </div>
                 <paper-input type="number" id="addXBtn" label="{{localize('point-x')}}" on-value-changed="changeAddPoint"></paper-input>
                 <paper-input type="number" id="addYBtn" label="{{localize('point-y')}}" on-value-changed="changeAddPoint"></paper-input>
                 <paper-button id="addPointBtn" on-tap="_addPoint" disabled>{{localize('add-point')}}</paper-button>
@@ -142,7 +168,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                         <div class="points" index="{{index}}">
                             <paper-input name="x" label="X" value="[[point.x]]"></paper-input>
                             <paper-input name="y" label="Y" value="[[point.y]]"></paper-input>
-                            <paper-icon-button icon="monitor:remove" class="circle"></paper-icon-button>
+                            <paper-icon-button icon="monitor:remove" class="circle" on-tap="_removePoint"></paper-icon-button>
                         </diV>
                    </template>
                 </dom-repeat>
@@ -420,6 +446,13 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
         this.$.addXBtn.value = null;
         this.$.addYBtn.value = null;
+    }
+
+    _removePoint(evt) {
+      
+
+        this.splice('monitor.polygonPoints', evt.target.parentElement.index, 1);
+        this._computePolygon(this.monitor.polygonPoints);
     }
 
     _changeZoom(newValue, oldValue) {

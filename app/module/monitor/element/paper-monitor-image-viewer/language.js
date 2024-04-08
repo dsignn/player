@@ -14,7 +14,8 @@ export const lang = {
     "polygonY" : "Y del poligono",
     "point-x" : "X del punto",
     "point-y" : "Y del punto",
-    "add-point" : "Aggingi"
+    "add-point" : "Aggingi",
+    "zoom": "Zoom"
   },
   "en": {
     "name": "Name",
@@ -31,6 +32,7 @@ export const lang = {
     "polygonY" : "Y del poligono",
     "point-x" : "X del punto",
     "point-y" : "Y del punto",
-    "add-point" : "Aggingi"
+    "add-point" : "Aggingi",
+    "zoom": "Zoom"
   }
 };

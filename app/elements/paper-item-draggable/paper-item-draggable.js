@@ -108,7 +108,7 @@ class PaperItemDraggable extends PolymerElement {
 
         this.style.width = this.width + 'px';
         this.style.height = this.height + 'px';
-        console.log('cccccc', this.height, this.width)
+        
         this.style.left = (this.x - (this.height  / 2)) + 'px';
         this.style.top = (this.y - (this.width / 2)) + 'px';
 
@@ -118,7 +118,6 @@ class PaperItemDraggable extends PolymerElement {
         if (newValue  === null || newValue === undefined) {
             return
         }
-        console.log('X', newValue, this.offsetWidth, this)
         this.style.left = (newValue - (this.offsetWidth / 2)) + 'px';
     }
 
@@ -126,7 +125,6 @@ class PaperItemDraggable extends PolymerElement {
         if (newValue === null || newValue === undefined) {
             return
         }
-        console.log('Y', newValue, this.offsetHeight, this)
         this.style.top = (newValue - (this.offsetHeight / 2)) + 'px';
     }
 
