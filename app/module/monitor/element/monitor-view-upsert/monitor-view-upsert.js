@@ -126,7 +126,6 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                                             <iron-pages selected={{tabsImageViewer}}>
                                                 <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
                                                     <div>
-                                                        <div class="test"></div>
                                                         <paper-monitor-image-viewer monitor="{{monitor}}"></paper-monitor-image-viewer>
                                                     </div>
                                                 </template>

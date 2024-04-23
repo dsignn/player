@@ -14,6 +14,7 @@ import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
 import  '../../../../elements/paper-item-draggable/paper-item-draggable';
 import '@fluidnext-polymer/paper-chip/paper-chip';
+import '../paper-monitor-image-viewer-control/paper-monitor-image-viewer-control'
 import {lang} from './language';
 
 /**
@@ -161,36 +162,14 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                 }
               
             </style>
-            <paper-card class="action">
-                <paper-input label="{{localize('height')}}" value="{{monitor.height}}" on-change="changeHeightEvtHandler"></paper-input>
-                <paper-input label="{{localize('width')}}"  value="{{monitor.width}}" on-change="changeWidthEvtHandler"></paper-input>
-                <paper-input-color id="backgroundColor" label="{{localize('bg-color')}}" value="{{monitor.backgroundColor}}" on-change-value="changeColor"></paper-input-color>
-                <paper-input name="zoom" label="{{localize('zoom')}}" value="{{zoom}}" disabled>
-                    <div slot="suffix">%</div>
-                </paper-input>       
-                <div class="zoom-action">
-                    <paper-icon-button icon="monitor:add" on-tap="zoomIn" class="circle"></paper-icon-button>
-                    <paper-icon-button icon="monitor:remove" on-tap="zoomOut" class="circle"></paper-icon-button>
-                </div>
-                <paper-input type="number" id="addXBtn" label="{{localize('point-x')}}" on-value-changed="changeAddPoint"></paper-input>
-                <paper-input type="number" id="addYBtn" label="{{localize('point-y')}}" on-value-changed="changeAddPoint"></paper-input>
-                <paper-button id="addPointBtn" on-tap="_addPoint" disabled>{{localize('add-point')}}</paper-button>
-                <dom-repeat items="{{monitor.polygonPoints}}" as="point">
-                    <template>  
-                        <div class="points" index="{{index}}">
-                            <paper-input name="x" label="X" value="[[point.x]]"></paper-input>
-                            <paper-input name="y" label="Y" value="[[point.y]]"></paper-input>
-                            <paper-icon-button icon="monitor:remove" class="circle" on-tap="_removePoint"></paper-icon-button>
-                        </diV>
-                   </template>
-                </dom-repeat>
-            </paper-card>
+            
+            <paper-monitor-image-viewer-control root-monitor=[[monitor]] id="controller"></paper-monitor-image-viewer-control>
             <div id="scroll-container">
                 <div id="scroll"></div>
             </div>
             <div id="image-container">
                 <div id="image">
-                    <dom-repeat items="{{monitor.polygonPoints}}" as="point">
+                    <dom-repeat id="points" items="{{monitor.polygonPoints}}" as="point">
                         <template>
                             <paper-item-draggable 
                                 index={{index}}
@@ -264,13 +243,14 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
             backgroundColor: {
                 notify: true,
                 type: String,
-                observer: '_changeBackgroundColor',
+             //   observer: '_changeBackgroundColor',
             },
 
             polygon: {
                 notify: true,
                 type: Array,
-                observer: '_changePolygon',
+            //    observer: '_changePolygon',
+                value: []
             },
 
             x: {
@@ -285,8 +265,32 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         };
     }
 
+    static get observers() {
+        return [
+            'changeBgPolygon(backgroundColor, polygon)'
+        ]
+    }
+
+    getSelectedElement(monitor) {
+
+        let elements = [];
+        let selected = null;
+        elements.push(this);
+        // if monitor
+
+        for(let cont = 0; elements.length > cont; cont++) {
+            if(elements[cont].monitor.id === monitor.id) {
+                selected = elements[cont];
+                break
+            }
+        }
+        return selected;
+    }
+
     connectedCallback() { 
         super.connectedCallback();
+
+        this.$.controller.rootElement = this;
       
         this.$['scroll-container'].addEventListener("scroll", (event) => {
            this.$['image-container'].scrollLeft = event.target.scrollLeft;
@@ -382,12 +386,32 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.width = evt.target.value;
     }
 
-    _changeBackgroundColor(newValue, oldValue) {
+
+
+    renderPoint(){
+        this.$.points.render();
+        
+        console.log('RENDER');
+        this._computePolygon();
+        this._computeBackground();
+    }
+
+    _changePolygon(newValue, oldValue) {
         if (!newValue && newValue != oldValue) {
             return;
         }
+        this._computePolygon();
+        
+    }
 
+    changeBgPolygon(polygon, backgroundColor) {
+        if(!polygon || !Array.isArray(backgroundColor)) {
+            return;
+        }
+
+        this._computePolygon();
         this._computeBackground();
+        console.log('computa', polygon, backgroundColor);
     }
 
     _computeBackground() {
@@ -396,7 +420,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         if(!this.backgroundColor) {
             background = 'transparent';
         }
-
+        this.monitor.backgroundColor = this.backgroundColor;
         if(this.polygon.length > 0) {
             this.$.image.style.backgroundColor = 'transparent';
             this.$.imageClip.style.backgroundColor = background;
@@ -406,20 +430,12 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         }
     }
 
-    _changePolygon(newValue, oldValue) {
-        if (!newValue && newValue != oldValue) {
-            return;
-        }
-
-        this._computePolygon(newValue);
-    }
-
-    _computePolygon(polygon) {
+    _computePolygon() {
 
         let stringPolygon = '';
-        for (let cont = 0; polygon.length > cont; cont++) {
-            stringPolygon += `${polygon[cont].x}px ${polygon[cont].y}px`;
-            if ((cont + 1) < polygon.length) {
+        for (let cont = 0; this.polygon.length > cont; cont++) {
+            stringPolygon += `${this.polygon[cont].x}px ${this.polygon[cont].y}px`;
+            if ((cont + 1) < this.polygon.length) {
                 stringPolygon += ',';
             }
         }
@@ -429,26 +445,24 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
     changePoint(evt) {
        
-        let nodes = this.shadowRoot.querySelectorAll('.points');
-        let ele;
-        let index;
-        for (let cont = 0; cont <= nodes.length; cont++ ) {
-            if (nodes[cont].index === evt.target.index) {
-                ele = nodes[cont];
-                index = cont;
-                break;
-            }
-        }
-      
-       
-        ele.querySelector('paper-input[name=x]').value = evt.detail.x;
-        ele.querySelector('paper-input[name=y]').value = evt.detail.y;
+        let index = evt.target.index;
+        
         this.monitor.polygonPoints[index].x = evt.detail.x;
         this.monitor.polygonPoints[index].y = evt.detail.y;
         this.polygon = this.monitor.polygonPoints;
     
-
-        this._computePolygon(this.monitor.polygonPoints);
+        let event = new CustomEvent(
+            'change-point', {
+                detail: {
+                    x: evt.detail.x,
+                    y: evt.detail.y,
+                    index: index
+                }
+            });
+        console.log(event);
+        
+        this.dispatchEvent(event);
+        this._computePolygon();
     }
 
     _addPoint(evt) {
@@ -460,7 +474,8 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
        // this.notifyPath('monitor.pol');
         this.push('monitor.polygonPoints', point);
         this.polygon = this.monitor.polygonPoints;
-        this._computePolygon(this.monitor.polygonPoints);
+        this._computePolygon();
+        this._computeBackground();
 
         this.$.addXBtn.value = null;
         this.$.addYBtn.value = null;
@@ -471,7 +486,7 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
         this.splice('monitor.polygonPoints', evt.target.parentElement.index, 1);
         this.polygon = this.monitor.polygonPoints;
-        this._computePolygon(this.monitor.polygonPoints);
+        this._computePolygon();
         this._computeBackground()
     }
 
