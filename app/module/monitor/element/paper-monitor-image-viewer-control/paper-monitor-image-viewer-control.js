@@ -17,6 +17,11 @@ import '@fluidnext-polymer/paper-chip/paper-chip';
 import {autocompleteStyle} from '../../../../style/autocomplete-custom-style';
 import {lang} from './language';
 
+
+var clickHandler = function (event) {
+    
+}
+
 /**
  * @customElement
  * @polymer
@@ -165,7 +170,7 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
             </style>
             <paper-card class="action">
                 <paper-autocomplete
-                    id="widgetAutocomplete"
+                    id="monitorAutocomplete"
                     label="{{localize('name-screen')}}"
                     text-property="name"
                     value-property="name"
@@ -182,6 +187,8 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
                             <paper-ripple></paper-ripple>
                         </paper-item>
                     </template>
+                    <paper-icon-button slot="suffix" on-tap="deSelectMonitor" icon="clear">
+                    </paper-icon-button>
                 </paper-autocomplete>
                 <paper-input label="{{localize('height')}}" value="{{monitor.height}}" on-change="changeHeightEvtHandler"></paper-input>
                 <paper-input label="{{localize('width')}}"  value="{{monitor.width}}" on-change="changeWidthEvtHandler"></paper-input>
@@ -319,22 +326,91 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
         if (ele) {
             this.selectElement = ele;
 
+            this.externalChangePointHandler = this.externalChangePoint.bind(this);
             this.selectElement.addEventListener(
                 'change-point',
-                this.externalChangePoint.bind(this)
+                this.externalChangePointHandler,
+                false
+            );
+
+            this.externalChangeHeightHandler =  this.externalChangeHeight.bind(this);
+            this.selectElement.addEventListener(
+                'change-height',
+                this.externalChangeHeightHandler,
+                false
+            );
+
+            this.externalChangeWidthHandler = this.externalChangeWidth.bind(this);
+            this.selectElement.addEventListener(
+                'change-width',
+                this.externalChangeWidthHandler,
+                false
             );
         }
-
-        console.log('select', ele);
-
     }
 
     deSelectMonitor(evt) {
 
+        if (!this.monitor || !this.selectElement) {
+            return;
+        }
+        console.log('deselect', this.selectElement);
+       
+        this.selectElement.removeEventListener(
+            'change-width',
+            this.externalChangeWidthHandler,
+            false
+        );
+
+        this.selectElement.removeEventListener(
+            'change-height',
+            this.externalChangeHeightHandler,
+            false
+        );
+
+        this.selectElement.removeEventListener(
+            'change-point',
+            this.externalChangePointHandler,
+            false
+        );
+
+        this.monitor = null;
+        this.selectElement = null;
+        this.$.monitorAutocomplete.clear();
+    }
+
+    externalChangeHeight(evt) {
+        console.log('height')
+        this.monitor.height = evt.detail.height;
+        this.notifyPath('monitor.height');
+    }
+
+    externalChangeWidth(evt) {
+        console.log('width')
+        this.monitor.width = evt.detail.width;
+        this.notifyPath('monitor.width');
     }
 
     externalChangePoint(evt) {
-        console.log(evt.target, 'externalChangePoint');
+        console.log('bbbbb')
+        let index = evt.detail.index;
+        let elements = this.shadowRoot.querySelectorAll('.points');
+        let ele = null;
+
+        for (let cont  = 0; elements.length > cont; cont++) {
+            if (elements[cont].index == index) {
+                ele = elements[cont];
+                break;
+            }
+        }
+
+        if (!ele) {
+            console.warn('No element found')
+            return;
+        }
+
+        ele.querySelector('paper-input[name=y]').value = evt.detail.y;
+        ele.querySelector('paper-input[name=x]').value = evt.detail.x;
     }
 
     _attachEvent() {

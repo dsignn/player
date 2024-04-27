@@ -243,13 +243,11 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
             backgroundColor: {
                 notify: true,
                 type: String,
-             //   observer: '_changeBackgroundColor',
             },
 
             polygon: {
                 notify: true,
                 type: Array,
-            //    observer: '_changePolygon',
                 value: []
             },
 
@@ -269,22 +267,6 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         return [
             'changeBgPolygon(backgroundColor, polygon)'
         ]
-    }
-
-    getSelectedElement(monitor) {
-
-        let elements = [];
-        let selected = null;
-        elements.push(this);
-        // if monitor
-
-        for(let cont = 0; elements.length > cont; cont++) {
-            if(elements[cont].monitor.id === monitor.id) {
-                selected = elements[cont];
-                break
-            }
-        }
-        return selected;
     }
 
     connectedCallback() { 
@@ -309,12 +291,20 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         window.addEventListener("resize", this.resizeImageContainer.bind(this));
     }
 
-    changeAddPoint(evt) {
-        if (this.$.addXBtn.value && this.$.addYBtn.value) {
-            this.$.addPointBtn.disabled = false;
-        } else {
-            this.$.addPointBtn.disabled = true;
+    getSelectedElement(monitor) {
+
+        let elements = [];
+        let selected = null;
+        elements.push(this);
+        // if monitor
+
+        for(let cont = 0; elements.length > cont; cont++) {
+            if(elements[cont].monitor.id === monitor.id) {
+                selected = elements[cont];
+                break
+            }
         }
+        return selected;
     }
 
     resizeImageContainer(evt) {
@@ -362,6 +352,15 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.$.image.style.height =  newValue + 'px';
         this.$.imageClip.style.height =  newValue + 'px';
         this.$.imageResize.style.height =  newValue + 'px';
+
+        let event = new CustomEvent(
+            'change-height', {
+                detail: {
+                    height: newValue
+                }
+            });
+        
+        this.dispatchEvent(event);
         
     }
 
@@ -380,28 +379,26 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
         this.$.imageClip.style.width =  newValue + 'px';
         this.$.imageResize.style.width =  newValue + 'px';
         this.$.scroll.style.width =  (newValue  + 9) + 'px';
+
+        let event = new CustomEvent(
+            'change-width', {
+                detail: {
+                    width: newValue
+                }
+            });
+        
+        this.dispatchEvent(event);
     }
 
     changeWidthEvtHandler(evt) {
         this.width = evt.target.value;
     }
 
-
-
     renderPoint(){
         this.$.points.render();
         
-        console.log('RENDER');
         this._computePolygon();
         this._computeBackground();
-    }
-
-    _changePolygon(newValue, oldValue) {
-        if (!newValue && newValue != oldValue) {
-            return;
-        }
-        this._computePolygon();
-        
     }
 
     changeBgPolygon(polygon, backgroundColor) {
@@ -411,7 +408,6 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
 
         this._computePolygon();
         this._computeBackground();
-        console.log('computa', polygon, backgroundColor);
     }
 
     _computeBackground() {
@@ -459,35 +455,9 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
                     index: index
                 }
             });
-        console.log(event);
         
         this.dispatchEvent(event);
         this._computePolygon();
-    }
-
-    _addPoint(evt) {
-      
-        let point = {};
-        point.x = this.$.addXBtn.value;
-        point.y = this.$.addYBtn.value;
-        
-       // this.notifyPath('monitor.pol');
-        this.push('monitor.polygonPoints', point);
-        this.polygon = this.monitor.polygonPoints;
-        this._computePolygon();
-        this._computeBackground();
-
-        this.$.addXBtn.value = null;
-        this.$.addYBtn.value = null;
-    }
-
-    _removePoint(evt) {
-      
-
-        this.splice('monitor.polygonPoints', evt.target.parentElement.index, 1);
-        this.polygon = this.monitor.polygonPoints;
-        this._computePolygon();
-        this._computeBackground()
     }
 
     _changeZoom(newValue, oldValue) {
