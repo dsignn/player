@@ -163,7 +163,6 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
               
             </style>
             
-            <paper-monitor-image-viewer-control root-monitor=[[monitor]] id="controller"></paper-monitor-image-viewer-control>
             <div id="scroll-container">
                 <div id="scroll"></div>
             </div>
@@ -272,7 +271,13 @@ class PaperMonitorImageViewer extends LocalizeMixin(ServiceInjectorMixin(Polymer
     connectedCallback() { 
         super.connectedCallback();
 
-        this.$.controller.rootElement = this;
+        // TODO gestirlo parametrico???
+        setTimeout( 
+            () => {
+                this.parentElement.querySelector('#controller').rootElement = this;
+            },
+            300
+        );
       
         this.$['scroll-container'].addEventListener("scroll", (event) => {
            this.$['image-container'].scrollLeft = event.target.scrollLeft;
