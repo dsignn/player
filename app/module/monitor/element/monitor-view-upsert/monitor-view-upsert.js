@@ -12,6 +12,8 @@ import '@polymer/paper-tooltip/paper-tooltip';
 import '@polymer/iron-flex-layout/iron-flex-layout';
 import '../paper-monitor-update/paper-monitor-update';
 import '../paper-monitor-image-viewer/paper-monitor-image-viewer';
+import '../paper-monitor-image-viewer/paper-monitor-image-viewer-control';
+import '../paper-monitor-image-viewer/paper-monitor-image-viewer-container';
 import {MongoIdGenerator} from '@dsign/library/src/storage/util/MongoIdGenerator';
 import '../../../../elements/paper-input-points/paper-input-points';
 import {flexStyle} from '../../../../style/layout-style';
@@ -59,6 +61,10 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                         width: fit-content;
                         min-width: 220px;
                         font-size: 18px;
+                    }
+
+                    paper-monitor-image-viewer-container {
+                        margin-top: 8px;
                     }
                     
                     #monitorUpdate paper-monitor-update {
@@ -125,10 +131,10 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
                                             </paper-tabs>
                                             <iron-pages selected={{tabsImageViewer}}>
                                                 <template is="dom-repeat" items="[[entity.monitors]]" as="monitor">
-                                                    <div>
-                                                        <paper-monitor-image-viewer-control root-monitor=[[monitor]] id="controller"></paper-monitor-image-viewer-control>
-                                                        <paper-monitor-image-viewer monitor="{{monitor}}"></paper-monitor-image-viewer>
-                                                    </div>
+                                                    <paper-monitor-image-viewer-control root-monitor=[[monitor]] id-root-element="controller"></paper-monitor-image-viewer-control>
+                                                    <paper-monitor-image-viewer-container>
+                                                       <paper-monitor-image-viewer id="controller" monitor="{{monitor}}" is-route></paper-monitor-image-viewer>
+                                                    </paper-monitor-image-viewer-container>
                                                 </template>
                                             </iron-pages>
                                         </div>
@@ -301,8 +307,9 @@ class MonitorViewUpsert extends StorageEntityMixin(LocalizeMixin(ServiceInjector
 
         setTimeout(
             () => {
-                let nodes = this.shadowRoot.querySelectorAll('paper-monitor-image-viewer');
+                let nodes = this.shadowRoot.querySelectorAll('paper-monitor-image-viewer-container');
                 for (let cont = 0; nodes.length > cont; cont++) {
+                    
                     nodes[cont].resizeImageContainer();
                 }
             },

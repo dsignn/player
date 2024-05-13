@@ -21,7 +21,7 @@ export class MonitorEntity extends EntityIdentifier {
         /**
          * @type {Number}
          */
-        this.width   = 0;
+        this.width = 0;
 
         /**
          * @type {Number}

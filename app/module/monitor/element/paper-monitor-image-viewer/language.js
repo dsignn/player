@@ -15,7 +15,9 @@ export const lang = {
     "point-x" : "X del punto",
     "point-y" : "Y del punto",
     "add-point" : "Aggingi",
-    "zoom": "Zoom"
+    "zoom": "Zoom",
+    "x": "Punto X", 
+    "y": "Punto Y"
   },
   "en": {
     "name": "Name",
@@ -33,6 +35,8 @@ export const lang = {
     "point-x" : "X del punto",
     "point-y" : "Y del punto",
     "add-point" : "Aggingi",
-    "zoom": "Zoom"
+    "zoom": "Zoom",
+    "x": "Punto X",
+    "y": "Punto Y"
   }
 };

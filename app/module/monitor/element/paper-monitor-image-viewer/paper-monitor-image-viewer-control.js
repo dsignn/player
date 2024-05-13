@@ -33,9 +33,7 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
             ${flexStyle}
             <style >
                 :host {
-                    display: block;
-
-                   
+                    display: block;                   
                 }
 
                 paper-menu-button {
@@ -137,9 +135,14 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
                 }
 
                 paper-input[name=x],
+                paper-input[name=y] {
+                    display: none;
+                }
+
+                paper-input[name=x],
                 paper-input[name=y],
                 paper-input[name=zoom] {
-                    width: 40px;
+                    width: 44px;
                 }
 
                 paper-input[disabled] {
@@ -190,10 +193,12 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
                     <paper-icon-button slot="suffix" on-tap="deSelectMonitor" icon="clear">
                     </paper-icon-button>
                 </paper-autocomplete>
-                <paper-input label="{{localize('height')}}" value="{{monitor.height}}" on-change="changeHeightEvtHandler"></paper-input>
-                <paper-input label="{{localize('width')}}"  value="{{monitor.width}}" on-change="changeWidthEvtHandler"></paper-input>
-                <paper-input-color id="backgroundColor" label="{{localize('bg-color')}}" value="{{monitor.backgroundColor}}" on-change-value="changeColor"></paper-input-color>
-                <paper-input name="zoom" label="{{localize('zoom')}}" value="{{zoom}}" disabled>
+                <paper-input label="{{localize('height')}}" value="[[height]]" on-change="changeHeightEvtHandler"></paper-input>
+                <paper-input label="{{localize('width')}}" value="[[width]]" on-change="changeWidthEvtHandler"></paper-input>
+                <paper-input name="x" label="{{localize('x')}}" value="[[x]]" on-change="changeXEvtHandler"></paper-input>
+                <paper-input name="y" label="{{localize('y')}}" value="[[y]]" on-change="changeYEvtHandler"></paper-input>
+                <paper-input-color id="backgroundColor" label="{{localize('bg-color')}}" value="[[backgroundColor]]" on-change-value="changeColor"></paper-input-color>
+                <paper-input name="zoom" label="{{localize('zoom')}}" value="[[zoom]]" disabled>
                     <div slot="suffix">%</div>
                 </paper-input>       
                 <div class="zoom-action">
@@ -250,6 +255,9 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
 
             },
 
+            idRootElement: {
+            },
+
             /**
              * @type object
              */
@@ -302,7 +310,9 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
     connectedCallback() { 
         super.connectedCallback();
         this._attachEvent();
-        
+        if (this.idRootElement) {
+            this.rootElement = this.parentElement.querySelector(`#${this.idRootElement}`);
+        }        
     }
 
     searchMonitor(evt) {
@@ -321,10 +331,13 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
 
     selectMonitor(evt){
        
-        this.monitor = evt.detail.value;
-        let ele = this.rootElement.getSelectedElement(this.monitor);
+      
+        let ele = this.rootElement.getSelectedElement(evt.detail.value);
         if (ele) {
             this.selectElement = ele;
+            this.monitor = evt.detail.value;
+           
+            this.showXY(!this.selectElement.isRoute);
 
             this.externalChangePointHandler = this.externalChangePoint.bind(this);
             this.selectElement.addEventListener(
@@ -333,10 +346,25 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
                 false
             );
 
+
+            this.externalChangeYHandler =  this.externalChangeY.bind(this);
+            this.selectElement.addEventListener(
+                'change-y',
+                this.externalChangeYHandler,
+                false
+            );
+
             this.externalChangeHeightHandler =  this.externalChangeHeight.bind(this);
             this.selectElement.addEventListener(
                 'change-height',
                 this.externalChangeHeightHandler,
+                false
+            );
+
+            this.externalChangeXHandler =  this.externalChangeX.bind(this);
+            this.selectElement.addEventListener(
+                'change-x',
+                this.externalChangeXHandler,
                 false
             );
 
@@ -354,11 +382,17 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
         if (!this.monitor || !this.selectElement) {
             return;
         }
-        console.log('deselect', this.selectElement);
+        //console.log('deselect', this.selectElement);
        
         this.selectElement.removeEventListener(
             'change-width',
             this.externalChangeWidthHandler,
+            false
+        );
+
+        this.selectElement.removeEventListener(
+            'change-x',
+            this.externalChangeXHandler,
             false
         );
 
@@ -369,30 +403,54 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
         );
 
         this.selectElement.removeEventListener(
+            'change-y',
+            this.externalChangeYHandler,
+            false
+        );
+
+        this.selectElement.removeEventListener(
             'change-point',
             this.externalChangePointHandler,
             false
         );
 
-        this.monitor = null;
+        this.monitor = {};
         this.selectElement = null;
         this.$.monitorAutocomplete.clear();
+        this.showXY(false);
     }
 
     externalChangeHeight(evt) {
-        console.log('height')
-        this.monitor.height = evt.detail.height;
+      
+        this.height =  evt.detail.height;
+        this.monitor.height = this.height ;
         this.notifyPath('monitor.height');
     }
 
     externalChangeWidth(evt) {
-        console.log('width')
-        this.monitor.width = evt.detail.width;
+       
+        this.width = evt.detail.width;
+        this.monitor.width = this.width;
         this.notifyPath('monitor.width');
     }
 
+    externalChangeX(evt) {
+       
+        this.x = evt.detail.x;
+        this.monitor.offsetX =   this.x;
+        this.notifyPath('monitor.offsetX');
+    }
+
+    externalChangeY(evt) {
+        
+        this.y = evt.detail.y;
+        this.monitor.offsetY = this.y;
+        this.notifyPath('monitor.offsetY');
+    
+    }
+
     externalChangePoint(evt) {
-        console.log('bbbbb')
+
         let index = evt.detail.index;
         let elements = this.shadowRoot.querySelectorAll('.points');
         let ele = null;
@@ -442,6 +500,34 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
             });
 
         this.addEventListener(
+            "change-x",
+            (evt) => {
+                if (this.selectElement) {
+                        console.log('cccc');
+                    this.selectElement.x = evt.detail;
+                }
+            });
+
+        this.addEventListener(
+            "change-y",
+            (evt) => {
+                if (this.selectElement) {
+                    console.log('fffff');
+                    this.selectElement.y = evt.detail;
+                }
+            });
+        
+
+        this.addEventListener(
+            "change-polygon",
+            (evt) => {
+                if (this.selectElement) {
+                    
+                    this.selectElement.renderPoint();
+                }
+            });
+
+          this.addEventListener(
             "change-polygon",
             (evt) => {
                 if (this.selectElement) {
@@ -461,11 +547,29 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
 
     _syncData() {
 
+      
         this.height = this.monitor.height;
         this.width = this.monitor.width;
         this.backgroundColor = this.monitor.backgroundColor;
         this.polygon = this.monitor.polygonPoints;
+        if (!this.isRoute) {
+            this.x = this.monitor.offsetX;
+            this.y = this.monitor.offsetY;
+        } 
     }
+
+    showXY(show) {
+        let xEle = this.shadowRoot.querySelector('paper-input[name=x]');
+        let yEle = this.shadowRoot.querySelector('paper-input[name=y]');
+        if (show) {
+            xEle.style.display = 'block';
+            yEle.style.display = 'block';
+        } else {
+            xEle.style.display = 'none';
+            yEle.style.display = 'none';
+        }
+    }
+
 
     changeColor(evt) {
         this._syncData();
@@ -486,7 +590,7 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
                 });
         }
 
-        console.log(event);
+       // console.log(event);
         this.dispatchEvent(event);
     }
 
@@ -496,7 +600,17 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
             'change-height', {
                 detail:  this.height
             });
-        console.log(event);
+      //  console.log(event);
+        this.dispatchEvent(event);
+    }
+
+    changeYEvtHandler(evt) {
+        this.y = evt.target.value;
+        let event = new CustomEvent(
+            'change-y', {
+                detail:  this.y
+            });
+      //  console.log(event);
         this.dispatchEvent(event);
     }
 
@@ -506,7 +620,17 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
             'change-width', {
                 detail:  this.width
             });
-        console.log(event);
+      //  console.log(event);
+        this.dispatchEvent(event);
+    }
+
+    changeXEvtHandler(evt) {
+        this.x = evt.target.value;
+        let event = new CustomEvent(
+            'change-x', {
+                detail:  this.x
+            });
+      //  console.log(event);
         this.dispatchEvent(event);
     }
 
@@ -534,7 +658,7 @@ class PaperMonitorImageViewerControl extends LocalizeMixin(ServiceInjectorMixin(
                     monitor: this.monitor
                 }
             });
-        console.log(event);
+     //   console.log(event);
         this.dispatchEvent(event);
     }
 

@@ -34,7 +34,7 @@ export class ConnectionService extends EventManagerAware {
     }
 
     _sendPing() {
-        
+        /*
         fetch(this.url).then(
             (response) => {
                 if (this.status != ConnectionService.ONLINE) {
@@ -48,6 +48,6 @@ export class ConnectionService extends EventManagerAware {
                 this.getEventManager().emit(ConnectionService.CHANGE_STATUS, this.status);
             }
         });
-    
+    */
     }
 }
