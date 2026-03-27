@@ -63,7 +63,7 @@
     "@polymer/polymer": "^3.5.1",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "app-module-path": "^2.2.0",
-    "ckeditor5": "39.0.1",
+    "ckeditor5": "47.6.0",
     "ckeditor5-webcomponent": "^2.0.5",
     "decompress": "4.2.1",
     "dexie": "~3.2.2",
